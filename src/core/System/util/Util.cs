@@ -187,5 +187,27 @@ namespace System.util {
 
             return result;
         }
+
+        public static void AddAll<T>(ICollection<T> dest, IEnumerable<T> source, int srcStartFrom) {
+            IEnumerator<T> enumerator = source.GetEnumerator();
+
+            while (srcStartFrom != 0 && enumerator.MoveNext()) {
+                --srcStartFrom;
+            }
+
+            while (enumerator.MoveNext()) {
+                dest.Add(enumerator.Current);
+            }
+        }
+
+        public static void AddAll<T>(ICollection<T> dest, IEnumerable<T> source) {
+            AddAll(dest, source, 0);
+        }
+
+        public static void AddAll<T>(Queue<T> to, IEnumerable<T> from) {
+            foreach (T elem in from) {
+                to.Enqueue(elem);
+            }
+        }
     }
 }

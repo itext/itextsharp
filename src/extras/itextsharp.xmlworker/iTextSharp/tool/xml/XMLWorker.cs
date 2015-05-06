@@ -60,9 +60,9 @@ namespace iTextSharp.tool.xml {
      */
     public class XMLWorker : IXMLParserListener {
 
-        private IPipeline rootpPipe;
+        protected IPipeline rootpPipe;
         private static LocalDataStoreSlot context = Thread.AllocateDataSlot();
-        private bool parseHtml;
+        protected bool parseHtml;
 
         static XMLWorker() {
             Thread.SetData(context, new WorkerContextImpl());
@@ -168,6 +168,13 @@ namespace iTextSharp.tool.xml {
          * method.
          */
         virtual public void Text(String text) {
+            if (text.StartsWith("<![CDATA[") && text.EndsWith("]]>"))
+            {
+                if (IgnoreCdata())
+                    return;
+                else
+                    text = text.Substring(9, text.Length - 12);
+            }
             IWorkerContext ctx = GetLocalWC();
             if (null != ctx.GetCurrentTag()) {
                 if (text.Length > 0) {
@@ -227,6 +234,11 @@ namespace iTextSharp.tool.xml {
                 Thread.SetData(context, ik);
             }
             return ik;
+        }
+
+        virtual protected bool IgnoreCdata()
+        {
+            return true;
         }
     }
 }

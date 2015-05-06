@@ -10,6 +10,9 @@ using NUnit.Framework;
 
 namespace itextsharp.tests.iTextSharp.text.pdf.parser {
     public class TextRenderInfoTest {
+        
+        public const int FIRST_PAGE = 1;
+        public const int FIRST_ELEMENT_INDEX = 0;
         private const string TEST_RESOURCES_PATH = @"..\..\resources\text\pdf\parser\TextRenderInfoTest\";
 
         [Test]
@@ -20,7 +23,7 @@ namespace itextsharp.tests.iTextSharp.text.pdf.parser {
             PdfReader r = new PdfReader(bytes);
 
             PdfReaderContentParser parser = new PdfReaderContentParser(r);
-            parser.ProcessContent(1, new CharacterPositionRenderListener());
+            parser.ProcessContent(FIRST_PAGE, new CharacterPositionRenderListener());
         }
         
         /**
@@ -38,7 +41,7 @@ namespace itextsharp.tests.iTextSharp.text.pdf.parser {
             PdfReader p = TestResourceUtils.GetResourceAsPdfReader(TEST_RESOURCES_PATH, inFile);
             ITextExtractionStrategy strat = new SimpleTextExtractionStrategy();
 
-            sb.Append(PdfTextExtractor.GetTextFromPage(p, 1, strat));
+            sb.Append(PdfTextExtractor.GetTextFromPage(p, FIRST_PAGE, strat));
 
             String result = sb.ToString(0, sb.ToString().IndexOf('\n'));
             String origText =
@@ -47,6 +50,55 @@ namespace itextsharp.tests.iTextSharp.text.pdf.parser {
                     + "\u30a9\u30fc\u30de\u30f3\u30b9\u306f\u0053\uff06\u0050"
                     + "\u0035\u0030\u0030\u6307\u6570\u3092\u4e0a\u56de\u308b";
             Assert.AreEqual(result, origText);
+        }
+
+        [Test]
+        public void TestType3FontWidth() {
+            String inFile = "type3font_text.pdf";
+            LineSegment origLineSegment = new LineSegment(new Vector(20.3246f, 769.4974f, 1.0f), new Vector(151.22923f, 769.4974f, 1.0f));
+
+            PdfReader reader = TestResourceUtils.GetResourceAsPdfReader(TEST_RESOURCES_PATH, inFile);
+            TextPositionRenderListener renderListener = new TextPositionRenderListener();
+            PdfContentStreamProcessor processor = new PdfContentStreamProcessor(renderListener);
+
+            PdfDictionary pageDic = reader.GetPageN(FIRST_PAGE);
+            PdfDictionary resourcesDic = pageDic.GetAsDict(PdfName.RESOURCES);
+            processor.ProcessContent(ContentByteUtils.GetContentBytesForPage(reader, FIRST_PAGE), resourcesDic);
+
+
+            Assert.AreEqual(renderListener.LineSegments[FIRST_ELEMENT_INDEX].GetStartPoint()[FIRST_ELEMENT_INDEX],
+                origLineSegment.GetStartPoint()[FIRST_ELEMENT_INDEX], 1/2f);
+
+            Assert.AreEqual(renderListener.LineSegments[FIRST_ELEMENT_INDEX].GetEndPoint()[FIRST_ELEMENT_INDEX],
+                origLineSegment.GetEndPoint()[FIRST_ELEMENT_INDEX], 1/2f);
+
+        }
+
+
+        private class TextPositionRenderListener : IRenderListener {
+
+            private List<LineSegment> lineSegments = new List<LineSegment>();
+
+            public List<LineSegment> LineSegments {
+                get { return lineSegments; }
+            }
+
+            public void RenderText(TextRenderInfo renderInfo) {
+                lineSegments.Add(renderInfo.GetBaseline());
+            }
+
+            public void BeginTextBlock() {
+            }
+
+            public void EndTextBlock() {
+
+            }
+
+            public void RenderImage(ImageRenderInfo renderInfo) {
+
+            }
+
+
         }
 
         private class CharacterPositionRenderListener : ITextExtractionStrategy {

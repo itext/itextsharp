@@ -68,7 +68,7 @@ namespace iTextSharp.tool.xml.css {
         private const string _0_RIGHT_1 = "{0}right{1}";
         private const string _0_BOTTOM_1 = "{0}bottom{1}";
         private const string _0_TOP_1 = "{0}top{1}";
-        private static CssUtils myself;
+        private static CssUtils instance = new CssUtils();
         private static object syncroot = new object();
 
         /**
@@ -80,15 +80,9 @@ namespace iTextSharp.tool.xml.css {
         /**
          * @return Singleton instance of CssUtils.
          */
-        public static CssUtils GetInstance() {
-            if (myself != null)
-                return myself;
-            lock (syncroot) {
-                if (null == myself) {
-                    myself = new CssUtils();
-                }
-                return myself;
-            }
+        public static CssUtils GetInstance()
+        {
+            return instance;    
         }
 
         /**

@@ -42,6 +42,7 @@
  * For more information, please contact iText Software Corp. at this
  * address: sales@itextpdf.com
  */
+
 namespace iTextSharp.text.pdf.parser {
 
     /**
@@ -102,6 +103,27 @@ namespace iTextSharp.text.pdf.parser {
         internal BaseColor fillColor;
         /** The current stroke color. */
         internal BaseColor strokeColor;
+
+        /** The line width for stroking operations */
+        private float lineWidth;
+
+        /**
+         * The line cap style. For possible values
+         * see {@link PdfContentByte}
+         */
+        private int lineCapStyle;
+
+        /**
+         * The line join style. For possible values
+         * see {@link PdfContentByte}
+         */
+        private int lineJoinStyle;
+
+        /** The mitir limit value */
+        private float miterLimit;
+
+        /** The line dash pattern */
+        private LineDashPattern lineDashPattern;
         
         /**
          * Constructs a new Graphics State object with the default values.
@@ -121,6 +143,10 @@ namespace iTextSharp.text.pdf.parser {
             colorSpaceStroke = null;
             fillColor = null;
             strokeColor = null;
+            lineWidth = 1.0f;
+            lineCapStyle = PdfContentByte.LINE_CAP_BUTT;
+            lineJoinStyle = PdfContentByte.LINE_JOIN_MITER;
+            miterLimit = 10.0f;
         }
         
         /**
@@ -144,6 +170,14 @@ namespace iTextSharp.text.pdf.parser {
             colorSpaceStroke = source.colorSpaceStroke;
             fillColor = source.fillColor;
             strokeColor = source.strokeColor;
+            lineWidth = source.lineWidth;
+            lineCapStyle = source.lineCapStyle;
+            lineJoinStyle = source.lineJoinStyle;
+            miterLimit = source.miterLimit;
+
+            if (source.lineDashPattern != null) {
+                lineDashPattern = new LineDashPattern(source.lineDashPattern.DashArray, source.lineDashPattern.DashPhase);
+            }
         }
 
         /**
@@ -268,6 +302,67 @@ namespace iTextSharp.text.pdf.parser {
         virtual public BaseColor StrokeColor
         {
             get { return strokeColor; }
+        }
+
+
+        /**
+         * Getter  and setter for the line width.
+         * @return The line width
+         * @since 5.5.6
+         */
+        public float LineWidth {
+            get { return lineWidth; }
+            set { lineWidth = value; }
+        }
+
+        /**
+         * Getter and setter for the line cap style.
+         * For possible values see {@link PdfContentByte}
+         * @return The line cap style.
+         * @since 5.5.6
+         */
+        public int LineCapStyle {
+            get { return lineCapStyle; }
+            set { lineCapStyle = value; }
+        }
+
+        /**
+         * Getter and setter for the line join style.
+         * For possible values see {@link PdfContentByte}
+         * @return The line join style.
+         * @since 5.5.6
+         */
+        public int LineJoinStyle {
+            get { return lineJoinStyle; }
+            set { lineJoinStyle = value; }
+        }
+
+        /**
+         * Getter and setter for the miter limit value.
+         * @return The miter limit.
+         * @since 5.5.6
+         */
+        public float MiterLimit {
+            get { return miterLimit; }
+            set { miterLimit = value; }
+        }
+
+        /**
+         * Getter for the line dash pattern.
+         * @return The line dash pattern.
+         * @since 5.5.6
+         */
+        public virtual LineDashPattern GetLineDashPattern() {
+            return lineDashPattern;
+        }
+
+        /**
+         * Setter for the line dash pattern.
+         * @param lineDashPattern New line dash pattern.
+         * @since 5.5.6
+         */
+        public virtual void SetLineDashPattern(LineDashPattern lineDashPattern) {
+            this.lineDashPattern = new LineDashPattern(lineDashPattern.DashArray, lineDashPattern.DashPhase);
         }
     }
 }

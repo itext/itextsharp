@@ -128,10 +128,10 @@ namespace iTextSharp.tool.xml.html {
     virtual protected void ProcessParagraphItems(IWorkerContext ctx, Tag tag, IList<IElement> paragraphItems, IList<IElement> l) {
                 Paragraph p = new Paragraph();
         p.MultipliedLeading = 1.2f;
-        IElement lastElement = paragraphItems[paragraphItems.Count - 1];
-        if (lastElement is Chunk && Chunk.NEWLINE.Content.Equals(((Chunk)lastElement).Content)) {
-            paragraphItems.RemoveAt(paragraphItems.Count - 1);
-        }
+//        IElement lastElement = paragraphItems[paragraphItems.Count - 1];
+//        if (lastElement is Chunk && Chunk.NEWLINE.Content.Equals(((Chunk)lastElement).Content)) {
+//            paragraphItems.RemoveAt(paragraphItems.Count - 1);
+//        }
         IDictionary<String, String> css = tag.CSS;
         if (css.ContainsKey(CSS.Property.TAB_INTERVAL)) {
             AddTabIntervalContent(ctx, tag, paragraphItems, p, css[CSS.Property.TAB_INTERVAL]);
@@ -224,11 +224,12 @@ namespace iTextSharp.tool.xml.html {
          * @param p paragraph to which the tabbed chunks will be added.
          * @param value the value of style "tab-stops".
          */
+
         private void AddTabStopsContent(IList<IElement> currentContent, Paragraph p, String value) {
             IList<Chunk> tabs = new List<Chunk>();
             String[] alignAndWidth = value.Split(' ');
             float tabWidth = 0;
-            for (int i = 0 , j = 1; j < alignAndWidth.Length ; i+=2, j+=2) {
+            for (int i = 0, j = 1; j < alignAndWidth.Length; i += 2, j += 2) {
                 tabWidth += CssUtils.GetInstance().ParsePxInCmMmPcToPt(alignAndWidth[j]);
                 TabbedChunk tab = new TabbedChunk(new VerticalPositionMark(), tabWidth, true, alignAndWidth[i]);
                 tabs.Add(tab);
@@ -244,9 +245,11 @@ namespace iTextSharp.tool.xml.html {
                         p.Add(new Chunk(tabs[currentTab]));
                         p.Add(new Chunk((TabbedChunk) e));
                         ++currentTab;
-    //              } else { // wat doet een tabCount van groter dan 1? sla een tab over of count * tabWidth?
-    //                  int widthMultiplier = ((TabbedChunk) e).GetTabCount();
+//                    } else {//wat doet een tabCount van groter dan 1? sla een tab over of count * tabWidth?
+//                        int widthMultiplier = ((TabbedChunk) e).GetTabCount();
                     }
+                } else {
+                    p.Add(e);
                 }
             }
         }

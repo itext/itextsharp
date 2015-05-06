@@ -11,7 +11,28 @@ using iTextSharp.text.pdf.parser;
 
 namespace iTextSharp.xtra.iTextSharp.text.pdf.pdfcleanup {
 
+    /**
+     * Represents the main mechanism for cleaning a PDF document.
+     *
+     * @since 5.5.5
+     */
     public class PdfCleanUpProcessor {
+
+        /**
+         * When a document with line arts is being cleaned up, there are lot of
+         * calculations with floating point numbers. All of them are translated
+         * into fixed point numbers by multiplying by this coefficient. Vary it
+         * to adjust the preciseness of the calculations.
+         */
+        public static double FloatMultiplier = Math.Pow(10, 14);
+
+        public static bool FillCleanedArea = true;
+
+        /**
+         * Used as the criterion of a good approximation of rounded line joins
+         * and line caps.
+         */
+        public static double ArcTolerance = 0.0025;
 
         private static readonly String XOBJ_NAME_PREFIX = "Fm";
 
@@ -20,17 +41,25 @@ namespace iTextSharp.xtra.iTextSharp.text.pdf.pdfcleanup {
 
         private int currentXObjNum = 0;
 
-        private IDictionary<int, IList<PdfCleanUpLocation>> pdfCleanUpLocations; // key - page number
         private PdfStamper pdfStamper;
 
-        private IDictionary<int, HashSet2<string>> redactAnnotIndirRefs; // key - number of page containing redact annotations
+        // key - page number, value - list of locations related to the page
+        private IDictionary<int, IList<PdfCleanUpLocation>> pdfCleanUpLocations;
+
+        // key - number of page containing redact annotations, value - look at variable name
+        private IDictionary<int, HashSet2<string>> redactAnnotIndirRefs;
+
+        // stores list of rectangles for annotation identified by it's index in Annots array
         private IDictionary<int, IList<Rectangle>> clippingRects; // stores list of rectangles for annotation identified by it's index in Annots array
 
         /**
-         * Create clean up processor.
+         * Creates a {@link com.itextpdf.text.pdf.pdfcleanup.PdfCleanUpProcessor} object based on the
+         * given {@link java.util.List} of {@link com.itextpdf.text.pdf.pdfcleanup.PdfCleanUpLocation}s
+         * representing regions to be erased from the document.
          *
          * @param pdfCleanUpLocations list of locations to be cleaned up {@see PdfCleanUpLocation}
-         * @param pdfStamper
+         * @param pdfStamper          A{@link com.itextpdf.text.pdf.PdfStamper} object representing the document which redaction
+         *                            applies to.
          */
         public PdfCleanUpProcessor(IList<PdfCleanUpLocation> pdfCleanUpLocations, PdfStamper pdfStamper) {
             this.pdfCleanUpLocations = OrganizeLocationsByPage(pdfCleanUpLocations);
@@ -38,9 +67,11 @@ namespace iTextSharp.xtra.iTextSharp.text.pdf.pdfcleanup {
         }
 
         /**
-         * CleanUp locations are extracted from Redact annotations.
+         * Creates a {@link com.itextpdf.text.pdf.pdfcleanup.PdfCleanUpProcessor} object. Regions to be erased from
+         * the document are extracted from the redact annotations contained inside the given document.
          *
-         * @param pdfStamper
+         * @param pdfStamper A{@link com.itextpdf.text.pdf.PdfStamper} object representing the document which redaction
+         *                   applies to.
          */
         public PdfCleanUpProcessor(PdfStamper pdfStamper) {
             this.redactAnnotIndirRefs = new Dictionary<int, HashSet2<string>>();
@@ -49,6 +80,13 @@ namespace iTextSharp.xtra.iTextSharp.text.pdf.pdfcleanup {
             ExtractLocationsFromRedactAnnots();
         }
 
+        /**
+         * Cleans the document by erasing all the areas which are either provided or
+         * extracted from redaction annotations.
+         *
+         * @throws IOException
+         * @throws DocumentException
+         */
         public void CleanUp() {
             foreach (KeyValuePair<int, IList<PdfCleanUpLocation>> entry in pdfCleanUpLocations) {
                 CleanUpPage(entry.Key, entry.Value);
@@ -70,8 +108,8 @@ namespace iTextSharp.xtra.iTextSharp.text.pdf.pdfcleanup {
 
             canvas.SaveState();
 
-            IList<PdfCleanUpRegionFilter> filters = CreateFilters(cleanUpLocations);
-            PdfCleanUpRenderListener pdfCleanUpRenderListener = new PdfCleanUpRenderListener(pdfStamper, filters);
+            PdfCleanUpRegionFilter filter = CreateFilter(cleanUpLocations);
+            PdfCleanUpRenderListener pdfCleanUpRenderListener = new PdfCleanUpRenderListener(pdfStamper, filter);
             pdfCleanUpRenderListener.RegisterNewContext(pdfReader.GetPageResources(page), canvas);
 
             PdfContentStreamProcessor contentProcessor = new PdfContentStreamProcessor(pdfCleanUpRenderListener);
@@ -84,25 +122,26 @@ namespace iTextSharp.xtra.iTextSharp.text.pdf.pdfcleanup {
             ColorCleanedLocations(canvas, cleanUpLocations);
 
             if (redactAnnotIndirRefs != null) { // if it isn't null, then we are in "extract locations from redact annots" mode
-                deleteRedactAnnots(pageNum);
+                DeleteRedactAnnots(pageNum);
             }
         }
 
-        private IList<PdfCleanUpRegionFilter> CreateFilters(IList<PdfCleanUpLocation> cleanUpLocations) {
-            IList<PdfCleanUpRegionFilter> filters = new List<PdfCleanUpRegionFilter>();
+        private PdfCleanUpRegionFilter CreateFilter(IList<PdfCleanUpLocation> cleanUpLocations) {
+            IList<Rectangle> regions = new List<Rectangle>(cleanUpLocations.Count);
 
-            foreach (PdfCleanUpLocation cleanUpLocation in cleanUpLocations) {
-                Rectangle region = cleanUpLocation.Region;
-                filters.Add(new PdfCleanUpRegionFilter(region));
+            foreach (PdfCleanUpLocation location in cleanUpLocations) {
+                regions.Add(location.Region);
             }
 
-            return filters;
+            return new PdfCleanUpRegionFilter(regions);
         }
 
         private void ColorCleanedLocations(PdfContentByte canvas, IList<PdfCleanUpLocation> cleanUpLocations) {
-            foreach (PdfCleanUpLocation location in cleanUpLocations) {
-                if (location.CleanUpColor != null) {
-                    AddColoredRectangle(canvas, location);
+            if (FillCleanedArea) {
+                foreach (PdfCleanUpLocation location in cleanUpLocations) {
+                    if (location.CleanUpColor != null) {
+                        AddColoredRectangle(canvas, location);
+                    }
                 }
             }
         }
@@ -137,6 +176,9 @@ namespace iTextSharp.xtra.iTextSharp.text.pdf.pdfcleanup {
             return organizedLocations;
         }
 
+        /**
+         * Extracts locations from the redact annotations contained in the document.
+         */
         private void ExtractLocationsFromRedactAnnots() {
             this.pdfCleanUpLocations = new Dictionary<int, IList<PdfCleanUpLocation>>();
             PdfReader reader = pdfStamper.Reader;
@@ -147,6 +189,9 @@ namespace iTextSharp.xtra.iTextSharp.text.pdf.pdfcleanup {
             }
         }
 
+        /**
+         * Extracts locations from the redact annotations contained in the document and applied to the given page.
+         */
         private IList<PdfCleanUpLocation> ExtractLocationsFromRedactAnnots(int page, PdfDictionary pageDict) {
             List<PdfCleanUpLocation> locations = new List<PdfCleanUpLocation>();
 
@@ -176,13 +221,18 @@ namespace iTextSharp.xtra.iTextSharp.text.pdf.pdfcleanup {
             redactAnnotIndirRefs[page].Add(indRefStr);
         }
 
+        /**
+         * Extracts locations from the concrete annotation.
+         * Note: annotation can consist not only of one area specified by the RECT entry, but also of multiple areas specified
+         * by the QuadPoints entry in the annotation dictionary.
+         */
         private IList<PdfCleanUpLocation> ExtractLocationsFromRedactAnnot(int page, int annotIndex, PdfDictionary annotDict) {
             IList<PdfCleanUpLocation> locations = new List<PdfCleanUpLocation>();
             List<Rectangle> markedRectangles = new List<Rectangle>();
             PdfArray quadPoints = annotDict.GetAsArray(PdfName.QUADPOINTS);
 
             if (quadPoints.Size != 0) {
-                markedRectangles.AddRange( QuadPointsToRectangles(quadPoints) );
+                markedRectangles.AddRange(TranslateQuadPointsToRectangles(quadPoints));
             } else {
                 PdfArray annotRect = annotDict.GetAsArray(PdfName.RECT);
                 markedRectangles.Add(new Rectangle(annotRect.GetAsNumber(0).FloatValue,
@@ -212,7 +262,7 @@ namespace iTextSharp.xtra.iTextSharp.text.pdf.pdfcleanup {
             return locations;
         }
 
-        private IList<Rectangle> QuadPointsToRectangles(PdfArray quadPoints) {
+        private IList<Rectangle> TranslateQuadPointsToRectangles(PdfArray quadPoints) {
             IList<Rectangle> rectangles = new List<Rectangle>();
 
             for (int i = 0; i < quadPoints.Size; i += 8) {
@@ -225,7 +275,10 @@ namespace iTextSharp.xtra.iTextSharp.text.pdf.pdfcleanup {
             return rectangles;
         }
 
-        private void deleteRedactAnnots(int pageNum) {
+        /**
+         * Deletes redact annotations from the page and substitutes them with either OverlayText or RO object if it's needed.
+         */
+        private void DeleteRedactAnnots(int pageNum) {
             HashSet2<String> indirRefs;
             redactAnnotIndirRefs.TryGetValue(pageNum, out indirRefs);
 
@@ -239,7 +292,7 @@ namespace iTextSharp.xtra.iTextSharp.text.pdf.pdfcleanup {
             PdfArray annotsArray = pageDict.GetAsArray(PdfName.ANNOTS);
 
             // j is for access annotRect (i can be decreased, so we need to store additional index,
-            // indicating current position in array in case if we don't remove anything
+            // indicating current position in ANNOTS array in case if we don't remove anything
             for (int i = 0, j = 0; i < annotsArray.Size; ++i, ++j) {
                 PdfIndirectReference annotIndRef = annotsArray.GetAsIndirectObject(i);
                 PdfDictionary annotDict = annotsArray.GetAsDict(i);
@@ -248,7 +301,7 @@ namespace iTextSharp.xtra.iTextSharp.text.pdf.pdfcleanup {
                     PdfStream formXObj = annotDict.GetAsStream(PdfName.RO);
                     PdfString overlayText = annotDict.GetAsString(PdfName.OVERLAYTEXT);
 
-                    if (formXObj != null) {
+                    if (FillCleanedArea && formXObj != null) {
                         PdfArray rectArray = annotDict.GetAsArray(PdfName.RECT);
                         Rectangle annotRect = new Rectangle(rectArray.GetAsNumber(0).FloatValue,
                                                             rectArray.GetAsNumber(1).FloatValue,
@@ -256,7 +309,7 @@ namespace iTextSharp.xtra.iTextSharp.text.pdf.pdfcleanup {
                                                             rectArray.GetAsNumber(3).FloatValue);
 
                         InsertFormXObj(canvas, pageDict, formXObj, clippingRects[j], annotRect);
-                    } else if (overlayText != null && overlayText.ToUnicodeString().Length > 0) {
+                    } else if (FillCleanedArea && overlayText != null && overlayText.ToUnicodeString().Length > 0) {
                         DrawOverlayText(canvas, clippingRects[j], overlayText,
                                         annotDict.GetAsString(PdfName.DA),
                                         annotDict.GetAsNumber(PdfName.Q),

@@ -225,18 +225,16 @@ namespace iTextSharp.text.pdf {
                     return;
                 PdfDictionary names = new PdfDictionary();
                 if (localDestinations.Count > 0) {
-                    PdfArray ar = new PdfArray();
+                    Dictionary<String, PdfObject> destmap = new Dictionary<String, PdfObject>();
                     foreach (String name in localDestinations.Keys) {
                         Destination dest;
                         if (!localDestinations.TryGetValue(name, out dest))
                             continue;
-                        PdfIndirectReference refi = dest.reference;
-                        ar.Add(new PdfString(name, PdfObject.TEXT_UNICODE));
-                        ar.Add(refi);
+                        destmap[name] = dest.reference;
                     }
-                    if (ar.Size > 0) {
+                    if (destmap.Count > 0) {
                         PdfDictionary dests = new PdfDictionary();
-                        dests.Put(PdfName.NAMES, ar);
+                        dests.Put(PdfName.NAMES, PdfNameTree.WriteTree(destmap, writer));
                         names.Put(PdfName.DESTS, writer.AddToBody(dests).IndirectReference);
                     }
                 }
@@ -450,7 +448,7 @@ namespace iTextSharp.text.pdf {
                         // we try to add the chunk to the line, until we succeed
                         {
                             PdfChunk overflow;
-                            while ((overflow = line.Add(chunk)) != null) {
+                            while ((overflow = line.Add(chunk, leading)) != null) {
                                 CarriageReturn();
                                 bool newlineSplit = chunk.IsNewlineSplit();
                                 chunk = overflow;
@@ -2607,6 +2605,9 @@ namespace iTextSharp.text.pdf {
             //fit on the current page, start a new page.
             if (ptable.KeepTogether && !FitsPage(ptable, 0f) && currentHeight > 0)  {
                 NewPage();
+                if (IsTagged(writer)) {
+                    ct.Canvas = text;
+                }
             }
             if (currentHeight == 0) {
                 ct.AdjustFirstLine = false;

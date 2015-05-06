@@ -271,15 +271,14 @@ namespace iTextSharp.text.pdfa
             document.Close();
         }
 
-        [Test]
-        virtual public void PdfObjectCheckTest4()
+        // This method is used in the PdfA2CheckerTest and PdfA3CheckerTest, too
+        public static void PdfObjectCheck(string output, PdfAConformanceLevel level, bool exceptionExpected)
         {
-            string filename = OUT + "PdfObjectCheckTest4.pdf";
-            FileStream fos = new FileStream(filename, FileMode.Create);
+            FileStream fos = new FileStream(output, FileMode.Create);
 
             Document document = new Document();
 
-            PdfAWriter writer = PdfAWriter.GetInstance(document, fos, PdfAConformanceLevel.PDF_A_1B);
+            PdfAWriter writer = PdfAWriter.GetInstance(document, fos, level);
             writer.CreateXmpMetadata();
 
             document.Open();
@@ -310,9 +309,42 @@ namespace iTextSharp.text.pdfa
                 if (e.GetObject().Equals(array))
                     exceptionThrown = true;
             }
-            if (!exceptionThrown)
-                Assert.Fail("PdfAConformanceException should be thrown.");
+            if (exceptionThrown != exceptionExpected) {
+                String error = exceptionExpected ? "" : " not";
+                error = String.Format("PdfAConformanceException should{0} be thrown.", error);
 
+                Assert.Fail(error);
+            }
+        }
+
+        [Test]
+        public void PdfObjectCheckTest4() {
+            PdfObjectCheck(OUT + "PdfObjectCheckTest4.pdf", PdfAConformanceLevel.PDF_A_1B, true);
+        }
+
+        [Test]
+        public void PdfNamedDestinationsOverflow() {
+            Document document = new Document();
+            PdfAWriter writer = PdfAWriter.GetInstance(document, new FileStream(OUT + "pdfNamedDestinationsOverflow.pdf", FileMode.Create), PdfAConformanceLevel.PDF_A_1A);
+            writer.CreateXmpMetadata();
+            writer.SetTagged();
+            document.Open();
+            document.AddLanguage("en-US");
+
+            Font font = FontFactory.GetFont(RESOURCES + "FreeMonoBold.ttf", BaseFont.WINANSI, BaseFont.EMBEDDED, 12);
+            document.Add(new Paragraph("Hello World", font));
+            FileStream iccProfileFileStream = File.Open(RESOURCES + "sRGB Color Space Profile.icm", FileMode.Open, FileAccess.Read, FileShare.Read);
+            ICC_Profile icc = ICC_Profile.GetInstance(iccProfileFileStream);
+            iccProfileFileStream.Close();
+
+            writer.SetOutputIntents("Custom", "", "http://www.color.org", "sRGB IEC61966-2.1", icc);
+
+            PdfDocument pdf = writer.PdfDocument;
+            for (int i = 0; i < 8200; i++) {
+                PdfDestination dest = new PdfDestination(PdfDestination.FITV);
+                pdf.LocalDestination("action" + i, dest);
+            }
+            document.Close();
         }
 
         [Test]

@@ -80,6 +80,9 @@ namespace iTextSharp.tool.xml.html.table {
                 cell.RunDirection = direction;
             }
 
+            if (HTML.Tag.TH.Equals(tag.Name, StringComparison.OrdinalIgnoreCase)) {
+                cell.Role = PdfName.TH;
+            }
             try {
                 HtmlPipelineContext htmlPipelineContext = GetHtmlPipelineContext(ctx);
                 cell = (HtmlCell) GetCssAppliers().Apply(cell, tag, htmlPipelineContext);
@@ -150,7 +153,7 @@ namespace iTextSharp.tool.xml.html.table {
 		    return true;
 	    }
 
-        private void ProcessChunkItems(IList<IElement> chunks, HtmlCell cell) {
+        protected void ProcessChunkItems(IList<IElement> chunks, HtmlCell cell) {
             Paragraph p = new Paragraph();
             p.MultipliedLeading = 1.2f;
             p.AddAll(chunks);
@@ -161,7 +164,7 @@ namespace iTextSharp.tool.xml.html.table {
             chunks.Clear();    
         }
 
-        private void ProcessListItems(IWorkerContext ctx, Tag tag, IList<ListItem> listItems, HtmlCell cell) {
+        protected void ProcessListItems(IWorkerContext ctx, Tag tag, IList<ListItem> listItems, HtmlCell cell) {
             try {
                 List list = new List();
                 list.Autoindent = false;

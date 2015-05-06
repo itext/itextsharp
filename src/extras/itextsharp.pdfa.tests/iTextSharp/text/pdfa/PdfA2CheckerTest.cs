@@ -707,6 +707,11 @@ namespace iTextSharp.text.pdfa {
         }
 
         [Test]
+        public void PdfObjectCheckTest() {
+            PdfA1CheckerTest.PdfObjectCheck(OUT + "pdfObjectCheckTest.pdf", PdfAConformanceLevel.PDF_A_2B, false);
+        }
+
+        [Test]
         virtual public void AnnotationCheckTest1() {
             Document document = new Document();
             PdfAWriter writer = PdfAWriter.GetInstance(document, new FileStream(OUT + "annotationCheckTest1.pdf", FileMode.Create), PdfAConformanceLevel.PDF_A_2B);

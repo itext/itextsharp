@@ -281,6 +281,35 @@ namespace iTextSharp.text.pdf {
         }
 
         /**
+         * ! .NET SPECIFIC; this method is used to avoid unecessary using of StringBuilder because it is slow in .NET !
+         * Decodes a single character string of bytes (encoded in the font's encoding) into a unicode string
+         * This will use the ToUnicode map of the font, if available, otherwise it uses
+         * the font's encoding
+         * @param cidbytes    the bytes that need to be decoded
+         * @return  the unicode String that results from decoding
+         */
+        virtual public String DecodeSingleCharacter(byte[] cidbytes, int offset, int len) {
+            string s = "";
+            if (toUnicodeCmap == null && byteCid != null) {
+                CMapSequence seq = new CMapSequence(cidbytes, offset, len);
+                int ca = byteCid.DecodeSingle(seq);
+                if (ca >= 0) {
+                    int c = cidUni.Lookup(ca);
+                    if (c > 0)
+                        s = Utilities.ConvertFromUtf32(c);
+                }
+            } else {
+                String rslt = DecodeSingleCID(cidbytes, offset, 1);
+                if (rslt == null && len > 1) {
+                    rslt = DecodeSingleCID(cidbytes, offset, 2);
+                }
+                if (rslt != null)
+                    s = rslt;
+            }
+            return s;
+        }
+
+        /**
          * Encodes bytes to a String.
          * @param bytes     the bytes from a stream
          * @param offset    an offset

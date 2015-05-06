@@ -141,11 +141,33 @@ namespace iTextSharp.text.pdf {
         /**
          * Adds a <CODE>PdfChunk</CODE> to the <CODE>PdfLine</CODE>.
          *
-         * @param        chunk        the <CODE>PdfChunk</CODE> to add
-         * @return        <CODE>null</CODE> if the chunk could be added completely; if not
-         *                a <CODE>PdfChunk</CODE> containing the part of the chunk that could
-         *                not be added is returned
+         * @param		chunk		        the <CODE>PdfChunk</CODE> to add
+         * @param		currentLeading		new value for the height of the line
+         * @return		<CODE>null</CODE> if the chunk could be added completely; if not
+         *				a <CODE>PdfChunk</CODE> containing the part of the chunk that could
+         *				not be added is returned
          */
+
+        internal PdfChunk Add(PdfChunk chunk, float currentLeading) {
+            //we set line height to correspond to the current leading
+            if (chunk != null && !chunk.ToString().Equals("")) {
+                //whitespace shouldn't change leading
+                if (!chunk.ToString().Equals(" ")) {
+                    if (this.height < currentLeading || this.line.Count == 0)
+                        this.height = currentLeading;
+                }
+            }
+            return Add(chunk);
+        }
+
+            /**
+             * Adds a <CODE>PdfChunk</CODE> to the <CODE>PdfLine</CODE>.
+             *
+             * @param        chunk        the <CODE>PdfChunk</CODE> to add
+             * @return        <CODE>null</CODE> if the chunk could be added completely; if not
+             *                a <CODE>PdfChunk</CODE> containing the part of the chunk that could
+             *                not be added is returned
+             */
     
         internal PdfChunk Add(PdfChunk chunk) {
             // nothing happens if the chunk is null.
@@ -178,7 +200,7 @@ namespace iTextSharp.text.pdf {
 							width = 0;
                         } else {
                             chunk.TabStop = tabStop;
-                            if (tabStop.Align == TabStop.Alignment.LEFT) {
+                            if (!isRTL && tabStop.Align == TabStop.Alignment.LEFT) {
                                 width = originalWidth - tabStop.Position;
                                 tabStop = null;
                                 tabPosition = float.NaN;
@@ -617,7 +639,10 @@ namespace iTextSharp.text.pdf {
                 width = originalWidth - tabStopPosition - textWidth;
                 if (width < 0)
                     tabStopPosition += width;
-                tabStop.Position = tabStopPosition;
+                if (!isRTL)
+                    tabStop.Position = tabStopPosition;
+                else
+                    tabStop.Position = originalWidth - width - tabPosition;
                 tabStop = null;
                 tabPosition = float.NaN;
             }

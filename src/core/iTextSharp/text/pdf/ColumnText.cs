@@ -1386,14 +1386,12 @@ namespace iTextSharp.text.pdf {
                             k = -1;
                             continue;
                         }
-                        if (k == items.Count - 1) {
-                            if (stack.Count > 0) {
-                                Object[] objs = stack.Pop();
-                                list = (List)objs[0];
-                                items = list.Items;
-                                k = (int)objs[1];
-                                listIndentation = (float)objs[2];
-                            }
+                        while (k == items.Count - 1 && stack.Count > 0) {
+                            Object[] objs = stack.Pop();
+                            list = (List) objs[0];
+                            items = list.Items;
+                            k = (int) objs[1];
+                            listIndentation = (float) objs[2];
                         }
                     }
                     int status = 0;
@@ -1538,14 +1536,7 @@ namespace iTextSharp.text.pdf {
 
                     // do we need to skip the header?
                     bool skipHeader = table.SkipFirstHeader && rowIdx <= realHeaderRows && (table.ElementComplete || rowIdx != realHeaderRows);
-
-                    if (!table.Complete) {
-                        if (table.TotalHeight - headerHeight > yTemp - minY) {
-                            table.SkipFirstHeader = false;
-                            return NO_MORE_COLUMN;
-                        }
-                    }
-
+                    
                     // if not, we wan't to be able to add more than just a header and a footer
                     if (!skipHeader) {
                         yTemp -= headerHeight;
@@ -1605,7 +1596,11 @@ namespace iTextSharp.text.pdf {
                             }
                             // or drop the row
                             else {
-                                table.Rows.RemoveAt(k);
+                                // don't drop the row if the table is incomplete and if there's only one row (not counting the header rows)
+                                // if there's only one row and this check wasn't here the row would have been deleted and not added at all
+                                if (!table.Complete && k == 1) {
+                                    table.Rows.RemoveAt(k);
+                                }
                                 return NO_MORE_COLUMN;
                             }
                         }

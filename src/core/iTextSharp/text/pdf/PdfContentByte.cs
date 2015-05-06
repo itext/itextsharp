@@ -103,9 +103,7 @@ namespace iTextSharp.text.pdf {
             /** The current word spacing */
             protected internal float wordSpace = 0;
 
-            protected internal BaseColor textColorFill = new GrayColor(0);
             protected internal BaseColor colorFill = new GrayColor(0);
-            protected internal BaseColor textColorStroke = new GrayColor(0);
             protected internal BaseColor colorStroke = new GrayColor(0);
             protected internal int textRenderMode = TEXT_RENDER_MODE_FILL;
             protected internal AffineTransform CTM = new AffineTransform();
@@ -133,9 +131,7 @@ namespace iTextSharp.text.pdf {
                 scale = cp.scale;
                 charSpace = cp.charSpace;
                 wordSpace = cp.wordSpace;
-                textColorFill = cp.textColorFill;
                 colorFill = cp.colorFill;
-                textColorStroke = cp.textColorStroke;
                 colorStroke = cp.colorStroke;
                 CTM = (AffineTransform)cp.CTM.Clone();
                 textRenderMode = cp.textRenderMode;
@@ -390,8 +386,21 @@ namespace iTextSharp.text.pdf {
          *
          * @param       flatness        a value
          */
+
+        public virtual void SetFlatness(float value) {
+            SetFlatness((double)value);
+        }
+
+        /**
+         * Changes the <VAR>Flatness</VAR>.
+         * <P>
+         * <VAR>Flatness</VAR> sets the maximum permitted distance in device pixels between the
+         * mathematically correct path and an approximation constructed from straight line segments.<BR>
+         *
+         * @param       flatness        a value
+         */
     
-        virtual public void SetFlatness(float value) {
+        virtual public void SetFlatness(double value) {
             if (value >= 0 && value <= 100) {
                 content.Append(value).Append(" i").Append_i(separator);
             }
@@ -432,11 +441,41 @@ namespace iTextSharp.text.pdf {
          *
          * @param       phase       the value of the phase
          */
+
+        public virtual void SetLineDash(float value) {
+            SetLineDash((double)value);
+        }
+
+        /**
+         * Changes the value of the <VAR>line dash pattern</VAR>.
+         * <P>
+         * The line dash pattern controls the pattern of dashes and gaps used to stroke paths.
+         * It is specified by an <I>array</I> and a <I>phase</I>. The array specifies the length
+         * of the alternating dashes and gaps. The phase specifies the distance into the dash
+         * pattern to start the dash.<BR>
+         *
+         * @param       phase       the value of the phase
+         */
     
-        virtual public void SetLineDash(float value) {
+        virtual public void SetLineDash(double value) {
             content.Append("[] ").Append(value).Append(" d").Append_i(separator);
         }
-    
+
+        /**
+         * Changes the value of the <VAR>line dash pattern</VAR>.
+         * <P>
+         * The line dash pattern controls the pattern of dashes and gaps used to stroke paths.
+         * It is specified by an <I>array</I> and a <I>phase</I>. The array specifies the length
+         * of the alternating dashes and gaps. The phase specifies the distance into the dash
+         * pattern to start the dash.<BR>
+         *
+         * @param       phase       the value of the phase
+         * @param       unitsOn     the number of units that must be 'on' (equals the number of units that must be 'off').
+         */
+
+        virtual public void SetLineDash(float unitsOn, float phase) {
+            SetLineDash((double)unitsOn, (double)phase);
+        }
         /**
          * Changes the value of the <VAR>line dash pattern</VAR>.
          * <P>
@@ -449,10 +488,26 @@ namespace iTextSharp.text.pdf {
          * @param       unitsOn     the number of units that must be 'on' (equals the number of units that must be 'off').
          */
     
-        virtual public void SetLineDash(float unitsOn, float phase) {
+        virtual public void SetLineDash(double unitsOn, double phase) {
             content.Append('[').Append(unitsOn).Append("] ").Append(phase).Append(" d").Append_i(separator);
         }
-    
+
+        /**
+         * Changes the value of the <VAR>line dash pattern</VAR>.
+         * <P>
+         * The line dash pattern controls the pattern of dashes and gaps used to stroke paths.
+         * It is specified by an <I>array</I> and a <I>phase</I>. The array specifies the length
+         * of the alternating dashes and gaps. The phase specifies the distance into the dash
+         * pattern to start the dash.<BR>
+         *
+         * @param       phase       the value of the phase
+         * @param       unitsOn     the number of units that must be 'on'
+         * @param       unitsOff    the number of units that must be 'off'
+         */
+
+        virtual public void SetLineDash(float unitsOn, float unitsOff, float phase) {
+            SetLineDash((double)unitsOn, (double)unitsOff, (double)phase);
+        }
         /**
          * Changes the value of the <VAR>line dash pattern</VAR>.
          * <P>
@@ -466,10 +521,10 @@ namespace iTextSharp.text.pdf {
          * @param       unitsOff    the number of units that must be 'off'
          */
     
-        virtual public void SetLineDash(float unitsOn, float unitsOff, float phase) {
+        virtual public void SetLineDash(double unitsOn, double unitsOff, double phase) {
             content.Append('[').Append(unitsOn).Append(' ').Append(unitsOff).Append("] ").Append(phase).Append(" d").Append_i(separator);
         }
-    
+
         /**
         * Changes the value of the <VAR>line dash pattern</VAR>.
         * <P>
@@ -481,8 +536,29 @@ namespace iTextSharp.text.pdf {
         * @param        array        length of the alternating dashes and gaps
         * @param        phase        the value of the phase
         */
-        
+
         public void SetLineDash(float[] array, float phase) {
+            content.Append('[');
+            for (int i = 0; i < array.Length; i++) {
+                content.Append(array[i]);
+                if (i < array.Length - 1) content.Append(' ');
+            }
+            content.Append("] ").Append(phase).Append(" d").Append_i(separator);
+        }
+
+        /**
+        * Changes the value of the <VAR>line dash pattern</VAR>.
+        * <P>
+        * The line dash pattern controls the pattern of dashes and gaps used to stroke paths.
+        * It is specified by an <I>array</I> and a <I>phase</I>. The array specifies the length
+        * of the alternating dashes and gaps. The phase specifies the distance into the dash
+        * pattern to start the dash.<BR>
+        *
+        * @param        array        length of the alternating dashes and gaps
+        * @param        phase        the value of the phase
+        */
+
+        public void SetLineDash(double[] array, double phase) {
             content.Append('[');
             for (int i = 0; i < array.Length; i++) {
                 content.Append(array[i]);
@@ -506,7 +582,20 @@ namespace iTextSharp.text.pdf {
                 content.Append(value).Append(" j").Append_i(separator);
             }
         }
-    
+
+        /**
+         * Changes the <VAR>line width</VAR>.
+         * <P>
+         * The line width specifies the thickness of the line used to stroke a path and is measured
+         * in used space units.<BR>
+         *
+         * @param       w           a width
+         */
+
+        public virtual void SetLineWidth(float value) {
+            SetLineWidth((double) value);
+        }
+
         /**
          * Changes the <VAR>line width</VAR>.
          * <P>
@@ -516,10 +605,25 @@ namespace iTextSharp.text.pdf {
          * @param       w           a width
          */
     
-        virtual public void SetLineWidth(float value) {
+        virtual public void SetLineWidth(double value) {
             content.Append(value).Append(" w").Append_i(separator);
         }
-    
+
+        /**
+         * Changes the <VAR>Miter limit</VAR>.
+         * <P>
+         * When two line segments meet at a sharp angle and mitered joins have been specified as the
+         * line join style, it is possible for the miter to extend far beyond the thickness of the line
+         * stroking path. The miter limit imposes a maximum on the ratio of the miter length to the line
+         * witdh. When the limit is exceeded, the join is converted from a miter to a bevel.<BR>
+         *
+         * @param       miterLimit      a miter limit
+         */
+
+        public virtual void SetMiterLimit(float value) {
+            SetMiterLimit((double)value);
+        }
+
         /**
          * Changes the <VAR>Miter limit</VAR>.
          * <P>
@@ -531,7 +635,7 @@ namespace iTextSharp.text.pdf {
          * @param       miterLimit      a miter limit
          */
     
-        virtual public void SetMiterLimit(float value) {
+        virtual public void SetMiterLimit(double value) {
             if (value > 1) {
                 content.Append(value).Append(" M").Append_i(separator);
             }
@@ -777,7 +881,18 @@ namespace iTextSharp.text.pdf {
             SaveColor(new CMYKColor(0, 0, 0, 1), false);
             content.Append("0 0 0 1 K").Append_i(separator);
         }
-    
+
+        /**
+         * Move the current point <I>(x, y)</I>, omitting any connecting line segment.
+         *
+         * @param       x               new x-coordinate
+         * @param       y               new y-coordinate
+         */
+
+        public virtual void MoveTo(float x, float y) {
+            MoveTo((double) x, (double) y);
+        }
+
         /**
          * Move the current point <I>(x, y)</I>, omitting any connecting line segment.
          *
@@ -785,7 +900,7 @@ namespace iTextSharp.text.pdf {
          * @param       y               new y-coordinate
          */
     
-        virtual public void MoveTo(float x, float y) {
+        virtual public void MoveTo(double x, double y) {
             if (inText) {
                 if (IsTagged()) {
                     EndText();
@@ -796,7 +911,19 @@ namespace iTextSharp.text.pdf {
             }
             content.Append(x).Append(' ').Append(y).Append(" m").Append_i(separator);
         }
-    
+
+        /**
+         * Appends a straight line segment from the current point <I>(x, y)</I>. The new current
+         * point is <I>(x, y)</I>.
+         *
+         * @param       x               new x-coordinate
+         * @param       y               new y-coordinate
+         */
+
+        public virtual void LineTo(float x, float y) {
+            LineTo((double) x, (double) y);
+        }
+
         /**
          * Appends a straight line segment from the current point <I>(x, y)</I>. The new current
          * point is <I>(x, y)</I>.
@@ -805,7 +932,7 @@ namespace iTextSharp.text.pdf {
          * @param       y               new y-coordinate
          */
     
-        virtual public void LineTo(float x, float y) {
+        virtual public void LineTo(double x, double y) {
             if (inText) {
                 if (IsTagged()) {
                     EndText();
@@ -816,7 +943,22 @@ namespace iTextSharp.text.pdf {
             }
             content.Append(x).Append(' ').Append(y).Append(" l").Append_i(separator);
         }
-    
+
+        /**
+         * Appends a Bezier curve to the path, starting from the current point.
+         *
+         * @param       x1      x-coordinate of the first control point
+         * @param       y1      y-coordinate of the first control point
+         * @param       x2      x-coordinate of the second control point
+         * @param       y2      y-coordinate of the second control point
+         * @param       x3      x-coordinaat of the ending point (= new current point)
+         * @param       y3      y-coordinaat of the ending point (= new current point)
+         */
+
+        virtual public void CurveTo(float x1, float y1, float x2, float y2, float x3, float y3) {
+            CurveTo((double)x1, (double)y1, (double)x2, (double)y2, (double)x3, (double)y3);
+        }
+
         /**
          * Appends a Bezier curve to the path, starting from the current point.
          *
@@ -828,7 +970,7 @@ namespace iTextSharp.text.pdf {
          * @param       y3      y-coordinaat of the ending point (= new current point)
          */
     
-        virtual public void CurveTo(float x1, float y1, float x2, float y2, float x3, float y3) {
+        virtual public void CurveTo(double x1, double y1, double x2, double y2, double x3, double y3) {
             if (inText) {
                 if (IsTagged()) {
                     EndText();
@@ -839,7 +981,20 @@ namespace iTextSharp.text.pdf {
             }
             content.Append(x1).Append(' ').Append(y1).Append(' ').Append(x2).Append(' ').Append(y2).Append(' ').Append(x3).Append(' ').Append(y3).Append(" c").Append_i(separator);
         }
-    
+
+        /**
+         * Appends a Bezier curve to the path, starting from the current point.
+         *
+         * @param       x2      x-coordinate of the second control point
+         * @param       y2      y-coordinate of the second control point
+         * @param       x3      x-coordinaat of the ending point (= new current point)
+         * @param       y3      y-coordinaat of the ending point (= new current point)
+         */
+
+        public virtual void CurveTo(float x2, float y2, float x3, float y3) {
+            CurveTo((double)x2, (double)y2, (double)x3, (double)y3);
+        }
+
         /**
          * Appends a Bezier curve to the path, starting from the current point.
          *
@@ -849,7 +1004,7 @@ namespace iTextSharp.text.pdf {
          * @param       y3      y-coordinaat of the ending point (= new current point)
          */
     
-        virtual public void CurveTo(float x2, float y2, float x3, float y3) {
+        virtual public void CurveTo(double x2, double y2, double x3, double y3) {
             if (inText) {
                 if (IsTagged()) {
                     EndText();
@@ -860,7 +1015,20 @@ namespace iTextSharp.text.pdf {
             }
             content.Append(x2).Append(' ').Append(y2).Append(' ').Append(x3).Append(' ').Append(y3).Append(" v").Append_i(separator);
         }
-    
+
+        /**
+         * Appends a Bezier curve to the path, starting from the current point.
+         *
+         * @param       x1      x-coordinate of the first control point
+         * @param       y1      y-coordinate of the first control point
+         * @param       x3      x-coordinaat of the ending point (= new current point)
+         * @param       y3      y-coordinaat of the ending point (= new current point)
+         */
+
+        public virtual void CurveFromTo(float x1, float y1, float x3, float y3) {
+            CurveFromTo((double)x1, (double)y1, (double)x3, (double)y3);
+        }
+
         /**
          * Appends a Bezier curve to the path, starting from the current point.
          *
@@ -870,7 +1038,7 @@ namespace iTextSharp.text.pdf {
          * @param       y3      y-coordinaat of the ending point (= new current point)
          */
     
-        virtual public void CurveFromTo(float x1, float y1, float x3, float y3) {
+        virtual public void CurveFromTo(double x1, double y1, double x3, double y3) {
             if (inText) {
                 if (IsTagged()) {
                     EndText();
@@ -881,14 +1049,25 @@ namespace iTextSharp.text.pdf {
             }
             content.Append(x1).Append(' ').Append(y1).Append(' ').Append(x3).Append(' ').Append(y3).Append(" y").Append_i(separator);
         }
-    
+
         /** Draws a circle. The endpoint will (x+r, y).
          *
          * @param x x center of circle
          * @param y y center of circle
          * @param r radius of circle
          */
-        virtual public void Circle(float x, float y, float r) {
+
+        public virtual void Circle(float x, float y, float r) {
+            Circle((double)x, (double)y, (double)r);
+        }
+
+        /** Draws a circle. The endpoint will (x+r, y).
+         *
+         * @param x x center of circle
+         * @param y y center of circle
+         * @param r radius of circle
+         */
+        virtual public void Circle(double x, double y, double r) {
             float b = 0.5523f;
             MoveTo(x + r, y);
             CurveTo(x + r, y + r * b, x + r * b, y + r, x, y + r);
@@ -896,9 +1075,20 @@ namespace iTextSharp.text.pdf {
             CurveTo(x - r, y - r * b, x - r * b, y - r, x, y - r);
             CurveTo(x + r * b, y - r, x + r, y - r * b, x + r, y);
         }
-    
-    
-    
+
+        /**
+         * Adds a rectangle to the current path.
+         *
+         * @param       x       x-coordinate of the starting point
+         * @param       y       y-coordinate of the starting point
+         * @param       w       width
+         * @param       h       height
+         */
+
+        public virtual void Rectangle(float x, float y, float w, float h) {
+            Rectangle((double)x, (double)y, (double)w, (double)h);
+        }
+
         /**
          * Adds a rectangle to the current path.
          *
@@ -908,7 +1098,7 @@ namespace iTextSharp.text.pdf {
          * @param       h       height
          */
     
-        virtual public void Rectangle(float x, float y, float w, float h) {
+        virtual public void Rectangle(double x, double y, double w, double h) {
             if (inText) {
                 if (IsTagged()) {
                     EndText();
@@ -1358,7 +1548,7 @@ namespace iTextSharp.text.pdf {
             matrix[Image.CY] = image.AbsoluteY - matrix[Image.CY];
             AddImage(image, matrix[0], matrix[1], matrix[2], matrix[3], matrix[4], matrix[5], inlineImage);
         }
-    
+
         /**
          * Adds an <CODE>Image</CODE> to the page. The positioning of the <CODE>Image</CODE>
          * is done with the transformation matrix. To position an <CODE>image</CODE> at (x,y)
@@ -1372,7 +1562,25 @@ namespace iTextSharp.text.pdf {
          * @param f an element of the transformation matrix
          * @throws DocumentException on error
          */
+
         public virtual void AddImage(Image image, float a, float b, float c, float d, float e, float f) {
+            AddImage(image, (double) a, (double) b, (double) c, (double) d, (double) e, (double) f);
+        }
+
+        /**
+         * Adds an <CODE>Image</CODE> to the page. The positioning of the <CODE>Image</CODE>
+         * is done with the transformation matrix. To position an <CODE>image</CODE> at (x,y)
+         * use AddImage(image, image_width, 0, 0, image_height, x, y).
+         * @param image the <CODE>Image</CODE> object
+         * @param a an element of the transformation matrix
+         * @param b an element of the transformation matrix
+         * @param c an element of the transformation matrix
+         * @param d an element of the transformation matrix
+         * @param e an element of the transformation matrix
+         * @param f an element of the transformation matrix
+         * @throws DocumentException on error
+         */
+        public virtual void AddImage(Image image, double a, double b, double c, double d, double e, double f) {
             AddImage(image, a, b, c, d, e, f, false);
         }
         
@@ -1384,8 +1592,8 @@ namespace iTextSharp.text.pdf {
         virtual public void AddImage(Image image, AffineTransform transform) {
     	    double[] matrix = new double[6];
     	    transform.GetMatrix(matrix);
-    	    AddImage(image, (float)matrix[0], (float)matrix[1], (float)matrix[2],
-    			      (float)matrix[3], (float)matrix[4], (float) matrix[5], false);
+    	    AddImage(image, matrix[0], matrix[1], matrix[2],
+    			      matrix[3], matrix[4],  matrix[5], false);
         }
 
 #if DRAWING
@@ -1417,7 +1625,26 @@ namespace iTextSharp.text.pdf {
         * @param inlineImage <CODE>true</CODE> to place this image inline, <CODE>false</CODE> otherwise
         * @throws DocumentException on error
         */
+
         public virtual void AddImage(Image image, float a, float b, float c, float d, float e, float f, bool inlineImage) {
+            AddImage(image, (double) a, (double) b, (double) c, (double) d, (double) e, (double) f, inlineImage);
+        }
+
+        /**
+        * Adds an <CODE>Image</CODE> to the page. The positioning of the <CODE>Image</CODE>
+        * is done with the transformation matrix. To position an <CODE>image</CODE> at (x,y)
+        * use AddImage(image, image_width, 0, 0, image_height, x, y). The image can be placed inline.
+        * @param image the <CODE>Image</CODE> object
+        * @param a an element of the transformation matrix
+        * @param b an element of the transformation matrix
+        * @param c an element of the transformation matrix
+        * @param d an element of the transformation matrix
+        * @param e an element of the transformation matrix
+        * @param f an element of the transformation matrix
+        * @param inlineImage <CODE>true</CODE> to place this image inline, <CODE>false</CODE> otherwise
+        * @throws DocumentException on error
+        */
+        public virtual void AddImage(Image image, double a, double b, double c, double d, double e, double f, bool inlineImage) {
             AffineTransform transform = new AffineTransform(a, b, c, d, e, f);
 
             if (image.Layer != null)
@@ -1539,15 +1766,15 @@ namespace iTextSharp.text.pdf {
             Annotation annot = image.Annotation;
             if (annot == null)
                 return;
-            float[] r = new float[unitRect.Length];
+            double[] r = new double[unitRect.Length];
             for (int k = 0; k < unitRect.Length; k += 2) {
                 r[k] = a * unitRect[k] + c * unitRect[k + 1] + e;
                 r[k + 1] = b * unitRect[k] + d * unitRect[k + 1] + f;
             }
-            float llx = r[0];
-            float lly = r[1];
-            float urx = llx;
-            float ury = lly;
+            double llx = r[0];
+            double lly = r[1];
+            double urx = llx;
+            double ury = lly;
             for (int k = 2; k < r.Length; k += 2) {
                 llx = Math.Min(llx, r[k]);
                 lly = Math.Min(lly, r[k + 1]);
@@ -1555,8 +1782,8 @@ namespace iTextSharp.text.pdf {
                 ury = Math.Max(ury, r[k + 1]);
             }
             annot = new Annotation(annot);
-            annot.SetDimensions(llx, lly, urx, ury);
-            PdfAnnotation an = PdfAnnotationsImp.ConvertAnnotation(writer, annot, new Rectangle(llx, lly, urx, ury));
+            annot.SetDimensions((float)llx, (float)lly, (float)urx, (float)ury);
+            PdfAnnotation an = PdfAnnotationsImp.ConvertAnnotation(writer, annot, new Rectangle((float)llx, (float)lly, (float)urx, (float)ury));
             if (an == null)
                 return;
             AddAnnotation(an);
@@ -1611,14 +1838,6 @@ namespace iTextSharp.text.pdf {
                     state.yTLM = 0;
                     state.tx = 0;
                 }
-                if (IsTagged()) {
-                    try {
-                        RestoreColor();
-                    }
-                    catch (IOException) {
-
-                    }
-                }
             }
         }
 
@@ -1643,15 +1862,6 @@ namespace iTextSharp.text.pdf {
             } else {
                 inText = false;
                 content.Append("ET").Append_i(separator);
-                if (IsTagged()) {
-                    try {
-                        RestoreColor();
-                    }
-                    catch (IOException) {
-
-                    }
-
-                }
             }
         }
     
@@ -1757,7 +1967,7 @@ namespace iTextSharp.text.pdf {
             state.textRenderMode = value;
             content.Append(value).Append(" Tr").Append_i(separator);
         }
-    
+
         /**
          * Sets the text rise parameter.
          * <P>
@@ -1765,7 +1975,19 @@ namespace iTextSharp.text.pdf {
          *
          * @param       rise                a parameter
          */
-        virtual public void SetTextRise(float value) {
+
+        public virtual void SetTextRise(float value) {
+            SetTextRise((double) value);
+        }
+
+        /**
+         * Sets the text rise parameter.
+         * <P>
+         * This allows to write text in subscript or basescript mode.</P>
+         *
+         * @param       rise                a parameter
+         */
+        virtual public void SetTextRise(double value) {
             if (!inText && IsTagged()) {
                 BeginText(true);
             }
@@ -2223,7 +2445,36 @@ namespace iTextSharp.text.pdf {
          * @param e an element of the transformation matrix
          * @param f an element of the transformation matrix
          **/
-        virtual public void ConcatCTM(float a, float b, float c, float d, float e, float f) {
+
+        public virtual void ConcatCTM(float a, float b, float c, float d, float e, float f) {
+            ConcatCTM((double)a, (double)b, (double)c, (double)d, (double)e, (double)f);
+        }
+
+        /**
+         * Concatenate a matrix to the current transformation matrix.
+         * 
+         * Common transformations:
+         * 
+         * <ul>
+         *   <li>Translation: [1 0 0 1 tx ty]</li>
+         *   <li>Scaling: [sx 0 0 sy 0 0] (if sx or sy is negative, it will flip the coordinate system)</li>
+         *   <li>Rotation: [cos(q) sin(q) -sin(q) cos(q) 0 0] where q is angle of counter-clockwise rotation (rotated around positive z-axis - use Right Hand Rule)
+         *     <ul>
+         *         <li>Rotate 90 degrees CCW: [0 1 -1 0 0 0]</li>
+         * 		   <li>Rotate 180 degrees: [-1 0 0 -1 0 0]</li>
+         *		   <li>Rotate 270 degrees: [0 -1 1 0 0 0]</li>
+         *   </li>
+         *   <li>Skew: [1 tan(a) tan(b) 1 0 0] where a is x-axis skew angle and b is y-axis skew angle</li>
+	     *</ul>
+         * 
+         * @param a an element of the transformation matrix
+         * @param b an element of the transformation matrix
+         * @param c an element of the transformation matrix
+         * @param d an element of the transformation matrix
+         * @param e an element of the transformation matrix
+         * @param f an element of the transformation matrix
+         **/
+        virtual public void ConcatCTM(double a, double b, double c, double d, double e, double f) {
             if (inText && IsTagged()) {
                 EndText();
             }
@@ -2239,8 +2490,8 @@ namespace iTextSharp.text.pdf {
         virtual public void ConcatCTM(AffineTransform transform) {
     	    double[] matrix = new double[6];
     	    transform.GetMatrix(matrix);
-    	    ConcatCTM((float) matrix[0], (float) matrix[1], (float) matrix[2],
-                    (float) matrix[3], (float) matrix[4], (float) matrix[5]);
+    	    ConcatCTM(matrix[0],  matrix[1],  matrix[2],
+                     matrix[3],  matrix[4],  matrix[5]);
         }
 
 #if DRAWING
@@ -2256,7 +2507,7 @@ namespace iTextSharp.text.pdf {
                     matrix[3], matrix[4], matrix[5]);
         }
 #endif// DRAWING
-            
+
         /**
          * Generates an array of bezier curves to draw an arc.
          * <P>
@@ -2281,8 +2532,37 @@ namespace iTextSharp.text.pdf {
          * @param extent angle extent in degrees
          * @return a list of float[] with the bezier curves
          */
-        public static List<float[]> BezierArc(float x1, float y1, float x2, float y2, float startAng, float extent) {
-            float tmp;
+
+        public static List<double[]> BezierArc(float x1, float y1, float x2, float y2, float startAng, float extent) {
+            return BezierArc((double)x1, (double)y1, (double)x2, (double)y2, (double)startAng, (double)extent);
+        }
+
+        /**
+         * Generates an array of bezier curves to draw an arc.
+         * <P>
+         * (x1, y1) and (x2, y2) are the corners of the enclosing rectangle.
+         * Angles, measured in degrees, start with 0 to the right (the positive X
+         * axis) and increase counter-clockwise.  The arc : from startAng
+         * to startAng+extent.  I.e. startAng=0 and extent=180 yields an openside-down
+         * semi-circle.
+         * <P>
+         * The resulting coordinates are of the form float[]{x1,y1,x2,y2,x3,y3, x4,y4}
+         * such that the curve goes from (x1, y1) to (x4, y4) with (x2, y2) and
+         * (x3, y3) as their respective Bezier control points.
+         * <P>
+         * Note: this code was taken from ReportLab (www.reportlab.com), an excelent
+         * PDF generator for Python.
+         *
+         * @param x1 a corner of the enclosing rectangle
+         * @param y1 a corner of the enclosing rectangle
+         * @param x2 a corner of the enclosing rectangle
+         * @param y2 a corner of the enclosing rectangle
+         * @param startAng starting angle in degrees
+         * @param extent angle extent in degrees
+         * @return a list of float[] with the bezier curves
+         */
+        public static List<double[]> BezierArc(double x1, double y1, double x2, double y2, double startAng, double extent) {
+            double tmp;
             if (x1 > x2) {
                 tmp = x1;
                 x1 = x2;
@@ -2294,7 +2574,7 @@ namespace iTextSharp.text.pdf {
                 y2 = tmp;
             }
         
-            float fragAngle;
+            double fragAngle;
             int Nfrag;
             if (Math.Abs(extent) <= 90f) {
                 fragAngle = extent;
@@ -2304,13 +2584,13 @@ namespace iTextSharp.text.pdf {
                 Nfrag = (int)(Math.Ceiling(Math.Abs(extent)/90f));
                 fragAngle = extent / Nfrag;
             }
-            float x_cen = (x1+x2)/2f;
-            float y_cen = (y1+y2)/2f;
-            float rx = (x2-x1)/2f;
-            float ry = (y2-y1)/2f;
-            float halfAng = (float)(fragAngle * Math.PI / 360.0);
-            float kappa = (float)(Math.Abs(4.0 / 3.0 * (1.0 - Math.Cos(halfAng)) / Math.Sin(halfAng)));
-            List<float[]> pointList = new List<float[]>();
+            double x_cen = (x1+x2)/2f;
+            double y_cen = (y1+y2)/2f;
+            double rx = (x2-x1)/2f;
+            double ry = (y2-y1)/2f;
+            double halfAng = (float)(fragAngle * Math.PI / 360.0);
+            double kappa = (float)(Math.Abs(4.0 / 3.0 * (1.0 - Math.Cos(halfAng)) / Math.Sin(halfAng)));
+            List<double[]> pointList = new List<double[]>();
             for (int i = 0; i < Nfrag; ++i) {
                 float theta0 = (float)((startAng + i*fragAngle) * Math.PI / 180.0);
                 float theta1 = (float)((startAng + (i+1)*fragAngle) * Math.PI / 180.0);
@@ -2319,7 +2599,7 @@ namespace iTextSharp.text.pdf {
                 float sin0 = (float)Math.Sin(theta0);
                 float sin1 = (float)Math.Sin(theta1);
                 if (fragAngle > 0f) {
-                    pointList.Add(new float[]{x_cen + rx * cos0,
+                    pointList.Add(new double[]{x_cen + rx * cos0,
                                                  y_cen - ry * sin0,
                                                  x_cen + rx * (cos0 - kappa * sin0),
                                                  y_cen - ry * (sin0 + kappa * cos0),
@@ -2329,7 +2609,7 @@ namespace iTextSharp.text.pdf {
                                                  y_cen - ry * sin1});
                 }
                 else {
-                    pointList.Add(new float[]{x_cen + rx * cos0,
+                    pointList.Add(new double[]{x_cen + rx * cos0,
                                                  y_cen - ry * sin0,
                                                  x_cen + rx * (cos0 + kappa * sin0),
                                                  y_cen - ry * (sin0 - kappa * cos0),
@@ -2341,7 +2621,7 @@ namespace iTextSharp.text.pdf {
             }
             return pointList;
         }
-    
+
         /**
          * Draws a partial ellipse inscribed within the rectangle x1,y1,x2,y2,
          * starting at startAng degrees and covering extent degrees. Angles
@@ -2354,18 +2634,48 @@ namespace iTextSharp.text.pdf {
          * @param startAng starting angle in degrees
          * @param extent angle extent in degrees
          */
-        virtual public void Arc(float x1, float y1, float x2, float y2, float startAng, float extent) {
-            List<float[]> ar = BezierArc(x1, y1, x2, y2, startAng, extent);
+
+        public virtual void Arc(float x1, float y1, float x2, float y2, float startAng, float extent) {
+            Arc((double)x1, (double)y1, (double)x2, (double)y2, (double)startAng, (double)extent);
+        }
+
+        /**
+         * Draws a partial ellipse inscribed within the rectangle x1,y1,x2,y2,
+         * starting at startAng degrees and covering extent degrees. Angles
+         * start with 0 to the right (+x) and increase counter-clockwise.
+         *
+         * @param x1 a corner of the enclosing rectangle
+         * @param y1 a corner of the enclosing rectangle
+         * @param x2 a corner of the enclosing rectangle
+         * @param y2 a corner of the enclosing rectangle
+         * @param startAng starting angle in degrees
+         * @param extent angle extent in degrees
+         */
+        virtual public void Arc(double x1, double y1, double x2, double y2, double startAng, double extent) {
+            List<double[]> ar = BezierArc(x1, y1, x2, y2, startAng, extent);
             if (ar.Count == 0)
                 return;
-            float[] pt = ar[0];
+            double[] pt = ar[0];
             MoveTo(pt[0], pt[1]);
             for (int k = 0; k < ar.Count; ++k) {
                 pt = ar[k];
                 CurveTo(pt[2], pt[3], pt[4], pt[5], pt[6], pt[7]);
             }
         }
-    
+
+        /**
+         * Draws an ellipse inscribed within the rectangle x1,y1,x2,y2.
+         *
+         * @param x1 a corner of the enclosing rectangle
+         * @param y1 a corner of the enclosing rectangle
+         * @param x2 a corner of the enclosing rectangle
+         * @param y2 a corner of the enclosing rectangle
+         */
+
+        public virtual void Ellipse(double x1, double y1, double x2, double y2) {
+            Ellipse((double)x1, (double)y1, (double)x2, (double)y2);
+        }
+
         /**
          * Draws an ellipse inscribed within the rectangle x1,y1,x2,y2.
          *
@@ -2526,8 +2836,41 @@ namespace iTextSharp.text.pdf {
         public virtual void AddTemplate(PdfTemplate template, float a, float b, float c, float d, float e, float f) {
             AddTemplate(template, a, b, c, d, e, f, false);
         }
-    
-         /**
+
+        /**
+         * Adds a template to this content.
+         *
+         * @param template the template
+         * @param a an element of the transformation matrix
+         * @param b an element of the transformation matrix
+         * @param c an element of the transformation matrix
+         * @param d an element of the transformation matrix
+         * @param e an element of the transformation matrix
+         * @param f an element of the transformation matrix
+         */
+        public virtual void AddTemplate(PdfTemplate template, double a, double b, double c, double d, double e, double f) {
+            AddTemplate(template, a, b, c, d, e, f, false);
+        }
+
+        /**
+        * Adds a template to this content.
+        *
+        * @param template the template
+        * @param a an element of the transformation matrix
+        * @param b an element of the transformation matrix
+        * @param c an element of the transformation matrix
+        * @param d an element of the transformation matrix
+        * @param e an element of the transformation matrix
+        * @param f an element of the transformation matrix
+        * @param tagContent <code>true</code> - template content will be tagged(all that will be added after), <code>false</code> - only a Do operator will be tagged.
+        *                   taken into account only if <code>isTagged()</code> - <code>true</code>.
+        */
+
+        public virtual void AddTemplate(PdfTemplate template, float a, float b, float c, float d, float e, float f, bool tagContent) {
+            AddTemplate(template, (double)a, (double)b, (double)c,(double)d,(double)e,(double)f,tagContent);
+        }
+
+        /**
          * Adds a template to this content.
          *
          * @param template the template
@@ -2540,7 +2883,7 @@ namespace iTextSharp.text.pdf {
          * @param tagContent <code>true</code> - template content will be tagged(all that will be added after), <code>false</code> - only a Do operator will be tagged.
          *                   taken into account only if <code>isTagged()</code> - <code>true</code>.
          */
-        virtual public void AddTemplate(PdfTemplate template, float a, float b, float c, float d, float e, float f, bool tagContent) {
+        virtual public void AddTemplate(PdfTemplate template, double a, double b, double c, double d, double e, double f, bool tagContent) {
             CheckWriter();
             CheckNoPattern(template);
             PdfWriter.CheckPdfIsoConformance(writer, PdfIsoKeys.PDFISOKEY_FORM_XOBJ, template);
@@ -2595,7 +2938,26 @@ namespace iTextSharp.text.pdf {
          * 
          * @return Name under which XObject was stored in resources. See <code>name</code> parameter
          */
+
         public virtual PdfName AddFormXObj(PdfStream formXObj, PdfName name, float a, float b, float c, float d, float e, float f) {
+            return AddFormXObj(formXObj, name, (double) a, (double) b, (double) c, (double) d, (double) e, (double) f);
+        }
+
+        /**
+         * Adds a form XObject to this content.
+         *
+         * @param formXObj the form XObject
+         * @param name the name of form XObject in content stream. The name is changed, if if it already exists in page resources
+         * @param a an element of the transformation matrix
+         * @param b an element of the transformation matrix
+         * @param c an element of the transformation matrix
+         * @param d an element of the transformation matrix
+         * @param e an element of the transformation matrix
+         * @param f an element of the transformation matrix
+         * 
+         * @return Name under which XObject was stored in resources. See <code>name</code> parameter
+         */
+        public virtual PdfName AddFormXObj(PdfStream formXObj, PdfName name, double a, double b, double c, double d, double e, double f) {
             CheckWriter();
             PdfWriter.CheckPdfIsoConformance(writer, PdfIsoKeys.PDFISOKEY_STREAM, formXObj);
             PageResources prs = PageResources;
@@ -2643,8 +3005,8 @@ namespace iTextSharp.text.pdf {
         virtual public void AddTemplate(PdfTemplate template, AffineTransform transform, bool tagContent) {
     	    double[] matrix = new double[6];
     	    transform.GetMatrix(matrix);
-    	    AddTemplate(template, (float) matrix[0], (float) matrix[1], (float) matrix[2],
-                    (float) matrix[3], (float) matrix[4], (float) matrix[5], tagContent);
+    	    AddTemplate(template,  matrix[0],  matrix[1],  matrix[2],
+                     matrix[3],  matrix[4],  matrix[5], tagContent);
         }
 
 #if DRAWING
@@ -2675,6 +3037,10 @@ namespace iTextSharp.text.pdf {
 #endif// DRAWING
 
         internal void AddTemplateReference(PdfIndirectReference template, PdfName name, float a, float b, float c, float d, float e, float f) {
+            AddTemplateReference(template, name, (double)a, (double)b, (double)c, (double)d, (double)e, (double)f);
+        }
+
+        internal void AddTemplateReference(PdfIndirectReference template, PdfName name, double a, double b, double c, double d, double e, double f) {
             if (inText && IsTagged()) {
                 EndText();
             }
@@ -2690,7 +3056,7 @@ namespace iTextSharp.text.pdf {
             content.Append(f).Append(" cm ");
             content.Append(name.GetBytes()).Append(" Do Q").Append_i(separator);
         }
-        
+
         /**
          * Adds a template to this content.
          *
@@ -2702,7 +3068,22 @@ namespace iTextSharp.text.pdf {
             AddTemplate(template, 1, 0, 0, 1, x, y);
         }
 
+        /**
+         * Adds a template to this content.
+         *
+         * @param template the template
+         * @param x the x location of this template
+         * @param y the y location of this template
+         */
+        virtual public void AddTemplate(PdfTemplate template, double x, double y) {
+            AddTemplate(template, 1, 0, 0, 1, x, y);
+        }
+
         virtual public void AddTemplate(PdfTemplate template, float x, float y, bool tagContent) {
+            AddTemplate(template, 1, 0, 0, 1, x, y, tagContent);
+        }
+
+        virtual public void AddTemplate(PdfTemplate template, double x, double y, bool tagContent) {
             AddTemplate(template, 1, 0, 0, 1, x, y, tagContent);
         }
 
@@ -3304,6 +3685,7 @@ namespace iTextSharp.text.pdf {
         virtual public void RemoteGoto(string filename, int page, float llx, float lly, float urx, float ury) {
             pdf.RemoteGoto(filename, page, llx, lly, urx, ury);
         }
+
         /**
          * Adds a round rectangle to the current path.
          *
@@ -3313,7 +3695,21 @@ namespace iTextSharp.text.pdf {
          * @param h height
          * @param r radius of the arc corner
          */
-        virtual public void RoundRectangle(float x, float y, float w, float h, float r) {
+
+        public virtual void RoundRectangle(float x, float y, float w, float h, float r) {
+            RoundRectangle((double) x, (double) y, (double) w, (double) h, (double) r);
+        }
+
+        /**
+         * Adds a round rectangle to the current path.
+         *
+         * @param x x-coordinate of the starting point
+         * @param y y-coordinate of the starting point
+         * @param w width
+         * @param h height
+         * @param r radius of the arc corner
+         */
+        virtual public void RoundRectangle(double x, double y, double w, double h, double r) {
             if (w < 0) {
                 x += w;
                 w = -w;
@@ -3375,14 +3771,22 @@ namespace iTextSharp.text.pdf {
             if (t.Type == PdfTemplate.TYPE_PATTERN)
                 throw new ArgumentException(MessageLocalization.GetComposedMessage("invalid.use.of.a.pattern.a.template.was.expected"));
         }
-    
+
+        /**
+         * Draws a TextField.
+         */
+
+        public virtual void DrawRadioField(float llx, float lly, float urx, float ury, bool on) {
+            DrawRadioField((double) llx, (double) lly, (double) urx, (double) ury, on);
+        }
+
         /**
          * Draws a TextField.
          */
     
-        virtual public void DrawRadioField(float llx, float lly, float urx, float ury, bool on) {
-            if (llx > urx) { float x = llx; llx = urx; urx = x; }
-            if (lly > ury) { float y = lly; lly = ury; ury = y; }
+        virtual public void DrawRadioField(double llx, double lly, double urx, double ury, bool on) {
+            if (llx > urx) { double x = llx; llx = urx; urx = x; }
+            if (lly > ury) { double y = lly; lly = ury; ury = y; }
             SaveState();
             // silver circle
             SetLineWidth(1);
@@ -3412,14 +3816,22 @@ namespace iTextSharp.text.pdf {
             }
             RestoreState();
         }
-    
+
+        /**
+         * Draws a TextField.
+         */
+
+        public virtual void DrawTextField(float llx, float lly, float urx, float ury) {
+            DrawTextField((double)llx, (double)lly, (double)urx, (double)ury);
+        }
+
         /**
          * Draws a TextField.
          */
     
-        virtual public void DrawTextField(float llx, float lly, float urx, float ury) {
-            if (llx > urx) { float x = llx; llx = urx; urx = x; }
-            if (lly > ury) { float y = lly; lly = ury; ury = y; }
+        virtual public void DrawTextField(double llx, double lly, double urx, double ury) {
+            if (llx > urx) { double x = llx; llx = urx; urx = x; }
+            if (lly > ury) { double y = lly; lly = ury; ury = y; }
             SaveState();
             // silver rectangle not filled
             SetColorStroke(new BaseColor(0xC0, 0xC0, 0xC0));
@@ -3459,14 +3871,22 @@ namespace iTextSharp.text.pdf {
             Stroke();
             RestoreState();
         }
-    
+
+        /**
+         * Draws a button.
+         */
+
+        public virtual void DrawButton(float llx, float lly, float urx, float ury, string text, BaseFont bf, float size) {
+            DrawButton((double) llx, (double) lly, (double) urx, (double) ury, text, bf, size);
+        }
+
         /**
          * Draws a button.
          */
     
-        virtual public void DrawButton(float llx, float lly, float urx, float ury, string text, BaseFont bf, float size) {
-            if (llx > urx) { float x = llx; llx = urx; urx = x; }
-            if (lly > ury) { float y = lly; lly = ury; ury = y; }
+        virtual public void DrawButton(double llx, double lly, double urx, double ury, string text, BaseFont bf, float size) {
+            if (llx > urx) { double x = llx; llx = urx; urx = x; }
+            if (lly > ury) { double y = lly; lly = ury; ury = y; }
             SaveState();
             // black rectangle not filled
             SetColorStroke(new BaseColor(0x00, 0x00, 0x00));
@@ -3500,7 +3920,7 @@ namespace iTextSharp.text.pdf {
             ResetRGBColorFill();
             BeginText();
             SetFontAndSize(bf, size);
-            ShowTextAligned(PdfContentByte.ALIGN_CENTER, text, llx + (urx - llx) / 2, lly + (ury - lly - size) / 2, 0);
+            ShowTextAligned(PdfContentByte.ALIGN_CENTER, text, (float)(llx + (urx - llx) / 2), (float)(lly + (ury - lly - size) / 2), 0);
             EndText();
             RestoreState();
         }
@@ -3933,66 +4353,10 @@ namespace iTextSharp.text.pdf {
         }
 
         private void SaveColor(BaseColor color, bool fill) {
-            if (IsTagged()) {
-                if (inText) {
-                    if (fill) {
-                        state.textColorFill = color;
-                    } else {
-                        state.textColorStroke = color;
-                    }
-                } else {
-                    if (fill) {
-                        state.colorFill = color;
-                    } else {
-                        state.colorStroke = color;
-                    }
-                }
-            }
-            else {
-                if (fill) {
-                    state.colorFill = color;
-                }
-                else {
-                    state.colorStroke = color;
-                }
-            }
-        }
-
-        private void RestoreColor(BaseColor color, bool fill) {
-            if (IsTagged()) {
-                if (color is UncoloredPattern) {
-                    UncoloredPattern c = (UncoloredPattern)color;
-                    if (fill)
-                        SetPatternFill(c.Painter, c.color, c.tint);
-                    else
-                        SetPatternStroke(c.Painter, c.color, c.tint);
-                } else {
-                    if (fill)
-                        SetColorFill(color);
-                    else
-                        SetColorStroke(color);
-                }
-            }
-        }
-
-        private void RestoreColor() {
-            if (IsTagged()) {
-                if (inText) {
-                    if (!state.textColorFill.Equals(state.colorFill)) {
-                        RestoreColor(state.textColorFill, true);
-                    }
-                    if (!state.textColorStroke.Equals(state.colorStroke)) {
-                        RestoreColor(state.textColorStroke, false);
-                    }
-                }
-                else {
-                    if (!state.textColorFill.Equals(state.colorFill)) {
-                        RestoreColor(state.colorFill, true);
-                    }
-                    if (!state.textColorStroke.Equals(state.colorStroke)) {
-                        RestoreColor(state.colorStroke, false);
-                    }
-                }
+            if (fill) {
+                state.colorFill = color;
+            } else {
+                state.colorStroke = color;
             }
         }
 
@@ -4033,12 +4397,10 @@ namespace iTextSharp.text.pdf {
                 stroke = true;
             }
             if (fill) {
-                PdfWriter.CheckPdfIsoConformance(writer, PdfIsoKeys.PDFISOKEY_COLOR,
-                    IsTagged() ? state.textColorFill : state.colorFill);
+                PdfWriter.CheckPdfIsoConformance(writer, PdfIsoKeys.PDFISOKEY_COLOR, state.colorFill);
             }
             if (stroke) {
-                PdfWriter.CheckPdfIsoConformance(writer, PdfIsoKeys.PDFISOKEY_COLOR,
-                    IsTagged() ? state.textColorStroke : state.colorStroke);
+                PdfWriter.CheckPdfIsoConformance(writer, PdfIsoKeys.PDFISOKEY_COLOR, state.colorStroke);
             }
             PdfWriter.CheckPdfIsoConformance(writer, PdfIsoKeys.PDFISOKEY_GSTATE, state.extGState);
         }
