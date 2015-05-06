@@ -42,7 +42,7 @@ namespace iTextSharp.xtra.iTextSharp.text.pdf.pdfcleanup {
         }
 
         public void PushStrokeColor(IList<PdfObject> strokeColorOperands) {
-            this.strokeColorOperands.Push(strokeColorOperands);
+            this.strokeColorOperands.Push(new List<PdfObject>(strokeColorOperands));
         }
 
         public IList<PdfObject> PeekStrokeColor() {
