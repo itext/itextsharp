@@ -90,6 +90,8 @@ namespace iTextSharp.text.pdf.intern
 
         protected String pdfaOutputIntentColorSpace = null;
         protected PdfObject pdfaDestOutputIntent = null;
+        static public readonly int maxStringLength = 32767;
+
 
         internal PdfA2Checker(PdfAConformanceLevel conformanceLevel)
             :base(conformanceLevel) {
@@ -446,18 +448,13 @@ namespace iTextSharp.text.pdf.intern
         protected override void CheckPdfObject(PdfWriter writer, int key, Object obj1) {
             if (obj1 is PdfNumber) {
                 PdfNumber number = (PdfNumber) obj1;
-                if (Math.Abs(number.DoubleValue) > PdfA1Checker.maxRealValue && number.ToString().Contains(".")) {
+                if (Math.Abs(number.DoubleValue) > float.MaxValue && number.ToString().Contains(".")) {
                     throw new PdfAConformanceException(obj1, MessageLocalization.GetComposedMessage("real.number.is.out.of.range"));
                 }
             } else if (obj1 is PdfString) {
                 PdfString str = (PdfString) obj1;
-                if (str.GetBytes().Length > PdfA1Checker.maxStringLength) {
+                if (str.GetBytes().Length > maxStringLength) {
                     throw new PdfAConformanceException(obj1, MessageLocalization.GetComposedMessage("pdf.string.is.too.long"));
-                }
-            } else if (obj1 is PdfArray) {
-                PdfArray array = (PdfArray) obj1;
-                if (array.Size > PdfA1Checker.maxArrayLength) {
-                    throw new PdfAConformanceException(obj1, MessageLocalization.GetComposedMessage("pdf.array.is.out.of.bounds"));
                 }
             }  else if (obj1 is PdfDictionary) {
                 PdfDictionary dictionary = (PdfDictionary) obj1;

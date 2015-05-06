@@ -1,4 +1,5 @@
 using System;
+using System.Diagnostics;
 using System.IO;
 using itextsharp.tests.iTextSharp.testutils;
 using iTextSharp.testutils;
@@ -329,6 +330,44 @@ namespace itextsharp.tests.iTextSharp.text.pdf
             copier.Close();
             CompareTool compareTool = new CompareTool();
             String errorMessage = compareTool.CompareByContent("PdfCopyTest/copyFields3.pdf", RESOURCES + "cmp_copyFields3.pdf", "PdfCopyTest/", "diff");
+            if (errorMessage != null) {
+                Assert.Fail(errorMessage);
+            }
+        }
+
+        [Test]
+        [Timeout(60000)]
+        public virtual void LargeFilePerformanceTest() {
+            const string target = "PdfCopyTest/";
+            const string output = "copyLargeFile.pdf";
+            const string cmp = "cmp_copyLargeFile.pdf";
+            
+            Directory.CreateDirectory(target);
+
+            Stopwatch timer = new Stopwatch();
+            timer.Start();
+
+            PdfReader firstSourceReader = new PdfReader(RESOURCES + "frontpage.pdf");
+            PdfReader secondSourceReader = new PdfReader(RESOURCES + "large_pdf.pdf");
+
+            Document document = new Document();
+
+            PdfCopy copy = new PdfCopy(document, File.Create(target + output));
+            copy.SetMergeFields();
+
+            document.Open();
+            copy.AddDocument(firstSourceReader);
+            copy.AddDocument(secondSourceReader);
+
+            copy.Close();
+            document.Close();
+
+            timer.Stop();
+            Console.WriteLine(timer.ElapsedMilliseconds);
+
+            CompareTool cmpTool = new CompareTool();
+            String errorMessage = cmpTool.CompareByContent(target + output, RESOURCES + cmp, target, "diff");
+
             if (errorMessage != null) {
                 Assert.Fail(errorMessage);
             }

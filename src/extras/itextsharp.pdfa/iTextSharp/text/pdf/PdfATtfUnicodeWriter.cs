@@ -104,8 +104,10 @@ namespace iTextSharp.text.pdf
             } else {
                 byte[] b;
                 if (font.Subset || font.DirectoryOffset != 0) {
-                    TrueTypeFontSubSet sb = new TrueTypeFontSubSet(font.FileName, new RandomAccessFileOrArray(font.Rf), new HashSet2<int>(longTag.Keys), font.DirectoryOffset, false, false);
-                    b = sb.Process();
+                    lock (font.Rf) {
+                        TrueTypeFontSubSet sb = new TrueTypeFontSubSet(font.FileName, new RandomAccessFileOrArray(font.Rf), new HashSet2<int>(longTag.Keys), font.DirectoryOffset, false, false);
+                        b = sb.Process();
+                    }
                 }
                 else {
                     b = font.GetFullFont();

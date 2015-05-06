@@ -729,9 +729,12 @@
     <Compile Include="iTextSharp\text\pdf\PageResources.cs">
       <SubType>Code</SubType>
     </Compile>
+    <Compile Include="iTextSharp\text\pdf\parser\BezierCurve.cs" />
+    <Compile Include="iTextSharp\text\pdf\parser\clipper\Clipper.cs" />
     <Compile Include="iTextSharp\text\pdf\parser\ContentByteUtils.cs">
       <SubType>Code</SubType>
     </Compile>
+    <Compile Include="iTextSharp\text\pdf\parser\IExtRenderListener.cs" />
     <Compile Include="iTextSharp\text\pdf\parser\FilteredRenderListener.cs">
       <SubType>Code</SubType>
     </Compile>
@@ -755,6 +758,8 @@
     <Compile Include="iTextSharp\text\pdf\parser\ITextExtractionStrategy.cs">
       <SubType>Code</SubType>
     </Compile>
+    <Compile Include="iTextSharp\text\pdf\parser\Line.cs" />
+    <Compile Include="iTextSharp\text\pdf\parser\LineDashPattern.cs" />
     <Compile Include="iTextSharp\text\pdf\parser\LineSegment.cs">
       <SubType>Code</SubType>
     </Compile>
@@ -771,6 +776,9 @@
       <SubType>Code</SubType>
     </Compile>
     <Compile Include="iTextSharp\text\pdf\parser\MultiFilteredRenderListener.cs" />
+    <Compile Include="iTextSharp\text\pdf\parser\Path.cs" />
+    <Compile Include="iTextSharp\text\pdf\parser\PathConstructionRenderInfo.cs" />
+    <Compile Include="iTextSharp\text\pdf\parser\PathPaintingRenderInfo.cs" />
     <Compile Include="iTextSharp\text\pdf\parser\PdfContentReaderTool.cs">
       <SubType>Code</SubType>
     </Compile>
@@ -792,9 +800,11 @@
     <Compile Include="iTextSharp\text\pdf\parser\RenderFilter.cs">
       <SubType>Code</SubType>
     </Compile>
+    <Compile Include="iTextSharp\text\pdf\parser\Shape.cs" />
     <Compile Include="iTextSharp\text\pdf\parser\SimpleTextExtractionStrategy.cs">
       <SubType>Code</SubType>
     </Compile>
+    <Compile Include="iTextSharp\text\pdf\parser\Subpath.cs" />
     <Compile Include="iTextSharp\text\pdf\parser\TaggedPdfReaderTool.cs">
       <SubType>Code</SubType>
     </Compile>
@@ -833,7 +843,7 @@
     </Compile>
     <Compile Include="iTextSharp\text\pdf\PdfBody.cs">
       <SubType>Code</SubType>
-	</Compile>
+    </Compile>
     <Compile Include="iTextSharp\text\pdf\PdfBoolean.cs">
       <SubType>Code</SubType>
     </Compile>

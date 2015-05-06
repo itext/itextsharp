@@ -1,7 +1,10 @@
 using System;
+using System.Collections;
 using System.Collections.Generic;
+using System.Runtime.InteropServices;
 using iTextSharp.text.error_messages;
 using iTextSharp.text.io;
+
 /*
  * $Id$
  *
@@ -199,6 +202,36 @@ namespace iTextSharp.text.pdf.parser {
             RegisterContentOperator("TJ", new ShowTextArray());
 
             RegisterContentOperator("Do", new Do());
+
+            RegisterContentOperator("w", new SetLineWidth());
+            RegisterContentOperator("J", new SetLineCap());
+            RegisterContentOperator("j", new SetLineJoin());
+            RegisterContentOperator("M", new SetMiterLimit());
+            RegisterContentOperator("d", new SetLineDashPattern());
+
+            // Path construction and painting operators
+            if (renderListener is IExtRenderListener) {
+                int fillStroke = PathPaintingRenderInfo.FILL | PathPaintingRenderInfo.STROKE;
+                RegisterContentOperator("m", new MoveTo());
+                RegisterContentOperator("l", new LineTo());
+                RegisterContentOperator("c", new Curve());
+                RegisterContentOperator("v", new CurveFirstPointDuplicated());
+                RegisterContentOperator("y", new CurveFourhPointDuplicated());
+                RegisterContentOperator("h", new CloseSubpath());
+                RegisterContentOperator("re", new Rectangle());
+                RegisterContentOperator("S", new PaintPathOp(PathPaintingRenderInfo.STROKE, -1, false));
+                RegisterContentOperator("s", new PaintPathOp(PathPaintingRenderInfo.STROKE, -1, true));
+                RegisterContentOperator("f", new PaintPathOp(PathPaintingRenderInfo.FILL, PathPaintingRenderInfo.NONZERO_WINDING_RULE, false));
+                RegisterContentOperator("F", new PaintPathOp(PathPaintingRenderInfo.FILL, PathPaintingRenderInfo.NONZERO_WINDING_RULE, false));
+                RegisterContentOperator("f*", new PaintPathOp(PathPaintingRenderInfo.FILL, PathPaintingRenderInfo.EVEN_ODD_RULE, false));
+                RegisterContentOperator("B", new PaintPathOp(fillStroke, PathPaintingRenderInfo.NONZERO_WINDING_RULE, false));
+                RegisterContentOperator("B*", new PaintPathOp(fillStroke, PathPaintingRenderInfo.EVEN_ODD_RULE, false));
+                RegisterContentOperator("b", new PaintPathOp(fillStroke, PathPaintingRenderInfo.NONZERO_WINDING_RULE, true));
+                RegisterContentOperator("b*", new PaintPathOp(fillStroke, PathPaintingRenderInfo.EVEN_ODD_RULE, true));
+                RegisterContentOperator("n", new PaintPathOp(PathPaintingRenderInfo.NO_OP, -1, false));
+                RegisterContentOperator("W", new ClipPathOp(PathPaintingRenderInfo.NONZERO_WINDING_RULE));
+                RegisterContentOperator("W*", new ClipPathOp(PathPaintingRenderInfo.EVEN_ODD_RULE));
+            }
         }
 
         /**
@@ -220,9 +253,17 @@ namespace iTextSharp.text.pdf.parser {
         }
 
         /**
+         * @return {@link java.util.Collection} containing all the registered operators strings
+         * @since 5.5.6
+         */
+        public virtual ICollection<String> RegisteredOperatorStrings {
+            get { return new List<string>(operators.Keys); }
+        }
+
+        /**
          * Resets the graphics state stack, matrices and resources.
          */
-        virtual public void Reset(){
+        virtual public void Reset() {
             gsStack.Clear();
             gsStack.Push(new GraphicsState());
             textMatrix = null;
@@ -234,7 +275,7 @@ namespace iTextSharp.text.pdf.parser {
          * Returns the current graphics state.
          * @return  the graphics state
          */
-        private GraphicsState Gs(){
+        public GraphicsState Gs() {
             return gsStack.Peek();
         }
 
@@ -296,10 +337,6 @@ namespace iTextSharp.text.pdf.parser {
 
             textMatrix = new Matrix(renderInfo.GetUnscaledWidth(), 0).Multiply(textMatrix);
         }
-
-
-
-
         
         /**
          * Displays an XObject using the registered handler for this XObject's subtype
@@ -322,6 +359,44 @@ namespace iTextSharp.text.pdf.parser {
             }
             
         }
+
+        /**
+         * Displays the current path.
+         *
+         * @param operation One of the possible combinations of {@link com.itextpdf.text.pdf.parser.PathPaintingRenderInfo#STROKE}
+         *                  and {@link com.itextpdf.text.pdf.parser.PathPaintingRenderInfo#FILL} values or
+         *                  {@link com.itextpdf.text.pdf.parser.PathPaintingRenderInfo#NO_OP}
+         * @param rule      Either {@link com.itextpdf.text.pdf.parser.PathPaintingRenderInfo#NONZERO_WINDING_RULE} or
+         *                  {@link com.itextpdf.text.pdf.parser.PathPaintingRenderInfo#EVEN_ODD_RULE}
+         *                  In case it isn't applicable pass any <CODE>int</CODE> value.
+         * @param close     Indicates whether the path should be closed or not.
+         * @since 5.5.6
+         */
+        private void PaintPath(int operation, int rule, bool close) {
+            if (close) {
+                ModifyPath(PathConstructionRenderInfo.CLOSE, null);
+            }
+
+            PathPaintingRenderInfo renderInfo = new PathPaintingRenderInfo(operation, rule, Gs());
+            ((IExtRenderListener) renderListener).RenderPath(renderInfo);
+        }
+
+        /**
+         * Modifies the current path.
+         *
+         * @param operation   Indicates which path-construction operation should be performed.
+         * @param segmentData Contains x, y components of points of a new segment being added to the current path.
+         *                    E.g. x1 y1 x2 y2 x3 y3 etc. It's ignored for "close subpath" operarion (h).
+         */
+        private void ModifyPath(int operation, IList<float> segmentData) {
+            PathConstructionRenderInfo renderInfo = new PathConstructionRenderInfo(operation, segmentData, Gs().GetCtm());
+            ((IExtRenderListener) renderListener).ModifyPath(renderInfo);
+        }
+
+        private void ClipPath(int rule) {
+            ((IExtRenderListener) renderListener).ClipPath(rule);
+        }
+
 
         /**
          * Adjusts the text matrix for the specified adjustment value (see TJ oper in the PDF spec for information)
@@ -904,6 +979,227 @@ namespace iTextSharp.text.pdf.parser {
             virtual public void Invoke(PdfContentStreamProcessor processor, PdfLiteral oper, List<PdfObject> operands) {
                 PdfName xobjectName = (PdfName)operands[0];
                 processor.DisplayXObject(xobjectName);
+            }
+        }
+
+        /**
+         * A content operator implementation (w).
+         */
+        private class SetLineWidth : IContentOperator {
+
+            public void Invoke(PdfContentStreamProcessor processor, PdfLiteral oper, List<PdfObject> operands) {
+                float lineWidth = ((PdfNumber) operands[0]).FloatValue;
+                processor.Gs().LineWidth = lineWidth;
+            }
+        }
+
+        /**
+         * A content operator implementation (J).
+         */
+        private class SetLineCap : IContentOperator {
+
+            public void Invoke(PdfContentStreamProcessor processor, PdfLiteral oper, List<PdfObject> operands) {
+                int lineCap = ((PdfNumber) operands[0]).IntValue;
+                processor.Gs().LineCapStyle = lineCap;
+            }
+        }
+
+        /**
+         * A content operator implementation (j).
+         */
+        private class SetLineJoin : IContentOperator {
+
+            public void Invoke(PdfContentStreamProcessor processor, PdfLiteral oper, List<PdfObject> operands) {
+                int lineJoin = ((PdfNumber) operands[0]).IntValue;
+                processor.Gs().LineJoinStyle = lineJoin;
+            }
+        }
+
+        /**
+         * A content operator implementation (M).
+         */
+        private class SetMiterLimit : IContentOperator {
+
+            public void Invoke(PdfContentStreamProcessor processor, PdfLiteral oper, List<PdfObject> operands) {
+                float miterLimit = ((PdfNumber) operands[0]).FloatValue;
+                processor.Gs().MiterLimit = miterLimit;
+            }
+        }
+
+        /**
+         * A content operator implementation (d).
+         */
+        private class SetLineDashPattern : IContentOperator {
+
+            public void Invoke(PdfContentStreamProcessor processor, PdfLiteral oper, List<PdfObject> operands) {
+                LineDashPattern pattern = new LineDashPattern(((PdfArray) operands[0]),
+                                                              ((PdfNumber) operands[1]).FloatValue);
+                processor.Gs().SetLineDashPattern(pattern);
+            }
+        }
+
+        /**
+         * A content operator implementation (m).
+         *
+         * @since 5.5.6
+         */
+        private class MoveTo : IContentOperator {
+
+            public virtual void Invoke(PdfContentStreamProcessor processor, PdfLiteral oper, List<PdfObject> operands) {
+                float x = ((PdfNumber) operands[0]).FloatValue;
+                float y = ((PdfNumber) operands[1]).FloatValue;
+                processor.ModifyPath(PathConstructionRenderInfo.MOVETO, new List<float>(new float[] {x, y}));
+            }
+        }
+
+        /**
+         * A content operator implementation (l).
+         *
+         * @since 5.5.6
+         */
+        private class LineTo : IContentOperator {
+
+            public virtual void Invoke(PdfContentStreamProcessor processor, PdfLiteral oper, List<PdfObject> operands) {
+                float x = ((PdfNumber) operands[0]).FloatValue;
+                float y = ((PdfNumber) operands[1]).FloatValue;
+                processor.ModifyPath(PathConstructionRenderInfo.LINETO, new List<float>(new float[] {x, y}));
+            }
+        }
+
+        /**
+         * A content operator implementation (c).
+         *
+         * @since 5.5.6
+         */
+        private class Curve : IContentOperator {
+
+            public virtual void Invoke(PdfContentStreamProcessor processor, PdfLiteral oper, List<PdfObject> operands) {
+                float x1 = ((PdfNumber) operands[0]).FloatValue;
+                float y1 = ((PdfNumber) operands[1]).FloatValue;
+                float x2 = ((PdfNumber) operands[2]).FloatValue;
+                float y2 = ((PdfNumber) operands[3]).FloatValue;
+                float x3 = ((PdfNumber) operands[4]).FloatValue;
+                float y3 = ((PdfNumber) operands[5]).FloatValue;
+                processor.ModifyPath(PathConstructionRenderInfo.CURVE_123, new List<float>(new float[] {x1, y1, x2, y2, x3, y3}));
+            }
+        }
+
+        /**
+         * A content operator implementation (v).
+         *
+         * @since 5.5.6
+         */
+        private class CurveFirstPointDuplicated : IContentOperator {
+
+            public virtual void Invoke(PdfContentStreamProcessor processor, PdfLiteral oper, List<PdfObject> operands) {
+                float x2 = ((PdfNumber) operands[0]).FloatValue;
+                float y2 = ((PdfNumber) operands[1]).FloatValue;
+                float x3 = ((PdfNumber) operands[2]).FloatValue;
+                float y3 = ((PdfNumber) operands[3]).FloatValue;
+                processor.ModifyPath(PathConstructionRenderInfo.CURVE_23, new List<float>(new float[] {x2, y2, x3, y3}));
+            }
+        }
+
+        /**
+         * A content operator implementation (y).
+         *
+         * @since 5.5.6
+         */
+        private class CurveFourhPointDuplicated : IContentOperator {
+
+            public virtual void Invoke(PdfContentStreamProcessor processor, PdfLiteral oper, List<PdfObject> operands) {
+                float x1 = ((PdfNumber) operands[0]).FloatValue;
+                float y1 = ((PdfNumber) operands[1]).FloatValue;
+                float x3 = ((PdfNumber) operands[2]).FloatValue;
+                float y3 = ((PdfNumber) operands[3]).FloatValue;
+                processor.ModifyPath(PathConstructionRenderInfo.CURVE_13, new List<float>(new float[] {x1, y1, x3, y3}));
+            }
+        }
+
+        /**
+         * A content operator implementation (h).
+         *
+         * @since 5.5.6
+         */
+        private class CloseSubpath : IContentOperator {
+
+            public virtual void Invoke(PdfContentStreamProcessor processor, PdfLiteral oper, List<PdfObject> operands) {
+                processor.ModifyPath(PathConstructionRenderInfo.CLOSE, null);
+            }
+        }
+
+        /**
+         * A content operator implementation (re).
+         *
+         * @since 5.5.6
+         */
+        private class Rectangle : IContentOperator {
+
+            public virtual void Invoke(PdfContentStreamProcessor processor, PdfLiteral oper, List<PdfObject> operands) {
+                float x = ((PdfNumber) operands[0]).FloatValue;
+                float y = ((PdfNumber) operands[1]).FloatValue;
+                float w = ((PdfNumber) operands[2]).FloatValue;
+                float h = ((PdfNumber) operands[3]).FloatValue;
+                processor.ModifyPath(PathConstructionRenderInfo.RECT, new List<float>(new float[] {x, y, w, h}));
+            }
+        }
+
+        /**
+         * A content operator implementation (S, s, f, F, f*, B, B*, b, b*).
+         *
+         * @since 5.5.6
+         */
+        private class PaintPathOp : IContentOperator {
+
+            private int operation;
+            private int rule;
+            private bool close;
+
+            /**
+             * Constructs PainPath object.
+             *
+             * @param operation One of the possible combinations of {@link com.itextpdf.text.pdf.parser.PathPaintingRenderInfo#STROKE}
+             *                  and {@link com.itextpdf.text.pdf.parser.PathPaintingRenderInfo#FILL} values or
+             *                  {@link com.itextpdf.text.pdf.parser.PathPaintingRenderInfo#NO_OP}
+             * @param rule      Either {@link com.itextpdf.text.pdf.parser.PathPaintingRenderInfo#NONZERO_WINDING_RULE} or
+             *                  {@link com.itextpdf.text.pdf.parser.PathPaintingRenderInfo#EVEN_ODD_RULE}
+             *                  In case it isn't applicable pass any value.
+             * @param close     Indicates whether the path should be closed or not.
+             */
+            public PaintPathOp(int operation, int rule, bool close) {
+                this.operation = operation;
+                this.rule = rule;
+                this.close = close;
+            }
+
+            public virtual void Invoke(PdfContentStreamProcessor processor, PdfLiteral oper, List<PdfObject> operands) {
+                processor.PaintPath(operation, rule, close);
+                // TODO: add logic for clipping path (before add it to the graphics state)
+            }
+        }
+
+        private class ClipPathOp : IContentOperator {
+
+            private int rule;
+
+            public ClipPathOp(int rule) {
+                this.rule = rule;
+            }
+
+            public virtual void Invoke(PdfContentStreamProcessor processor, PdfLiteral oper, List<PdfObject> operands) {
+                processor.ClipPath(rule);
+            }
+        }
+
+        /**
+         * A content operator implementation (n).
+         *
+         * @since 5.5.6
+         */
+        private class EndPath : IContentOperator {
+
+            public void Invoke(PdfContentStreamProcessor processor, PdfLiteral oper, List<PdfObject> operands) {
+                processor.PaintPath(PathPaintingRenderInfo.NO_OP, -1, false);
             }
         }
         

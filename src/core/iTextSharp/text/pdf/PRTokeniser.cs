@@ -480,23 +480,32 @@ namespace iTextSharp.text.pdf {
                     outBuf.Length = 0;
                     if (ch == '-' || ch == '+' || ch == '.' || (ch >= '0' && ch <= '9')) {
                         type = TokType.NUMBER;
+                        bool isReal = false;
+                        int numberOfMinuses = 0;
                         if (ch == '-') {
                             // Take care of number like "--234". If Acrobat can read them so must we.
-                            bool minus = false;
                             do {
-                                minus = !minus;
+                                ++numberOfMinuses;
                                 ch = file.Read();
                             } while (ch == '-');
-                            if (minus)
-                                outBuf.Append('-');
+                            outBuf.Append('-');
                         }
                         else {
                             outBuf.Append((char)ch);
+                            // We don't need to check if the number is real over here as we need to know that fact only in case if there are any minuses.
                             ch = file.Read();
                         }
                         while (ch != -1 && ((ch >= '0' && ch <= '9') || ch == '.')) {
+                            if (ch == '.')
+                                isReal = true;
                             outBuf.Append((char)ch);
                             ch = file.Read();
+                        }
+                        if (numberOfMinuses > 1 && !isReal) {
+                            // Numbers of integer type and with more than one minus before them
+                            // are interpreted by Acrobat as zero.
+                            outBuf.Length = 0;
+                            outBuf.Append('0');
                         }
                     }
                     else {

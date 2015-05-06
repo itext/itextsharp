@@ -80,11 +80,86 @@ namespace itextsharp.tests.iTextSharp.text.pdf.table {
             document.Add(table);
             document.Close();
 
+            CompareTablePdf(file);
+        }
+
+        [Test]
+        public void testIncompleteTable2() {
+            const String file = "incomplete_table_2.pdf";
+
+            Document document = new Document(PageSize.A4.Rotate());
+            PdfWriter.GetInstance(document, new FileStream(OUTPUT_FOLDER + file, FileMode.OpenOrCreate));
+            document.Open();
+            Font font = new Font();
+            float[] widths = new float[] {50f, 50f};
+            PdfPTable table = new PdfPTable(widths.Length);
+            table.Complete = false;
+            table.SetWidths(widths);
+            table.WidthPercentage = 100;
+            PdfPCell cell = new PdfPCell(new Phrase("Column #1", font));
+            table.AddCell(cell);
+            cell = new PdfPCell(new Phrase("Column #2", font));
+            table.AddCell(cell);
+            table.HeaderRows  = 1;
+
+            for (int i = 0; i < 50; i++) {
+                cell = new PdfPCell(new Phrase("Table cell #" + i, font));
+                table.AddCell(cell);
+                cell = new PdfPCell(new Phrase("Blah blah blah", font));
+                table.AddCell(cell);
+                if (i % 40 == 0) {
+                    document.Add(table);
+                }
+            }
+            table.Complete = true;
+            document.Add(table);
+            document.Close();
+
+            CompareTablePdf(file);
+        }
+
+        [Test]
+        public void RemoveRowFromIncompleteTable()
+        {
+            const string file = "incomplete_table_row_remved.pdf";
+
+            Document document = new Document();
+
+            PdfWriter pdfWriter = PdfWriter.GetInstance(document, new FileStream(OUTPUT_FOLDER + file, FileMode.OpenOrCreate));
+
+            document.Open();
+
+            PdfPTable table = new PdfPTable(1);
+            table.Complete = false;
+            table.TotalWidth = 500;
+            table.LockedWidth = true;
+
+            for (int i = 0; i < 21; i++)
+            {
+                PdfPCell cell = new PdfPCell(new Phrase("Test" + i));
+                table.AddCell(cell);
+            }
+
+            table.Rows.RemoveAt(20);
+            document.Add(table);
+
+            table.Complete = true;
+
+            document.Add(table);
+
+            document.Close();
+
+            CompareTablePdf(file);
+        }
+
+        
+        private void CompareTablePdf(String file) {
             // compare
             CompareTool compareTool = new CompareTool();
             String errorMessage = compareTool.CompareByContent(OUTPUT_FOLDER + file, CMP_FOLDER + file, OUTPUT_FOLDER, "diff");
 
-            if (errorMessage != null) {
+            if (errorMessage != null)
+            {
                 Assert.Fail(errorMessage);
             }
         }

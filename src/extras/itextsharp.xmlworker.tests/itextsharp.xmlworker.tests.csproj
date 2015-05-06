@@ -67,6 +67,7 @@
     <Compile Include="iTextSharp\tool\xml\css\DefaultCSSResolverTest.cs" />
     <Compile Include="iTextSharp\tool\xml\css\FontSizeTranslatorTest.cs" />
     <Compile Include="iTextSharp\tool\xml\css\WidthCalculatorTest.cs" />
+    <Compile Include="iTextSharp\tool\xml\examples\css\at_rule\AtMedia_Rule_IgnoringTest.cs" />
     <Compile Include="iTextSharp\tool\xml\examples\css\background\background_color\cell\Background_color_cell01Test.cs" />
     <Compile Include="iTextSharp\tool\xml\examples\css\background\background_color\cell\Background_color_cell02Test.cs" />
     <Compile Include="iTextSharp\tool\xml\examples\css\background\background_color\div\Background_color_div01Test.cs" />
@@ -435,6 +436,7 @@
     <Compile Include="iTextSharp\tool\xml\examples\html\List05Test.cs" />
     <Compile Include="iTextSharp\tool\xml\examples\html\List06Test.cs" />
     <Compile Include="iTextSharp\tool\xml\examples\html\P01Test.cs" />
+    <Compile Include="iTextSharp\tool\xml\examples\html\ParagraphNewlineTest.cs" />
     <Compile Include="iTextSharp\tool\xml\examples\html\Pre01Test.cs" />
     <Compile Include="iTextSharp\tool\xml\examples\html\S01Test.cs" />
     <Compile Include="iTextSharp\tool\xml\examples\html\Samp01Test.cs" />

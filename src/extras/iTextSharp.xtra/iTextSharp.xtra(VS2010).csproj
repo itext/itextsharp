@@ -57,8 +57,6 @@
     <Compile Include="iTextSharp\text\pdf\pdfcleanup\PdfCleanUpContentChunk.cs" />
     <Compile Include="iTextSharp\text\pdf\pdfcleanup\PdfCleanUpContentOperator.cs" />
     <Compile Include="iTextSharp\text\pdf\pdfcleanup\PdfCleanUpContext.cs" />
-    <Compile Include="iTextSharp\text\pdf\pdfcleanup\PdfCleanUpCoveredArea.cs" />
-    <Compile Include="iTextSharp\text\pdf\pdfcleanup\PdfCleanUpGraphicsState.cs" />
     <Compile Include="iTextSharp\text\pdf\pdfcleanup\PdfCleanUpLocation.cs" />
     <Compile Include="iTextSharp\text\pdf\pdfcleanup\PdfCleanUpProcessor.cs" />
     <Compile Include="iTextSharp\text\pdf\pdfcleanup\PdfCleanUpRegionFilter.cs" />
@@ -77,6 +75,8 @@
     <Compile Include="iTextSharp\text\pdf\richmedia\RichMediaPresentation.cs" />
     <Compile Include="iTextSharp\text\pdf\richmedia\RichMediaWindow.cs" />
     <Compile Include="iTextSharp\text\pdf\spatial\units\SpacialUnits.cs" />
+    <Compile Include="iTextSharp\text\pdf\util\PdfResourceCounter.cs" />
+    <Compile Include="iTextSharp\text\pdf\util\SmartPdfSplitter.cs" />
     <Compile Include="Properties\AssemblyInfo.cs" />
   </ItemGroup>
   <ItemGroup>

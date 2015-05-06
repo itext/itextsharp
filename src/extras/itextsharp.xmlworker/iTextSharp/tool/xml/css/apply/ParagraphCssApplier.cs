@@ -88,7 +88,7 @@ namespace iTextSharp.tool.xml.css.apply {
             }*/
             CssUtils utils = CssUtils.GetInstance();
             float fontSize = FontSizeTranslator.GetInstance().GetFontSize(t);
-            if (fontSize < 0) {
+            if (fontSize == Font.UNDEFINED) {
                 fontSize = 0;
             }
             float lmb = 0;

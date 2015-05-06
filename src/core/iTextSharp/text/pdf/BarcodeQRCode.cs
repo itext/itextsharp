@@ -127,5 +127,34 @@ namespace iTextSharp.text.pdf {
     //    java.awt.Image img = canvas.CreateImage(new MemoryImageSource(width, height, pix, 0, width));
     //    return img;
     //}
+
+        public void PlaceBarcode(PdfContentByte cb, BaseColor foreground, float moduleSide)
+        {
+            int width = bm.GetWidth();
+            int height = bm.GetHeight();
+            sbyte[][] mt = bm.GetArray();
+
+            cb.SetColorFill(foreground);
+
+            for (int y = 0; y < height; ++y)
+            {
+                sbyte[] line = mt[y];
+                for (int x = 0; x < width; ++x)
+                {
+                    if (line[x] == 0)
+                    {
+                        cb.Rectangle(x * moduleSide, (height - y - 1) * moduleSide, moduleSide, moduleSide);
+                    }
+                }
+            }
+            cb.Fill();
+        }
+
+        /** Gets the size of the barcode grid. */
+        public Rectangle GetBarcodeSize()
+        {
+            return new Rectangle(0, 0, bm.GetWidth(), bm.GetHeight());
+        }
+
     }
 }

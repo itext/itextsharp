@@ -229,6 +229,10 @@ namespace iTextSharp.text.pdf {
         public static readonly int[] CHAR_RANGE_ARABIC = {0, 0x7f, 0x0600, 0x067f, 0x20a0, 0x20cf, 0xfb50, 0xfbff, 0xfe70, 0xfeff};
         public static readonly int[] CHAR_RANGE_HEBREW = {0, 0x7f, 0x0590, 0x05ff, 0x20a0, 0x20cf, 0xfb1d, 0xfb4f};
         public static readonly int[] CHAR_RANGE_CYRILLIC = {0, 0x7f, 0x0400, 0x052f, 0x2000, 0x206f, 0x20a0, 0x20cf};
+
+        /**default array of six numbers specifying the font matrix, mapping glyph space to text space */
+        public static readonly double[] DEFAULT_FONT_MATRIX = {0.001, 0, 0,0.001 , 0, 0};
+
     
         /** if the font has to be embedded */
         public const bool EMBEDDED = true;
@@ -1514,6 +1518,16 @@ namespace iTextSharp.text.pdf {
             else
                 return charBBoxes[b[0] & 0xff];
         }
+
+        /**
+         *  Gets default array of six numbers specifying the font matrix, mapping glyph space to text space
+         * @return an array of six values
+         * <code>null</code>
+         */
+        public virtual double[] GetFontMatrix() {
+            return DEFAULT_FONT_MATRIX;
+        }
+
         
         protected abstract int[] GetRawCharBBox(int c, String name);
 
