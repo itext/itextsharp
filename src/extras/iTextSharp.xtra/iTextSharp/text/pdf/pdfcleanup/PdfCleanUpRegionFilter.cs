@@ -124,7 +124,7 @@ namespace iTextSharp.xtra.iTextSharp.text.pdf.pdfcleanup {
         private static JoinType GetJoinType(int lineJoinStyle) {
             switch (lineJoinStyle) {
                 case PdfContentByte.LINE_JOIN_BEVEL:
-                    return JoinType.jtSquare;
+                    return JoinType.jtBevel;
 
                 case PdfContentByte.LINE_JOIN_MITER:
                     return JoinType.jtMiter;

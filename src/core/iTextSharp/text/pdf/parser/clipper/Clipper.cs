@@ -422,7 +422,7 @@ namespace iTextSharp.text.pdf.parser.clipper {
     //see http://glprogramming.com/red/chapter11.html
     public enum PolyFillType { pftEvenOdd, pftNonZero, pftPositive, pftNegative };
 
-    public enum JoinType { jtSquare, jtRound, jtMiter };
+    public enum JoinType { jtBevel, jtRound, jtMiter };
     public enum EndType { etClosedPolygon, etClosedLine, etOpenButt, etOpenSquare, etOpenRound };
 
     internal enum EdgeSide { esLeft, esRight };
@@ -4333,7 +4333,7 @@ namespace iTextSharp.text.pdf.parser.clipper {
                         m_sinA = 0;
                         m_normals[j] = new DoublePoint(-m_normals[j].X, -m_normals[j].Y);
                         if (node.m_endtype == EndType.etOpenSquare)
-                            DoSquare(j, k);
+                            DoSquare(j, k, true);
                         else
                             DoRound(j, k);
                     }
@@ -4359,7 +4359,7 @@ namespace iTextSharp.text.pdf.parser.clipper {
                         k = 1;
                         m_sinA = 0;
                         if (node.m_endtype == EndType.etOpenSquare)
-                            DoSquare(0, 1);
+                            DoSquare(0, 1, true);
                         else
                             DoRound(0, 1);
                     }
@@ -4467,11 +4467,11 @@ namespace iTextSharp.text.pdf.parser.clipper {
                             if (r >= m_miterLim)
                                 DoMiter(j, k, r);
                             else
-                                DoSquare(j, k);
+                                DoSquare(j, k, false);
                             break;
                         }
-                    case JoinType.jtSquare:
-                        DoSquare(j, k);
+                    case JoinType.jtBevel:
+                        DoSquare(j, k, false);
                         break;
                     case JoinType.jtRound:
                         DoRound(j, k);
@@ -4481,15 +4481,15 @@ namespace iTextSharp.text.pdf.parser.clipper {
         }
         //------------------------------------------------------------------------------
 
-        internal void DoSquare(int j, int k) {
+        internal void DoSquare(int j, int k, bool addExtra) {
             double dx = Math.Tan(Math.Atan2(m_sinA,
                 m_normals[k].X * m_normals[j].X + m_normals[k].Y * m_normals[j].Y) / 4);
             m_destPoly.Add(new IntPoint(
-                Round(m_srcPoly[j].X + m_delta * (m_normals[k].X - m_normals[k].Y * dx)),
-                Round(m_srcPoly[j].Y + m_delta * (m_normals[k].Y + m_normals[k].X * dx))));
+                Round(m_srcPoly[j].X + m_delta * (m_normals[k].X - (addExtra ? m_normals[k].Y * dx : 0))),
+                Round(m_srcPoly[j].Y + m_delta * (m_normals[k].Y + (addExtra ? m_normals[k].X * dx : 0)))));
             m_destPoly.Add(new IntPoint(
-                Round(m_srcPoly[j].X + m_delta * (m_normals[j].X + m_normals[j].Y * dx)),
-                Round(m_srcPoly[j].Y + m_delta * (m_normals[j].Y - m_normals[j].X * dx))));
+                Round(m_srcPoly[j].X + m_delta * (m_normals[j].X + (addExtra ? m_normals[j].Y * dx : 0))),
+                Round(m_srcPoly[j].Y + m_delta * (m_normals[j].Y - (addExtra ? m_normals[j].X * dx : 0)))));
         }
         //------------------------------------------------------------------------------
 
