@@ -69,7 +69,7 @@ namespace iTextSharp.tool.xml.parser.state {
          */
         virtual public void Process(char character) {
             String tag = this.parser.BufferToString();
-            if (HTMLUtils.IsWhiteSpace(character) || character == '>' || character == '/' || character == ':' || tag.Equals("!--") || tag.Equals("![CDATA[") || character == '?') {
+            if (HTMLUtils.IsWhiteSpace(character) || character == '>' || character == '/' || character == ':' || tag.Equals("!--") || tag.Equals("![CDATA") && character == '[' || character == '?') {
                 // cope with <? xml and <! DOCTYPE
                 if (tag.Length > 0) {
                     if (tag.Equals("!--")) {
@@ -86,10 +86,9 @@ namespace iTextSharp.tool.xml.parser.state {
                         } else {
                             this.parser.Memory().Comment().Append(character);
                         }
-                    } else if (tag.Equals("![CDATA[")) {
+                    } else if (tag.Equals("![CDATA") && character == '[') {
                         this.parser.Flush();
                         parser.SelectState().Cdata();
-                        this.parser.Append(character);
                     } else if (tag.Equals("!DOCTYPE")) {
                         this.parser.Flush();
                         parser.SelectState().Doctype();
