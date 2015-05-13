@@ -71,17 +71,26 @@ namespace iTextSharp.text.pdf.parser {
         /** the row=3, col=3 position (always 1 for 2-D) in the matrix. */
         public const int I33 = 8;   
         
-        /** the values inside the matrix (the identity matrix by default). */
-        private float[] vals = new float[]{
-                1,0,0,
-                0,1,0,
-                0,0,1
-        };
-        
+        /** the values inside the matrix (the identity matrix by default).*/
+        /** default initialization is performed in the default constructor.*/
+        private readonly float[] vals = new float[9];
+
         /**
          * constructs a new Matrix with identity.
+         * !shall be called from any other constructor!
          */
-        public Matrix() {
+        public Matrix() { 
+            //here we are initializing matrix with default values
+            // ! not using inline array initializer because it is ~20 times slower in .net 2.0 !
+            vals[I11] = 1;
+            vals[I12] = 0;
+            vals[I13] = 0;
+            vals[I21] = 0;
+            vals[I22] = 1;
+            vals[I23] = 0;
+            vals[I31] = 0;
+            vals[I32] = 0;
+            vals[I33] = 1;
         }
 
         /**
@@ -89,7 +98,7 @@ namespace iTextSharp.text.pdf.parser {
          * @param tx
          * @param ty
          */
-        public Matrix(float tx, float ty){
+        public Matrix(float tx, float ty): this(){
             vals[I31] = tx;
             vals[I32] = ty;
         }
@@ -103,7 +112,7 @@ namespace iTextSharp.text.pdf.parser {
          * @param e
          * @param f
          */
-        public Matrix(float a, float b, float c, float d, float e, float f){
+        public Matrix(float a, float b, float c, float d, float e, float f) {
             vals[I11] = a;
             vals[I12] = b;
             vals[I13] = 0;

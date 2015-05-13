@@ -470,8 +470,8 @@ namespace iTextSharp.text.pdf {
                     pageN.Put(PdfName.CONTENTS, ar);
                 }
                 else if (content.IsArray()) {
-                    ar = (PdfArray)content;
-                    MarkUsed(ar);
+                    ar = new PdfArray((PdfArray)content);
+                    pageN.Put(PdfName.CONTENTS, ar);
                 }
                 else if (content.IsStream()) {
                     ar = new PdfArray();

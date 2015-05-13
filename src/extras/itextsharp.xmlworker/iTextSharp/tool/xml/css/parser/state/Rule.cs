@@ -11,6 +11,7 @@ namespace iTextSharp.tool.xml.css.parser.state {
 
         private CssStateController controller;
         private bool isCss3AtRule;
+        private int openParenthesesCount = 0;
 
         /**
          * @param cssStateController the controller
@@ -22,18 +23,18 @@ namespace iTextSharp.tool.xml.css.parser.state {
         /* (non-Javadoc)
          * @see com.itextpdf.tool.xml.css.parser.State#process(char)
          */
-        virtual public void Process(char c) {
-            if ('}' == c && isCss3AtRule) 
-            {
+
+        public virtual void Process(char c) {
+            if ('}' == c && isCss3AtRule) {
+                --openParenthesesCount;
+                if (openParenthesesCount == 0) {
+                    controller.StateUnknown();
+                    isCss3AtRule = false;
+                }
+            } else if (';' == c && !isCss3AtRule) {
                 controller.StateUnknown();
-                isCss3AtRule = false;
-            } 
-            else if (';' == c && !isCss3AtRule)
-            {
-                controller.StateUnknown();
-            }
-            else if ('{' == c)
-            {
+            } else if ('{' == c) {
+                ++openParenthesesCount;
                 isCss3AtRule = true;
             }
         }

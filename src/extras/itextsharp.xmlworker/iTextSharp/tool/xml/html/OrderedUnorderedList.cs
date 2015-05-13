@@ -151,6 +151,8 @@ namespace iTextSharp.tool.xml.html {
                 HtmlPipelineContext context = GetHtmlPipelineContext(ctx);
                 String end = isTop?"-top":"-bottom";
                 float ownFontSize = fst.GetFontSize(tag);
+                if (ownFontSize == Font.UNDEFINED)
+                    ownFontSize = 0;
                 float ownMargin = 0;
                 String marginValue;
                 tag.CSS.TryGetValue(CSS.Property.MARGIN+end, out marginValue);

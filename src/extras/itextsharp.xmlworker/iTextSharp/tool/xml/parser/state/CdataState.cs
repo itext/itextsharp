@@ -68,11 +68,14 @@ namespace iTextSharp.tool.xml.parser.state {
         virtual public void Process(char character) {
             if (character == '>' && "]]".Equals(this.parser.Memory().Comment().ToString()) ) {
                 this.parser.Memory().Comment().Length = 0;
+                this.parser.Text("<![CDATA[" + this.parser.BufferToString() + "]]>");
                 this.parser.Flush();
                 this.parser.SelectState().InTag();
             } else if (character == ']') {
                 this.parser.Memory().Comment().Append(character);
-            } else {
+            } else
+            {
+                this.parser.Append(character);
                 this.parser.Memory().Comment().Length = 0;
             }
         }

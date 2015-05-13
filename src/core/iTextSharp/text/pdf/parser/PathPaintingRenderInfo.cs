@@ -51,26 +51,26 @@ namespace iTextSharp.text.pdf.parser {
 
         private int operation;
         private int rule;
-        private Matrix ctm;
+        private GraphicsState gs;
 
         /**
          * @param operation One of the possible combinations of {@link #STROKE} and {@link #FILL} values or {@link #NO_OP}
          * @param rule      Either {@link #NONZERO_WINDING_RULE} or {@link #EVEN_ODD_RULE}.
-         * @param ctm       Current transformation matrix.
+         * @param gs        The graphics state.
          */
-        public PathPaintingRenderInfo(int operation, int rule, Matrix ctm) {
+        public PathPaintingRenderInfo(int operation, int rule, GraphicsState gs) {
             this.operation = operation;
             this.rule = rule;
-            this.ctm = ctm;
+            this.gs = gs;
         }
 
         /**
          * If the operation is {@link #NO_OP} then the rule is ignored,
          * otherwise {@link #NONZERO_WINDING_RULE} is used by default.
          *
-         * See {@link #PathPaintingRenderInfo(int, int, Matrix)}
+         * See {@link #PathPaintingRenderInfo(int, int, GraphicsState)}
          */
-        public PathPaintingRenderInfo(int operation, Matrix ctm) : this(operation, NONZERO_WINDING_RULE, ctm) {
+        public PathPaintingRenderInfo(int operation, GraphicsState gs) : this(operation, NONZERO_WINDING_RULE, gs) {
         }
 
         /**
@@ -92,7 +92,27 @@ namespace iTextSharp.text.pdf.parser {
          * @return Current transformation matrix.
          */
         public virtual Matrix Ctm {
-            get { return ctm; }
+            get { return gs.ctm; }
+        }
+
+        public virtual float LineWidth {
+            get { return gs.LineWidth; }
+        }
+
+        public virtual int LineCapStyle {
+            get { return gs.LineCapStyle; }
+        }
+
+        public virtual int LineJoinStyle {
+            get { return gs.LineJoinStyle; }
+        }
+
+        public virtual float MiterLimit {
+            get { return gs.MiterLimit; }
+        }
+
+        public virtual LineDashPattern LineDashPattern {
+            get { return gs.GetLineDashPattern(); }
         }
     }
 }
