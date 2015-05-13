@@ -1,8 +1,10 @@
 using System;
 using System.Collections;
 using System.Collections.Generic;
+using System.Runtime.InteropServices;
 using iTextSharp.text.error_messages;
 using iTextSharp.text.io;
+
 /*
  * $Id$
  *
@@ -201,6 +203,12 @@ namespace iTextSharp.text.pdf.parser {
 
             RegisterContentOperator("Do", new Do());
 
+            RegisterContentOperator("w", new SetLineWidth());
+            RegisterContentOperator("J", new SetLineCap());
+            RegisterContentOperator("j", new SetLineJoin());
+            RegisterContentOperator("M", new SetMiterLimit());
+            RegisterContentOperator("d", new SetLineDashPattern());
+
             // Path construction and painting operators
             if (renderListener is IExtRenderListener) {
                 int fillStroke = PathPaintingRenderInfo.FILL | PathPaintingRenderInfo.STROKE;
@@ -267,7 +275,7 @@ namespace iTextSharp.text.pdf.parser {
          * Returns the current graphics state.
          * @return  the graphics state
          */
-        private GraphicsState Gs() {
+        public GraphicsState Gs() {
             return gsStack.Peek();
         }
 
@@ -369,7 +377,7 @@ namespace iTextSharp.text.pdf.parser {
                 ModifyPath(PathConstructionRenderInfo.CLOSE, null);
             }
 
-            PathPaintingRenderInfo renderInfo = new PathPaintingRenderInfo(operation, rule, Gs().GetCtm());
+            PathPaintingRenderInfo renderInfo = new PathPaintingRenderInfo(operation, rule, Gs());
             ((IExtRenderListener) renderListener).RenderPath(renderInfo);
         }
 
@@ -971,6 +979,62 @@ namespace iTextSharp.text.pdf.parser {
             virtual public void Invoke(PdfContentStreamProcessor processor, PdfLiteral oper, List<PdfObject> operands) {
                 PdfName xobjectName = (PdfName)operands[0];
                 processor.DisplayXObject(xobjectName);
+            }
+        }
+
+        /**
+         * A content operator implementation (w).
+         */
+        private class SetLineWidth : IContentOperator {
+
+            public void Invoke(PdfContentStreamProcessor processor, PdfLiteral oper, List<PdfObject> operands) {
+                float lineWidth = ((PdfNumber) operands[0]).FloatValue;
+                processor.Gs().LineWidth = lineWidth;
+            }
+        }
+
+        /**
+         * A content operator implementation (J).
+         */
+        private class SetLineCap : IContentOperator {
+
+            public void Invoke(PdfContentStreamProcessor processor, PdfLiteral oper, List<PdfObject> operands) {
+                int lineCap = ((PdfNumber) operands[0]).IntValue;
+                processor.Gs().LineCapStyle = lineCap;
+            }
+        }
+
+        /**
+         * A content operator implementation (j).
+         */
+        private class SetLineJoin : IContentOperator {
+
+            public void Invoke(PdfContentStreamProcessor processor, PdfLiteral oper, List<PdfObject> operands) {
+                int lineJoin = ((PdfNumber) operands[0]).IntValue;
+                processor.Gs().LineJoinStyle = lineJoin;
+            }
+        }
+
+        /**
+         * A content operator implementation (M).
+         */
+        private class SetMiterLimit : IContentOperator {
+
+            public void Invoke(PdfContentStreamProcessor processor, PdfLiteral oper, List<PdfObject> operands) {
+                float miterLimit = ((PdfNumber) operands[0]).FloatValue;
+                processor.Gs().MiterLimit = miterLimit;
+            }
+        }
+
+        /**
+         * A content operator implementation (d).
+         */
+        private class SetLineDashPattern : IContentOperator {
+
+            public void Invoke(PdfContentStreamProcessor processor, PdfLiteral oper, List<PdfObject> operands) {
+                LineDashPattern pattern = new LineDashPattern(((PdfArray) operands[0]),
+                                                              ((PdfNumber) operands[1]).FloatValue);
+                processor.Gs().SetLineDashPattern(pattern);
             }
         }
 

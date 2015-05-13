@@ -265,8 +265,7 @@ namespace iTextSharp.text.pdf
         }
 
 
-        virtual public void WriteAttributes(IAccessibleElement element)
-        {
+        public virtual void WriteAttributes(IAccessibleElement element) {
             // I do remember that these lines were necessary to avoid creation of files which are not valid from Acrobat 10 preflight perspective.
             // Now it seems that in Acrobat 11 there's no such problem (I think Acrobat 10 behavior can be considered as a bug) and we can remove those lines.
             // if(top.Writer.GetPdfVersion().Version < PdfWriter.VERSION_1_7)
@@ -303,19 +302,22 @@ namespace iTextSharp.text.pdf
             else if (element is PdfDiv)
                 WriteAttributes((PdfDiv) element);
             else if (element is PdfTemplate)
-                WriteAttributes((PdfTemplate)element);
+                WriteAttributes((PdfTemplate) element);
             else if (element is Document)
                 WriteAttributes((Document) element);
 
-            if (element.GetAccessibleAttributes() != null)
-                foreach (PdfName key in element.GetAccessibleAttributes().Keys)
-                {
-                    if (key.Equals(PdfName.LANG) || key.Equals(PdfName.ALT) || key.Equals(PdfName.ACTUALTEXT) ||
-                        key.Equals(PdfName.E) || key.Equals(PdfName.T))
+            if (element.GetAccessibleAttributes() != null) {
+                foreach (PdfName key in element.GetAccessibleAttributes().Keys) {
+                    if (key.Equals(PdfName.ID)) {
+                        PdfObject attr = element.GetAccessibleAttribute(key);
+                        Put(key, attr);
+                        top.PutIDTree(attr.ToString(), Reference);
+                    } else if (key.Equals(PdfName.LANG) || key.Equals(PdfName.ALT) || key.Equals(PdfName.ACTUALTEXT) || key.Equals(PdfName.E) || key.Equals(PdfName.T)) {
                         Put(key, element.GetAccessibleAttribute(key));
-                    else
+                    } else
                         SetAttribute(key, element.GetAccessibleAttribute(key));
                 }
+            }
         }
 
         private void WriteAttributes(Chunk chunk)

@@ -428,5 +428,18 @@ namespace iTextSharp.text.pdf {
             }
             return rslt;
         }
+
+        /**
+         *
+         * @return this PdfArray's values as a double[]
+         * @since 5.5.6
+         */
+        public double[] AsDoubleArray() {
+            double[] rslt = new double[Size];
+            for (int k = 0; k < rslt.Length; ++k) {
+                rslt[k] = GetAsNumber(k).DoubleValue;
+            }
+            return rslt;
+        }
     }
 }

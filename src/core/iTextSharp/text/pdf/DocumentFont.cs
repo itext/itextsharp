@@ -53,6 +53,7 @@ namespace iTextSharp.text.pdf {
         private String fontName;
         private PRIndirectReference refFont;
         private PdfDictionary font;
+        private double[] fontMatrix;
         private IntHashtable uni2byte = new IntHashtable();
         private IntHashtable byte2uni = new IntHashtable();
         private IntHashtable diffmap;
@@ -90,6 +91,7 @@ namespace iTextSharp.text.pdf {
             8212,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,
             0,198,0,170,0,0,0,0,321,216,338,186,0,0,0,0,
             0,230,0,0,0,305,0,0,322,248,339,223,0,0,0,0};
+
 
         /** Creates a new instance of DocumentFont */
         internal DocumentFont(PdfDictionary font) {
@@ -136,6 +138,7 @@ namespace iTextSharp.text.pdf {
                 // When parsing a document that shows a cat and a dog, you shouldn't expect seeing a cat and a dog. Instead you'll get b and a.
                 FillEncoding(null);
                 FillDiffMap(font.GetAsDict(PdfName.ENCODING), null);
+                FillWidths();
             } else {
                 PdfName encodingName = font.GetAsName(PdfName.ENCODING);
                 if (encodingName != null){
@@ -330,8 +333,7 @@ namespace iTextSharp.text.pdf {
                         byte2uni[kv.Value] = kv.Key;
                     }
                 }
-            }
-            else {
+            } else {
                 if (enc.IsName())
                     FillEncoding((PdfName) enc);
                 else if (enc.IsDictionary()) {
@@ -344,9 +346,6 @@ namespace iTextSharp.text.pdf {
                     FillDiffMap(encDic, toUnicode);
                 }
             }
-            PdfArray newWidths = font.GetAsArray(PdfName.WIDTHS);
-            PdfNumber first = font.GetAsNumber(PdfName.FIRSTCHAR);
-            PdfNumber last = font.GetAsNumber(PdfName.LASTCHAR);
             if (BuiltinFonts14.ContainsKey(fontName)) {
                 BaseFont bf = BaseFont.CreateFont(fontName, WINANSI, false);
                 int[] e = uni2byte.ToOrderedKeys();
@@ -354,7 +353,8 @@ namespace iTextSharp.text.pdf {
                     int n = uni2byte[e[k]];
                     widths[n] = bf.GetRawWidth(n, GlyphList.UnicodeToName(e[k]));
                 }
-                if (diffmap != null) { //widths for differences must override existing ones
+                if (diffmap != null) {
+                    //widths for differences must override existing ones
                     e = diffmap.ToOrderedKeys();
                     for (int k = 0; k < e.Length; ++k) {
                         int n = diffmap[e[k]];
@@ -372,6 +372,14 @@ namespace iTextSharp.text.pdf {
                 urx = bf.GetFontDescriptor(BBOXURX, 1000);
                 ury = bf.GetFontDescriptor(BBOXURY, 1000);
             }
+            FillWidths();
+            FillFontDesc(font.GetAsDict(PdfName.FONTDESCRIPTOR));
+        }
+
+        private void FillWidths() {
+            PdfArray newWidths = font.GetAsArray(PdfName.WIDTHS);
+            PdfNumber first = font.GetAsNumber(PdfName.FIRSTCHAR);
+            PdfNumber last = font.GetAsNumber(PdfName.LASTCHAR);
             if (first != null && last != null && newWidths != null) {
                 int f = first.IntValue;
                 int nSize = f + newWidths.Size;
@@ -384,7 +392,6 @@ namespace iTextSharp.text.pdf {
                     widths[f + k] = newWidths.GetAsNumber(k).IntValue;
                 }
             }
-            FillFontDesc(font.GetAsDict(PdfName.FONTDESCRIPTOR));
         }
 
         private void FillDiffMap(PdfDictionary encDic, CMapToUnicode toUnicode) {
@@ -811,7 +818,16 @@ namespace iTextSharp.text.pdf {
             else
                 return base.CharExists(c);
         }
-        
+
+
+        public override double[] GetFontMatrix() {
+            if (fontMatrix == null) {
+                PdfArray array = font.GetAsArray(PdfName.FONTMATRIX);
+                fontMatrix = array != null ? array.AsDoubleArray() : DEFAULT_FONT_MATRIX;
+            }
+            return fontMatrix;
+        }
+
         public override bool SetKerning(int char1, int char2, int kern) {
             return false;
         }

@@ -21,25 +21,34 @@ namespace iTextSharp.xtra.iTextSharp.text.pdf.pdfcleanup {
         private static readonly Color CLEANED_AREA_FILL_COLOR = Color.White;
 
         private PdfStamper pdfStamper;
-        private IList<PdfCleanUpRegionFilter> filters;
+        private PdfCleanUpRegionFilter filter;
         private IList<PdfCleanUpContentChunk> chunks = new List<PdfCleanUpContentChunk>();
         private Stack<PdfCleanUpContext> contextStack = new Stack<PdfCleanUpContext>();
         private int strNumber = 1; // Represents ordinal number of string under processing. Needed for processing TJ operator.
 
-        private Path unfilteredCurrentPath = new Path(); // Represents current path as if there were no segments to cut
-        private Path currentStrokePath = new Path(); // Represents actual current path ("actual" means that it is filtered current path)
+        // Represents current path as if there were no segments to cut
+        private Path unfilteredCurrentPath = new Path();
 
-        /**
-         * Represents actual current path to be filled. In general case in context of cleanup tool it completely differs from
-         * the current path with implicitly closed subpaths.
-         */
+        // Represents actual current path to be stroked ("actual" means that it is filtered current path)
+        private Path currentStrokePath = new Path();
+
+        // Represents actual current path to be filled.
         private Path currentFillPath = new Path();
 
-        private bool clipPath = false;
+        // Represents the latest path used as a new clipping path. If the new path from the source document
+        // is cleaned, then you should treat it as an empty set. Then the intersection (current clipping path)
+        // between previous clipping path and the new one is also empty set, which means that there is no visible 
+        // content at all. But we also can't write invisible content, which wasn't cleaned, to the resultant document, 
+        // because in this case it will become visible. The latter case is incorrect from user's point of view.
+        private Path newClippingPath;
 
-        public PdfCleanUpRenderListener(PdfStamper pdfStamper, IList<PdfCleanUpRegionFilter> filters) {
+        private bool clipPath;
+        private int clippingRule;
+
+        public PdfCleanUpRenderListener(PdfStamper pdfStamper, PdfCleanUpRegionFilter filter) {
             this.pdfStamper = pdfStamper;
-            this.filters = filters;
+            this.filter = filter;
+            InitClippingPath();
         }
 
         public virtual void RenderText(TextRenderInfo renderInfo) {
@@ -47,11 +56,19 @@ namespace iTextSharp.xtra.iTextSharp.text.pdf.pdfcleanup {
                 return;
             }
 
-            foreach (TextRenderInfo ri in renderInfo.GetCharacterRenderInfos()) {
-                bool textIsInsideRegion = TextIsInsideRegion(ri);
-                LineSegment baseline = ri.GetUnscaledBaseline();
+            // if true, than clipping path was completely cleaned
+            if (newClippingPath.IsEmpty()) {
+                LineSegment baseline = renderInfo.GetUnscaledBaseline();
+                chunks.Add(new PdfCleanUpContentChunk.Text(renderInfo.PdfString, baseline.GetStartPoint(), 
+                    baseline.GetEndPoint(), false, strNumber));
+            } else {
+                foreach (TextRenderInfo ri in renderInfo.GetCharacterRenderInfos()) {
+                    bool isAllowed = filter.AllowText(ri);
+                    LineSegment baseline = ri.GetUnscaledBaseline();
 
-                chunks.Add(new PdfCleanUpContentChunk.Text(ri.PdfString, baseline.GetStartPoint(), baseline.GetEndPoint(), !textIsInsideRegion, strNumber));
+                    chunks.Add(new PdfCleanUpContentChunk.Text(ri.PdfString, baseline.GetStartPoint(),
+                        baseline.GetEndPoint(), isAllowed, strNumber));
+                }
             }
 
             ++strNumber;
@@ -60,7 +77,7 @@ namespace iTextSharp.xtra.iTextSharp.text.pdf.pdfcleanup {
         public virtual void RenderImage(ImageRenderInfo renderInfo) {
             IList<Rectangle> areasToBeCleaned = GetImageAreasToBeCleaned(renderInfo);
 
-            if (areasToBeCleaned == null) {
+            if (areasToBeCleaned == null || newClippingPath.IsEmpty()) {
                 chunks.Add(new PdfCleanUpContentChunk.Image(false, null));
             } else {
                 PdfImageObject pdfImage = renderInfo.GetImage();
@@ -94,6 +111,11 @@ namespace iTextSharp.xtra.iTextSharp.text.pdf.pdfcleanup {
         }
 
         public virtual void ModifyPath(PathConstructionRenderInfo renderInfo) {
+            // See the comment on the newClippingPath field.
+            if (newClippingPath.IsEmpty()) {
+                return;
+            }
+
             IList<float> segmentData = renderInfo.SegmentData;
 
             switch (renderInfo.Operation) {
@@ -129,25 +151,58 @@ namespace iTextSharp.xtra.iTextSharp.text.pdf.pdfcleanup {
         }
 
         public virtual Path RenderPath(PathPaintingRenderInfo renderInfo) {
-            if ((renderInfo.Operation & PathPaintingRenderInfo.STROKE) != 0) {
-                currentStrokePath = FilterCurrentPath(renderInfo.Ctm, true);
+            // If previous clipping is empty, then we shouldn't compute the new one
+            // because their intersection is empty.
+            if (newClippingPath.IsEmpty()) {
+                currentStrokePath = new Path();
+                currentFillPath = currentStrokePath;
+                return newClippingPath;
             }
 
-            if ((renderInfo.Operation & PathPaintingRenderInfo.FILL) != 0 || clipPath) {
-                currentFillPath = FilterCurrentPath(renderInfo.Ctm, false);
+            bool stroke = (renderInfo.Operation & PathPaintingRenderInfo.STROKE) != 0;
+            bool fill = (renderInfo.Operation & PathPaintingRenderInfo.FILL) != 0;
+
+            float lineWidth = renderInfo.LineWidth;
+            int lineCapStyle = renderInfo.LineCapStyle;
+            int lineJoinStyle = renderInfo.LineJoinStyle;
+            float miterLimit = renderInfo.MiterLimit;
+            LineDashPattern lineDashPattern = renderInfo.LineDashPattern;
+
+            if (stroke) {
+                currentStrokePath = FilterCurrentPath(renderInfo.Ctm, true, -1, 
+                    lineWidth, lineCapStyle, lineJoinStyle, miterLimit, lineDashPattern);
+            }
+
+            if (fill) {
+                currentFillPath = FilterCurrentPath(renderInfo.Ctm, false, renderInfo.Rule, 
+                    lineWidth, lineCapStyle, lineJoinStyle, miterLimit, lineDashPattern);
+            } 
+            
+            if (clipPath) {
+                if (fill && renderInfo.Rule == clippingRule) {
+                    newClippingPath = currentFillPath;
+                } else {
+                    newClippingPath = FilterCurrentPath(renderInfo.Ctm, false, clippingRule, 
+                        lineWidth, lineCapStyle, lineJoinStyle, miterLimit, lineDashPattern);
+                }
             }
 
             unfilteredCurrentPath = new Path();
-            return currentFillPath;
+            return newClippingPath;
         }
 
         public virtual void ClipPath(int rule) {
             clipPath = true;
+            clippingRule = rule;
         }
 
         public virtual bool Clipped {
             get { return clipPath; }
             set { clipPath = value; }
+        }
+
+        public virtual int ClippingRule {
+            get { return clippingRule; }
         }
 
         public virtual Path CurrentStrokePath {
@@ -156,6 +211,10 @@ namespace iTextSharp.xtra.iTextSharp.text.pdf.pdfcleanup {
 
         public virtual Path CurrentFillPath {
             get { return currentFillPath; }
+        }
+
+        public virtual Path NewClipPath {
+            get { return newClippingPath; }
         }
 
 
@@ -181,14 +240,12 @@ namespace iTextSharp.xtra.iTextSharp.text.pdf.pdfcleanup {
             strNumber = 1;
         }
 
-        private bool TextIsInsideRegion(TextRenderInfo renderInfo) {
-            foreach (PdfCleanUpRegionFilter filter in filters) {
-                if (filter.AllowText(renderInfo)) {
-                    return true;
-                }
-            }
-
-            return false;
+        private void InitClippingPath() {
+            /* For our purposes it is enough to initialize clipping path as arbitrary !non-empty! path.
+               In other cases, initially, it shall include the entire page as it stated in PDF spec. */
+            newClippingPath = new Path();
+            newClippingPath.MoveTo(30, 30);
+            newClippingPath.LineTo(30, 40);
         }
 
         /**
@@ -196,19 +253,7 @@ namespace iTextSharp.xtra.iTextSharp.text.pdf.pdfcleanup {
          * List of covered image areas otherwise.
          */
         private IList<Rectangle> GetImageAreasToBeCleaned(ImageRenderInfo renderInfo) {
-            IList<Rectangle> areasToBeCleaned = new List<Rectangle>();
-
-            foreach (PdfCleanUpRegionFilter filter in filters) {
-                PdfCleanUpCoveredArea coveredArea = filter.Intersection(renderInfo);
-
-                if (coveredArea == null || coveredArea.MatchesObjRect) {
-                    return null;
-                } else if (coveredArea.Rect != null) {
-                    areasToBeCleaned.Add(coveredArea.Rect);
-                }
-            }
-
-            return areasToBeCleaned;
+            return filter.GetCoveredAreas(renderInfo);
         }
 
         private byte[] ProcessImage(byte[] imageBytes, IList<Rectangle> areasToBeCleaned) {
@@ -276,26 +321,21 @@ namespace iTextSharp.xtra.iTextSharp.text.pdf.pdfcleanup {
             return null;
         }
 
-        private Path FilterCurrentPath(Matrix ctm, bool isContour) {
-            Queue<Subpath> filteredSubpaths = new Queue<Subpath>(unfilteredCurrentPath.Subpaths);
+        /**
+         * @param fillingRule If the path is contour, pass any value.
+         */
 
-            foreach (PdfCleanUpRegionFilter filter in filters) {
-                int queueSize = filteredSubpaths.Count;
+        private Path FilterCurrentPath(Matrix ctm, bool stroke, int fillingRule, float lineWidth, int lineCapStyle, 
+                                       int lineJoinStyle, float miterLimit, LineDashPattern lineDashPattern) {
+            Path path = new Path(unfilteredCurrentPath.Subpaths);
 
-                while (queueSize-- != 0) {
-                    Subpath subpath = filteredSubpaths.Dequeue();
-
-                    if (!isContour) {
-                        subpath = new Subpath(subpath);
-                        subpath.Closed = true;
-                    }
-
-                    IList<Subpath> filteredSubpath = filter.FilterSubpath(subpath, ctm, isContour);
-                    Util.AddAll(filteredSubpaths, filteredSubpath);
-                }
+            if (stroke) {
+                return filter.FilterStrokePath(path, ctm, lineWidth, lineCapStyle, lineJoinStyle,
+                    miterLimit, lineDashPattern);
+            } else {
+                path.CloseAllSubpaths();
+                return filter.FilterFillPath(path, ctm, fillingRule);
             }
-
-            return new Path(new List<Subpath>(filteredSubpaths));
         }
     }
 }

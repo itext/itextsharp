@@ -448,7 +448,7 @@ namespace iTextSharp.text.pdf {
                         // we try to add the chunk to the line, until we succeed
                         {
                             PdfChunk overflow;
-                            while ((overflow = line.Add(chunk)) != null) {
+                            while ((overflow = line.Add(chunk, leading)) != null) {
                                 CarriageReturn();
                                 bool newlineSplit = chunk.IsNewlineSplit();
                                 chunk = overflow;
@@ -2605,6 +2605,9 @@ namespace iTextSharp.text.pdf {
             //fit on the current page, start a new page.
             if (ptable.KeepTogether && !FitsPage(ptable, 0f) && currentHeight > 0)  {
                 NewPage();
+                if (IsTagged(writer)) {
+                    ct.Canvas = text;
+                }
             }
             if (currentHeight == 0) {
                 ct.AdjustFirstLine = false;

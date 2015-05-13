@@ -326,10 +326,10 @@ namespace iTextSharp.text.pdf.codec.wmf
                     float r = state.TransformX(meta.ReadShort());
                     float t = state.TransformY(meta.ReadShort());
                     float l = state.TransformX(meta.ReadShort());
-                    float cx = (r + l) / 2;
-                    float cy = (t + b) / 2;
-                    float arc1 = GetArc(cx, cy, xstart, ystart);
-                    float arc2 = GetArc(cx, cy, xend, yend);
+                    double cx = (r + l) / 2;
+                    double cy = (t + b) / 2;
+                    double arc1 = GetArc(cx, cy, xstart, ystart);
+                    double arc2 = GetArc(cx, cy, xend, yend);
                     arc2 -= arc1;
                     if (arc2 <= 0)
                         arc2 += 360;
@@ -349,17 +349,17 @@ namespace iTextSharp.text.pdf.codec.wmf
                     float r = state.TransformX(meta.ReadShort());
                     float t = state.TransformY(meta.ReadShort());
                     float l = state.TransformX(meta.ReadShort());
-                    float cx = (r + l) / 2;
-                    float cy = (t + b) / 2;
-                    float arc1 = GetArc(cx, cy, xstart, ystart);
-                    float arc2 = GetArc(cx, cy, xend, yend);
+                    double cx = (r + l) / 2;
+                    double cy = (t + b) / 2;
+                    double arc1 = GetArc(cx, cy, xstart, ystart);
+                    double arc2 = GetArc(cx, cy, xend, yend);
                     arc2 -= arc1;
                     if (arc2 <= 0)
                         arc2 += 360;
-                    List<float[]> ar = PdfContentByte.BezierArc(l, b, r, t, arc1, arc2);
+                    List<double[]> ar = PdfContentByte.BezierArc(l, b, r, t, arc1, arc2);
                     if (ar.Count == 0)
                         break;
-                    float[] pt = ar[0];
+                    double[] pt = ar[0];
                     cb.MoveTo(cx, cy);
                     cb.LineTo(pt[0], pt[1]);
                     for (int k = 0; k < ar.Count; ++k) {
@@ -382,17 +382,17 @@ namespace iTextSharp.text.pdf.codec.wmf
                     float r = state.TransformX(meta.ReadShort());
                     float t = state.TransformY(meta.ReadShort());
                     float l = state.TransformX(meta.ReadShort());
-                    float cx = (r + l) / 2;
-                    float cy = (t + b) / 2;
-                    float arc1 = GetArc(cx, cy, xstart, ystart);
-                    float arc2 = GetArc(cx, cy, xend, yend);
+                    double cx = (r + l) / 2;
+                    double cy = (t + b) / 2;
+                    double arc1 = GetArc(cx, cy, xstart, ystart);
+                    double arc2 = GetArc(cx, cy, xend, yend);
                     arc2 -= arc1;
                     if (arc2 <= 0)
                         arc2 += 360;
-                    List<float[]> ar = PdfContentByte.BezierArc(l, b, r, t, arc1, arc2);
+                    List<double[]> ar = PdfContentByte.BezierArc(l, b, r, t, arc1, arc2);
                     if (ar.Count == 0)
                         break;
-                    float[] pt = ar[0];
+                    double[] pt = ar[0];
                     cx = pt[0];
                     cy = pt[1];
                     cb.MoveTo(cx, cy);
@@ -663,11 +663,11 @@ namespace iTextSharp.text.pdf.codec.wmf
         }
     }
     
-    internal static float GetArc(float xCenter, float yCenter, float xDot, float yDot) {
+    internal static double GetArc(double xCenter, double yCenter, double xDot, double yDot) {
         double s = Math.Atan2(yDot - yCenter, xDot - xCenter);
         if (s < 0)
             s += Math.PI * 2;
-        return (float)(s / Math.PI * 180);
+        return (s / Math.PI * 180);
     }
 
     public static byte[] WrapBMP(Image image)  {
