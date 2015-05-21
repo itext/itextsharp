@@ -99,14 +99,11 @@ namespace iTextSharp.tool.xml.pipeline.html {
                 IList<IElement> content = tp.StartElement(context, t);
                 if (content.Count > 0) {
                     if (tp.IsStackOwner()) {
-                        StackKeeper peek;
-                        try {
-                            peek = hcc.Peek();
-                            foreach (IElement elem in content) {
-                                peek.Add(elem);
-                            }
-                        } catch (NoStackException e) {
-                            throw new PipelineException(String.Format(LocaleMessages.STACK_404, t.ToString()), e);
+                        StackKeeper peek = hcc.Peek();
+                        if (peek == null)
+                            throw new PipelineException(String.Format(LocaleMessages.STACK_404, t.ToString()));
+                        foreach (IElement elem in content) {
+                            peek.Add(elem);
                         }
                     } else {
                         foreach (IElement elem in content) {
@@ -147,22 +144,27 @@ namespace iTextSharp.tool.xml.pipeline.html {
                 //    ctn = Encoding.Default.GetString(b);
                 //}
                 IList<IElement> elems = tp.Content(context, t, text);
-                if (elems.Count > 0) {
-                    StackKeeper peek;
-                    try {
-                        peek = hcc.Peek();
-                        foreach (IElement e in elems) {
+                if (elems.Count > 0)
+                {
+                    StackKeeper peek = hcc.Peek();
+                    if (peek != null)
+                    {
+                        foreach (IElement e in elems)
+                        {
                             peek.Add(e);
                         }
-                    } catch (NoStackException) {
+                    }
+                    else
+                    {
                         WritableElement writableElement = new WritableElement();
-                        foreach (IElement elem in elems) {
+                        foreach (IElement elem in elems)
+                        {
                             writableElement.Add(elem);
                         }
                         po.Add(writableElement);
                     }
                 }
-            } catch (NoTagProcessorException e) {
+              } catch (NoTagProcessorException e) {
                 if (!hcc.AcceptUnknown()) {
                     throw e;
                 }
@@ -203,12 +205,13 @@ namespace iTextSharp.tool.xml.pipeline.html {
                     hcc.CurrentContent().Clear();
                 }
                 if (elems.Count > 0) {
-                    try {
-                        StackKeeper stack = hcc.Peek();
+                    StackKeeper stack = hcc.Peek();
+
+                    if(stack !=null){
                         foreach (IElement elem in elems) {
                             stack.Add(elem);
                         }
-                    } catch (NoStackException) {
+                    } else {
                         WritableElement writableElement = new WritableElement();
                             po.Add(writableElement);
                             writableElement.AddAll(elems);

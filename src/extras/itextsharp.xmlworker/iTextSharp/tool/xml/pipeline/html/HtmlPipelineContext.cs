@@ -124,15 +124,15 @@ namespace iTextSharp.tool.xml.pipeline.html {
 
         /**
          * Retrieves, but does not remove, the head (first element) of this list.
-         * @return a StackKeeper
-         * @throws NoStackException if there are no elements on the stack
+         * @return a StackKeeper or null if there are no elements on the stack
          */
 
         virtual protected internal StackKeeper Peek()
         {
             if (queue.Count == 0)
-                throw new NoStackException();
-            return this.queue.First.Value;
+                return null;
+            else
+                return this.queue.First.Value;
         }
 
         /**
