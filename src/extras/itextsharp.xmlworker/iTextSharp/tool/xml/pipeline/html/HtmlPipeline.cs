@@ -93,9 +93,7 @@ namespace iTextSharp.tool.xml.pipeline.html {
                     hcc.GetMemory().Remove(HtmlPipelineContext.LAST_MARGIN_BOTTOM);
                 }
                 ITagProcessor tp = hcc.ResolveProcessor(t.Name, t.NameSpace);
-                if (tp.IsStackOwner()) {
-                    hcc.AddFirst(new StackKeeper(t));
-                }
+                AddStackKeeper(t, hcc, tp);
                 IList<IElement> content = tp.StartElement(context, t);
                 if (content.Count > 0) {
                     if (tp.IsStackOwner()) {
@@ -224,6 +222,12 @@ namespace iTextSharp.tool.xml.pipeline.html {
                 }
             }
             return GetNext();
+        }
+
+        protected virtual void AddStackKeeper(Tag t, HtmlPipelineContext hcc, ITagProcessor tp)
+        {
+            if (tp.IsStackOwner())
+                hcc.AddFirst(new StackKeeper(t));
         }
     }
 }

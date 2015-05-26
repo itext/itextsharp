@@ -139,7 +139,7 @@ namespace iTextSharp.tool.xml.html {
          */
         virtual public ITagProcessor GetProcessor(String tag, String nameSpace) {
             FactoryObject fo;
-            if (map.TryGetValue(tag, out fo) && fo != null) {
+            if (map.TryGetValue(tag.ToLower(), out fo) && fo != null) {
                 return fo.Processor;
             }
             throw new NoTagProcessorException(tag);

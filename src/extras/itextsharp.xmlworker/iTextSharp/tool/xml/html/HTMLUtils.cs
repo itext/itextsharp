@@ -68,9 +68,9 @@ namespace iTextSharp.tool.xml.html {
 		    foreach (char c in str) {
 			    if (isWhitespace && !IsWhiteSpace(c)) {
                     if (builder.Length == 0) {
-                        chunkList.Add(Chunk.CreateWhitespace(builder.ToString(), preserveWhiteSpace));
+                        chunkList.Add(Chunk.CreateWhitespace(whitespaceBuilder.ToString(), preserveWhiteSpace));
                     } else {
-                        builder.Append(" ");
+                        builder.Append(preserveWhiteSpace ? whitespaceBuilder : new StringBuilder(" "));
                     }
                     whitespaceBuilder = new StringBuilder();
                 }
