@@ -900,6 +900,7 @@ namespace iTextSharp.text.pdf {
                                     pageFields.ArrayList.Remove(@ref);
                                 }
                             }
+                            indirectMap.TryGetValue(page.reader, out indirects);
                             foreach (PdfObject @ref in pageFields.ArrayList)
                                 page.mergedFields.Add(CopyObject(@ref));
                         }
