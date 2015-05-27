@@ -131,6 +131,13 @@ namespace iTextSharp.text.pdf {
 
                         status = floatingElement.Layout(canvas, useAscender, true, floatLeftX, minY, floatRightX, yLine);
 
+                        if (floatingElement.KeepTogether && !floatingElement.OnNewPage &&
+                            (status & ColumnText.NO_MORE_TEXT) == 0) {
+                            floatingElement.OnNewPage = true;
+                            content.Insert(0, floatingElement);
+                            break;
+                        }
+
                         if (!simulate) {
                             canvas.OpenMCBlock(floatingElement);
                             status = floatingElement.Layout(canvas, useAscender, simulate, floatLeftX, minY, floatRightX, yLine);
