@@ -75,6 +75,9 @@ namespace iTextSharp.tool.xml.html {
             List<IElement> l = new List<IElement>(1);
             if (currentContent.Count > 0) {
                 IList<IElement> currentContentToParagraph = CurrentContentToParagraph(currentContent, true, true, tag, ctx);
+                foreach (IElement p in currentContentToParagraph) {
+                    ((Paragraph) p).Role = (getHeaderRole(GetLevel(tag)));
+                }
                 ParentTreeUtil pt = new ParentTreeUtil();
                 try {
                     HtmlPipelineContext context = GetHtmlPipelineContext(ctx);
@@ -101,6 +104,24 @@ namespace iTextSharp.tool.xml.html {
                 l.AddRange(currentContentToParagraph);
             }
             return l;
+        }
+
+        private PdfName getHeaderRole(int level) {
+            switch (level) {
+                case 1:
+                    return PdfName.H1;
+                case 2:
+                    return PdfName.H2;
+                case 3:
+                    return PdfName.H3;
+                case 4:
+                    return PdfName.H4;
+                case 5:
+                    return PdfName.H5;
+                case 6:
+                    return PdfName.H6;
+            }
+            return PdfName.H;
         }
 
         /**
