@@ -352,7 +352,7 @@ namespace itextsharp.tests.iTextSharp.text.pdf
             document.Close();
 
             Document pdfDocument = new Document();
-            PdfCopy copier = new PdfCopy(pdfDocument, new FileStream(outfile, FileMode.Create));
+            PdfCopy copier = new PdfCopy(pdfDocument, new FileStream(target + outfile, FileMode.Create));
             copier.SetMergeFields();
             pdfDocument.Open();
 
