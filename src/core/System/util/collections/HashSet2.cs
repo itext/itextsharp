@@ -34,14 +34,14 @@ namespace System.util.collections
         {
             Object o = null;
             if (set.TryGetValue(item, out o)) {
-                return true;
+                return false;
             }
             set[item] = null;
-            return false;
+            return true;
 
         }
 
-        virtual public void Add(T item)        {
+        virtual public void Add(T item){
             
             set[item] = null;           
 

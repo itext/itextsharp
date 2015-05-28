@@ -3,6 +3,7 @@ using System.Collections.Generic;
 using System.IO;
 using itextsharp.tests.iTextSharp.testutils;
 using iTextSharp.text;
+using iTextSharp.text.exceptions;
 using iTextSharp.text.pdf;
 using NUnit.Framework;
 
@@ -80,5 +81,24 @@ namespace itextsharp.tests.iTextSharp.text.pdf
             }
             rdr.Close();
         }
+
+         
+        [Test]
+        [ExpectedException(typeof(InvalidPdfException))]
+        public void CircularReferencesInResources()  {
+            string testFile = TestResourceUtils.GetResourceAsTempFile(TEST_RESOURCES_PATH, "circularReferencesInResources.pdf");
+            PdfReader rdr = new PdfReader(testFile);
+            rdr.Close();
+            BaseFont.GetDocumentFonts(rdr);
+        }
+
+        
+        [Test]
+        [ExpectedException(typeof(InvalidPdfException))]
+        public void CircularReferencesInPageTree()  {
+            string testFile = TestResourceUtils.GetResourceAsTempFile(TEST_RESOURCES_PATH, "circularReferencesInPageTree.pdf");
+            PdfReader rdr = new PdfReader(testFile);
+        }
+
     }
 }
