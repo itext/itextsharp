@@ -218,6 +218,7 @@ illegal.type.value.at.1.2=ongeldige waarde voor type op {1}: {2}
 illegal.v.value=Ongeldige waarde voor V.
 illegal.value.for.predictor.in.tiff.file=Ongeldige waarde voor Predictor in TIFF file.
 illegal.ve.value=Ongeldige VE waarde.
+illegal.pages.tree=Illegal pages tree.
 improperly.padded.base64.input=Ongeldig 'gepadde' Base64 input.
 in.a.page.label.the.page.numbers.must.be.greater.or.equal.to.1=In een page label moeten de pagina nummers groter dan of gelijk aan 1 zijn.
 in.codabar.start.stop.characters.are.only.allowed.at.the.extremes=In codabar worden start/stop karakters enkel toegelaten bij begin en einde van de string.
