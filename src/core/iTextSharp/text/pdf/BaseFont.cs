@@ -4,6 +4,8 @@ using System.Collections.Generic;
 using System.util;
 using iTextSharp.text.xml.simpleparser;
 using iTextSharp.text.error_messages;
+using System.util.collections;
+using iTextSharp.text.exceptions;
 
 /*
  * $Id$
@@ -1439,8 +1441,9 @@ namespace iTextSharp.text.pdf {
             fonts.Add(new Object[]{PdfName.DecodeName(name.ToString()), fontRef});
             hits[fontRef.Number] = 1;
         }
-        
-        private static void RecourseFonts(PdfDictionary page, IntHashtable hits, List<object[]> fonts, int level) {
+
+        private static void RecourseFonts(PdfDictionary page, IntHashtable hits, List<object[]> fonts, int level, HashSet2<PdfDictionary> visitedResources)
+        {
             ++level;
             if (level > 50) // in case we have an endless loop
                 return;
@@ -1461,14 +1464,21 @@ namespace iTextSharp.text.pdf {
                     AddFont((PRIndirectReference)ft, hits, fonts);
                 }
             }
+            
+            
             PdfDictionary xobj = resources.GetAsDict(PdfName.XOBJECT);
-            if (xobj != null) {
-                foreach (PdfName key in xobj.Keys) {
-                    PdfObject po = xobj.GetDirectObject(key);
-                    if (po is PdfDictionary)
-                        RecourseFonts((PdfDictionary)po, hits, fonts, level);
-                }
+            if(xobj != null){
+                if (visitedResources.AddAndCheck(xobj)){
+                    foreach (PdfName key in xobj.Keys) {
+                        PdfObject po = xobj.GetDirectObject(key);
+                        if (po is PdfDictionary)
+                            RecourseFonts((PdfDictionary)po, hits, fonts, level, visitedResources);
+                    }
+                    visitedResources.Remove(xobj);
+                } else                    
+                throw new InvalidPdfException(MessageLocalization.GetComposedMessage("illegal.resources.tree"));
             }
+
         }
         
         /**
@@ -1483,7 +1493,7 @@ namespace iTextSharp.text.pdf {
             List<object[]> fonts = new List<object[]>();
             int npages = reader.NumberOfPages;
             for (int k = 1; k <= npages; ++k)
-                RecourseFonts(reader.GetPageN(k), hits, fonts, 1);
+                RecourseFonts(reader.GetPageN(k), hits, fonts, 1, new HashSet2<PdfDictionary>());
             return fonts;
         }
         
@@ -1498,7 +1508,7 @@ namespace iTextSharp.text.pdf {
         public static List<object[]> GetDocumentFonts(PdfReader reader, int page) {
             IntHashtable hits = new IntHashtable();
             List<object[]> fonts = new List<object[]>();
-            RecourseFonts(reader.GetPageN(page), hits, fonts, 1);
+            RecourseFonts(reader.GetPageN(page), hits, fonts, 1, new HashSet2<PdfDictionary>());
             return fonts;
         }
         

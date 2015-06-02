@@ -133,6 +133,7 @@ namespace iTextSharp.tool.xml.css {
             public const String TAB_STOPS = "tab-stops";
             public const String XFA_TAB_STOPS = "xfa-tab-stops";
             public const String PAGE_BREAK_BEFORE = "page-break-before";
+            public const String PAGE_BREAK_INSIDE = "page-break-inside";
             public const String PAGE_BREAK_AFTER = "page-break-after";
             public const String REPEAT_HEADER = "repeat-header";
             public const String REPEAT_FOOTER = "repeat-footer";
@@ -222,6 +223,7 @@ namespace iTextSharp.tool.xml.css {
             public const String EM = "em";
             public const String EX = "ex";
             public const String ALWAYS = "always";
+            public const String AVOID = "avoid";
             public const String ABSOLUTE = "absolute";
             public const String AUTO = "auto";
 		    public const String INLINE = "inline";
@@ -246,3 +248,4 @@ namespace iTextSharp.tool.xml.css {
         }
     }
 }
+

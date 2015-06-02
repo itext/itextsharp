@@ -103,9 +103,7 @@ namespace iTextSharp.text.pdf {
             /** The current word spacing */
             protected internal float wordSpace = 0;
 
-            protected internal BaseColor textColorFill = new GrayColor(0);
             protected internal BaseColor colorFill = new GrayColor(0);
-            protected internal BaseColor textColorStroke = new GrayColor(0);
             protected internal BaseColor colorStroke = new GrayColor(0);
             protected internal int textRenderMode = TEXT_RENDER_MODE_FILL;
             protected internal AffineTransform CTM = new AffineTransform();
@@ -133,9 +131,7 @@ namespace iTextSharp.text.pdf {
                 scale = cp.scale;
                 charSpace = cp.charSpace;
                 wordSpace = cp.wordSpace;
-                textColorFill = cp.textColorFill;
                 colorFill = cp.colorFill;
-                textColorStroke = cp.textColorStroke;
                 colorStroke = cp.colorStroke;
                 CTM = (AffineTransform)cp.CTM.Clone();
                 textRenderMode = cp.textRenderMode;
@@ -1842,14 +1838,6 @@ namespace iTextSharp.text.pdf {
                     state.yTLM = 0;
                     state.tx = 0;
                 }
-                if (IsTagged()) {
-                    try {
-                        RestoreColor();
-                    }
-                    catch (IOException) {
-
-                    }
-                }
             }
         }
 
@@ -1874,15 +1862,6 @@ namespace iTextSharp.text.pdf {
             } else {
                 inText = false;
                 content.Append("ET").Append_i(separator);
-                if (IsTagged()) {
-                    try {
-                        RestoreColor();
-                    }
-                    catch (IOException) {
-
-                    }
-
-                }
             }
         }
     
@@ -4374,66 +4353,10 @@ namespace iTextSharp.text.pdf {
         }
 
         private void SaveColor(BaseColor color, bool fill) {
-            if (IsTagged()) {
-                if (inText) {
-                    if (fill) {
-                        state.textColorFill = color;
-                    } else {
-                        state.textColorStroke = color;
-                    }
-                } else {
-                    if (fill) {
-                        state.colorFill = color;
-                    } else {
-                        state.colorStroke = color;
-                    }
-                }
-            }
-            else {
-                if (fill) {
-                    state.colorFill = color;
-                }
-                else {
-                    state.colorStroke = color;
-                }
-            }
-        }
-
-        private void RestoreColor(BaseColor color, bool fill) {
-            if (IsTagged()) {
-                if (color is UncoloredPattern) {
-                    UncoloredPattern c = (UncoloredPattern)color;
-                    if (fill)
-                        SetPatternFill(c.Painter, c.color, c.tint);
-                    else
-                        SetPatternStroke(c.Painter, c.color, c.tint);
-                } else {
-                    if (fill)
-                        SetColorFill(color);
-                    else
-                        SetColorStroke(color);
-                }
-            }
-        }
-
-        private void RestoreColor() {
-            if (IsTagged()) {
-                if (inText) {
-                    if (!state.textColorFill.Equals(state.colorFill)) {
-                        RestoreColor(state.textColorFill, true);
-                    }
-                    if (!state.textColorStroke.Equals(state.colorStroke)) {
-                        RestoreColor(state.textColorStroke, false);
-                    }
-                }
-                else {
-                    if (!state.textColorFill.Equals(state.colorFill)) {
-                        RestoreColor(state.colorFill, true);
-                    }
-                    if (!state.textColorStroke.Equals(state.colorStroke)) {
-                        RestoreColor(state.colorStroke, false);
-                    }
-                }
+            if (fill) {
+                state.colorFill = color;
+            } else {
+                state.colorStroke = color;
             }
         }
 
@@ -4474,12 +4397,10 @@ namespace iTextSharp.text.pdf {
                 stroke = true;
             }
             if (fill) {
-                PdfWriter.CheckPdfIsoConformance(writer, PdfIsoKeys.PDFISOKEY_COLOR,
-                    IsTagged() ? state.textColorFill : state.colorFill);
+                PdfWriter.CheckPdfIsoConformance(writer, PdfIsoKeys.PDFISOKEY_COLOR, state.colorFill);
             }
             if (stroke) {
-                PdfWriter.CheckPdfIsoConformance(writer, PdfIsoKeys.PDFISOKEY_COLOR,
-                    IsTagged() ? state.textColorStroke : state.colorStroke);
+                PdfWriter.CheckPdfIsoConformance(writer, PdfIsoKeys.PDFISOKEY_COLOR, state.colorStroke);
             }
             PdfWriter.CheckPdfIsoConformance(writer, PdfIsoKeys.PDFISOKEY_GSTATE, state.extGState);
         }

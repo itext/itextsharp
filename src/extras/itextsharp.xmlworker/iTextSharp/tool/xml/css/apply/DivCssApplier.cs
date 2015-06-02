@@ -38,7 +38,7 @@ namespace iTextSharp.tool.xml.css.apply {
 
 
             String widthValue;
-            if (!t.CSS.TryGetValue(HTML.Attribute.WIDTH, out widthValue)) {
+            if (!css.TryGetValue(HTML.Attribute.WIDTH, out widthValue)) {
                 t.Attributes.TryGetValue(HTML.Attribute.WIDTH, out widthValue);
             }
             if (widthValue != null) {
@@ -55,7 +55,7 @@ namespace iTextSharp.tool.xml.css.apply {
             }
 
             String heightValue;
-            if (!t.CSS.TryGetValue(HTML.Attribute.HEIGHT, out heightValue)) {
+            if (!css.TryGetValue(HTML.Attribute.HEIGHT, out heightValue)) {
                 t.Attributes.TryGetValue(HTML.Attribute.HEIGHT, out heightValue);
             }
             if (heightValue != null) {
@@ -185,6 +185,11 @@ namespace iTextSharp.tool.xml.css.apply {
                     else if (Util.EqualsIgnoreCase(value, CSS.Value.OUTSET))
                     {
                         div.BorderStyle = PdfDiv.BorderTopStyle.OUTSET;
+                    }
+                    else if (Util.EqualsIgnoreCase(key, CSS.Property.PAGE_BREAK_INSIDE)) {
+                        if (Util.EqualsIgnoreCase(value, CSS.Value.AVOID)) {
+                            div.KeepTogether = true;
+                        }
                     }
                 } 
 

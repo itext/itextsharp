@@ -151,6 +151,15 @@ namespace iTextSharp.text.pdf {
 
         protected AccessibleElementId id = new AccessibleElementId();
 
+        /**
+         * Defines if the div should be kept on one page if possible
+         */
+        private bool keepTogether;
+
+        /**
+         * Defines if the div is already placed on the new page in attempt to keep the div together
+         */
+        private bool onNewPage;
 
         virtual public float? Left
         {
@@ -315,9 +324,21 @@ namespace iTextSharp.text.pdf {
             set { borderTopStyle = value; }
         }
 
+        virtual public bool KeepTogether {
+            get { return keepTogether; }
+            set { keepTogether = value; }
+        }
+
+        virtual public bool OnNewPage {
+            get { return onNewPage; }
+            set { onNewPage = value; }
+        }
+
         public PdfDiv()
         {
             content = new List<IElement>();
+            keepTogether = false;
+            onNewPage = false;
         }
 
         /**

@@ -131,6 +131,13 @@ namespace iTextSharp.text.pdf {
 
                         status = floatingElement.Layout(canvas, useAscender, true, floatLeftX, minY, floatRightX, yLine);
 
+                        if (floatingElement.KeepTogether && !floatingElement.OnNewPage &&
+                            (status & ColumnText.NO_MORE_TEXT) == 0) {
+                            floatingElement.OnNewPage = true;
+                            content.Insert(0, floatingElement);
+                            break;
+                        }
+
                         if (!simulate) {
                             canvas.OpenMCBlock(floatingElement);
                             status = floatingElement.Layout(canvas, useAscender, simulate, floatLeftX, minY, floatRightX, yLine);
@@ -286,6 +293,26 @@ namespace iTextSharp.text.pdf {
                         }
                     }
                 }
+               if (nextElement is Paragraph) {
+                Paragraph p = (Paragraph) nextElement;
+                foreach (IElement e in p) {
+                    if (e is WritableDirectElement) {
+                        WritableDirectElement writableElement = (WritableDirectElement) e;
+                        if (writableElement.DirectElemenType == WritableDirectElement.DIRECT_ELEMENT_TYPE_HEADER && !simulate) {
+                            PdfWriter writer = compositeColumn.Canvas.PdfWriter;
+                            PdfDocument doc = compositeColumn.Canvas.PdfDocument;
+
+                            // here is used a little hack:
+                            // writableElement.write() method implementation uses PdfWriter.getVerticalPosition() to create PdfDestination (see com.itextpdf.tool.xml.html.Header),
+                            // so here we are adjusting document's currentHeight in order to make getVerticalPosition() return value corresponding to real current position
+                            float savedHeight = doc.currentHeight;
+                            doc.currentHeight = doc.Top - yLine - doc.indentation.indentTop;
+                            writableElement.Write(writer, doc);
+                            doc.currentHeight = savedHeight;
+                        }
+                    }
+                }
+            } 
                 if (ignoreSpacingBefore && nextElement.Chunks.Count == 0)
                 {
                     if (nextElement is Paragraph)

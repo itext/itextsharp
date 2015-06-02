@@ -11,6 +11,7 @@ namespace System.util.collections
         public HashSet2()
         {
             set = new Dictionary<T, object>();
+            
         }
 
         public HashSet2(IEnumerable<T> set) : this()
@@ -29,9 +30,21 @@ namespace System.util.collections
             return GetEnumerator();
         }
 
-        virtual public void Add(T item)
+        public bool AddAndCheck(T item)
         {
+            Object o = null;
+            if (set.TryGetValue(item, out o)) {
+                return false;
+            }
             set[item] = null;
+            return true;
+
+        }
+
+        virtual public void Add(T item){
+            
+            set[item] = null;           
+
         }
 
         virtual public void AddAll(IEnumerable<T> set)

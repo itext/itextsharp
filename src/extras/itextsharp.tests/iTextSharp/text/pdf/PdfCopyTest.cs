@@ -1,6 +1,7 @@
 using System;
 using System.Diagnostics;
 using System.IO;
+using System.Security;
 using itextsharp.tests.iTextSharp.testutils;
 using iTextSharp.testutils;
 using iTextSharp.text;
@@ -333,6 +334,38 @@ namespace itextsharp.tests.iTextSharp.text.pdf
             if (errorMessage != null) {
                 Assert.Fail(errorMessage);
             }
+        }
+
+        [Test]
+        public virtual void CopyFields4Test() {
+            string target = "PdfCopyTest/";
+            Directory.CreateDirectory(target);
+            const string outfile = "copyFields4.pdf";
+            const string inputFile = "link.pdf";
+
+            Document document = new Document();
+            MemoryStream stream = new MemoryStream();
+            PdfWriter.GetInstance(document, stream);
+            Font font = new Font(BaseFont.CreateFont(RESOURCES + "fonts/georgia.ttf", BaseFont.IDENTITY_H, BaseFont.EMBEDDED), 9);
+            document.Open();
+            document.Add(new Phrase("text", font));
+            document.Close();
+
+            Document pdfDocument = new Document();
+            PdfCopy copier = new PdfCopy(pdfDocument, new FileStream(target + outfile, FileMode.Create));
+            copier.SetMergeFields();
+            pdfDocument.Open();
+
+            PdfReader reader1 = new PdfReader(RESOURCES + inputFile);
+            PdfReader reader2 = new PdfReader(stream.ToArray());
+
+            copier.AddDocument(reader1);
+            copier.AddDocument(reader2);
+            copier.Close();
+            CompareTool cmpTool = new CompareTool();
+            string errorMessage = cmpTool.CompareByContent(target + outfile, RESOURCES + "cmp_" + outfile, target, "diff");
+            if (errorMessage != null)
+                Assert.Fail(errorMessage);
         }
 
         [Test]

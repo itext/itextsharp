@@ -14,6 +14,8 @@ using Org.BouncyCastle.Cms;
 using Org.BouncyCastle.X509;
 using iTextSharp.text.error_messages;
 using iTextSharp.text.io;
+using System.util.collections;
+
 /*
  * $Id$
  *
@@ -3458,6 +3460,10 @@ namespace iTextSharp.text.pdf {
             private int lastPageRead = -1;
             private int sizep;
             private bool keepPages;
+            /**
+            * Keeps track of all pages nodes to avoid circular references.
+            */
+            private HashSet2<PdfObject> pagesNodes = new HashSet2<PdfObject>();
             
             internal PageRefs(PdfReader reader) {
                 this.reader = reader;
@@ -3650,7 +3656,10 @@ namespace iTextSharp.text.pdf {
             }
 
             private void IteratePages(PRIndirectReference rpage) {
-                PdfDictionary page = (PdfDictionary)GetPdfObject(rpage);
+
+                PdfDictionary page = (PdfDictionary)GetPdfObject(rpage);                
+                if (!pagesNodes.AddAndCheck(page))
+                    throw new InvalidPdfException(MessageLocalization.GetComposedMessage("illegal.pages.tree"));
                 if (page == null)
                     return;
                 PdfArray kidsPR = page.GetAsArray(PdfName.KIDS);
