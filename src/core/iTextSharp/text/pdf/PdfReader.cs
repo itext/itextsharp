@@ -347,6 +347,11 @@ namespace iTextSharp.text.pdf {
             this.cryptoRef = (PRIndirectReference)DuplicatePdfObject(reader.cryptoRef, this);
             this.ownerPasswordUsed = reader.ownerPasswordUsed;
         }
+
+        // Explicit static constructor to tell C# compiler
+        // not to mark type as beforefieldinit. It prevents
+        // problems with Logger initialization.
+        static PdfReader() { }
                                                                                       
         /**
          * Utility method that checks the provided byte source to see if it has junk bytes at the beginning.  If junk bytes

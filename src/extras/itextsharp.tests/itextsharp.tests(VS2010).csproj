@@ -274,6 +274,7 @@
     <None Include="resources\text\pdf\pdfcleanup\PdfCleanUpProcessorTest\cmp_hello_05.pdf" />
     <None Include="resources\text\pdf\pdfcleanup\PdfCleanUpProcessorTest\cmp_LineArtsCompletely.pdf" />
     <None Include="resources\text\pdf\pdfcleanup\PdfCleanUpProcessorTest\cmp_lineArtsPartially.pdf" />
+    <None Include="resources\text\pdf\pdfcleanup\PdfCleanUpProcessorTest\cmp_miterTest.pdf" />
     <None Include="resources\text\pdf\pdfcleanup\PdfCleanUpProcessorTest\cmp_multiUseImage.pdf" />
     <None Include="resources\text\pdf\pdfcleanup\PdfCleanUpProcessorTest\cmp_multiUseIndirect.pdf" />
     <None Include="resources\text\pdf\pdfcleanup\PdfCleanUpProcessorTest\cmp_page166_03.pdf" />
@@ -291,6 +292,7 @@
     <None Include="resources\text\pdf\pdfcleanup\PdfCleanUpProcessorTest\hello_05.pdf" />
     <None Include="resources\text\pdf\pdfcleanup\PdfCleanUpProcessorTest\lineArtsCompletely.pdf" />
     <None Include="resources\text\pdf\pdfcleanup\PdfCleanUpProcessorTest\lineArtsPartially.pdf" />
+    <None Include="resources\text\pdf\pdfcleanup\PdfCleanUpProcessorTest\miterTest.pdf" />
     <None Include="resources\text\pdf\pdfcleanup\PdfCleanUpProcessorTest\multiUseImage.pdf" />
     <None Include="resources\text\pdf\pdfcleanup\PdfCleanUpProcessorTest\multiUseIndirect.pdf" />
     <None Include="resources\text\pdf\pdfcleanup\PdfCleanUpProcessorTest\page166_03.pdf" />
