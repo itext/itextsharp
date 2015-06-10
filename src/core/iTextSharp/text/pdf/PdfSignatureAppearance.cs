@@ -1140,7 +1140,16 @@ namespace iTextSharp.text.pdf {
         
         /** Indicates if the stamper has already been pre-closed. */
         private bool preClosed = false;
-        
+
+        /// <summary>
+        /// Signature field lock dictionary.
+        /// </summary>
+        /// <remarks>
+        /// If a signature is created on an existing signature field, then its /Lock dictionary 
+        /// takes the precedence (if it exists).
+        /// </remarks>
+        public virtual PdfSigLockDictionary FieldLockDict { get; set; }
+
         /**
          * Checks if the document is in the process of closing.
          * @return <CODE>true</CODE> if the document is in the process of closing,
@@ -1181,6 +1190,12 @@ namespace iTextSharp.text.pdf {
                 PdfDictionary widget = af.GetFieldItem(name).GetWidget(0);
                 writer.MarkUsed(widget);
                 fieldLock = widget.GetAsDict(PdfName.LOCK);
+
+                if (fieldLock == null && FieldLockDict != null) {
+                    widget.Put(PdfName.LOCK, writer.AddToBody(FieldLockDict).IndirectReference);
+                    fieldLock = FieldLockDict;
+                }
+
                 widget.Put(PdfName.P, writer.GetPageReference(Page));
                 widget.Put(PdfName.V, refSig);
                 PdfObject obj = PdfReader.GetPdfObjectRelease(widget.Get(PdfName.F));
@@ -1198,6 +1213,11 @@ namespace iTextSharp.text.pdf {
                 sigField.FieldName = name;
                 sigField.Put(PdfName.V, refSig);
                 sigField.Flags = PdfAnnotation.FLAGS_PRINT | PdfAnnotation.FLAGS_LOCKED;
+
+                if (FieldLockDict != null) {
+                    sigField.Put(PdfName.LOCK, writer.AddToBody(FieldLockDict).IndirectReference);
+                    fieldLock = FieldLockDict;
+                }
 
                 int pagen = Page;
                 if (!IsInvisible())
