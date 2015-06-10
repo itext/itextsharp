@@ -1531,33 +1531,44 @@ namespace iTextSharp.text.pdf {
                     int headerRows = table.HeaderRows;
                     int footerRows = table.FooterRows;
                     int realHeaderRows = headerRows - footerRows;
-                    float headerHeight = table.HeaderHeight;
                     float footerHeight = table.FooterHeight;
+                    float headerHeight = table.HeaderHeight - footerHeight;
 
                     // do we need to skip the header?
                     bool skipHeader = table.SkipFirstHeader && rowIdx <= realHeaderRows && (table.ElementComplete || rowIdx != realHeaderRows);
-                    
-                    // if not, we wan't to be able to add more than just a header and a footer
-                    if (!skipHeader) {
-                        yTemp -= headerHeight;
-                        if (yTemp < minY || yTemp > maxY) {
-                            return NO_MORE_COLUMN;
-                        }
-                    }
-                
-                    // MEASURE NECESSARY SPACE
 
+                    if (!skipHeader)
+                    {
+                        yTemp -= headerHeight;
+                    }
+
+                    // MEASURE NECESSARY SPACE
                     // how many real rows (not header or footer rows) fit on a page?
                     int k = 0;
                     if (rowIdx < headerRows)
+                    {
                         rowIdx = headerRows;
-                    // if the table isn't complete, we need to be able to add a footer
-                    if (!table.ElementComplete) {
-                        yTemp -= footerHeight;
                     }
-                    // k will be the first row that doesn't fit
-                    // Contributed by Deutsche Bahn Systel GmbH (Thorsten Seitz), splitting row spans
-                    PdfPTable.FittingRows fittingRows = table.GetFittingRows(yTemp - minY, rowIdx);
+                    PdfPTable.FittingRows fittingRows = null;
+                    //if we skip the last header, firstly, we want to check if table is wholly fit to the page
+                    if (table.SkipLastFooter)
+                    {
+                        // Contributed by Deutsche Bahn Systel GmbH (Thorsten Seitz), splitting row spans
+                        fittingRows = table.GetFittingRows(yTemp - minY, rowIdx);
+                    }
+                    //if we skip the last footer, but the table doesn't fit to the page - we reserve space for footer
+                    //and recalculate fitting rows
+                    if (!table.SkipLastFooter || fittingRows.lastRow < table.Size - 1)
+                    {
+                        yTemp -= footerHeight;
+                        fittingRows = table.GetFittingRows(yTemp - minY, rowIdx);
+                    }
+
+                    //we want to be able to add more than just a header and a footer
+                    if (yTemp < minY || yTemp > maxY)
+                    {
+                        return NO_MORE_COLUMN;
+                    }
                     k = fittingRows.lastRow + 1;
                     yTemp -= fittingRows.height;
                     // splitting row spans
