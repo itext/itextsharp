@@ -1144,11 +1144,19 @@ namespace iTextSharp.text.pdf {
         /// <summary>
         /// Signature field lock dictionary.
         /// </summary>
+        private PdfSigLockDictionary fieldLock;
+
+        /// <summary>
+        /// Signature field lock dictionary.
+        /// </summary>
         /// <remarks>
         /// If a signature is created on an existing signature field, then its /Lock dictionary 
         /// takes the precedence (if it exists).
         /// </remarks>
-        public virtual PdfSigLockDictionary FieldLockDict { get; set; }
+        public virtual PdfSigLockDictionary FieldLockDict {
+            get { return fieldLock; }
+            set { fieldLock = value; }
+        }
 
         /**
          * Checks if the document is in the process of closing.
