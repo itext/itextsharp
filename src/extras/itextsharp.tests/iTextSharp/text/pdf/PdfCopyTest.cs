@@ -87,6 +87,8 @@ namespace itextsharp.tests.iTextSharp.text.pdf
 #endif// DRAWING
 
 
+
+
         [Test]
         /**
          * Test to make sure that the following issue is fixed: http://sourceforge.net/mailarchive/message.php?msg_id=30891213
@@ -401,6 +403,56 @@ namespace itextsharp.tests.iTextSharp.text.pdf
             CompareTool cmpTool = new CompareTool();
             String errorMessage = cmpTool.CompareByContent(target + output, RESOURCES + cmp, target, "diff");
 
+            if (errorMessage != null) {
+                Assert.Fail(errorMessage);
+            }
+        }
+
+        [Test]
+        public void MergeNamedDestinationsTest()  {
+            string outputFolder = "PdfCopyTest/";
+            string outputFile = "namedDestinations.pdf";
+            Directory.CreateDirectory(outputFolder);
+
+            // Create simple document
+            MemoryStream main = new MemoryStream();
+            Document doc = new Document(new Rectangle(612f,792f),54f,54f,36f,36f);
+            PdfWriter pdfwrite = PdfWriter.GetInstance(doc, main);
+            doc.Open();
+            doc.Add(new Paragraph("Testing Page"));
+            doc.Close();
+
+            // Create TOC document
+            MemoryStream two = new MemoryStream();
+            Document doc2 = new Document(new Rectangle(612f,792f),54f,54f,36f,36f);
+            PdfWriter pdfwrite2 = PdfWriter.GetInstance(doc2, two);
+            doc2.Open();
+            Chunk chn = new Chunk("<<-- Link To Testing Page -->>");
+            chn.SetRemoteGoto("DUMMY.PDF","page-num-1");
+            doc2.Add(new Paragraph(chn));
+            doc2.Close();
+
+            // Merge documents
+            MemoryStream three = new MemoryStream();
+            PdfReader reader1 = new PdfReader(main.ToArray());
+            PdfReader reader2 = new PdfReader(two.ToArray());
+            Document doc3 = new Document();
+            PdfCopy DocCopy = new PdfCopy(doc3,three);
+            doc3.Open();
+            DocCopy.AddPage(DocCopy.GetImportedPage(reader2,1));
+            DocCopy.AddPage(DocCopy.GetImportedPage(reader1,1));
+            DocCopy.AddNamedDestination("page-num-1",2,new PdfDestination(PdfDestination.FIT));
+            doc3.Close();
+
+            // Fix references and write to file
+            PdfReader finalReader = new PdfReader(three.ToArray());
+            finalReader.MakeRemoteNamedDestinationsLocal();
+            PdfStamper stamper = new PdfStamper(finalReader,new  FileStream(outputFolder + outputFile, FileMode.Create));
+            stamper.Close();
+
+           
+            CompareTool compareTool = new CompareTool();
+            String errorMessage = compareTool.CompareByContent(outputFolder + outputFile, RESOURCES + "cmp_" + outputFile, outputFolder, "diff");
             if (errorMessage != null) {
                 Assert.Fail(errorMessage);
             }

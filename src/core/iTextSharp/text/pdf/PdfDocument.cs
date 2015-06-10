@@ -233,9 +233,7 @@ namespace iTextSharp.text.pdf {
                         destmap[name] = dest.reference;
                     }
                     if (destmap.Count > 0) {
-                        PdfDictionary dests = new PdfDictionary();
-                        dests.Put(PdfName.NAMES, PdfNameTree.WriteTree(destmap, writer));
-                        names.Put(PdfName.DESTS, writer.AddToBody(dests).IndirectReference);
+                        names.Put(PdfName.DESTS, writer.AddToBody(PdfNameTree.WriteTree(destmap, writer)).IndirectReference);
                     }
                 }
                 if (documentLevelJS.Count > 0) {
