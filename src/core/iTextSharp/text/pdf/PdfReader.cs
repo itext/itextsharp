@@ -2355,7 +2355,7 @@ namespace iTextSharp.text.pdf {
                     PdfObject dpEntry = GetPdfObject(dp[j]);
                     if (dpEntry is PdfDictionary){
                         decodeParams = (PdfDictionary)dpEntry;
-                    } else if (dpEntry == null || dpEntry is PdfNull || (dpEntry is PdfLiteral && EqualBytes(Encoding.UTF8.GetBytes("null"), ((PdfLiteral)dpEntry).GetBytes()))) {
+                    } else if (dpEntry == null || dpEntry is PdfNull || (dpEntry is PdfLiteral && Util.ArraysAreEqual(Encoding.UTF8.GetBytes("null"), ((PdfLiteral)dpEntry).GetBytes()))) {
                         decodeParams = null;
                     } else {
                         throw new UnsupportedPdfException(MessageLocalization.GetComposedMessage("the.decode.parameter.type.1.is.not.supported", dpEntry.GetType().FullName));
@@ -2626,18 +2626,6 @@ namespace iTextSharp.text.pdf {
             get {
                 return decrypt;
             }
-        }
-
-        internal static bool EqualBytes(byte[] a1, byte[] b1) {
-            if (a1.Length != b1.Length) {
-                return false;
-            }
-            for (int i = 0; i < a1.Length; i++) {
-                if (a1[i] != b1[i]) {
-                    return false;
-                }
-            }
-            return true;
         }
 
         //possible IndexOutException 
