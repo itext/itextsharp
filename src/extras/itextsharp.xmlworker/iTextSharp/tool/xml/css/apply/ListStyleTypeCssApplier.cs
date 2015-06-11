@@ -94,7 +94,6 @@ namespace iTextSharp.tool.xml.css.apply {
                     lst.SetListSymbol("");
                 } else if (Util.EqualsIgnoreCase(CSS.Value.DECIMAL, styleType)) {
                     lst = new List(List.ORDERED);
-                    SynchronizeSymbol(fontSize, lst, color);
                 } else if (Util.EqualsIgnoreCase(CSS.Value.DISC, styleType)) {
                     lst = new ZapfDingbatsList(108);
                     lst.Autoindent = false;
