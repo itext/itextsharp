@@ -137,6 +137,13 @@ namespace iTextSharp.tool.xml.html.table {
                 if (direction != PdfWriter.RUN_DIRECTION_DEFAULT) {
                     table.RunDirection = direction;
                 }
+                foreach (KeyValuePair<String, String> entry in tag.CSS) {
+				    if (entry.Key.ToLower().Equals(CSS.Property.PAGE_BREAK_INSIDE.ToLower())) {
+					    if (entry.Value.ToLower().Equals(CSS.Value.AVOID.ToLower())) {
+						    table.KeepTogether = true;
+					    }
+				    }
+			    }
 
                 TableStyleValues styleValues = SetStyleValues(tag);
                 table.TableEvent = new TableBorderEvent(styleValues);

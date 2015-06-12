@@ -156,11 +156,7 @@ namespace iTextSharp.text.pdf {
          */
         private bool keepTogether;
 
-        /**
-         * Defines if the div is already placed on the new page in attempt to keep the div together
-         */
-        private bool onNewPage;
-
+      
         virtual public float? Left
         {
             get { return left; }
@@ -329,16 +325,12 @@ namespace iTextSharp.text.pdf {
             set { keepTogether = value; }
         }
 
-        virtual public bool OnNewPage {
-            get { return onNewPage; }
-            set { onNewPage = value; }
-        }
+       
 
         public PdfDiv()
         {
             content = new List<IElement>();
             keepTogether = false;
-            onNewPage = false;
         }
 
         /**

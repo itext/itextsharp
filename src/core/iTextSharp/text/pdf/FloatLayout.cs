@@ -131,11 +131,13 @@ namespace iTextSharp.text.pdf {
 
                         status = floatingElement.Layout(canvas, useAscender, true, floatLeftX, minY, floatRightX, yLine);
 
-                        if (floatingElement.KeepTogether && !floatingElement.OnNewPage &&
-                            (status & ColumnText.NO_MORE_TEXT) == 0) {
-                            floatingElement.OnNewPage = true;
-                            content.Insert(0, floatingElement);
-                            break;
+                        if (floatingElement.KeepTogether && (status & ColumnText.NO_MORE_TEXT) == 0)
+                        {
+                            //check for empty page
+                            if (compositeColumn.Canvas.PdfDocument.currentHeight > 0 || yLine != maxY) {
+                                content.Insert(0,floatingElement);
+                                break;
+                            }
                         }
 
                         if (!simulate) {
