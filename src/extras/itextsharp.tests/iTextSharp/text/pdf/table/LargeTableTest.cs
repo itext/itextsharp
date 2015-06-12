@@ -51,7 +51,6 @@ namespace itextsharp.tests.iTextSharp.text.pdf.table {
             stream.Close();
         }
 
-        [Ignore]
         [Test]
         public virtual void TestIncompleteTableAdd() {
             const String file = "incomplete_add.pdf";

@@ -1609,7 +1609,7 @@ namespace iTextSharp.text.pdf {
                             else {
                                 // don't drop the row if the table is incomplete and if there's only one row (not counting the header rows)
                                 // if there's only one row and this check wasn't here the row would have been deleted and not added at all
-                                if (!table.Complete && k == 1) {
+                                if (!(!table.Complete && k == 1)) {
                                     table.Rows.RemoveAt(k);
                                 }
                                 return NO_MORE_COLUMN;
