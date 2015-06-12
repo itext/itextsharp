@@ -119,11 +119,10 @@ namespace itextsharp.tests.iTextSharp.text.pdf.table {
             CompareTablePdf(file);
         }
 
-        [Ignore]
         [Test]
         public void RemoveRowFromIncompleteTable()
         {
-            const string file = "incomplete_table_row_remved.pdf";
+            const string file = "incomplete_table_row_removed.pdf";
 
             Document document = new Document();
 
