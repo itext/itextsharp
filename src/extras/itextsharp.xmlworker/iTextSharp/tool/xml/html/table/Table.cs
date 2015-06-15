@@ -138,8 +138,8 @@ namespace iTextSharp.tool.xml.html.table {
                     table.RunDirection = direction;
                 }
                 foreach (KeyValuePair<String, String> entry in tag.CSS) {
-				    if (entry.Key.ToLower().Equals(CSS.Property.PAGE_BREAK_INSIDE.ToLower())) {
-					    if (entry.Value.ToLower().Equals(CSS.Value.AVOID.ToLower())) {
+				    if (Util.EqualsIgnoreCase(entry.Key,CSS.Property.PAGE_BREAK_INSIDE)) {
+					    if (Util.EqualsIgnoreCase(entry.Value,CSS.Value.AVOID.ToLower())) {
 						    table.KeepTogether = true;
 					    }
 				    }

@@ -120,7 +120,7 @@ namespace iTextSharp.tool.xml.html {
             {
                 e = image.Apply((text.Image) e, t);
             } else if (e is PdfDiv) {
-                e = div.apply((PdfDiv)e, t, mm, psc);
+                e = div.Apply((PdfDiv)e, t, mm, psc);
             }
             return e;
 

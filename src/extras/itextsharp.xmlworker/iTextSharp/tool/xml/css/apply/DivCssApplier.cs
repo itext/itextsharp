@@ -11,7 +11,7 @@ namespace iTextSharp.tool.xml.css.apply {
     public class DivCssApplier {
         private CssUtils utils = CssUtils.GetInstance();
 
-        virtual public PdfDiv apply(PdfDiv div, Tag t, IMarginMemory memory, IPageSizeContainable psc) {
+        virtual public PdfDiv Apply(PdfDiv div, Tag t, IMarginMemory memory, IPageSizeContainable psc) {
             IDictionary<String, String> css = t.CSS;
             float fontSize = FontSizeTranslator.GetInstance().TranslateFontSize(t);
             if (fontSize == Font.UNDEFINED) {
@@ -186,10 +186,10 @@ namespace iTextSharp.tool.xml.css.apply {
                     {
                         div.BorderStyle = PdfDiv.BorderTopStyle.OUTSET;
                     }
-                    else if (Util.EqualsIgnoreCase(key, CSS.Property.PAGE_BREAK_INSIDE)) {
-                        if (Util.EqualsIgnoreCase(value, CSS.Value.AVOID)) {
-                            div.KeepTogether = true;
-                        }
+
+                } else if (Util.EqualsIgnoreCase(key, CSS.Property.PAGE_BREAK_INSIDE)) {
+                    if (Util.EqualsIgnoreCase(value, CSS.Value.AVOID)) {
+                        div.KeepTogether = true;
                     }
                 } 
 

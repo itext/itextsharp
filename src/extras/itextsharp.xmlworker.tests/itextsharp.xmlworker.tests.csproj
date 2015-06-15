@@ -242,6 +242,9 @@
     <Compile Include="iTextSharp\tool\xml\examples\css\page_break\before\list\Before_list01.cs" />
     <Compile Include="iTextSharp\tool\xml\examples\css\page_break\before\table\Before_table01.cs" />
     <Compile Include="iTextSharp\tool\xml\examples\css\page_break\before\text\Before_text01.cs" />
+	<Compile Include="iTextSharp\tool\xml\examples\css\page_break\inside\div\Inside_div01.cs" />
+    <Compile Include="iTextSharp\tool\xml\examples\css\page_break\inside\div\Inside_div02.cs" />
+    <Compile Include="iTextSharp\tool\xml\examples\css\page_break\inside\table\Inside_table01.cs" />
     <Compile Include="iTextSharp\tool\xml\examples\css\position\div\Position_div01.cs" />
     <Compile Include="iTextSharp\tool\xml\examples\css\position\Overflow01Test.cs" />
     <Compile Include="iTextSharp\tool\xml\examples\css\position\text\Position_text01.cs" />
