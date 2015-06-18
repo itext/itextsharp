@@ -1,4 +1,7 @@
-﻿namespace iTextSharp.text.pdf.parser {
+﻿using System.util;
+using iTextSharp.awt.geom;
+
+namespace iTextSharp.text.pdf.parser {
 
     /**
      * Represents the line dash pattern. The line dash pattern shall control the pattern
@@ -68,6 +71,55 @@
             }
 
             return ret;
+        }
+
+        /**
+     * Checks whether the dashed pattern consists of zero-length dashes.
+     *
+     * @return <code>true</code> if the dash pattern consists only of zero-length dashes,
+     * <code>false</code> otherwise.
+     */
+        public bool IsZeroDashed() {
+            float total = 0;
+
+            // We should only iterate over the numbers specifying lengths of dashes
+            for (int i = 0; i < dashArray.Length; i += 2) {
+                float currentDash = dashArray.GetAsNumber(i).FloatValue;
+                // Should be nonnegative according to spec.
+                if (currentDash < 0) {
+                    currentDash = 0;
+                }
+
+                total += currentDash;
+            }
+
+            return Util.compare(total, 0) == 0;
+        }
+
+        /**
+         * Checks whether the dashed pattern is solid or not. It's solid when phase is 0 and
+         * one of the following conditions is true:
+         * <ul>
+         *     <li>Dash array is empty;
+         *     <li>
+         *         Size of a dash array is even and sum of all the units off in the array is 0.
+         *         For example: [3 0 4 0 5 0 6 0] (sum is 0), [3 0 4 0 5 1] (sum is 1).
+         *     </li>
+         * </ul>
+         * @return
+         */
+        public bool IsSolid() {
+            if (dashPhase != 0 || (dashArray.Size % 2 != 0)) {
+                return false;
+            }
+
+            float unitsOffSum = 0;
+
+            for (int i = 1; i < dashArray.Size; i += 2) {
+                unitsOffSum += dashArray.GetAsNumber(i).FloatValue;
+            }
+
+            return Util.compare(unitsOffSum, 0) == 0;
         }
 
         /**

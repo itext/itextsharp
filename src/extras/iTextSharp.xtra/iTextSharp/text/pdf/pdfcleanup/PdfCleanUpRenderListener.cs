@@ -333,7 +333,6 @@ namespace iTextSharp.xtra.iTextSharp.text.pdf.pdfcleanup {
                 return filter.FilterStrokePath(path, ctm, lineWidth, lineCapStyle, lineJoinStyle,
                     miterLimit, lineDashPattern);
             } else {
-                path.CloseAllSubpaths();
                 return filter.FilterFillPath(path, ctm, fillingRule);
             }
         }

@@ -120,5 +120,9 @@ namespace iTextSharp.awt.geom
             }
             return false;
         }
+
+        public override int GetHashCode() {
+            return GetX().GetHashCode() + GetY().GetHashCode();
+        }
     }
 }

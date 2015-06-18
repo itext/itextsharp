@@ -4403,7 +4403,7 @@ namespace iTextSharp.text.pdf.parser.clipper {
             DoOffset(delta);
 
             //now clean up 'corners' ...
-            Clipper clpr = new Clipper();
+            Clipper clpr = new Clipper(Clipper.ioReverseSolution);
             clpr.AddPaths(m_destPolys, PolyType.ptSubject, true);
             if (delta > 0) {
                 clpr.Execute(ClipType.ctUnion, solution,

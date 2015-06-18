@@ -24,10 +24,7 @@ namespace iTextSharp.text.pdf.parser {
         }
 
         public Path(IList<Subpath> subpaths) {
-            if (subpaths.Count > 0) {
-                Util.AddAll(this.subpaths, subpaths);
-                currentPoint = this.subpaths[subpaths.Count - 1].GetLastPoint();
-            }
+            AddSubpaths(subpaths);
         }
 
         /**
@@ -35,6 +32,28 @@ namespace iTextSharp.text.pdf.parser {
          */
         public virtual IList<Subpath> Subpaths {
             get { return subpaths; }
+        }
+
+        /**
+         * Adds the subpath to this path.
+         *
+         * @param subpath The subpath to be added to this path.
+         */
+        public void AddSubpath(Subpath subpath) {
+            subpaths.Add(subpath);
+            currentPoint = subpath.GetLastPoint();
+        }
+
+        /**
+         * Adds the subpaths to this path.
+         *
+         * @param subpaths {@link java.util.List} of subpaths to be added to this path.
+         */
+        public void AddSubpaths(IList<Subpath> subpaths) {
+            if (subpaths.Count > 0) {
+                Util.AddAll(this.subpaths, subpaths);
+                currentPoint = this.subpaths[subpaths.Count - 1].GetLastPoint();
+            }
         }
 
         /**

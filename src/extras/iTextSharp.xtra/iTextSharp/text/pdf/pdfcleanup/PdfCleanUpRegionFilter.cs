@@ -17,6 +17,8 @@ namespace iTextSharp.xtra.iTextSharp.text.pdf.pdfcleanup {
 
         private IList<Rectangle> rectangles;
 
+        private static readonly double circleApproximationConst = 0.55191502449;
+
         public PdfCleanUpRegionFilter(IList<Rectangle> rectangles) {
             this.rectangles = rectangles;
         }
@@ -47,7 +49,7 @@ namespace iTextSharp.xtra.iTextSharp.text.pdf.pdfcleanup {
          * Calculates intersection of the image and the render filter region in the coordinate system relative to the image.
          * 
          * @return <code>null</code> if the image is not allowed, {@link java.util.List} of 
-         *         {@link com.itextpdf.text.Rectangle} objects otherwise.
+         * {@link com.itextpdf.text.Rectangle} objects otherwise.
          */
         protected internal virtual IList<Rectangle> GetCoveredAreas(ImageRenderInfo renderInfo) {
             Rectangle imageRect = CalcImageRect(renderInfo);
@@ -73,34 +75,46 @@ namespace iTextSharp.xtra.iTextSharp.text.pdf.pdfcleanup {
             return coveredAreas;
         }
 
-        protected internal virtual Path FilterStrokePath(Path path, Matrix ctm, float lineWidth, int lineCapStyle,
-                                                int lineJoinStyle, float miterLimit, LineDashPattern lineDashPattern) {
+        protected internal Path FilterStrokePath(Path sourcePath, Matrix ctm, float lineWidth, int lineCapStyle,
+                                int lineJoinStyle, float miterLimit, LineDashPattern lineDashPattern) {
+            Path path = sourcePath;
             JoinType joinType = GetJoinType(lineJoinStyle);
             EndType endType = GetEndType(lineCapStyle);
 
             if (lineDashPattern != null) {
-                if (IsZeroDash(lineDashPattern)) {
-                    return new Path();
-                }
-                
-                if (!IsSolid(lineDashPattern)) {
+                if (!lineDashPattern.IsSolid() || (lineDashPattern.IsZeroDashed())) {// && elementsSum(lineDashPattern)) {
                     path = ApplyDashPattern(path, lineDashPattern);
                 }
             }
 
             ClipperOffset offset = new ClipperOffset(miterLimit, PdfCleanUpProcessor.ArcTolerance * PdfCleanUpProcessor.FloatMultiplier);
-            AddPath(offset, path, joinType, endType);
+            IList<Subpath> degenerateSubpaths = AddPath(offset, path, joinType, endType);
 
             PolyTree resultTree = new PolyTree();
             offset.Execute(ref resultTree, lineWidth * PdfCleanUpProcessor.FloatMultiplier / 2);
+            Path offsetedPath = ConvertToPath(resultTree);
 
-            return FilterFillPath(ConvertToPath(resultTree), ctm, PathPaintingRenderInfo.NONZERO_WINDING_RULE);
+            if (degenerateSubpaths.Count > 0) {
+                if (endType == EndType.etOpenRound) {
+                    IList<Subpath> circles = ConvertToCircles(degenerateSubpaths, lineWidth / 2);
+                    offsetedPath.AddSubpaths(circles);
+                } else if (endType == EndType.etOpenSquare && lineDashPattern != null) {
+                    IList<Subpath> squares = ConvertToSquares(degenerateSubpaths, lineWidth, sourcePath);
+                    offsetedPath.AddSubpaths(squares);
+                }
+            }
+
+            return FilterFillPath(offsetedPath, ctm, PathPaintingRenderInfo.NONZERO_WINDING_RULE);
         }
 
         /**
+         * Note: this method will close all unclosed subpaths of the passed path.
+         *
          * @param fillingRule If the subpath is contour, pass any value.
          */
-        protected internal virtual Path FilterFillPath(Path path, Matrix ctm, int fillingRule) {
+        protected internal Path FilterFillPath(Path path, Matrix ctm, int fillingRule) {
+            path.CloseAllSubpaths();
+
             Clipper clipper = new Clipper();
             AddPath(clipper, path);
 
@@ -145,8 +159,151 @@ namespace iTextSharp.xtra.iTextSharp.text.pdf.pdfcleanup {
             return EndType.etOpenRound;
         }
 
-        private static void AddPath(ClipperOffset offset, Path path, JoinType joinType, EndType endType) {
+        /**
+     * Converts specified degenerate subpaths to circles.
+     * Note: actually the resultant subpaths are not real circles but approximated.
+     *
+     * @param radius Radius of each constructed circle.
+     * @return {@link java.util.List} consisting of circles constructed on given degenerated subpaths.
+     */
+        private static IList<Subpath> ConvertToCircles(IList<Subpath> degenerateSubpaths, double radius) {
+            IList<Subpath> circles = new List<Subpath>(degenerateSubpaths.Count);
+
+            foreach (Subpath subpath in degenerateSubpaths) {
+                BezierCurve[] circleSectors = ApproximateCircle(subpath.GetStartPoint(), radius);
+
+                Subpath circle = new Subpath();
+                circle.AddSegment(circleSectors[0]);
+                circle.AddSegment(circleSectors[1]);
+                circle.AddSegment(circleSectors[2]);
+                circle.AddSegment(circleSectors[3]);
+
+                circles.Add(circle);
+            }
+
+            return circles;
+        }
+
+        /**
+         * Converts specified degenerate subpaths to squares.
+         * Note: the list of degenerate subpaths should contain at least 2 elements. Otherwise
+         * we can't determine the direction which the rotation of each square depends on.
+         *
+         * @param squareWidth Width of each constructed square.
+         * @param sourcePath The path which dash pattern applied to. Needed to calc rotation angle of each square.
+         * @return {@link java.util.List} consisting of squares constructed on given degenerated subpaths.
+         */
+        private static IList<Subpath> ConvertToSquares(IList<Subpath> degenerateSubpaths, double squareWidth, Path sourcePath) {
+            IList<Point2D> pathApprox = GetPathApproximation(sourcePath);
+
+            if (pathApprox.Count < 2) {
+                return new List<Subpath>();
+            }
+
+            IEnumerator<Point2D> approxIter = pathApprox.GetEnumerator();
+
+            approxIter.MoveNext();
+            Point2D approxPt1 = approxIter.Current;
+
+            approxIter.MoveNext();
+            Point2D approxPt2 = approxIter.Current;
+
+            StandardLine line = new StandardLine(approxPt1, approxPt2);
+
+            IList<Subpath> squares = new List<Subpath>(degenerateSubpaths.Count);
+            float widthHalf = (float) squareWidth / 2;
+
+            for (int i = 0; i < degenerateSubpaths.Count; ++i) {
+                Point2D point = degenerateSubpaths[i].GetStartPoint();
+
+                while (!line.Contains(point)) {
+                    approxPt1 = approxPt2;
+
+                    approxIter.MoveNext();
+                    approxPt2 = approxIter.Current;
+
+                    line = new StandardLine(approxPt1, approxPt2);
+                }
+
+                float slope = line.GetSlope();
+                double angle;
+
+                if (!float.IsPositiveInfinity(slope)) {
+                    angle = Math.Atan(slope);
+                } else {
+                    angle = Math.PI / 2;
+                }
+
+                squares.Add(ConstructSquare(point, widthHalf, angle));
+            }
+
+            return squares;
+        }
+
+        private static IList<Point2D> GetPathApproximation(Path path) {
+            IList<Point2D> approx = new List<Point2D>();
+
             foreach (Subpath subpath in path.Subpaths) {
+                IList<Point2D> subpathApprox = subpath.GetPiecewiseLinearApproximation();
+                Point2D prevPoint = null;
+
+                foreach (Point2D approxPt in subpathApprox) {
+                    if (!approxPt.Equals(prevPoint)) {
+                        approx.Add(approxPt);
+                        prevPoint = approxPt;
+                    }
+                }
+            }
+
+            return approx;
+        }
+
+        private static Subpath ConstructSquare(Point2D squareCenter, double widthHalf, double rotationAngle) {
+            // Orthogonal square is the square with sides parallel to one of the axes.
+            Point2D[] ortogonalSquareVertices = {
+                new Point2D.Double(-widthHalf, -widthHalf),
+                new Point2D.Double(-widthHalf, widthHalf),
+                new Point2D.Double(widthHalf, widthHalf),
+                new Point2D.Double(widthHalf, -widthHalf)
+        };
+
+            Point2D[] rotatedSquareVertices = GetRotatedSquareVertices(ortogonalSquareVertices, rotationAngle, squareCenter);
+
+            Subpath square = new Subpath();
+            square.AddSegment(new Line(rotatedSquareVertices[0], rotatedSquareVertices[1]));
+            square.AddSegment(new Line(rotatedSquareVertices[1], rotatedSquareVertices[2]));
+            square.AddSegment(new Line(rotatedSquareVertices[2], rotatedSquareVertices[3]));
+            square.AddSegment(new Line(rotatedSquareVertices[3], rotatedSquareVertices[0]));
+
+            return square;
+        }
+
+        private static Point2D[] GetRotatedSquareVertices(Point2D[] orthogonalSquareVertices, double angle, Point2D squareCenter) {
+            Point2D[] rotatedSquareVertices = new Point2D[orthogonalSquareVertices.Length];
+
+            AffineTransform.GetRotateInstance(angle).
+                    Transform(orthogonalSquareVertices, 0, rotatedSquareVertices, 0, rotatedSquareVertices.Length);
+            AffineTransform.GetTranslateInstance(squareCenter.GetX(), squareCenter.GetY()).
+                    Transform(rotatedSquareVertices, 0, rotatedSquareVertices, 0, orthogonalSquareVertices.Length);
+
+            return rotatedSquareVertices;
+        }
+
+        /**
+         * Adds all subpaths of the path to the {@link ClipperOffset} object with one
+         * note: it doesn't add degenerate subpaths.
+         *
+         * @return {@link java.util.List} consisting of all degenerate subpaths of the path.
+         */
+        private static IList<Subpath> AddPath(ClipperOffset offset, Path path, JoinType joinType, EndType endType) {
+            IList<Subpath> degenerateSubpaths = new List<Subpath>();
+
+            foreach (Subpath subpath in path.Subpaths) {
+                if (subpath.IsDegenerate()) {
+                    degenerateSubpaths.Add(subpath);
+                    continue;
+                }
+
                 if (!subpath.IsSinglePointClosed() && !subpath.IsSinglePointOpen()) {
                     EndType et;
 
@@ -161,6 +318,46 @@ namespace iTextSharp.xtra.iTextSharp.text.pdf.pdfcleanup {
                     offset.AddPath(ConvertToIntPoints(linearApproxPoints), joinType, et);
                 }
             }
+
+            return degenerateSubpaths;
+        }
+
+        private static BezierCurve[] ApproximateCircle(Point2D center, double radius) {
+            // The circle is split into 4 sectors. Arc of each sector
+            // is approximated  with bezier curve separately.
+            BezierCurve[] approximation = new BezierCurve[4];
+            double x = center.GetX();
+            double y = center.GetY();
+
+            approximation[0] = new BezierCurve(new List<Point2D>(new Point2D[] {
+                new Point2D.Double(x, y + radius),
+                new Point2D.Double(x + radius * circleApproximationConst, y + radius),
+                new Point2D.Double(x + radius, y + radius * circleApproximationConst),
+                new Point2D.Double(x + radius, y)
+            }));
+
+            approximation[1] = new BezierCurve(new List<Point2D>(new Point2D[] {
+                new Point2D.Double(x + radius, y),
+                new Point2D.Double(x + radius, y - radius * circleApproximationConst),
+                new Point2D.Double(x + radius * circleApproximationConst, y - radius),
+                new Point2D.Double(x, y - radius)
+            }));
+
+            approximation[2] = new BezierCurve(new List<Point2D>(new Point2D[] {
+                new Point2D.Double(x, y - radius),
+                new Point2D.Double(x - radius * circleApproximationConst, y - radius),
+                new Point2D.Double(x - radius, y - radius * circleApproximationConst),
+                new Point2D.Double(x - radius, y)
+            }));
+
+            approximation[3] = new BezierCurve(new List<Point2D>(new Point2D[] {
+                new Point2D.Double(x - radius, y),
+                new Point2D.Double(x - radius, y + radius * circleApproximationConst),
+                new Point2D.Double(x - radius * circleApproximationConst, y + radius),
+                new Point2D.Double(x, y + radius)
+            }));
+
+            return approximation;
         }
 
         private static void AddPath(Clipper clipper, Path path) {
@@ -292,28 +489,6 @@ namespace iTextSharp.xtra.iTextSharp.text.pdf.pdfcleanup {
             return new Rectangle((float)left, (float)bottom, (float)right, (float)top);
         }
 
-        private static bool IsZeroDash(LineDashPattern lineDashPattern) {
-            PdfArray dashArray = lineDashPattern.DashArray;
-            float total = 0;
-
-            // We should only iterate over the numbers specifying lengths of dashes
-            for (int i = 0; i < dashArray.Size; i += 2) {
-                float currentDash = dashArray.GetAsNumber(i).FloatValue;
-                // Should be nonnegative according to spec.
-                if (currentDash < 0) {
-                    currentDash = 0;
-                }
-
-                total += currentDash;
-            }
-
-            return Util.compare(total, 0) == 0;
-        }
-
-        private static bool IsSolid(LineDashPattern lineDashPattern) {
-            return lineDashPattern.DashArray.IsEmpty();
-        }
-
         private static Path ApplyDashPattern(Path path, LineDashPattern lineDashPattern) {
             HashSet2<int> modifiedSubpaths = new HashSet2<int>(path.ReplaceCloseWithLine());
             Path dashedPath = new Path();
@@ -410,23 +585,6 @@ namespace iTextSharp.xtra.iTextSharp.text.pdf.pdfcleanup {
                    point.GetY() <= Math.Max(segStart.GetY(), segEnd.GetY());
         }
 
-        private static bool ContainsAll(RectangleJ rect, params Point2D[] points) {
-            foreach (Point2D point in points) {
-                if (!rect.Contains(point)) {
-                    return false;
-                }
-            }
-
-            return true;
-        }
-
-        private Point2D[] TransformPoints(Matrix transormationMatrix, bool inverse, ICollection<Point2D> points) {
-            Point2D[] pointsArr = new Point2D[points.Count];
-            points.CopyTo(pointsArr, 0);
-
-            return TransformPoints(transormationMatrix, inverse, pointsArr);
-        }
-
         private Point2D[] TransformPoints(Matrix transormationMatrix, bool inverse, params Point2D[] points) {
             AffineTransform t = new AffineTransform(transormationMatrix[Matrix.I11], transormationMatrix[Matrix.I12],
                                                     transormationMatrix[Matrix.I21], transormationMatrix[Matrix.I22],
@@ -440,6 +598,32 @@ namespace iTextSharp.xtra.iTextSharp.text.pdf.pdfcleanup {
             t.Transform(points, 0, transformed, 0, points.Length);
 
             return transformed;
+        }
+
+        // Constants from the standard line representation: Ax+By+C
+        private class StandardLine {
+
+            float A;
+            float B;
+            float C;
+
+            internal StandardLine(Point2D p1, Point2D p2) {
+                A = (float) (p2.GetY() - p1.GetY());
+                B = (float) (p1.GetX() - p2.GetX());
+                C = (float) (p1.GetY() * (-B) - p1.GetX() * A);
+            }
+
+            internal float GetSlope() {
+                if (Util.compare(B, 0) == 0) {
+                    return Single.PositiveInfinity;
+                }
+
+                return -A / B;
+            }
+
+            internal bool Contains(Point2D point) {
+                return Util.compare(Math.Abs(A * (float) point.GetX() + B * (float) point.GetY() + C), 0.1f) < 0;
+            }
         }
     }
 }

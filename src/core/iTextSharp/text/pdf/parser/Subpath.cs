@@ -71,17 +71,12 @@ namespace iTextSharp.text.pdf.parser {
         /**
          * @return The last point of the subpath.
          */
-        public virtual Point2D GetLastPoint() {
-            Point2D lastPoint = null;
+        public Point2D GetLastPoint() {
+            Point2D lastPoint = startPoint;
 
-            if (segments.Count > 0) {
-                if (closed) {
-                    IShape shape = segments[0];
-                    lastPoint = shape.GetBasePoints()[0];
-                } else {
-                    IShape shape = segments[segments.Count - 1];
-                    lastPoint = shape.GetBasePoints()[shape.GetBasePoints().Count - 1];
-                }
+            if (segments.Count > 0 && !closed) {
+                IShape shape = segments[segments.Count - 1];
+                lastPoint = shape.GetBasePoints()[shape.GetBasePoints().Count - 1];
             }
 
             return lastPoint;
