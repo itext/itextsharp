@@ -2,7 +2,7 @@ using System;
 using System.IO;
 using System.Collections.Generic;
 using System.Globalization;
-
+using System.Security.Permissions;
 using iTextSharp.text.pdf;
 using iTextSharp.text.log;
 using iTextSharp.text;
@@ -58,8 +58,13 @@ namespace iTextSharp.text {
     /// to this class first and then create fonts in your code using one of the getFont method
     /// without having to enter a path as parameter.
     /// </summary>
-    public class FontFactoryImp : IFontProvider {
-        
+    /// 
+   
+    public class FontFactoryImp : IFontProvider
+    {
+
+        protected static string SystemPath = null;
+
         private static readonly ILogger LOGGER = LoggerFactory.GetLogger(typeof(FontFactoryImp));
         
         /// <summary> This is a map of postscriptfontnames of True Type fonts and the path of their ttf- or ttc-file. </summary>
@@ -553,8 +558,18 @@ namespace iTextSharp.text {
                 return count;
             }
 
-            string dir = Path.Combine(Path.GetDirectoryName(Environment.GetFolderPath(Environment.SpecialFolder.System)), "Fonts");
-            return RegisterDirectory(dir);
+            try {
+                
+                if (SystemPath == null) {
+                    SystemPath = Environment.GetFolderPath(Environment.SpecialFolder.System);
+                }
+                string dir = Path.Combine(SystemPath,"Fonts");
+
+                return RegisterDirectory(dir);
+            }
+            catch (Exception xc) {}
+            return 0;
+            
         }
 
         /// <summary>
