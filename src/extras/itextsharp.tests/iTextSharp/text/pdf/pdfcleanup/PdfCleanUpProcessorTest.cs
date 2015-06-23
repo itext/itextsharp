@@ -65,7 +65,8 @@ namespace itextsharp.tests.iTextSharp.text.pdf.pdfcleanup {
                 new object[] {"clippingNWRule.pdf", "clippingNWRule.pdf", "cmp_clippingNWRule.pdf", null},
                 new object[] {"dashedClosedRotatedTriangles.pdf", "dashedClosedRotatedTriangles.pdf", "cmp_dashedClosedRotatedTriangles.pdf", null},
                 new object[] {"miterTest.pdf", "miterTest.pdf", "cmp_miterTest.pdf", null},
-                new object[] {"degenerateCases.pdf", "degenerateCases.pdf", "cmp_degenerateCases.pdf", null}
+                new object[] {"degenerateCases.pdf", "degenerateCases.pdf", "cmp_degenerateCases.pdf", null},
+                new object[] {"absentICentry.pdf", "absentICentry.pdf", "cmp_absentICentry.pdf", null}
             };
         }
 

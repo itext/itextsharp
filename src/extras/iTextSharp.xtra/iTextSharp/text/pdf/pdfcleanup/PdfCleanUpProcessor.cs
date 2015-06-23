@@ -243,10 +243,16 @@ namespace iTextSharp.xtra.iTextSharp.text.pdf.pdfcleanup {
 
             clippingRects.Add(annotIndex, markedRectangles);
 
+            BaseColor cleanUpColor = null;
             PdfArray ic = annotDict.GetAsArray(PdfName.IC);
-            BaseColor cleanUpColor = new BaseColor(ic.GetAsNumber(0).FloatValue,
-                                                   ic.GetAsNumber(1).FloatValue,
-                                                   ic.GetAsNumber(2).FloatValue);
+
+            if (ic != null) {
+                cleanUpColor = new BaseColor(
+                    ic.GetAsNumber(0).FloatValue,
+                    ic.GetAsNumber(1).FloatValue,
+                    ic.GetAsNumber(2).FloatValue
+                );
+            }
 
 
             PdfStream ro = annotDict.GetAsStream(PdfName.RO);

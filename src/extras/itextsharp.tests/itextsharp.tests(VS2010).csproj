@@ -205,6 +205,7 @@
     <None Include="resources\text\pdf\cs\DeviceNColorSpaceTest\cmp_device_n_gradient_CmykRedRgbBlue.pdf" />
     <None Include="resources\text\pdf\cs\LabColorSpaceTest\cmp_lab_spot_based_gradient.pdf" />
     <None Include="resources\text\pdf\DocumentFontTest\type0FontWithoutToUnicodeMap.pdf" />
+    <None Include="resources\text\pdf\DocumentLayoutTest\phrases.pdf" />
     <None Include="resources\text\pdf\FlatteningTest\cmp\imdb0413300.pdf" />
     <None Include="resources\text\pdf\FlatteningTest\cmp\imdb0452623.pdf" />
     <None Include="resources\text\pdf\FlatteningTest\cmp\imdb0468569.pdf" />
@@ -234,6 +235,7 @@
     <None Include="resources\text\pdf\mc\SF2809_alt.pdf" />
     <None Include="resources\text\pdf\MultithreadedTtfTest\FreeSans.ttf" />
     <None Include="resources\text\pdf\MultithreadedTtfTest\test.pdf" />
+    <None Include="resources\text\pdf\NestedListInColumnTextTest\nestedListAtTheEndOfAnotherNestedList.pdf" />
     <None Include="resources\text\pdf\ocg\peek-a-boo2.pdf" />
     <None Include="resources\text\pdf\parser\GlyphTextRenderListenerTest\Sample.pdf" />
     <None Include="resources\text\pdf\parser\GlyphTextRenderListenerTest\test.pdf" />
@@ -258,12 +260,14 @@
     <None Include="resources\text\pdf\parser\SimpleTextExtractionStrategyTest\ISO-TC171-SC2_N0896_SC2WG5_Edinburgh_Agenda.pdf" />
     <None Include="resources\text\pdf\parser\SimpleTextExtractionStrategyTest\page229.pdf" />
     <None Include="resources\text\pdf\parser\TextRenderInfoTest\japanese_text.pdf" />
+    <None Include="resources\text\pdf\pdfcleanup\PdfCleanUpProcessorTest\absentICentry.pdf" />
     <None Include="resources\text\pdf\pdfcleanup\PdfCleanUpProcessorTest\BigImage-jpg.pdf" />
     <None Include="resources\text\pdf\pdfcleanup\PdfCleanUpProcessorTest\BigImage-png.pdf" />
     <None Include="resources\text\pdf\pdfcleanup\PdfCleanUpProcessorTest\BigImage-tif-lzw.pdf" />
     <None Include="resources\text\pdf\pdfcleanup\PdfCleanUpProcessorTest\BigImage-tif.pdf" />
     <None Include="resources\text\pdf\pdfcleanup\PdfCleanUpProcessorTest\clippingNWRule.pdf" />
     <None Include="resources\text\pdf\pdfcleanup\PdfCleanUpProcessorTest\closedBezier.pdf" />
+    <None Include="resources\text\pdf\pdfcleanup\PdfCleanUpProcessorTest\cmp_absentICentry.pdf" />
     <None Include="resources\text\pdf\pdfcleanup\PdfCleanUpProcessorTest\cmp_BigImage-jpg.pdf" />
     <None Include="resources\text\pdf\pdfcleanup\PdfCleanUpProcessorTest\cmp_BigImage-png.pdf" />
     <None Include="resources\text\pdf\pdfcleanup\PdfCleanUpProcessorTest\cmp_BigImage-tif-lzw.pdf" />
@@ -273,6 +277,7 @@
     <None Include="resources\text\pdf\pdfcleanup\PdfCleanUpProcessorTest\cmp_dashedBezier.pdf" />
     <None Include="resources\text\pdf\pdfcleanup\PdfCleanUpProcessorTest\cmp_dashedClosedRotatedTriangles.pdf" />
     <None Include="resources\text\pdf\pdfcleanup\PdfCleanUpProcessorTest\cmp_dashedStyledClosedBezier.pdf" />
+    <None Include="resources\text\pdf\pdfcleanup\PdfCleanUpProcessorTest\cmp_degenerateCases.pdf" />
     <None Include="resources\text\pdf\pdfcleanup\PdfCleanUpProcessorTest\cmp_hello_05.pdf" />
     <None Include="resources\text\pdf\pdfcleanup\PdfCleanUpProcessorTest\cmp_LineArtsCompletely.pdf" />
     <None Include="resources\text\pdf\pdfcleanup\PdfCleanUpProcessorTest\cmp_lineArtsPartially.pdf" />
@@ -291,6 +296,7 @@
     <None Include="resources\text\pdf\pdfcleanup\PdfCleanUpProcessorTest\dashedBezier.pdf" />
     <None Include="resources\text\pdf\pdfcleanup\PdfCleanUpProcessorTest\dashedClosedRotatedTriangles.pdf" />
     <None Include="resources\text\pdf\pdfcleanup\PdfCleanUpProcessorTest\dashedStyledClosedBezier.pdf" />
+    <None Include="resources\text\pdf\pdfcleanup\PdfCleanUpProcessorTest\degenerateCases.pdf" />
     <None Include="resources\text\pdf\pdfcleanup\PdfCleanUpProcessorTest\hello_05.pdf" />
     <None Include="resources\text\pdf\pdfcleanup\PdfCleanUpProcessorTest\lineArtsCompletely.pdf" />
     <None Include="resources\text\pdf\pdfcleanup\PdfCleanUpProcessorTest\lineArtsPartially.pdf" />
