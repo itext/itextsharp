@@ -81,10 +81,8 @@ namespace iTextSharp.xtra.iTextSharp.text.pdf.pdfcleanup {
             JoinType joinType = GetJoinType(lineJoinStyle);
             EndType endType = GetEndType(lineCapStyle);
 
-            if (lineDashPattern != null) {
-                if (!lineDashPattern.IsSolid() || (lineDashPattern.IsZeroDashed())) {// && elementsSum(lineDashPattern)) {
-                    path = ApplyDashPattern(path, lineDashPattern);
-                }
+            if (lineDashPattern != null && !lineDashPattern.IsSolid()) {
+                path = ApplyDashPattern(path, lineDashPattern);
             }
 
             ClipperOffset offset = new ClipperOffset(miterLimit, PdfCleanUpProcessor.ArcTolerance * PdfCleanUpProcessor.FloatMultiplier);
