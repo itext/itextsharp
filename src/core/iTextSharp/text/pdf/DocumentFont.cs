@@ -111,7 +111,7 @@ namespace iTextSharp.text.pdf {
         internal DocumentFont(PRIndirectReference refFont, PdfDictionary drEncoding) {
         this.refFont = refFont;
         font = (PdfDictionary) PdfReader.GetPdfObject(refFont);
-        if (font.GetAsName(PdfName.ENCODING) == null
+        if (font.Get(PdfName.ENCODING) == null
                 && drEncoding != null) {
             foreach (PdfName key in drEncoding.Keys) {
                 font.Put(PdfName.ENCODING, drEncoding.Get(key));

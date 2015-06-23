@@ -1,7 +1,8 @@
-using System;
+﻿using System;
 using System.Collections.Generic;
 using System.IO;
 using itextsharp.tests.iTextSharp.testutils;
+using iTextSharp.testutils;
 using iTextSharp.text;
 using iTextSharp.text.pdf;
 using NUnit.Framework;
@@ -160,5 +161,52 @@ namespace itextsharp.tests.iTextSharp.text.pdf {
             Assert.AreEqual(24410, b.Length);
             fdfReader.Close();
         }
+
+        [Test]
+        public void IcelandicLettersInAcroFieldTest()  {
+
+            String outFile = OUT_FOLDER+"icelandicLettersInAcroFieldTest.pdf";
+            FileStream file = new FileStream(outFile,FileMode.Create);
+
+            PdfReader reader = new PdfReader(new FileStream(TEST_RESOURCES_PATH + "HelveticaFont.pdf",FileMode.Open));
+
+            PdfStamper stamper = new PdfStamper(reader, file);
+
+            AcroFields fields = stamper.AcroFields;
+
+            fields.SetField("Mitarbeiter", "ÁÁÁÁ ÓÓÓÓ Testð");
+
+            stamper.Close();
+
+            CompareTool compareTool = new CompareTool();
+            String errorMessage = compareTool.CompareByContent(outFile, TEST_RESOURCES_PATH + "cmp_icelandicLettersInAcroFieldTest.pdf", OUT_FOLDER, "diff_");
+            if (errorMessage != null) {
+                Assert.Fail(errorMessage);
+            }
+        }
+
+        [Test]
+        public void SpecialCharactersInAcroFieldTest()  {
+
+            String outFile = OUT_FOLDER+"specialCharactersInAcroFieldTest.pdf";
+            FileStream file = new FileStream(outFile,FileMode.Create);
+
+            PdfReader reader = new PdfReader(new FileStream(TEST_RESOURCES_PATH+"HelveticaFont.pdf",FileMode.Open));
+
+            PdfStamper stamper = new PdfStamper(reader, file);
+            AcroFields acroFields = stamper.AcroFields;
+            acroFields.SetField("Mitarbeiter", "öäüß€@");
+            stamper.Close();
+
+            CompareTool compareTool = new CompareTool();
+            String errorMessage = compareTool.CompareByContent(outFile, TEST_RESOURCES_PATH + "cmp_specialCharactersInAcroFieldTest.pdf", OUT_FOLDER, "diff_");
+            if (errorMessage != null) {
+                Assert.Fail(errorMessage);
+            }
+        }
+
+
+
+
     }
 }
