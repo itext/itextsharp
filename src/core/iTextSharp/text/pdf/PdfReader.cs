@@ -2280,7 +2280,7 @@ namespace iTextSharp.text.pdf {
         * @throws IOException on error
         */    
         virtual public void SetPageContent(int pageNum, byte[] content) {
-    	    SetPageContent(pageNum, content, PdfStream.DEFAULT_COMPRESSION);
+    	    SetPageContent(pageNum, content, PdfStream.DEFAULT_COMPRESSION,false);
         }
 
         /** Sets the contents of the page.
@@ -2288,13 +2288,15 @@ namespace iTextSharp.text.pdf {
         * @param pageNum the page number. 1 is the first
         * @since   2.1.3   (the method already existed without param compressionLevel)
         */
-        virtual public void SetPageContent(int pageNum, byte[] content, int compressionLevel) {
+        virtual public void SetPageContent(int pageNum, byte[] content, int compressionLevel,bool killOldXRefRecursively) {
             PdfDictionary page = GetPageN(pageNum);
             if (page == null)
                 return;
             PdfObject contents = page.Get(PdfName.CONTENTS);
             freeXref = -1;
-            KillXref(contents);
+            if (killOldXRefRecursively) {
+                KillXref(contents);
+            }
             if (freeXref == -1) {
                 xrefObj.Add(null);
                 freeXref = xrefObj.Count - 1;

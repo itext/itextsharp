@@ -113,6 +113,7 @@
     <Compile Include="iTextSharp\text\pdf\table\RowspanTest.cs" />
     <Compile Include="iTextSharp\text\pdf\table\ColorsInTaggedDocumentsTest.cs" />
     <Compile Include="iTextSharp\text\pdf\table\LargeTableTest.cs" />
+	<Compile Include="iTextSharp\text\pdf\PdfStamperTest.cs" />
     <Compile Include="iTextSharp\text\pdf\TestPdfCopyAndStamp.cs" />
     <Compile Include="iTextSharp\text\pdf\TextFieldTest.cs" />
     <Compile Include="iTextSharp\text\pdf\ToUnicodeNonBreakableSpacesTest.cs" />
