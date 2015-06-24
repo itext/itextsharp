@@ -1,4 +1,7 @@
 using System;
+using System.Collections.Generic;
+using iTextSharp.text;
+
 /*
  * $Id: CSS.java 168 2011-06-08 08:37:18Z redlab_b $
  *
@@ -245,6 +248,25 @@ namespace iTextSharp.tool.xml.css {
 		    public const String TABLE_HEADER_GROUP = "table-header-group";
 		    public const String TABLE_ROW = "table-row";
 		    public const String TABLE_ROW_GROUP = "table-row-group";
+        }
+
+        private static  Dictionary<String, int> cssAlignMap = new Dictionary<String, int>();
+        private static  String Default = "default";
+
+        static CSS() {
+            cssAlignMap.Add(Value.LEFT.ToLower(), Element.ALIGN_LEFT);
+            cssAlignMap.Add(Value.CENTER.ToLower(), Element.ALIGN_CENTER);
+            cssAlignMap.Add(Value.RIGHT.ToLower(), Element.ALIGN_RIGHT);
+            cssAlignMap.Add(Value.JUSTIFY.ToLower(), Element.ALIGN_JUSTIFIED);
+            cssAlignMap.Add(Default.ToLower(), Element.ALIGN_UNDEFINED);
+        }
+        
+        public static int GetElementAlignment(String cssAlignment) {
+            String lower = cssAlignment.ToLower();
+            if (cssAlignMap.ContainsKey(lower)) {
+                return cssAlignMap[lower];
+            }
+            return cssAlignMap[Default];
         }
     }
 }

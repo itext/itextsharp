@@ -25,15 +25,7 @@ namespace iTextSharp.tool.xml.css.apply {
             }
 
             if (align != null) {
-                if (Util.EqualsIgnoreCase(align,CSS.Value.CENTER)) {
-                    div.TextAlignment = Element.ALIGN_CENTER;
-                } else if (Util.EqualsIgnoreCase(align, CSS.Value.LEFT)) {
-                    div.TextAlignment = Element.ALIGN_LEFT;
-                } else if (Util.EqualsIgnoreCase(align, CSS.Value.RIGHT)) {
-                    div.TextAlignment = Element.ALIGN_RIGHT;
-                } else if (Util.EqualsIgnoreCase(align, CSS.Value.JUSTIFY)) {
-                    div.TextAlignment = Element.ALIGN_JUSTIFIED;
-                }
+                div.TextAlignment = CSS.GetElementAlignment(align);
             }
 
 

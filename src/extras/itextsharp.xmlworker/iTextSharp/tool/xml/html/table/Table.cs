@@ -132,6 +132,12 @@ namespace iTextSharp.tool.xml.html.table {
                 table.HeaderRows = headerRows + footerRows;
                 table.FooterRows = footerRows;
 
+                if (tag.Attributes.ContainsKey(HTML.Attribute.ALIGN)) {
+                    String value = tag.Attributes[HTML.Attribute.ALIGN];
+                    table.HorizontalAlignment = CSS.GetElementAlignment(value);
+                }
+
+
                 int direction = GetRunDirection(tag);
 
                 if (direction != PdfWriter.RUN_DIRECTION_DEFAULT) {
