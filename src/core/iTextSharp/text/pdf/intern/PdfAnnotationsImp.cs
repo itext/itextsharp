@@ -118,8 +118,12 @@ namespace iTextSharp.text.pdf.intern {
             annotations.Add(field);
             List<PdfFormField> kids = field.Kids;
             if (kids != null) {
-                for (int k = 0; k < kids.Count; ++k)
-                    AddFormFieldRaw(kids[k]);
+                for (int k = 0; k < kids.Count; ++k) {
+                    PdfFormField kid = kids[k];
+                    if (!kid.IsUsed()) {
+                        AddFormFieldRaw(kid);
+                    }
+                }
             }
         }
         
@@ -164,30 +168,29 @@ namespace iTextSharp.text.pdf.intern {
                         } else {
                             rect = new PdfRectangle(tmp.GetAsNumber(0).FloatValue, tmp.GetAsNumber(1).FloatValue);
                         }
-                        if (rect != null) {
-                            switch (rotation) {
+                        switch (rotation)
+                        {
                                 case 90:
                                     dic.Put(PdfName.RECT, new PdfRectangle(
-                                            pageSize.Top - rect.Bottom,
-                                            rect.Left,
-                                            pageSize.Top - rect.Top,
-                                            rect.Right));
+                                    pageSize.Top - rect.Bottom,
+                                    rect.Left,
+                                    pageSize.Top - rect.Top,
+                                    rect.Right));
                                     break;
                                 case 180:
                                     dic.Put(PdfName.RECT, new PdfRectangle(
-                                            pageSize.Right - rect.Left,
-                                            pageSize.Top - rect.Bottom,
-                                            pageSize.Right - rect.Right,
-                                            pageSize.Top - rect.Top));
+                                    pageSize.Right - rect.Left,
+                                    pageSize.Top - rect.Bottom,
+                                    pageSize.Right - rect.Right,
+                                    pageSize.Top - rect.Top));
                                     break;
                                 case 270:
                                     dic.Put(PdfName.RECT, new PdfRectangle(
-                                            rect.Bottom,
-                                            pageSize.Right - rect.Left,
-                                            rect.Top,
-                                            pageSize.Right - rect.Right));
+                                    rect.Bottom,
+                                    pageSize.Right - rect.Left,
+                                    rect.Top,
+                                    pageSize.Right - rect.Right));
                                     break;
-                            }
                         }
                     }
                 }
