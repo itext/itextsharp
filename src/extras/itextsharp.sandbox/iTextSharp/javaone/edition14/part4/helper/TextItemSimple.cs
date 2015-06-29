@@ -1,4 +1,4 @@
-﻿using iTextSharp.awt.geom;
+using iTextSharp.awt.geom;
 using iTextSharp.text;
 using iTextSharp.text.pdf.parser;
 

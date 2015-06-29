@@ -1,4 +1,4 @@
-﻿using System;
+using System;
 using System.util;
 using iTextSharp.text.error_messages;
 

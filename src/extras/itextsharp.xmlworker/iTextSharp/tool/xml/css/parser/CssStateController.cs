@@ -78,7 +78,7 @@ namespace iTextSharp.tool.xml.css.parser {
             }
             if (currentSelector.Contains(",")) {
                 String[] selectors = currentSelector.Split(',');
-                //check for rules like p, {…}
+                //check for rules like p, {Â…}
                 for (int i = 0; i < selectors.Length; i++) {
                     selectors[i] = utils.StripDoubleSpacesAndTrim(selectors[i]);
                     if (selectors[i].Length == 0)

@@ -1,4 +1,4 @@
-﻿using System;
+using System;
 using iTextSharp.javaone.edition14.part2;
 using iTextSharp.text.pdf;
 using iTextSharp.text.pdf.parser;

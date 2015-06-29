@@ -1,4 +1,4 @@
-﻿namespace iTextSharp.text.pdf {
+namespace iTextSharp.text.pdf {
     public class LabColor : ExtendedColor {
         PdfLabColor labColorSpace;
         private float l;

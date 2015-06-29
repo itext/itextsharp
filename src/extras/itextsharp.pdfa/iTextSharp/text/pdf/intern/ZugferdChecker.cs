@@ -1,4 +1,4 @@
-﻿using System;
+using System;
 using System.Collections.Generic;
 using iTextSharp.text.error_messages;
 using iTextSharp.text.pdf;

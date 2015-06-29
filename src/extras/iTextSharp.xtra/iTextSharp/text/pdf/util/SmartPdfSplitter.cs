@@ -1,4 +1,4 @@
-﻿/*
+/*
  * $Id:  $
  *
  * This file is part of the iText (R) project.

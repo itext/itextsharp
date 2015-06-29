@@ -1,4 +1,4 @@
-﻿/*
+/*
  * $Id: PdfACopy.java 6134 2013-12-23 13:15:14Z pavel-alay $
  *
  * This file is part of the iText (R) project.

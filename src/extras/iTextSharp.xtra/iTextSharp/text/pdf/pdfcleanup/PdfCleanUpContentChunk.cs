@@ -1,4 +1,4 @@
-﻿using iTextSharp.text.pdf;
+using iTextSharp.text.pdf;
 using iTextSharp.text.pdf.parser;
 
 namespace iTextSharp.xtra.iTextSharp.text.pdf.pdfcleanup {

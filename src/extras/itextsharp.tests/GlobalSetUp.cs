@@ -1,4 +1,4 @@
-﻿using iTextSharp.text.io;
+using iTextSharp.text.io;
 using NUnit.Framework;
 
 namespace itextsharp.tests {

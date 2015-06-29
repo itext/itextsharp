@@ -1,4 +1,4 @@
-﻿using System;
+using System;
 using iTextSharp.text.error_messages;
 
 namespace iTextSharp.text.pdf {

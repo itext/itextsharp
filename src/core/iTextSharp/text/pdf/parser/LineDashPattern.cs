@@ -1,4 +1,4 @@
-﻿using System.util;
+using System.util;
 using iTextSharp.awt.geom;
 
 namespace iTextSharp.text.pdf.parser {

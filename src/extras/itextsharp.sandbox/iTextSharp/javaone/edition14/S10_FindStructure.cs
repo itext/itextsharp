@@ -1,4 +1,4 @@
-﻿using System.Collections.Generic;
+using System.Collections.Generic;
 using System.IO;
 using iTextSharp.javaone.edition14.part4.helper;
 using iTextSharp.text.pdf;

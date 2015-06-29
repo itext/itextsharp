@@ -1,4 +1,4 @@
-﻿using System.Collections.Generic;
+using System.Collections.Generic;
 
 namespace iTextSharp.javaone.edition14.part4.helper
 {

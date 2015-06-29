@@ -1,4 +1,4 @@
-﻿using System;
+using System;
 using iTextSharp.awt.geom;
 using iTextSharp.text;
 

@@ -1,4 +1,4 @@
-﻿namespace iTextSharp.text.pdf {
+namespace iTextSharp.text.pdf {
     public class StringUtils {
 
         private static readonly byte[] r = DocWriter.GetISOBytes("\\r");

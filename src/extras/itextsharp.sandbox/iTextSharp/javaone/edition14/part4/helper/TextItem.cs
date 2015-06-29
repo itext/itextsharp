@@ -1,4 +1,4 @@
-﻿using System.Collections.Generic;
+using System.Collections.Generic;
 using iTextSharp.awt.geom;
 using iTextSharp.text;
 using iTextSharp.text.pdf.parser;

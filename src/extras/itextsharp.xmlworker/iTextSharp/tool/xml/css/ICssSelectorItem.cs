@@ -1,4 +1,4 @@
-﻿namespace iTextSharp.tool.xml.css {
+namespace iTextSharp.tool.xml.css {
     public interface ICssSelectorItem {
         bool Matches(Tag t);
 

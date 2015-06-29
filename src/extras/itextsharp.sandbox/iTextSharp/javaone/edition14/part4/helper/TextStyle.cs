@@ -1,4 +1,4 @@
-﻿using System;
+using System;
 using iTextSharp.text.pdf.parser;
 
 namespace iTextSharp.javaone.edition14.part4.helper
