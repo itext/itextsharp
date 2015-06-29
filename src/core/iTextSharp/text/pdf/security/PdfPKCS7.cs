@@ -21,7 +21,7 @@ using Org.BouncyCastle.Utilities;
  * $Id: PdfPKCS7.java 5195 2012-06-18 14:25:30Z blowagie $
  *
  * This file is part of the iText (R) project.
- * Copyright (c) 1998-2014 iText Group NV
+ * Copyright (c) 1998-2015 iText Group NV
  * Authors: Bruno Lowagie, Paulo Soares, et al.
  *
  * This program is free software; you can redistribute it and/or modify

@@ -4,7 +4,7 @@ using Org.BouncyCastle.Tsp;
  * $Id: TSAInfoBouncyCastle.java 5345 2012-08-22 08:14:09Z blowagie $
  *
  * This file is part of the iText (R) project.
- * Copyright (c) 1998-2014 iText Group NV
+ * Copyright (c) 1998-2015 iText Group NV
  * Authors: Bruno Lowagie, Paulo Soares, et al.
  *
  * This program is free software; you can redistribute it and/or modify

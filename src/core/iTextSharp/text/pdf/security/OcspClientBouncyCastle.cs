@@ -15,7 +15,7 @@ using iTextSharp.text.log;
  * $Id: OcspClientBouncyCastle.cs 220 2010-12-22 13:38:35Z psoares33 $
  *
  * This file is part of the iText project.
- * Copyright (c) 1998-2014 iText Group NV
+ * Copyright (c) 1998-2015 iText Group NV
  * Authors: Bruno Lowagie, Paulo Soares, et al.
  *
  * This program is free software; you can redistribute it and/or modify
