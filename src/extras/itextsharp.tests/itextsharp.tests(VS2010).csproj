@@ -124,6 +124,7 @@
     <Compile Include="iTextSharp\text\pdf\PdfReaderTest.cs" />
     <Compile Include="iTextSharp\text\pdf\PRTokeniserTest.cs" />
     <Compile Include="iTextSharp\text\pdf\RandomAccessFileOrArrayTest.cs" />
+    <Compile Include="iTextSharp\text\pdf\StringUtilsTest.cs" />
     <Compile Include="iTextSharp\text\pdf\table\KeepTogetherTest.cs" />
     <Compile Include="iTextSharp\text\pdf\table\LargeTableTest.cs" />
     <Compile Include="iTextSharp\text\pdf\PdfStamperTest.cs" />

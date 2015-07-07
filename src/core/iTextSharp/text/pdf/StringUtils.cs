@@ -105,5 +105,22 @@ namespace iTextSharp.text.pdf {
             }
             content.Append(')');
         }
+
+         /**
+         * Converts an array of unsigned 16bit numbers to an array of bytes.
+         * The input values are presented as chars for convenience.
+         * 
+         * @param chars the array of 16bit numbers that should be converted
+         * @return the resulting byte array, twice as large as the input
+         */
+        public static byte[] ConvertCharsToBytes(char[] chars) {
+            byte[] result = new byte[chars.Length * 2];
+            for (int i = 0; i < chars.Length; i++) {
+                result[2 * i] = (byte)(chars[i] / 256);
+                result[2 * i + 1] = (byte)(chars[i] % 256);
+            }
+            return result;
+        }
+
     }
 }
