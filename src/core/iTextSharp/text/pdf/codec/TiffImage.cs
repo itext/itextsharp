@@ -118,7 +118,7 @@ namespace iTextSharp.text.pdf.codec {
             Image img = null;
             long tiffT4Options = 0;
             long tiffT6Options = 0;
-            int fillOrder = 1;
+            long fillOrder = 1;
             int h = (int)dir.GetFieldAsLong(TIFFConstants.TIFFTAG_IMAGELENGTH);
             int w = (int)dir.GetFieldAsLong(TIFFConstants.TIFFTAG_IMAGEWIDTH);
             int dpiX = 0;
@@ -148,7 +148,7 @@ namespace iTextSharp.text.pdf.codec {
             bool reverse = false;
             TIFFField fillOrderField =  dir.GetField(TIFFConstants.TIFFTAG_FILLORDER);
             if (fillOrderField != null)
-                fillOrder = fillOrderField.GetAsInt(0);
+                fillOrder = fillOrderField.GetAsLong(0);
             reverse = (fillOrder == TIFFConstants.FILLORDER_LSB2MSB);
             int paramsn = 0;
             if (dir.IsTagPresent(TIFFConstants.TIFFTAG_PHOTOMETRIC)) {
