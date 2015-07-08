@@ -1463,27 +1463,34 @@ namespace iTextSharp.text.pdf {
                             tabPosition = tmp;
                         }
                         if (chunk.IsAttribute(Chunk.BACKGROUND)) {
-                            bool inText = graphics.InText;
-                            if (inText && IsTagged(writer)) {
-                                graphics.EndText();
-                            }
-                            float subtract = lastBaseFactor;
-                            if (nextChunk != null && nextChunk.IsAttribute(Chunk.BACKGROUND))
-                                subtract = 0;
-                            if (nextChunk == null)
-                                subtract += hangingCorrection;
-                            Object[] bgr = (Object[])chunk.GetAttribute(Chunk.BACKGROUND);
-                            graphics.SetColorFill((BaseColor)bgr[0]);
-                            float[] extra = (float[])bgr[1];
-                            graphics.Rectangle(xMarker - extra[0],
-                                yMarker + descender - extra[1] + chunk.TextRise,
-                                width - subtract + extra[0] + extra[2],
-                                ascender - descender + extra[1] + extra[3]);
-                            graphics.Fill();
-                            graphics.SetGrayFill(0);
-                            if (inText && IsTagged(writer)) {
-                                graphics.BeginText(true);
-                            }
+                             Object[] bgr = (Object[])chunk.GetAttribute(Chunk.BACKGROUND);
+                            if (bgr[0] != null) {
+                                bool inText = graphics.InText;
+                                if (inText && IsTagged(writer)) {
+                                    graphics.EndText();
+                                }
+                                graphics.SaveState();
+                                float subtract = lastBaseFactor;
+                                if (nextChunk != null && nextChunk.IsAttribute(Chunk.BACKGROUND)) {
+                                    subtract = 0;
+                                }
+                                if (nextChunk == null) {
+                                    subtract += hangingCorrection;
+                                }
+                                BaseColor c = (BaseColor)bgr[0];
+                                graphics.SetColorFill(c);
+                                float[] extra = (float[]) bgr[1];
+                                graphics.Rectangle(xMarker - extra[0],
+                                        yMarker + descender - extra[1] + chunk.TextRise,
+                                        width - subtract + extra[0] + extra[2],
+                                        ascender - descender + extra[1] + extra[3]);
+                                graphics.Fill();
+                                graphics.SetGrayFill(0);
+                                graphics.RestoreState();
+                                if (inText && IsTagged(writer)) {
+                                    graphics.BeginText(true);
+                                }
+                        }
                         }
                         if (chunk.IsAttribute(Chunk.UNDERLINE)) {
                             bool inText = graphics.InText;

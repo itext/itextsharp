@@ -3235,6 +3235,14 @@ namespace iTextSharp.text.pdf {
                     SetRGBColorStroke(value.R, value.G, value.B);
                     break;
             }
+
+            int alpha = value.A;
+            if (alpha < 255) {
+                PdfGState gState = new PdfGState();
+                gState.StrokeOpacity = alpha / 255f;
+                SetGState(gState);
+            }
+
         }
     
         /** Sets the fill color. <CODE>color</CODE> can be an
@@ -3282,6 +3290,15 @@ namespace iTextSharp.text.pdf {
                     SetRGBColorFill(value.R, value.G, value.B);
                     break;
             }
+
+            int alpha = value.A;
+            if (alpha < 255) {
+                PdfGState gState = new PdfGState();
+                gState.FillOpacity = alpha / 255f ;
+                SetGState(gState);
+            }
+
+
         }
     
         /** Sets the fill color to a spot color.

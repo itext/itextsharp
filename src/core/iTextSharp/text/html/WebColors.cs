@@ -282,6 +282,22 @@ namespace iTextSharp.text.html {
                 return new BaseColor(color[0], color[1], color[2], color[3]);
             }
 
+            if (colorName.StartsWith("rgba(")) {
+			    const String delim = "rgba(), \t\r\n\f";
+			    StringTokenizer tok = new StringTokenizer(colorName, delim);
+			    for (int k = 0; k < 3; ++k) {
+				    if (tok.HasMoreTokens()) {
+					    color[k] = GetRGBChannelValue(tok.NextToken());
+					    color[k] = Math.Max(0, color[k]);
+					    color[k] = Math.Min(255, color[k]);
+				    }
+			    }
+			    if (tok.HasMoreTokens()) {
+				    color[3] = (int)(255 * float.Parse(tok.NextToken()) + 0.5);
+			    }
+			    return new BaseColor(color[0], color[1], color[2], color[3]);
+		}
+
             if (!NAMES.ContainsKey(colorName)) {
                 throw new FormatException(
                     MessageLocalization.GetComposedMessage("color.not.found",
