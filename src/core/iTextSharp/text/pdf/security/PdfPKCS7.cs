@@ -611,18 +611,17 @@ namespace iTextSharp.text.pdf.security {
          * @return the bytes for the PKCS7SignedData object
          */
         virtual public byte[] GetEncodedPKCS7() {
-            return GetEncodedPKCS7(null, DateTime.Now, null, null, null, CryptoStandard.CMS);
+            return GetEncodedPKCS7(null, null, null, null, CryptoStandard.CMS);
         }
 
         /**
          * Gets the bytes for the PKCS7SignedData object. Optionally the authenticatedAttributes
          * in the signerInfo can also be set. If either of the parameters is <CODE>null</CODE>, none will be used.
          * @param secondDigest the digest in the authenticatedAttributes
-         * @param signingTime the signing time in the authenticatedAttributes
          * @return the bytes for the PKCS7SignedData object
          */
-        virtual public byte[] GetEncodedPKCS7(byte[] secondDigest, DateTime signingTime) {
-            return GetEncodedPKCS7(secondDigest, signingTime, null, null, null, CryptoStandard.CMS);
+        virtual public byte[] GetEncodedPKCS7(byte[] secondDigest) {
+            return GetEncodedPKCS7(secondDigest, null, null, null, CryptoStandard.CMS);
         }
 
         /**
@@ -630,12 +629,11 @@ namespace iTextSharp.text.pdf.security {
          * in the signerInfo can also be set, OR a time-stamp-authority client
          * may be provided.
          * @param secondDigest the digest in the authenticatedAttributes
-         * @param signingTime the signing time in the authenticatedAttributes
          * @param tsaClient TSAClient - null or an optional time stamp authority client
          * @return byte[] the bytes for the PKCS7SignedData object
          * @since   2.1.6
          */
-        virtual public byte[] GetEncodedPKCS7(byte[] secondDigest, DateTime signingTime, ITSAClient tsaClient, byte[] ocsp, ICollection<byte[]> crlBytes, CryptoStandard sigtype) {
+        virtual public byte[] GetEncodedPKCS7(byte[] secondDigest, ITSAClient tsaClient, byte[] ocsp, ICollection<byte[]> crlBytes, CryptoStandard sigtype) {
             if (externalDigest != null) {
                 digest = externalDigest;
                 if (RSAdata != null)
@@ -701,8 +699,8 @@ namespace iTextSharp.text.pdf.security {
             signerinfo.Add(new DerSequence(v));
             
             // add the authenticated attribute if present
-            if (secondDigest != null /*&& signingTime != null*/) {
-                signerinfo.Add(new DerTaggedObject(false, 0, GetAuthenticatedAttributeSet(secondDigest, signingTime, ocsp, crlBytes, sigtype)));
+            if (secondDigest != null) {
+                signerinfo.Add(new DerTaggedObject(false, 0, GetAuthenticatedAttributeSet(secondDigest, ocsp, crlBytes, sigtype)));
             }
             // Add the digestEncryptionAlgorithm
             v = new Asn1EncodableVector();
@@ -807,11 +805,10 @@ namespace iTextSharp.text.pdf.security {
          * byte sg[] = pk7.getEncodedPKCS7(hash, cal);
          * </pre>
          * @param secondDigest the content digest
-         * @param signingTime the signing time
          * @return the byte array representation of the authenticatedAttributes ready to be signed
          */
-        virtual public byte[] getAuthenticatedAttributeBytes(byte[] secondDigest, DateTime signingTime, byte[] ocsp, ICollection<byte[]> crlBytes, CryptoStandard sigtype) {
-            return GetAuthenticatedAttributeSet(secondDigest, signingTime, ocsp, crlBytes, sigtype).GetEncoded(Asn1Encodable.Der);
+        virtual public byte[] getAuthenticatedAttributeBytes(byte[] secondDigest, byte[] ocsp, ICollection<byte[]> crlBytes, CryptoStandard sigtype) {
+            return GetAuthenticatedAttributeSet(secondDigest, ocsp, crlBytes, sigtype).GetEncoded(Asn1Encodable.Der);
         }
 
         /**
@@ -819,18 +816,13 @@ namespace iTextSharp.text.pdf.security {
          * exactly the same as in {@link #getEncodedPKCS7(byte[],Calendar)}.
          * 
          * @param secondDigest the content digest
-         * @param signingTime the signing time
          * @return the byte array representation of the authenticatedAttributes ready to be signed
          */
-        private DerSet GetAuthenticatedAttributeSet(byte[] secondDigest, DateTime signingTime, byte[] ocsp, ICollection<byte[]> crlBytes, CryptoStandard sigtype) {
+        private DerSet GetAuthenticatedAttributeSet(byte[] secondDigest, byte[] ocsp, ICollection<byte[]> crlBytes, CryptoStandard sigtype) {
             Asn1EncodableVector attribute = new Asn1EncodableVector();
             Asn1EncodableVector v = new Asn1EncodableVector();
             v.Add(new DerObjectIdentifier(SecurityIDs.ID_CONTENT_TYPE));
             v.Add(new DerSet(new DerObjectIdentifier(SecurityIDs.ID_PKCS7_DATA)));
-            attribute.Add(new DerSequence(v));
-            v = new Asn1EncodableVector();
-            v.Add(new DerObjectIdentifier(SecurityIDs.ID_SIGNING_TIME));
-            v.Add(new DerSet(new DerUtcTime(signingTime)));
             attribute.Add(new DerSequence(v));
             v = new Asn1EncodableVector();
             v.Add(new DerObjectIdentifier(SecurityIDs.ID_MESSAGE_DIGEST));

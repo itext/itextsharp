@@ -120,16 +120,15 @@ namespace iTextSharp.text.pdf.security {
             IDigest messageDigest = DigestUtilities.GetDigest(hashAlgorithm);
             Stream data = sap.GetRangeStream();
             byte[] hash = DigestAlgorithms.Digest(data, hashAlgorithm);
-            DateTime cal = DateTime.Now;
             byte[] ocsp = null;
             if (chain.Count >= 2 && ocspClient != null) {
                 ocsp = ocspClient.GetEncoded(certa[0], certa[1], null);
             }
-            byte[] sh = sgn.getAuthenticatedAttributeBytes(hash, cal, ocsp, crlBytes, sigtype);
+            byte[] sh = sgn.getAuthenticatedAttributeBytes(hash, ocsp, crlBytes, sigtype);
             byte[] extSignature = externalSignature.Sign(sh);
             sgn.SetExternalDigest(extSignature, null, externalSignature.GetEncryptionAlgorithm());
 
-            byte[] encodedSig = sgn.GetEncodedPKCS7(hash, cal, tsaClient, ocsp, crlBytes, sigtype);
+            byte[] encodedSig = sgn.GetEncodedPKCS7(hash, tsaClient, ocsp, crlBytes, sigtype);
 
             if (estimatedSize < encodedSig.Length)
                 throw new IOException("Not enough space");
