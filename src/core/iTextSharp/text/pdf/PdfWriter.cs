@@ -1623,8 +1623,9 @@ namespace iTextSharp.text.pdf {
         * @since    iText 5.0
         */
         virtual public void AddNamedDestination(String name, int page, PdfDestination dest) {
-            dest.AddPage(GetPageReference(page));
-            pdf.LocalDestination(name, dest);
+            PdfDestination d = new PdfDestination(dest);
+            d.AddPage(GetPageReference(page));
+            pdf.LocalDestination(name, d);
         }
         
         /**

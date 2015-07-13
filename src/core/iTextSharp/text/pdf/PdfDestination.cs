@@ -186,6 +186,10 @@ namespace iTextSharp.text.pdf {
             Add(new PdfNumber(right));
             Add(new PdfNumber(top));
         }
+
+        public PdfDestination(PdfDestination d):base(d) {
+        }
+
     
         /**
         * Creates a PdfDestination based on a String.

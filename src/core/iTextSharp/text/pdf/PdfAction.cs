@@ -386,10 +386,11 @@ namespace iTextSharp.text.pdf {
          */    
         public static PdfAction GotoLocalPage(int page, PdfDestination dest, PdfWriter writer) {
             PdfIndirectReference piref = writer.GetPageReference(page);
-            dest.AddPage(piref);
+            PdfDestination d = new PdfDestination(dest);
+            d.AddPage(piref);
             PdfAction action = new PdfAction();
             action.Put(PdfName.S, PdfName.GOTO);
-            action.Put(PdfName.D, dest);
+            action.Put(PdfName.D, d);
             return action;
         }
 
