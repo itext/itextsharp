@@ -293,7 +293,7 @@ namespace iTextSharp.text.html {
 				    }
 			    }
 			    if (tok.HasMoreTokens()) {
-				    color[3] = (int)(255 * float.Parse(tok.NextToken()) + 0.5);
+				    color[3] = (int)(255 * float.Parse(tok.NextToken(), CultureInfo.InvariantCulture) + 0.5);
 			    }
 			    return new BaseColor(color[0], color[1], color[2], color[3]);
 		}
