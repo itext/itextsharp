@@ -66,8 +66,7 @@ namespace iTextSharp.text.pdf.intern
             PdfName.PRINTERMARK, PdfName.TRAPNET});
 
         public static readonly HashSet2<PdfName> contentAnnotations = new HashSet2<PdfName>(new PdfName[] {PdfName.TEXT,
-            PdfName.LINK, PdfName.FREETEXT, PdfName.LINE, PdfName.SQUARE, PdfName.CIRCLE, PdfName.STAMP,
-            PdfName.INK, PdfName.POPUP, PdfName.WIDGET});
+            PdfName.FREETEXT, PdfName.LINE, PdfName.SQUARE, PdfName.CIRCLE, PdfName.STAMP, PdfName.INK, PdfName.POPUP});
 
         private static readonly HashSet2<PdfName> keysForCheck = new HashSet2<PdfName>(new PdfName[] {PdfName.AP, PdfName.N,
             PdfName.R, PdfName.D, PdfName.FONTFILE, PdfName.FONTFILE2, PdfName.FONTFILE3, PdfName.NAME, PdfName.XFA,
