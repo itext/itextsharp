@@ -218,8 +218,9 @@ namespace iTextSharp.text.pdf {
         public static PdfAnnotation CreateLink(PdfWriter writer, Rectangle rect, PdfName highlight, int page, PdfDestination dest) {
             PdfAnnotation annot = CreateLink(writer, rect, highlight);
             PdfIndirectReference piref = writer.GetPageReference(page);
-            dest.AddPage(piref);
-            annot.Put(PdfName.DEST, dest);
+            PdfDestination d = new PdfDestination(dest);
+            d.AddPage(piref);
+            annot.Put(PdfName.DEST, d);
             return annot;
         }
     
