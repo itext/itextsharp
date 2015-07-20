@@ -897,6 +897,7 @@ namespace iTextSharp.text.pdf {
             PdfLine line;
             float x1;
             int status = 0;
+            bool rtl = false;
             while (true) {
                 firstIndent = (lastWasNewline ? indent : followingIndent); //
                 if (rectangularMode) {
@@ -928,8 +929,11 @@ namespace iTextSharp.text.pdf {
                         break;
                     }
                     yLine -= currentLeading;
-                    if (!simulate && !dirty)
-                    {
+                    if (!simulate && !dirty) {
+                        if (line.isRTL && canvas.IsTagged()) {
+                            canvas.BeginMarkedContentSequence(PdfName.REVERSEDCHARS);
+                            rtl = true;
+                        }
                         text.BeginText();
                         dirty = true;
                     }
@@ -958,10 +962,15 @@ namespace iTextSharp.text.pdf {
                     }
                     x1 = Math.Max(xx[0], xx[2]);
                     float x2 = Math.Min(xx[1], xx[3]);
-                    if (x2 - x1 <= firstIndent + rightIndent)
+                    if (x2 - x1 <= firstIndent + rightIndent) {
                         continue;
-                    if (!simulate && !dirty)
-                    {
+                    }
+                    line = bidiLine.ProcessLine(x1, x2 - x1 - firstIndent - rightIndent, alignment, localRunDirection, arabicOptions, minY, yLine, descender);
+                    if (!simulate && !dirty) {
+                        if (line.isRTL && canvas.IsTagged()) {
+                            canvas.BeginMarkedContentSequence(PdfName.REVERSEDCHARS);
+                            rtl = true;
+                        }
                         text.BeginText();
                         dirty = true;
                     }
@@ -1010,9 +1019,14 @@ namespace iTextSharp.text.pdf {
 
             if (dirty) {
                 text.EndText();
-            
-                if (canvas != text)
+
+                if (canvas != text) {
                     canvas.Add(text);
+                }
+
+                if (rtl && canvas.IsTagged()) {
+                    canvas.EndMarkedContentSequence();
+                }
             }
             return status;
         }

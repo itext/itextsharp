@@ -1655,6 +1655,10 @@ namespace iTextSharp.text.pdf {
          * @since 5.5.4
          */
         public static readonly PdfName REPEAT = new PdfName("Repeat");
+
+       
+        public static readonly PdfName REVERSEDCHARS = new PdfName("ReversedChars");
+
         /** A name */
         public static readonly PdfName RESETFORM = new PdfName("ResetForm");
         /** A name */
