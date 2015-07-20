@@ -789,6 +789,13 @@ namespace iTextSharp.text.pdf.parser {
     	    float[] c = new float[nOperands];
     	    for (int i = 0; i < nOperands; i++) {
     		    c[i] = ((PdfNumber)operands[i]).FloatValue;
+                // fallbacks for illegal values: handled as Acrobat and Foxit do
+                if (c[i] > 1f) {
+                    c[i] = 1f;
+                }
+                else if (c[i] < 0f) {
+                    c[i] = 0f;
+                }
     	    }
     	    switch (nOperands) {
     	    case 1:

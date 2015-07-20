@@ -71,6 +71,11 @@ namespace itextsharp.tests.iTextSharp.text.pdf.parser
             ProcessBytes("yaxiststar.pdf", 1);
         }
 
+        [Test]
+        public void TestFallbackForBadColorSpace() {
+            ProcessBytes("fallbackForBadColorSpace.pdf", 1);
+        }
+
 
         private void ProcessBytes(
             string resourceName,
@@ -157,7 +162,6 @@ namespace itextsharp.tests.iTextSharp.text.pdf.parser
             virtual public void RenderImage(ImageRenderInfo renderInfo)
             {
             }
-
         }
     }
 }
