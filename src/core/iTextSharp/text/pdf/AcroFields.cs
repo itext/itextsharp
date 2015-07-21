@@ -686,6 +686,8 @@ namespace iTextSharp.text.pdf {
             PdfName fieldType = merged.GetAsName(PdfName.FT);
 
             if (PdfName.BTN.Equals(fieldType)) {
+                PdfNumber fieldFlags = merged.GetAsNumber(PdfName.FF);
+                bool isRadio = fieldFlags != null && (fieldFlags.IntValue & PdfFormField.FF_RADIO) != 0;
                 RadioCheckField field = new RadioCheckField(writer, null, null, null);
                 DecodeGenericDictionary(merged, field);
                 //rect
@@ -694,8 +696,10 @@ namespace iTextSharp.text.pdf {
                 if (field.Rotation == 90 || field.Rotation == 270)
                     box = box.Rotate();
                 field.Box = box;
-                field.CheckType = RadioCheckField.TYPE_CROSS;
-                return field.GetAppearance(false, !(merged.GetAsName(PdfName.AS).Equals(PdfName.Off_)));
+                if (!isRadio) {
+                    field.CheckType = RadioCheckField.TYPE_CROSS;    
+                }
+                return field.GetAppearance(isRadio, !(merged.GetAsName(PdfName.AS).Equals(PdfName.Off_)));
             }
 
             topFirst = 0;

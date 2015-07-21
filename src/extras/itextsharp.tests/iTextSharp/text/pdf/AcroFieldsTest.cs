@@ -250,8 +250,26 @@ namespace itextsharp.tests.iTextSharp.text.pdf {
             }
         }
 
+        [Test]
+        public void FlatteningRadioButtonFieldsTest()
+        {
 
+            String outFile = OUT_FOLDER + "flatteningRadioButtonFieldsTest.pdf";
+            FileStream file = new FileStream(outFile, FileMode.Create);
 
+            PdfReader reader = new PdfReader(new FileStream(TEST_RESOURCES_PATH + "radios_src.pdf", FileMode.Open));
 
+            PdfStamper stamper = new PdfStamper(reader, file);
+            AcroFields acroFields = stamper.AcroFields;
+            acroFields.SetField("radiogroup", "1");
+            stamper.Close();
+
+            CompareTool compareTool = new CompareTool();
+            String errorMessage = compareTool.CompareByContent(outFile, TEST_RESOURCES_PATH + "cmp_flatteningRadioButtonFieldsTest.pdf", OUT_FOLDER, "diff_");
+            if (errorMessage != null)
+            {
+                Assert.Fail(errorMessage);
+            }
+        }
     }
 }
