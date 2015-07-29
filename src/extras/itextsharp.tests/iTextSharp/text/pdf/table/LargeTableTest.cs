@@ -97,8 +97,8 @@ namespace itextsharp.tests.iTextSharp.text.pdf.table {
         }
 
         [Test]
-        public virtual void TestIncompleteTableAdd() {
-            const String file = "incomplete_add.pdf";
+        public virtual void TestIncompleteTableAdd01() {
+            const String file = "incomplete_add01.pdf";
 
             Document document = new Document(PageSize.LETTER);
             PdfWriter.GetInstance(document, new FileStream(OUTPUT_FOLDER + file, FileMode.OpenOrCreate));
@@ -115,6 +115,116 @@ namespace itextsharp.tests.iTextSharp.text.pdf.table {
 
             for (int i = 0; i < 500; i++) {
                 if (i % 5 == 0) {
+                    document.Add(table);
+                }
+
+                table.AddCell("Test " + i);
+            }
+
+            table.Complete = true;
+            document.Add(table);
+            document.Close();
+
+            CompareTablePdf(file);
+        }
+
+        [Test, Ignore]
+        public virtual void TestIncompleteTableAdd02()
+        {
+            const String file = "incomplete_add02.pdf";
+
+            Document document = new Document(PageSize.LETTER);
+            PdfWriter.GetInstance(document, new FileStream(OUTPUT_FOLDER + file, FileMode.OpenOrCreate));
+
+            document.Open();
+            PdfPTable table = new PdfPTable(5);
+            table.HeaderRows = 2;
+            table.SplitRows = false;
+            table.Complete = false;
+
+            for (int i = 0; i < 5; i++)
+            {
+                table.AddCell("Header " + i);
+            }
+
+            for (int i = 0; i < 500; i++)
+            {
+                if (i % 5 == 0)
+                {
+                    document.Add(table);
+                }
+
+                table.AddCell("Test " + i);
+            }
+
+            table.Complete = true;
+            document.Add(table);
+            document.Close();
+
+            CompareTablePdf(file);
+        }
+
+        [Test, Ignore]
+        public virtual void TestIncompleteTableAdd03()
+        {
+            const String file = "incomplete_add03.pdf";
+
+            Document document = new Document(PageSize.LETTER);
+            PdfWriter.GetInstance(document, new FileStream(OUTPUT_FOLDER + file, FileMode.OpenOrCreate));
+
+            document.Open();
+            PdfPTable table = new PdfPTable(5);
+            table.HeaderRows = 2;
+            table.FooterRows = 1;
+            table.SplitRows = false;
+            table.Complete = false;
+
+            for (int i = 0; i < 5; i++)
+            {
+                table.AddCell("Header " + i);
+            }
+
+            for (int i = 0; i < 500; i++)
+            {
+                if (i % 5 == 0)
+                {
+                    document.Add(table);
+                }
+
+                table.AddCell("Test " + i);
+            }
+
+            table.Complete = true;
+            document.Add(table);
+            document.Close();
+
+            CompareTablePdf(file);
+        }
+
+        [Test]
+        public virtual void TestIncompleteTableAdd04()
+        {
+            const String file = "incomplete_add04.pdf";
+
+            Document document = new Document(PageSize.LETTER);
+            PdfWriter.GetInstance(document, new FileStream(OUTPUT_FOLDER + file, FileMode.OpenOrCreate));
+
+            document.Open();
+            PdfPTable table = new PdfPTable(5);
+            table.HeaderRows = 1;
+            table.FooterRows = 1;
+            table.SplitRows = false;
+            table.Complete = false;
+
+            for (int i = 0; i < 5; i++)
+            {
+                table.AddCell("Header " + i);
+            }
+
+            for (int i = 0; i < 500; i++)
+            {
+                if (i % 5 == 0)
+                {
                     document.Add(table);
                 }
 
