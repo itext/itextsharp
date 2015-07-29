@@ -93,6 +93,122 @@ namespace itextsharp.tests.iTextSharp.text.pdf.table {
             CompareDocuments(false, false);
         }
 
+        [Test]
+        public void TestSplitLateAndSplitRow1()
+        {
+            String filename = "testSplitLateAndSplitRow1.pdf";
+            Document doc = new Document(PageSize.LETTER, 72f, 72f, 72f, 72f);
+            PdfWriter writer = PdfWriter.GetInstance(doc, new FileStream(outFolder + filename, FileMode.Create));
+            doc.Open();
+            PdfContentByte canvas = writer.DirectContent;
+
+            ColumnText ct = new ColumnText(canvas);
+
+            StringBuilder text = new StringBuilder();
+            for (int i = 0; i < 21; ++i)
+            {
+                text.Append(i).Append("\n");
+            }
+
+            // Add a table with a single row and column that doesn't fit on one page
+            PdfPTable t = new PdfPTable(1);
+            t.SplitLate = true;
+            t.SplitRows = true;
+            t.WidthPercentage = 100f;
+
+            ct.AddElement(
+                new Paragraph(
+                    "Pushing table down\ndown\ndown\ndown\ndown\ndown\ndown\ndown\ndown\ndown\ndown\ndown\ndown\ndown\ndown\ndown\ndown\ndown\ndown\ndown\n"));
+
+            PdfPCell c = new PdfPCell();
+            c.HorizontalAlignment = Element.ALIGN_LEFT;
+            c.VerticalAlignment = Element.ALIGN_TOP;
+            c.Border = Rectangle.NO_BORDER;
+            c.BorderWidth = 0;
+            c.Padding = 0;
+            c.AddElement(new Paragraph(text.ToString()));
+            t.AddCell(c);
+
+            ct.AddElement(t);
+
+            int status = 0;
+            while (ColumnText.HasMoreText(status))
+            {
+                ct.SetSimpleColumn(doc.Left, doc.Bottom, doc.Right, doc.Top);
+                status = ct.Go();
+
+                if (ColumnText.HasMoreText(status))
+                    doc.NewPage();
+            }
+
+            doc.Close();
+
+            String errorMessage = new CompareTool().CompareByContent(outFolder + filename, cmpFolder + filename,
+                outFolder, "diff");
+            if (errorMessage != null)
+            {
+                Assert.Fail(errorMessage);
+            }
+        }
+
+        [Test]
+        public void TestSplitLateAndSplitRow2()
+        {
+            String filename = "testSplitLateAndSplitRow2.pdf";
+            Document doc = new Document(PageSize.LETTER, 72f, 72f, 72f, 72f);
+            PdfWriter writer = PdfWriter.GetInstance(doc, new FileStream(outFolder + filename, FileMode.Create));
+            doc.Open();
+            PdfContentByte canvas = writer.DirectContent;
+
+            ColumnText ct = new ColumnText(canvas);
+
+            StringBuilder text = new StringBuilder();
+            for (int i = 0; i < 42; ++i)
+            {
+                text.Append(i).Append("\n");
+            }
+
+            // Add a table with a single row and column that doesn't fit on one page
+            PdfPTable t = new PdfPTable(1);
+            t.SplitLate = true;
+            t.SplitRows = true;
+            t.WidthPercentage = 100f;
+
+            ct.AddElement(
+                new Paragraph(
+                    "Pushing table down\ndown\ndown\ndown\ndown\ndown\ndown\ndown\ndown\ndown\ndown\ndown\ndown\ndown\ndown\ndown\ndown\ndown\ndown\ndown\n"));
+
+            PdfPCell c = new PdfPCell();
+            c.HorizontalAlignment = Element.ALIGN_LEFT;
+            c.VerticalAlignment = Element.ALIGN_TOP;
+            c.Border = Rectangle.NO_BORDER;
+            c.BorderWidth = 0;
+            c.Padding = 0;
+            c.AddElement(new Paragraph(text.ToString()));
+            t.AddCell(c);
+
+            ct.AddElement(t);
+
+            int status = 0;
+            while (ColumnText.HasMoreText(status))
+            {
+                ct.SetSimpleColumn(doc.Left, doc.Bottom, doc.Right, doc.Top);
+                status = ct.Go();
+
+                if (ColumnText.HasMoreText(status))
+                    doc.NewPage();
+            }
+
+            doc.Close();
+
+            String errorMessage = new CompareTool().CompareByContent(outFolder + filename, cmpFolder + filename,
+                outFolder, "diff");
+            if (errorMessage != null)
+            {
+                Assert.Fail(errorMessage);
+            }
+        }
+        
         public void TestKeepTogether(bool tagged, bool keepTogether) {
             Document document = new Document();
             String file = "tagged_" + tagged + "-keeptogether_" + keepTogether + ".pdf";

@@ -248,8 +248,10 @@ namespace iTextSharp.text.pdf {
         /**
          * The index of the last row that needed to be splitted.
          * @since 5.0.1 changed a boolean into an int
+         * -2 value mean it is the first attempt to split the first row.
+         * -1 means that we try to avoid splitting current row.
          */
-        private int splittedRow = -1;
+        private int splittedRow = -2;
 
     
         protected Phrase waitPhrase;
@@ -1633,7 +1635,12 @@ namespace iTextSharp.text.pdf {
                     // IF ROWS SHOULD NOT BE SPLIT
                     // Contributed by Deutsche Bahn Systel GmbH (Thorsten Seitz), splitting row spans
                     //else if (table.isSplitLate() && !table.hasRowspan(k) && rowIdx < k) {
-                    else if(table.SplitLate && rowIdx < k) {
+                    //if first row do not fit, splittedRow has value of -2, so in this case we try to avoid split.
+                    // Separate constant for the first attempt of splitting first row save us from infinite loop.
+                    // Also we check header rows, because in other case we may split right after header row,
+                    // while header row can't split before regular rows.
+                    else if (table.SplitLate && (rowIdx < k || (splittedRow == -2 && (table.HeaderRows == 0 || table.SkipFirstHeader))))
+                    {
                         splittedRow = -1;
                     }
                     // SPLIT ROWS (IF WANTED AND NECESSARY)
@@ -1730,81 +1737,93 @@ namespace iTextSharp.text.pdf {
                     	    footerRows = 0;
                         }
 
-                        // we need a correction if the last row needs to be extended
-                        float rowHeight = 0;
-                        int lastIdx = sub.Count - 1 - footerRows;
-                        PdfPRow last = sub[lastIdx];
-                        if (table.IsExtendLastRow(newPageFollows)) {
-                            rowHeight = last.MaxHeights;
-                            last.MaxHeights = yTemp - minY + rowHeight;
-                            yTemp = minY;
-                        }
-                    
-                        // newPageFollows indicates that this table is being split
-                        if (newPageFollows) {
-                            IPdfPTableEvent tableEvent = table.TableEvent;
-                            if (tableEvent is IPdfPTableEventSplit) {
-                                ((IPdfPTableEventSplit)tableEvent).SplitTable(table);
-                            }
-                        }
-                    
-                        // now we render the rows of the new table
-                        if (canvases != null)
+                        if (sub.Count > 0)
                         {
-                            if (IsTagged(canvases[PdfPTable.TEXTCANVAS]))
+                            // we need a correction if the last row needs to be extended
+                            float rowHeight = 0;
+                            int lastIdx = sub.Count - 1 - footerRows;
+                            PdfPRow last = sub[lastIdx];
+                            if (table.IsExtendLastRow(newPageFollows))
                             {
-                                canvases[PdfPTable.TEXTCANVAS].OpenMCBlock(table);
+                                rowHeight = last.MaxHeights;
+                                last.MaxHeights = yTemp - minY + rowHeight;
+                                yTemp = minY;
                             }
-                            nt.WriteSelectedRows(0, -1, 0, -1, x1, yLineWrite, canvases, false);
-                            if (IsTagged(canvases[PdfPTable.TEXTCANVAS]))
+
+                            // newPageFollows indicates that this table is being split
+                            if (newPageFollows)
                             {
-                                canvases[PdfPTable.TEXTCANVAS].CloseMCBlock(table);
+                                IPdfPTableEvent tableEvent = table.TableEvent;
+                                if (tableEvent is IPdfPTableEventSplit)
+                                {
+                                    ((IPdfPTableEventSplit) tableEvent).SplitTable(table);
+                                }
                             }
-                        }
-                        else
-                        {
-                            if (IsTagged(canvas))
+
+                            // now we render the rows of the new table
+                            if (canvases != null)
                             {
-                                canvas.OpenMCBlock(table);
+                                if (IsTagged(canvases[PdfPTable.TEXTCANVAS]))
+                                {
+                                    canvases[PdfPTable.TEXTCANVAS].OpenMCBlock(table);
+                                }
+                                nt.WriteSelectedRows(0, -1, 0, -1, x1, yLineWrite, canvases, false);
+                                if (IsTagged(canvases[PdfPTable.TEXTCANVAS]))
+                                {
+                                    canvases[PdfPTable.TEXTCANVAS].CloseMCBlock(table);
+                                }
                             }
-                            nt.WriteSelectedRows(0, -1, 0, -1, x1, yLineWrite, canvas, false);
-                            if (IsTagged(canvas))
+                            else
                             {
-                                canvas.CloseMCBlock(table);
+                                if (IsTagged(canvas))
+                                {
+                                    canvas.OpenMCBlock(table);
+                                }
+                                nt.WriteSelectedRows(0, -1, 0, -1, x1, yLineWrite, canvas, false);
+                                if (IsTagged(canvas))
+                                {
+                                    canvas.CloseMCBlock(table);
+                                }
                             }
-                        }
 
-                        if (!table.Complete) {
-                            table.AddNumberOfRowsWritten(k);
-                        }
+                            if (!table.Complete)
+                            {
+                                table.AddNumberOfRowsWritten(k);
+                            }
 
-                        // if the row was split, we copy the content of the last row
-                        // that was consumed into the first row shown on the next page
-                        if (splittedRow == k && k < table.Size) {
-                            PdfPRow splitted = table.Rows[k];
-                            splitted.CopyRowContent(nt, lastIdx);
-                        }
-                        // Contributed by Deutsche Bahn Systel GmbH (Thorsten Seitz), splitting row spans
-                        else if(k > 0 && k < table.Size) {
-                            // continue rowspans on next page
-                            // (as the row was not split there is no content to copy)
-                            PdfPRow row = table.GetRow(k);
-                            row.SplitRowspans(table, k - 1, nt, lastIdx);
-                        }
-                        // splitting row spans
-
-                        // reset the row height of the last row
-                        if (table.IsExtendLastRow(newPageFollows)) {
-                            last.MaxHeights = rowHeight;
-                        }
-
-                        // Contributed by Deutsche Bahn Systel GmbH (Thorsten Seitz)
-                        // newPageFollows indicates that this table is being split
-                        if (newPageFollows) {
-                            IPdfPTableEvent tableEvent = table.TableEvent;
-                            if (tableEvent is IPdfPTableEventAfterSplit) {
+                            // if the row was split, we copy the content of the last row
+                            // that was consumed into the first row shown on the next page
+                            if (splittedRow == k && k < table.Size)
+                            {
+                                PdfPRow splitted = table.Rows[k];
+                                splitted.CopyRowContent(nt, lastIdx);
+                            }
+                            // Contributed by Deutsche Bahn Systel GmbH (Thorsten Seitz), splitting row spans
+                            else if (k > 0 && k < table.Size)
+                            {
+                                // continue rowspans on next page
+                                // (as the row was not split there is no content to copy)
                                 PdfPRow row = table.GetRow(k);
-                                ((IPdfPTableEventAfterSplit)tableEvent).AfterSplitTable(table, row, k);
+                                row.SplitRowspans(table, k - 1, nt, lastIdx);
+                            }
+                            // splitting row spans
+
+                            // reset the row height of the last row
+                            if (table.IsExtendLastRow(newPageFollows))
+                            {
+                                last.MaxHeights = rowHeight;
+                            }
+
+                            // Contributed by Deutsche Bahn Systel GmbH (Thorsten Seitz)
+                            // newPageFollows indicates that this table is being split
+                            if (newPageFollows)
+                            {
+                                IPdfPTableEvent tableEvent = table.TableEvent;
+                                if (tableEvent is IPdfPTableEventAfterSplit)
+                                {
+                                    PdfPRow row = table.GetRow(k);
+                                    ((IPdfPTableEventAfterSplit) tableEvent).AfterSplitTable(table, row, k);
+                                }
                             }
                         }
                     }
@@ -1838,7 +1857,7 @@ namespace iTextSharp.text.pdf {
                         rowIdx = 0;
                     }
                     else {
-                        if (splittedRow != -1) {
+                        if (splittedRow > -1) {
                             List<PdfPRow> rows = table.Rows;
                             for (int i = rowIdx; i < k; ++i)
                                 rows[i] = null;
