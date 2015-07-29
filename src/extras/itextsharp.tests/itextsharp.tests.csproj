@@ -130,6 +130,7 @@
     <Compile Include="iTextSharp\text\pdf\TaggedPdfCopyTest.cs" />
     <Compile Include="iTextSharp\text\pdf\TaggedPdfTest.cs" />
 	<Compile Include="iTextSharp\text\pdf\StringUtilsTest.cs" />
+    <Compile Include="iTextSharp\text\pdf\table\KeepRowsTogetherTest.cs" />
   </ItemGroup>
   <ItemGroup>
     <None Include="lib\XmlDiffPatch.dll">
