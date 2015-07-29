@@ -1594,7 +1594,10 @@ namespace iTextSharp.text.pdf {
                     while ((kTemp > rowIdx && kTemp < table.Size && table.GetRow(kTemp).MayNotBreak)) {
                         kTemp--;
                     }
-                    if ((kTemp > rowIdx && kTemp < k) || (kTemp == 0 && table.GetRow(0).MayNotBreak && table.LoopCheck)) {
+                    if (kTemp < (table.Size - 1) && !table.GetRow(kTemp).MayNotBreak) {
+                        kTemp++;
+                    }
+                    if ((kTemp > rowIdx && kTemp < k) || (kTemp == headerRows && table.GetRow(headerRows).MayNotBreak && table.LoopCheck)) {
                         yTemp = minY;
                         k = kTemp;
                 	    table.LoopCheck = false;
