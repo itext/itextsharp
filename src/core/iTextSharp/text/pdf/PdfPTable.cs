@@ -1896,7 +1896,7 @@ namespace iTextSharp.text.pdf {
             virtual public void BeginCell(PdfPCell cell, float completedRowsHeight, float rowHeight) {
                 rowspan = cell.Rowspan;
                 colspan = cell.Colspan;
-                height = completedRowsHeight + Math.Max(cell.GetMaxHeight(), rowHeight);
+                height = completedRowsHeight + Math.Max(cell.HasCachedMaxHeight() ? cell.CachedMaxHeight : cell.GetMaxHeight(), rowHeight);
             }
 
             virtual public void ConsumeRowspan(float completedRowsHeight, float rowHeight) {
@@ -1950,7 +1950,7 @@ namespace iTextSharp.text.pdf {
                         state.ConsumeRowspan(completedRowsHeight, rowHeight);
                     } else {
                         state.BeginCell(cell, completedRowsHeight, rowHeight);
-                        LOGGER.Info(String.Format("Height after BeginCell: {0} (cell: {1})", state.height, cell.GetMaxHeight()));
+                        LOGGER.Info(String.Format("Height after BeginCell: {0} (cell: {1})", state.height, cell.CachedMaxHeight));
                 
                     }
                     if (state.CellEnds() && state.height > maxCompletedRowsHeight) {

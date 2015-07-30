@@ -130,6 +130,7 @@
     <Compile Include="iTextSharp\text\pdf\table\LargeTableTest.cs" />
     <Compile Include="iTextSharp\text\pdf\PdfStamperTest.cs" />
     <Compile Include="iTextSharp\text\pdf\NamedDestinationsTest.cs" />
+    <Compile Include="iTextSharp\text\pdf\table\NestedTablesTest.cs" />
     <Compile Include="iTextSharp\text\pdf\table\RowspanTest.cs" />
     <Compile Include="iTextSharp\text\pdf\table\ColorsInTaggedDocumentsTest.cs" />
     <Compile Include="iTextSharp\text\pdf\TestPdfCopyAndStamp.cs" />
@@ -356,6 +357,7 @@
     <None Include="resources\text\pdf\table\keeptogether\tagged_true-keeptogether_true.pdf" />
     <None Include="resources\text\pdf\table\RowspanTest\nestedtabletest.pdf" />
     <None Include="resources\text\pdf\table\RowspanTest\rowspantest.pdf" />
+    <None Include="resources\text\pdf\table\nestedTablesTest\cmp_nestedTablesTest.pdf" />
     <None Include="resources\text\pdf\TextFieldTest\textfield-top-visible-0.pdf" />
     <None Include="resources\text\pdf\TextFieldTest\textfield-top-visible-1.pdf" />
     <None Include="resources\text\pdf\TextFieldTest\textfield-top-visible-2.pdf" />

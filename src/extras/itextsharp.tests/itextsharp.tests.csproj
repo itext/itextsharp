@@ -115,6 +115,7 @@
     <Compile Include="iTextSharp\text\pdf\table\LargeTableTest.cs" />
 	<Compile Include="iTextSharp\text\pdf\PdfStamperTest.cs" />
 	<Compile Include="iTextSharp\text\pdf\NamedDestinationsTest.cs" />
+    <Compile Include="iTextSharp\text\pdf\table\NestedTablesTest.cs" />
     <Compile Include="iTextSharp\text\pdf\TestPdfCopyAndStamp.cs" />
     <Compile Include="iTextSharp\text\pdf\TextFieldTest.cs" />
     <Compile Include="iTextSharp\text\pdf\ToUnicodeNonBreakableSpacesTest.cs" />
@@ -335,6 +336,7 @@
     <None Include="resources\text\pdf\table\LargeTableTest\incomplete_add.pdf" />
     <None Include="resources\text\pdf\table\RowspanTest\nestedtabletest.pdf" />
     <None Include="resources\text\pdf\table\RowspanTest\rowspantest.pdf" />
+    <None Include="resources\text\pdf\table\nestedTablesTest\cmp_nestedTablesTest.pdf" />
     <None Include="resources\text\pdf\TextFieldTest\textfield-top-visible-0.pdf" />
     <None Include="resources\text\pdf\TextFieldTest\textfield-top-visible-1.pdf" />
     <None Include="resources\text\pdf\TextFieldTest\textfield-top-visible-2.pdf" />

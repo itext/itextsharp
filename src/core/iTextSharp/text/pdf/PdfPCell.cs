@@ -87,6 +87,13 @@ namespace iTextSharp.text.pdf {
         
         /** Holds value of property minimumHeight. */
         private float minimumHeight;
+
+        /**  
+         * This field is used to cache the height which is calculated on getMaxHeight() method call;
+         * this helps to avoid unnecessary recalculations on table drawing.
+         */
+        private float cachedMaxHeight;
+
         
         /** Holds value of property colspan. */
         private int colspan = 1;
@@ -531,6 +538,19 @@ namespace iTextSharp.text.pdf {
         }
 
         /**
+         * Gets the height which was calculated on last call of getMaxHeight().
+         * If cell's bBox and content wasn't changed this value is actual maxHeight of the cell.
+         * @return max height which was calculated on last call of getMaxHeight(); if getMaxHeight() wasn't called the return value is 0
+         */
+        public float CachedMaxHeight {
+            get { return cachedMaxHeight; }
+        }
+
+        public bool HasCachedMaxHeight() {
+            return cachedMaxHeight > 0;
+        }
+
+        /**
         * Setter for property noWrap.
         * @param noWrap New value of property noWrap.
         */
@@ -832,6 +852,7 @@ namespace iTextSharp.text.pdf {
                 height = FixedHeight;
             else if (HasMinimumHeight() && height < MinimumHeight)
                 height = MinimumHeight;
+            cachedMaxHeight = height; 
             return height;
         }
 
