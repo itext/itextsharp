@@ -76,7 +76,15 @@ namespace iTextSharp.text.pdf{
                 if (font.Subset || font.SubsetRanges != null)
                 {
                     CFFFontSubset cff = new CFFFontSubset(new RandomAccessFileOrArray(b), longTag);
-                    b = cff.Process(cff.GetNames()[0]);
+                    try {
+                        b = cff.Process(cff.GetNames()[0]);
+                    }
+                    catch (Exception e) {
+                        font.Subset = false;
+                        WriteFont(font,refer,parms,rotbits);
+                    }
+                    
+                    
                 }
                 pobj = new BaseFont.StreamFont(b, "CIDFontType0C", font.CompressionLevel);
                 obj = writer.AddToBody(pobj);
