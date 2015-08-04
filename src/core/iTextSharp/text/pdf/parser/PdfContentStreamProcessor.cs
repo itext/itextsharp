@@ -439,7 +439,7 @@ namespace iTextSharp.text.pdf.parser {
          */
         virtual protected void HandleInlineImage(InlineImageInfo info, PdfDictionary colorSpaceDic)
         {
-            ImageRenderInfo renderInfo = ImageRenderInfo.CreateForEmbeddedImage(Gs().ctm, info, colorSpaceDic);
+            ImageRenderInfo renderInfo = ImageRenderInfo.CreateForEmbeddedImage(Gs(), info, colorSpaceDic);
             renderListener.RenderImage(renderInfo);
         }
 
@@ -1255,7 +1255,7 @@ namespace iTextSharp.text.pdf.parser {
 
             virtual public void HandleXObject(PdfContentStreamProcessor processor, PdfStream xobjectStream, PdfIndirectReference refi) {
                 PdfDictionary colorSpaceDic = processor.resources.GetAsDict(PdfName.COLORSPACE);
-                ImageRenderInfo renderInfo = ImageRenderInfo.CreateForXObject(processor.Gs().ctm, refi, colorSpaceDic);
+                ImageRenderInfo renderInfo = ImageRenderInfo.CreateForXObject(processor.Gs(), refi, colorSpaceDic);
                 processor.renderListener.RenderImage(renderInfo);
             }
         }

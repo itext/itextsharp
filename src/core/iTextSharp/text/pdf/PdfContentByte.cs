@@ -103,8 +103,8 @@ namespace iTextSharp.text.pdf {
             /** The current word spacing */
             protected internal float wordSpace = 0;
 
-            protected internal BaseColor colorFill = new GrayColor(0);
-            protected internal BaseColor colorStroke = new GrayColor(0);
+            protected internal BaseColor colorFill = BaseColor.BLACK;
+            protected internal BaseColor colorStroke = BaseColor.BLACK;
             protected internal int textRenderMode = TEXT_RENDER_MODE_FILL;
             protected internal AffineTransform CTM = new AffineTransform();
             protected internal PdfObject extGState = null;

@@ -1307,7 +1307,7 @@ namespace iTextSharp.text.pdfa {
             sec.Put(PdfName.WHITEPOINT, new PdfArray(new float[] {0.9505f, 1f, 1.089f}));
             PdfArray arr = new PdfArray(PdfName.CALRGB);
             arr.Add(sec);
-            writer.SetDefaultColorspace(PdfName.DEFAULTGRAY, writer.AddToBody(arr).IndirectReference);
+            writer.SetDefaultColorspace(PdfName.DEFAULTRGB, writer.AddToBody(arr).IndirectReference);
             Font font = FontFactory.GetFont(RESOURCES + "FreeMonoBold.ttf", BaseFont.WINANSI, BaseFont.EMBEDDED, 12);
             document.Add(new Paragraph("Hello World", font));
             document.Close();
