@@ -49,13 +49,9 @@ using System.util;
  * For more inFormation, please contact iText Software Corp. at this
  * address: sales@itextpdf.com
  */
-using System.util;
-using System.Collections;
 using System.Xml;
 using iTextSharp.text;
 using iTextSharp.text.pdf;
-using iTextSharp.xmp.impl;
-using System.util;
 using System.util.collections;
 
 namespace iTextSharp.testutils {
@@ -329,11 +325,20 @@ public class CompareTool {
 
     private int compareByContentErrorsLimit = 1;
     private bool generateCompareByContentXmlReport = false;
+    private String xmlReportName = "report";
 
 
     public CompareTool() {
         gsExec = Environment.GetEnvironmentVariable("gsExec");
         compareExec = Environment.GetEnvironmentVariable("compareExec");
+    }
+
+    public void SetXmlReportName(String reportName) {
+        this.xmlReportName = reportName;
+    }
+
+    public String GetXmlReportName() {
+        return this.xmlReportName;
     }
 
     private String Compare(String outPath, String differenceImagePrefix, IDictionary<int, IList<Rectangle>> ignoredAreas) {
@@ -593,7 +598,7 @@ public class CompareTool {
 
         if (generateCompareByContentXmlReport) {
             try {
-                compareResult.WriteReportToXml(new FileStream(outPath + "/report.xml", FileMode.Create));
+                compareResult.WriteReportToXml(new FileStream(outPath + "/" +xmlReportName+ ".xml", FileMode.Create));
             }
             catch (Exception exc) { }
         }
@@ -969,6 +974,8 @@ public class CompareTool {
 
         return message;
     }
+
+   
 
     private bool LinksAreSame(PdfAnnotation.PdfImportedLink cmpLink, PdfAnnotation.PdfImportedLink outLink) {
         // Compare link boxes, page numbers the links refer to, and simple parameters (non-indirect, non-arrays, non-dictionaries)

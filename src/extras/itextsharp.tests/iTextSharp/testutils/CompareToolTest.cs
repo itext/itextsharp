@@ -46,6 +46,7 @@
 using System;
 using System.IO;
 using iTextSharp.testutils;
+using Microsoft.XmlDiffPatch;
 using NUnit.Framework;
 
 namespace itextsharp.tests.iTextSharp.testutils {
@@ -56,35 +57,42 @@ namespace itextsharp.tests.iTextSharp.testutils {
 
         [SetUp]
         public void SetUp() {
-            new DirectoryInfo(OUT_FOLDER).Create();
+           new DirectoryInfo(OUT_FOLDER).Create();
         }
 
         [Test]
-        public void Test1() {
+        public void CompareToolErrorReportTest01() {
             CompareTool compareTool = new CompareTool();
             compareTool.SetCompareByContentErrorsLimit(10);
             compareTool.SetGenerateCompareByContentXmlReport(true);
-
+            compareTool.SetXmlReportName("report01");
             String outPdf = TEST_RESOURCES_PATH + "simple_pdf.pdf";
             String cmpPdf = TEST_RESOURCES_PATH + "cmp_simple_pdf.pdf";
             String result = compareTool.CompareByContent(outPdf, cmpPdf, OUT_FOLDER, "difference");
-
-            Assert.NotNull(result);
+            Assert.NotNull("CompareTool must return differences found between the files", result);
+            Assert.IsTrue(CompareXmls(TEST_RESOURCES_PATH + "cmp_report01.xml", OUT_FOLDER + "report01.xml"), "CompareTool report differs from the reference one");
             Console.WriteLine(result);
         }
 
         [Test]
-        public void Test2() {
+        public void CompareToolErrorReportTest02() {
             CompareTool compareTool = new CompareTool();
             compareTool.SetCompareByContentErrorsLimit(10);
             compareTool.SetGenerateCompareByContentXmlReport(true);
-
+            compareTool.SetXmlReportName("report02");
             String outPdf = TEST_RESOURCES_PATH + "tagged_pdf.pdf";
             String cmpPdf = TEST_RESOURCES_PATH + "cmp_tagged_pdf.pdf";
             String result = compareTool.CompareByContent(outPdf, cmpPdf, OUT_FOLDER, "difference");
-
-            Assert.NotNull(result);
+            Assert.NotNull("CompareTool must return differences found between the files",result);
+            Assert.IsTrue(CompareXmls(TEST_RESOURCES_PATH + "cmp_report02.xml", OUT_FOLDER + "report02.xml"), "CompareTool report differs from the reference one");
             Console.WriteLine(result);
+        }
+
+   
+
+        virtual protected bool CompareXmls(String xml1, String xml2) {
+            XmlDiff xmldiff = new XmlDiff(XmlDiffOptions.None);
+            return xmldiff.Compare(xml1, xml2, false);
         }
     }
 }
