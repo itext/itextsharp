@@ -1,6 +1,6 @@
 using System;
 using iTextSharp.text;
-using iTextSharp.tool.xml.html;
+
 /*
  * $Id: NoNewLineParagraph.java 124 2011-05-27 12:37:59Z redlab_b $
  *
@@ -208,7 +208,7 @@ namespace iTextSharp.tool.xml.html.pdfelement {
                 list.IndentationRight = indentationRight;
                 return base.Add(list);
             }
-            else if (o is Image) {
+            else if (o is text.Image) {
                 base.AddSpecial(o);
                 return true;
             }

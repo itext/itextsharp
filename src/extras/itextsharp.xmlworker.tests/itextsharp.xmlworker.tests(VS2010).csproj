@@ -521,6 +521,7 @@
     <Compile Include="iTextSharp\tool\xml\html\LineHeightLetterSpacingTest.cs" />
     <Compile Include="iTextSharp\tool\xml\html\LoadCssThroughLinkStyleTagTest.cs" />
     <Compile Include="iTextSharp\tool\xml\html\PandBTest.cs" />
+    <Compile Include="iTextSharp\tool\xml\html\pdfelement\NoNewLineParagraphTest.cs" />
     <Compile Include="iTextSharp\tool\xml\html\SamplesTest.cs" />
     <Compile Include="iTextSharp\tool\xml\html\SnippetUtil.cs" />
     <Compile Include="iTextSharp\tool\xml\html\SpecialCharInPDFTest.cs" />
