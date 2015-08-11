@@ -602,11 +602,12 @@ namespace iTextSharp.text.pdf {
                 return stamper.FullCompression;
             }
         }
-        
-        /**
-        * Sets the document's compression to the new 1.5 mode with object streams and xref
-        * streams. It can be set at any time but once set it can't be unset.
-        */
+
+         /**
+         * Sets the document's compression to the new 1.5 mode with object streams and xref
+         * streams. Be attentive!!! If you want set full compression , you should set immediately after creating PdfStamper,
+         * before editing the document.It can be set once and it can't be unset.
+         */
         virtual public void SetFullCompression() {
             if (stamper.append)
                 return;
