@@ -390,9 +390,9 @@ namespace iTextSharp.text {
                         String newFullName = fullName.ToLower();
                         if (newFullName.EndsWith("regular")) {
                             //remove "regular" at the end of the font name
-                            newFullName = newFullName.Substring(newFullName.Length - 7).Trim();
+                            newFullName = newFullName.Substring(0, newFullName.Length - 7).Trim();
                             //insert this font name at the first position for higher priority
-                            tmp.Insert(0, fullName.Substring(newFullName.Length));
+                            tmp.Insert(0, fullName.Substring(0, newFullName.Length));
                         }
                     }
                 }
@@ -499,7 +499,7 @@ namespace iTextSharp.text {
         // Don't use this method for not regular fonts!
         protected bool SaveCopyOfRegularFont(string regularFontName, string path) {
             //remove "regular" at the end of the font name
-            String alias = regularFontName.Substring(regularFontName.Length - 7).Trim();
+            String alias = regularFontName.Substring(0, regularFontName.Length - 7).Trim();
             if (!trueTypeFonts.ContainsKey(alias)) {
                 trueTypeFonts[alias] = path;
                 return true;
