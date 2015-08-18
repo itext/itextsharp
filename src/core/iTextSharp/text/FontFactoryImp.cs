@@ -385,8 +385,16 @@ namespace iTextSharp.text {
                             break;
                         }
                     }
-                    if (!inserted)
+                    if (!inserted) {
                         tmp.Add(fullName);
+                        String newFullName = fullName.ToLower();
+                        if (newFullName.EndsWith("regular")) {
+                            //remove "regular" at the end of the font name
+                            newFullName = newFullName.Substring(newFullName.Length - 7).Trim();
+                            //insert this font name at the first position for higher priority
+                            tmp.Insert(0, fullName.Substring(newFullName.Length));
+                        }
+                    }
                 }
             }
         }
@@ -410,12 +418,22 @@ namespace iTextSharp.text {
                     Object[] allNames = BaseFont.GetAllFontNames(path, BaseFont.WINANSI, null);
                     trueTypeFonts[((string)allNames[0]).ToLower(CultureInfo.InvariantCulture)] = path;
                     if (alias != null) {
-                        trueTypeFonts[alias.ToLower(CultureInfo.InvariantCulture)] = path;
+                        string lcAlias = alias.ToLower(CultureInfo.InvariantCulture);
+                        trueTypeFonts[lcAlias] = path;
+                        if (lcAlias.EndsWith("regular")) {
+                            //do this job to give higher priority to regular fonts in comparison with light, narrow, etc
+                            SaveCopyOfRegularFont(lcAlias, path);
+                        }
                     }
                     // register all the font names with all the locales
                     string[][] names = (string[][])allNames[2]; //full name
                     for (int i = 0; i < names.Length; i++) {
-                        trueTypeFonts[names[i][3].ToLower(CultureInfo.InvariantCulture)] = path;
+                        string lcName = names[i][3].ToLower(CultureInfo.InvariantCulture);
+                        trueTypeFonts[lcName] = path;
+                        if (lcName.EndsWith("regular")) {
+                            //do this job to give higher priority to regular fonts in comparison with light, narrow, etc
+                            SaveCopyOfRegularFont(lcName, path);
+                        };
                     }
                     string fullName = null;
                     string familyName = null;
@@ -474,6 +492,19 @@ namespace iTextSharp.text {
             catch (System.IO.IOException ioe) {
                 throw ioe;
             }
+        }
+
+        // remove regular and correct last symbol
+        // do this job to give higher priority to regular fonts in comparison with light, narrow, etc
+        // Don't use this method for not regular fonts!
+        protected bool SaveCopyOfRegularFont(string regularFontName, string path) {
+            //remove "regular" at the end of the font name
+            String alias = regularFontName.Substring(regularFontName.Length - 7).Trim();
+            if (!trueTypeFonts.ContainsKey(alias)) {
+                trueTypeFonts[alias] = path;
+                return true;
+            }
+            return false;
         }
     
         /** Register all the fonts in a directory.

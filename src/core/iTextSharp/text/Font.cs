@@ -640,7 +640,7 @@ namespace iTextSharp.text {
         /// Replaces the attributes that are equal to null with
         /// the attributes of a given font.
         /// </summary>
-        /// <param name="font">the font of a bigger element class</param>
+        /// <param name="font"> the font of a lower element class (ex. this - paragraph font, font - chunk font)
         /// <returns>a Font</returns>
         public virtual Font Difference(Font font) {
             if (font == null) return this;

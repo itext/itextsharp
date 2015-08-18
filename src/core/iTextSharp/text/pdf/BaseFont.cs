@@ -1179,6 +1179,10 @@ namespace iTextSharp.text.pdf {
             get;
             set;
         }
+
+        public virtual string Subfamily {
+            get { return ""; }
+        }
     
         /** Gets the full name of the font. If it is a True Type font
          * each array element will have {Platform ID, Platform Encoding ID,

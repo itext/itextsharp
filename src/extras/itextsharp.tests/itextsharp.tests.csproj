@@ -82,6 +82,7 @@
     <Compile Include="iTextSharp\text\pdf\FlatteningTest.cs" />
     <Compile Include="iTextSharp\text\pdf\fonts\cmaps\CMapParserExTest.cs" />
     <Compile Include="iTextSharp\text\pdf\fonts\cmaps\CMapTest.cs" />
+    <Compile Include="iTextSharp\text\pdf\fonts\FontFamilyTest.cs" />
     <Compile Include="iTextSharp\text\pdf\fonts\SymbolTest.cs" />
     <Compile Include="iTextSharp\text\pdf\IndicLigatures.cs" />
     <Compile Include="iTextSharp\text\pdf\mc\AcroFieldsFlattenTest.cs" />
@@ -136,6 +137,7 @@
   <ItemGroup>
     <None Include="lib\XmlDiffPatch.dll">
     </None>
+    <Content Include="resources\text\pdf\FontFamilyTest\LICENSE_CJK.txt" />
     <Content Include="resources\text\pdf\TaggedPdfCopyTest\xml\test0.xml" />
     <Content Include="resources\text\pdf\TaggedPdfCopyTest\xml\test1.xml" />
     <Content Include="resources\text\pdf\TaggedPdfCopyTest\xml\test10.xml" />
@@ -213,6 +215,8 @@
     <None Include="resources\text\pdf\FlatteningTest\noappearances-needapp-true.pdf" />
     <None Include="resources\text\pdf\FlatteningTest\regenerateFieldFalse.pdf" />
     <None Include="resources\text\pdf\FlatteningTest\regenerateFieldTrue.pdf" />
+    <None Include="resources\text\pdf\FontFamilyTest\NotoSansCJKjp-Bold.otf" />
+    <None Include="resources\text\pdf\FontFamilyTest\NotoSansCJKjp-Regular.otf" />
     <None Include="resources\text\pdf\fonts\cmaps\CMapParserExTest\cmap_results_in_empty_map.cmap" />
     <None Include="resources\text\pdf\mc\SF2809.pdf" />
     <None Include="resources\text\pdf\mc\SF2809_alt.pdf" />
