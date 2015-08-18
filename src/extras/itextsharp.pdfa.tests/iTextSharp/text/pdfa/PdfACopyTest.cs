@@ -53,7 +53,7 @@ using NUnit.Framework;
 
 namespace itextsharp.pdfa.tests.iTextSharp.text.pdfa {
     public class PdfACopyTest {
-        private const String outputDir = "copy\\";
+        protected const String outputDir = "copy\\";
         public const String RESOURCES = @"..\..\resources\text\pdfa\";
 
         static PdfACopyTest() {
@@ -380,6 +380,23 @@ namespace itextsharp.pdfa.tests.iTextSharp.text.pdfa {
 
             if (!exceptionThrown)
                 Assert.Fail("PdfAConformanceException should be thrown.");
+        }
+
+        [Test]
+        public void TestSmartCopyCreatePdfA_1() {
+            String fileName = RESOURCES + "copy/pdfa-1a.pdf";
+            String testName = "testSmartCopyPdfA_1.pdf";
+
+            FileStream outputPdfStream = File.Create(outputDir + testName);
+            Document document = new Document();
+            PdfCopy copy = new PdfASmartCopy(document, outputPdfStream, PdfAConformanceLevel.PDF_A_1B);
+            copy.CreateXmpMetadata();
+            document.Open();
+            document.AddLanguage("en-US");
+            PdfReader reader = new PdfReader(fileName);
+            PdfImportedPage page = copy.GetImportedPage(reader, 1);
+            copy.AddPage(page);
+            copy.Close();
         }
 
     }
