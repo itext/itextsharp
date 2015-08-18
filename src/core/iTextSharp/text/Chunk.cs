@@ -400,7 +400,16 @@ namespace iTextSharp.text {
         /// </summary>
         /// <returns>false if there aren't any.</returns>
         virtual public bool HasAttributes() {
-            return attributes != null;
+            return attributes != null && attributes.Count > 0;
+        }
+
+        /**
+         * Checks  the accessible attributes of this <CODE>Chunk</CODE>.
+         *
+         * @return false if there aren't any.
+         */
+        public bool HasAccessibleAttributes() {
+            return accessibleAttributes != null && accessibleAttributes.Count > 0;
         }
 
         /// <summary>
