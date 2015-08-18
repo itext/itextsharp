@@ -94,6 +94,14 @@ namespace itextsharp.tests.iTextSharp.text.pdf.parser
 
         }
 
+        [Test]
+        public void TestInlineImageWithUnsupportedDecodeFilter() {
+            PdfReader reader = TestResourceUtils.GetResourceAsPdfReader(TEST_RESOURCES_PATH, "inlineImages01.pdf");
+            PdfReaderContentParser parser = new PdfReaderContentParser(reader);
+            int page =  reader.NumberOfPages;
+            LocationTextExtractionStrategy strategy = parser.ProcessContent(page, new LocationTextExtractionStrategy());
+        }
+
 
         private byte[] ReadContentBytes(
              PdfObject contentObject)
