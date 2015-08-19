@@ -157,6 +157,7 @@
     <Content Include="resources\text\pdf\AcroFieldsTest\barcode.jpg" />
     <Content Include="resources\text\pdf\FontFamilyTest\LICENSE_CJK.txt" />
     <Content Include="resources\text\pdf\fonts\cmaps\CMapParserExTest\cmap_with_def_dictionary_key.txt" />
+    <Content Include="resources\text\pdf\PdfStamperTest\Willi-1.jpg" />
     <Content Include="resources\text\pdf\signature\ds-ks\xfa.signed.package.xml" />
     <Content Include="resources\text\pdf\signature\ds-ks\xfa.signed.xml" />
     <Content Include="resources\text\pdf\signature\ds\xfa.signed.ki.package.xml" />
@@ -355,6 +356,11 @@
     <None Include="resources\text\pdf\PdfReaderTest\getLinkTest1.pdf" />
     <None Include="resources\text\pdf\PdfReaderTest\getLinkTest2.pdf" />
     <None Include="resources\text\pdf\PdfReaderTest\RomeoJuliet.pdf" />
+    <None Include="resources\text\pdf\PdfStamperTest\cmp_House_Plan_Final.pdf" />
+    <None Include="resources\text\pdf\PdfStamperTest\cmp_out1.pdf" />
+    <None Include="resources\text\pdf\PdfStamperTest\cmp_out2.pdf" />
+    <None Include="resources\text\pdf\PdfStamperTest\House_Plan_Final.pdf" />
+    <None Include="resources\text\pdf\PdfStamperTest\in.pdf" />
     <None Include="resources\text\pdf\table\keeptogether\tagged_false-keeptogether_false.pdf" />
     <None Include="resources\text\pdf\table\keeptogether\tagged_false-keeptogether_true.pdf" />
     <None Include="resources\text\pdf\table\keeptogether\tagged_true-keeptogether_false.pdf" />
@@ -413,6 +419,7 @@
       <Name>itextsharp.xtra%28VS2010%29</Name>
     </ProjectReference>
   </ItemGroup>
+  <ItemGroup />
   <Import Project="$(MSBuildBinPath)\Microsoft.CSharp.targets" />
   <!-- To modify your build process, add your task inside one of the targets below and uncomment it. 
        Other similar extension points exist, see Microsoft.Common.targets.

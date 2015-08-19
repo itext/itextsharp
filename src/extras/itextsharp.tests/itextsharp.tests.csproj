@@ -333,6 +333,11 @@
     <None Include="resources\text\pdf\PdfReaderTest\getLinkTest1.pdf" />
     <None Include="resources\text\pdf\PdfReaderTest\getLinkTest2.pdf" />
     <None Include="resources\text\pdf\PdfReaderTest\RomeoJuliet.pdf" />
+    <None Include="resources\text\pdf\PdfStamperTest\cmp_House_Plan_Final.pdf" />
+    <None Include="resources\text\pdf\PdfStamperTest\cmp_out1.pdf" />
+    <None Include="resources\text\pdf\PdfStamperTest\cmp_out2.pdf" />
+    <None Include="resources\text\pdf\PdfStamperTest\House_Plan_Final.pdf" />
+    <None Include="resources\text\pdf\PdfStamperTest\in.pdf" />
     <None Include="resources\text\pdf\table\keeptogether\tagged_false-keeptogether_false.pdf" />
     <None Include="resources\text\pdf\table\keeptogether\tagged_false-keeptogether_true.pdf" />
     <None Include="resources\text\pdf\table\keeptogether\tagged_true-keeptogether_false.pdf" />
@@ -353,6 +358,7 @@
     <None Include="resources\text\xml\xmp\xmp_metadata_automatic.pdf" />
     <Content Include="resources\text\ChunkTest\logo.gif" />
     <Content Include="resources\text\pdf\fonts\cmaps\CMapParserExTest\cmap_with_def_dictionary_key.txt" />
+    <Content Include="resources\text\pdf\PdfStamperTest\Willi-1.jpg" />
     <Content Include="resources\text\pdf\signature\ds-ks\pkcs12" />
     <Content Include="resources\text\pdf\signature\ds\key" />
     <Content Include="resources\text\pdf\signature\ds-ks\xfa.signed.package.xml" />

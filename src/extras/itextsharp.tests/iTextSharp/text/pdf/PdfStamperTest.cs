@@ -49,6 +49,7 @@ using System.IO;
 using System.Text;
 using itextsharp.tests.iTextSharp.testutils;
 using iTextSharp.testutils;
+using iTextSharp.text;
 using iTextSharp.text.pdf;
 using NUnit.Framework;
 
@@ -76,7 +77,7 @@ namespace itextsharp.tests.iTextSharp.text.pdf {
             }
             stamper.Close();
 
-            new CompareTool().CompareByContent(outPdf, TestResourceUtils.GetResourceAsTempFile(TestResourcesPath, "cmp_out1.pdf"), DestFolder, "diff_");
+            Assert.Null(new CompareTool().CompareByContent(outPdf, TestResourceUtils.GetResourceAsTempFile(TestResourcesPath, "cmp_out1.pdf"), DestFolder, "diff_"));
         }
 
         [Test]
@@ -93,6 +94,29 @@ namespace itextsharp.tests.iTextSharp.text.pdf {
             stamper.Close();
 
             String s = new CompareTool().CompareByContent(outPdf, TestResourceUtils.GetResourceAsTempFile(TestResourcesPath, "cmp_out2.pdf"), DestFolder, "diff_");
+            Assert.Null(s);
+        }
+
+        [Test]
+        public void LayerStampingTest() {
+            String outPdf = DestFolder + "out3.pdf";
+            PdfReader reader =
+                new PdfReader(TestResourceUtils.GetResourceAsStream(TestResourcesPath, "House_Plan_Final.pdf"));
+            PdfStamper stamper = new PdfStamper(reader, File.Create(outPdf));
+
+            PdfLayer logoLayer = new PdfLayer("Logos", stamper.Writer);
+            PdfContentByte cb = stamper.GetUnderContent(1);
+            cb.BeginLayer(logoLayer);
+
+            Image iImage = Image.GetInstance(TestResourceUtils.GetResourceAsStream(TestResourcesPath, "Willi-1.jpg"));
+            iImage.ScalePercent(24f);
+            iImage.SetAbsolutePosition(100, 100);
+            cb.AddImage(iImage);
+
+            cb.EndLayer();
+            stamper.Close();
+
+            Assert.Null(new CompareTool().CompareByContent(outPdf, TestResourceUtils.GetResourceAsTempFile(TestResourcesPath, "cmp_House_Plan_Final.pdf"), DestFolder, "diff_"));
         }
 
 

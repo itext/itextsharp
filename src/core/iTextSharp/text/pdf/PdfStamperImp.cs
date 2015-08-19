@@ -88,6 +88,11 @@ namespace iTextSharp.text.pdf {
     	    return COUNTER;
         }
 
+        /* Flag which defines if PdfLayer objects from existing pdf have been already read.
+         * If no new layers were registered and user didn't fetched layers explicitly via getPdfLayers() method
+         * then original layers are never read - they are simply copied to the new document with whole original catalog. */
+        private bool originalLayersAreRead = false;
+
         /** Creates new PdfStamperImp.
         * @param reader the read PDF
         * @param os the output destination
@@ -1774,7 +1779,8 @@ namespace iTextSharp.text.pdf {
         * @since    2.1.2
         */
         virtual public Dictionary<string,PdfLayer> GetPdfLayers() {
-            if (documentOCG.Count == 0) {
+            if (!originalLayersAreRead) {
+                originalLayersAreRead = true;
                 ReadOCProperties();
             }
             Dictionary<string,PdfLayer> map = new Dictionary<string,PdfLayer>();
@@ -1798,6 +1804,14 @@ namespace iTextSharp.text.pdf {
                 map[key] = layer;
             }
             return map;
+        }
+
+        override internal void RegisterLayer(IPdfOCG layer) {
+            if (!originalLayersAreRead) {
+                originalLayersAreRead = true;
+                ReadOCProperties();
+            }
+            base.RegisterLayer(layer);
         }
 
         override public void CreateXmpMetadata() {

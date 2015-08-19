@@ -2786,7 +2786,7 @@ namespace iTextSharp.text.pdf {
             d.Put(PdfName.LISTMODE, PdfName.VISIBLEPAGES);
         }
         
-        internal void RegisterLayer(IPdfOCG layer) {
+        virtual internal void RegisterLayer(IPdfOCG layer) {
             PdfWriter.CheckPdfIsoConformance(this, PdfIsoKeys.PDFISOKEY_LAYER, layer);
             if (layer is PdfLayer) {
                 PdfLayer la = (PdfLayer)layer;

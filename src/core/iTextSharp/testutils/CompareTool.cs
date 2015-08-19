@@ -191,7 +191,9 @@ public class CompareTool {
         }
 
         public override int GetHashCode() {
-            int hashCode = baseCmpObject.GetHashCode() * 31 + baseOutObject.GetHashCode();
+            int code1 = baseCmpObject != null ? baseCmpObject.GetHashCode() : 1;
+            int code2 = baseOutObject != null ? baseOutObject.GetHashCode() : 1;
+            int hashCode = code1 * 31 + code2;
 
             foreach (PathItem pathItem in path) {
                 hashCode *= 31;
@@ -588,8 +590,8 @@ public class CompareTool {
 
         PdfObject outOcProperties = outReader.Catalog.Get(PdfName.OCPROPERTIES);
         PdfObject cmpOcProperties = cmpReader.Catalog.Get(PdfName.OCPROPERTIES);
-        RefKey outOcPropertiesRef = outOcProperties == null ? null : new RefKey((PdfIndirectReference)outOcProperties);
-        RefKey cmpOcPropertiesRef = cmpOcProperties == null ? null : new RefKey((PdfIndirectReference)cmpOcProperties);
+        RefKey outOcPropertiesRef = outOcProperties is PdfIndirectReference ? new RefKey((PdfIndirectReference)outOcProperties) : null;
+        RefKey cmpOcPropertiesRef = cmpOcProperties is PdfIndirectReference ? new RefKey((PdfIndirectReference)cmpOcProperties) : null;
         CompareObjects(outOcProperties, cmpOcProperties, new ObjectPath(outOcPropertiesRef, cmpOcPropertiesRef), compareResult);
 
 
