@@ -140,5 +140,11 @@ namespace iTextSharp.text
             }
             return false;
         }
+
+	    public override List CloneShallow() {
+		    ZapfDingbatsNumberList clone = new ZapfDingbatsNumberList(type);
+		    PopulateProperties(clone);
+		    return clone;
+	    }
     }
 }

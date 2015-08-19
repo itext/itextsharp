@@ -107,5 +107,11 @@ namespace iTextSharp.text {
             }
             return false;
         }
+
+        public override List CloneShallow() {
+            RomanList clone = new RomanList();
+            PopulateProperties(clone);
+            return clone;
+        }
     }
 }

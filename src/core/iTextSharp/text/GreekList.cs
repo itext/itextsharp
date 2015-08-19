@@ -115,5 +115,11 @@ namespace iTextSharp.text
             }
             return false;
         }
+
+	    public override List CloneShallow() {
+		    GreekList clone = new GreekList();
+		    PopulateProperties(clone);
+		    return clone;
+	    }
     }
 }

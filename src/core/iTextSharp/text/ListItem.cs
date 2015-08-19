@@ -225,6 +225,12 @@ namespace iTextSharp.text {
         }
     
         // methods
+
+        public override Paragraph CloneShallow(bool spacingBefore) {
+            ListItem copy = new ListItem();
+            PopulateProperties(copy, spacingBefore);
+            return copy;
+        }
     
         // methods to retrieve information
     

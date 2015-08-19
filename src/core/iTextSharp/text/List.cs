@@ -306,6 +306,21 @@ namespace iTextSharp.text {
             }
             return false;
         }
+
+        public virtual List CloneShallow() {
+            List clone = new List();
+            PopulateProperties(clone);
+            return clone;
+        }
+
+        protected void PopulateProperties(List clone) {
+            clone.indentationLeft = indentationLeft;
+            clone.indentationRight = indentationRight;
+            clone.autoindent = autoindent;
+            clone.alignindent = alignindent;
+            clone.symbolIndent = symbolIndent;
+            clone.symbol = symbol;
+        }
     
         // extra methods
         

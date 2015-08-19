@@ -106,7 +106,7 @@ namespace iTextSharp.text {
         protected float paddingTop;
         protected PdfName role = PdfName.P;
         protected Dictionary<PdfName, PdfObject> accessibleAttributes = null;
-        protected AccessibleElementId id = new AccessibleElementId();
+        private AccessibleElementId id = new AccessibleElementId();
 
         // constructors
     
@@ -193,6 +193,11 @@ namespace iTextSharp.text {
          */
         public virtual Paragraph CloneShallow(bool spacingBefore) {
             Paragraph copy = new Paragraph();
+            PopulateProperties(copy, spacingBefore);
+    	    return copy;
+        }
+
+        protected void PopulateProperties(Paragraph copy, bool spacingBefore) {
             copy.Font = Font;
             copy.Alignment = Alignment;
             copy.SetLeading(Leading, multipliedLeading);
@@ -209,7 +214,6 @@ namespace iTextSharp.text {
                 copy.accessibleAttributes = new Dictionary<PdfName, PdfObject>(accessibleAttributes);
             copy.TabSettings = this.TabSettings;
             copy.KeepTogether = this.KeepTogether;
-            return copy;
         }
 
         /**
