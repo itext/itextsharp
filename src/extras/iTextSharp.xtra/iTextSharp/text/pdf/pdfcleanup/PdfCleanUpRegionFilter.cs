@@ -72,13 +72,17 @@ namespace iTextSharp.xtra.iTextSharp.text.pdf.pdfcleanup {
             LineSegment ascent = renderInfo.GetAscentLine();
             LineSegment descent = renderInfo.GetDescentLine();
 
-            Rectangle r1 = new Rectangle(Math.Min(descent.GetStartPoint()[0], descent.GetEndPoint()[0]),
-                                         descent.GetStartPoint()[1],
-                                         Math.Max(descent.GetStartPoint()[0], descent.GetEndPoint()[0]),
-                                         ascent.GetEndPoint()[1]);
+        Point2D[] glyphRect = new Point2D[] {
+                new Point2D.Float(ascent.GetStartPoint()[0], ascent.GetStartPoint()[1]),
+                new Point2D.Float(ascent.GetEndPoint()[0], ascent.GetEndPoint()[1]),
+                new Point2D.Float(descent.GetEndPoint()[0], descent.GetEndPoint()[1]),
+                new Point2D.Float(descent.GetStartPoint()[0], descent.GetStartPoint()[1]),
+        };
 
             foreach (Rectangle rectangle in rectangles) {
-                if (Intersect(r1, rectangle)) {
+                Point2D[] redactRect = GetVertices(rectangle);
+
+                if (Intersect(glyphRect, redactRect)) {
                     return false;
                 }
             }
@@ -163,7 +167,7 @@ namespace iTextSharp.xtra.iTextSharp.text.pdf.pdfcleanup {
 
             foreach (Rectangle rectangle in rectangles) {
                 Point2D[] transfRectVertices = TransformPoints(ctm, true, GetVertices(rectangle));
-                AddRect(clipper, transfRectVertices);
+                AddRect(clipper, transfRectVertices, PolyType.ptClip);
             }
 
             PolyFillType fillType = PolyFillType.pftNonZero;
@@ -412,8 +416,8 @@ namespace iTextSharp.xtra.iTextSharp.text.pdf.pdfcleanup {
             }
         }
 
-        private static void AddRect(Clipper clipper, Point2D[] rectVertices) {
-            clipper.AddPath(ConvertToIntPoints(new List<Point2D>(rectVertices)), PolyType.ptClip, true);
+        private static void AddRect(Clipper clipper, Point2D[] rectVertices, PolyType polyType) {
+            clipper.AddPath(ConvertToIntPoints(new List<Point2D>(rectVertices)), polyType, true);
         }
 
         private static List<IntPoint> ConvertToIntPoints(IList<Point2D> points) {
@@ -478,9 +482,15 @@ namespace iTextSharp.xtra.iTextSharp.text.pdf.pdfcleanup {
         }
 
 
-        private bool Intersect(Rectangle r1, Rectangle r2) {
-            return (r1.Left < r2.Right && r1.Right > r2.Left &&
-                    r1.Bottom < r2.Top && r1.Top > r2.Bottom);
+        private bool Intersect(Point2D[] rect1, Point2D[] rect2) {
+            Clipper clipper = new Clipper();
+            AddRect(clipper, rect1, PolyType.ptSubject);
+            AddRect(clipper, rect2, PolyType.ptClip);
+
+            List<List<IntPoint>> paths = new List<List<IntPoint>>();
+            clipper.Execute(ClipType.ctIntersection, paths, PolyFillType.pftNonZero, PolyFillType.pftNonZero);
+
+            return paths.Count != 0;
         }
 
         /**
