@@ -593,7 +593,6 @@ namespace iTextSharp.text.pdf {
             return t;
         }
 
-
         /** Indicates if we need to reuse the existing appearance as layer 0. */
         private bool reuseAppearance = false;
 

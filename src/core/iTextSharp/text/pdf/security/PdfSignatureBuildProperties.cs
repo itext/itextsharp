@@ -44,14 +44,14 @@
  */
 
 namespace iTextSharp.text.pdf.security {
+
     /**
      * Dictionary that stores signature build properties.
      * @author Kwinten Pisman
      */
-
     internal class PdfSignatureBuildProperties : PdfDictionary {
-        /** Creates new PdfSignatureBuildProperties */
 
+        /** Creates new PdfSignatureBuildProperties */
         public PdfSignatureBuildProperties() : base() {
         }
 
@@ -61,7 +61,6 @@ namespace iTextSharp.text.pdf.security {
          * 
          * @param name
          */
-
         virtual public string SignatureCreator {
             set { GetPdfSignatureAppProperty().SignatureCreator = value; }
         }
@@ -73,7 +72,6 @@ namespace iTextSharp.text.pdf.security {
          * 
          * @return {@link PdfSignatureAppDictionary}
          */
-
         private PdfSignatureAppDictionary GetPdfSignatureAppProperty() {
             PdfSignatureAppDictionary appPropDic = (PdfSignatureAppDictionary) GetAsDict(PdfName.APP);
             if (appPropDic == null) {

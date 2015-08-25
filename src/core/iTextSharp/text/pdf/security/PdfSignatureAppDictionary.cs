@@ -49,8 +49,8 @@ namespace iTextSharp.text.pdf.security {
      */
 
     internal class PdfSignatureAppDictionary : PdfDictionary {
-        /** Creates new PdfSignatureAppDictionary */
 
+        /** Creates new PdfSignatureAppDictionary */
         public PdfSignatureAppDictionary() : base() {
         }
 
@@ -60,7 +60,6 @@ namespace iTextSharp.text.pdf.security {
          * 
          * @param name
          */
-
         virtual public string SignatureCreator {
             set { Put(PdfName.NAME, new PdfName(value)); }
         }

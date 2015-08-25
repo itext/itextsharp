@@ -877,8 +877,16 @@ namespace iTextSharp.text.pdf.security {
                 v.Add(new DerObjectIdentifier(SecurityIDs.ID_AA_SIGNING_CERTIFICATE_V2));
 
                 Asn1EncodableVector aaV2 = new Asn1EncodableVector();
-                AlgorithmIdentifier algoId = new AlgorithmIdentifier(new DerObjectIdentifier(digestAlgorithmOid), null);
-                aaV2.Add(algoId);
+                String sha256Oid = DigestAlgorithms.GetAllowedDigests(DigestAlgorithms.SHA256);
+
+                // If we look into X.690-0207, clause 11.5, we can see that using DER all the components of a sequence having
+                // default values shall not be included. According to RFC 5035, 5.4.1.1, definition of ESSCertIDv2, default
+                // AlgorithmIdentifier is sha256.
+                if (!sha256Oid.Equals(digestAlgorithmOid)) {
+                    AlgorithmIdentifier algoId = new AlgorithmIdentifier(new DerObjectIdentifier(digestAlgorithmOid));
+                    aaV2.Add(algoId);
+                }
+
                 byte[] dig = DigestAlgorithms.Digest(GetHashAlgorithm(), signCert.GetEncoded()); 
                 aaV2.Add(new DerOctetString(dig));
                 
