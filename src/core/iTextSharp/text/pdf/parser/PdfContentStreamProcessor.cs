@@ -863,7 +863,7 @@ namespace iTextSharp.text.pdf.parser {
         }
 
         /**
-         * A content operator implementation (CS).
+         * A content operator implementation (cs).
          */
         private class SetColorSpaceFill : IContentOperator{
 		    virtual public void Invoke(PdfContentStreamProcessor processor, PdfLiteral oper, List<PdfObject> operands) {
@@ -872,7 +872,7 @@ namespace iTextSharp.text.pdf.parser {
         }
 
         /**
-         * A content operator implementation (cs).
+         * A content operator implementation (CS).
          */
         private class SetColorSpaceStroke : IContentOperator{
 		    virtual public void Invoke(PdfContentStreamProcessor processor, PdfLiteral oper, List<PdfObject> operands) {
