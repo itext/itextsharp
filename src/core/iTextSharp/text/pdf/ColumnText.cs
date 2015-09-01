@@ -290,10 +290,12 @@ namespace iTextSharp.text.pdf {
          * @return itself
          */    
         virtual public ColumnText SetACopy(ColumnText org) {
-            SetSimpleVars(org);
-            if (org.bidiLine != null)
-                bidiLine = new BidiLine(org.bidiLine);
-            return this;
+            if (org != null) {
+                SetSimpleVars(org);
+                if (org.bidiLine != null)
+                    bidiLine = new BidiLine(org.bidiLine);
+            }
+            return this;    
         }
     
         virtual protected internal void SetSimpleVars(ColumnText org) {
