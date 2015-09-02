@@ -539,6 +539,7 @@ namespace iTextSharp.text.pdf {
             // the text size and color
             PdfString da = merged.GetAsString(PdfName.DA);
             if (da != null) {
+                bool fontFallBack = false;
                 Object[] dab = SplitDAelements(da.ToUnicodeString());
                 if (dab[DA_SIZE] != null)
                     tx.FontSize = (float)dab[DA_SIZE];
@@ -549,9 +550,9 @@ namespace iTextSharp.text.pdf {
                     if (dr != null) {
                         PdfDictionary font = dr.GetAsDict(PdfName.FONT);
                         if (font != null) {
-                            PdfObject po = font.Get(new PdfName((String)dab[DA_FONT]));
+                            PdfObject po = font.Get(new PdfName((String) dab[DA_FONT]));
                             if (po != null && po.Type == PdfObject.INDIRECT) {
-                                PRIndirectReference por = (PRIndirectReference)po;
+                                PRIndirectReference por = (PRIndirectReference) po;
                                 BaseFont bp = new DocumentFont((PRIndirectReference) po, dr.GetAsDict(PdfName.ENCODING));
                                 tx.Font = bp;
                                 int porkey = por.Number;
@@ -559,18 +560,19 @@ namespace iTextSharp.text.pdf {
                                 extensionFonts.TryGetValue(porkey, out porf);
                                 if (porf == null) {
                                     if (!extensionFonts.ContainsKey(porkey)) {
-                                        PdfDictionary fo = (PdfDictionary)PdfReader.GetPdfObject(po);
+                                        PdfDictionary fo = (PdfDictionary) PdfReader.GetPdfObject(po);
                                         PdfDictionary fd = fo.GetAsDict(PdfName.FONTDESCRIPTOR);
                                         if (fd != null) {
-                                            PRStream prs = (PRStream)PdfReader.GetPdfObject(fd.Get(PdfName.FONTFILE2));
+                                            PRStream prs = (PRStream) PdfReader.GetPdfObject(fd.Get(PdfName.FONTFILE2));
                                             if (prs == null)
-                                                prs = (PRStream)PdfReader.GetPdfObject(fd.Get(PdfName.FONTFILE3));
+                                                prs = (PRStream) PdfReader.GetPdfObject(fd.Get(PdfName.FONTFILE3));
                                             if (prs == null) {
                                                 extensionFonts[porkey] = null;
                                             }
                                             else {
                                                 try {
-                                                    porf = BaseFont.CreateFont("font.ttf", BaseFont.IDENTITY_H, true, false, PdfReader.GetStreamBytes(prs), null);
+                                                    porf = BaseFont.CreateFont("font.ttf", BaseFont.IDENTITY_H, true,
+                                                        false, PdfReader.GetStreamBytes(prs), null);
                                                 }
                                                 catch {
                                                 }
@@ -580,30 +582,40 @@ namespace iTextSharp.text.pdf {
                                     }
                                 }
                                 if (tx is TextField)
-                                    ((TextField)tx).ExtensionFont = porf;
+                                    ((TextField) tx).ExtensionFont = porf;
                             }
                             else {
-                                BaseFont bf;
-                                if (!localFonts.TryGetValue((string)dab[DA_FONT], out bf)) {
-                                    String[] fn;
-                                    stdFieldFontNames.TryGetValue((string)dab[DA_FONT], out fn);
-                                    if (fn != null) {
-                                        try {
-                                            String enc = "winansi";
-                                            if (fn.Length > 1)
-                                                enc = fn[1];
-                                            bf = BaseFont.CreateFont(fn[0], enc, false);
-                                            tx.Font = bf;
-                                        }
-                                        catch {
-                                            // empty
-                                        }
-                                    }
-                                }
-                                else
-                                    tx.Font = bf;
+                                fontFallBack = true;
                             }
                         }
+                        else {
+                            fontFallBack = true;
+                        }
+                    }
+                    if (fontFallBack) {
+                        BaseFont bf;
+                        if (!localFonts.TryGetValue((string)dab[DA_FONT], out bf))
+                        {
+                            String[] fn;
+                            stdFieldFontNames.TryGetValue((string)dab[DA_FONT], out fn);
+                            if (fn != null)
+                            {
+                                try
+                                {
+                                    String enc = "winansi";
+                                    if (fn.Length > 1)
+                                        enc = fn[1];
+                                    bf = BaseFont.CreateFont(fn[0], enc, false);
+                                    tx.Font = bf;
+                                }
+                                catch
+                                {
+                                    // empty
+                                }
+                            }
+                        }
+                        else
+                            tx.Font = bf;
                     }
                 }
             }
