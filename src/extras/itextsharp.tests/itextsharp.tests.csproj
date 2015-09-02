@@ -114,10 +114,11 @@
     <Compile Include="iTextSharp\text\pdf\table\RowspanTest.cs" />
     <Compile Include="iTextSharp\text\pdf\table\ColorsInTaggedDocumentsTest.cs" />
     <Compile Include="iTextSharp\text\pdf\table\LargeTableTest.cs" />
-	<Compile Include="iTextSharp\text\pdf\PdfStamperTest.cs" />
-	<Compile Include="iTextSharp\text\pdf\NamedDestinationsTest.cs" />
+    <Compile Include="iTextSharp\text\pdf\PdfStamperTest.cs" />
+    <Compile Include="iTextSharp\text\pdf\NamedDestinationsTest.cs" />
     <Compile Include="iTextSharp\text\pdf\table\NestedTablesTest.cs" />
     <Compile Include="iTextSharp\text\pdf\TestPdfCopyAndStamp.cs" />
+    <Compile Include="iTextSharp\text\pdf\TextExpansionTest.cs" />
     <Compile Include="iTextSharp\text\pdf\TextFieldTest.cs" />
     <Compile Include="iTextSharp\text\pdf\ToUnicodeNonBreakableSpacesTest.cs" />
     <Compile Include="iTextSharp\text\pdf\UnbalancedOperatorsTest.cs" />
@@ -131,7 +132,7 @@
     <Compile Include="Properties\AssemblyInfo.cs" />
     <Compile Include="iTextSharp\text\pdf\TaggedPdfCopyTest.cs" />
     <Compile Include="iTextSharp\text\pdf\TaggedPdfTest.cs" />
-	<Compile Include="iTextSharp\text\pdf\StringUtilsTest.cs" />
+    <Compile Include="iTextSharp\text\pdf\StringUtilsTest.cs" />
     <Compile Include="iTextSharp\text\pdf\table\KeepRowsTogetherTest.cs" />
   </ItemGroup>
   <ItemGroup>

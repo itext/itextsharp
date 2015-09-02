@@ -1644,7 +1644,30 @@ namespace iTextSharp.text.pdf {
         * @param inlineImage <CODE>true</CODE> to place this image inline, <CODE>false</CODE> otherwise
         * @throws DocumentException on error
         */
-        public virtual void AddImage(Image image, double a, double b, double c, double d, double e, double f, bool inlineImage) {
+
+        public virtual void AddImage(Image image, double a, double b, double c, double d, double e, double f,
+            bool inlineImage) {
+            AddImage(image, a, b, c, d, e, f, inlineImage, false);
+        }
+
+        /**
+         * Adds an <CODE>Image</CODE> to the page. The positioning of the <CODE>Image</CODE>
+         * is done with the transformation matrix. To position an <CODE>image</CODE> at (x,y)
+         * The image can be placed inline.
+         * @param image the <CODE>Image</CODE> object
+         * @param a an element of the transformation matrix
+         * @param b an element of the transformation matrix
+         * @param c an element of the transformation matrix
+         * @param d an element of the transformation matrix
+         * @param e an element of the transformation matrix
+         * @param f an element of the transformation matrix
+         * @param inlineImage <CODE>true</CODE> to place this image inline, <CODE>false</CODE> otherwise
+         * @param isMCBlockOpened <CODE>true</CODE> not to open MCBlock, <CODE>false</CODE> otherwise
+         * @throws DocumentException on error
+         */
+        protected internal void AddImage(Image image, double a, double b, double c, double d, double e, double f, bool inlineImage, 
+            bool isMCBlockOpened) {
+            
             AffineTransform transform = new AffineTransform(a, b, c, d, e, f);
 
             if (image.Layer != null)
@@ -1682,7 +1705,7 @@ namespace iTextSharp.text.pdf {
                 }
                 float w = template.Width;
                 float h = template.Height;
-                AddTemplate(template, a / w, b / w, c / h, d / h, e, f);
+                AddTemplate(template, a / w, b / w, c / h, d / h, e, f, isMCBlockOpened);
             }
             else {
                 content.Append("q ");
@@ -4075,13 +4098,24 @@ namespace iTextSharp.text.pdf {
         }
 #endif// DRAWING
 
+         /**
+        * Begins a marked content sequence. This sequence will be tagged with the structure <CODE>struc</CODE>.
+        * The same structure can be used several times to connect text that belongs to the same logical segment
+        * but is in a different location, like the same paragraph crossing to another page, for example.
+        * @param struc the tagging structure
+        */
+
+        public virtual void BeginMarkedContentSequence(PdfStructureElement struc) {
+            BeginMarkedContentSequence(struc    , null);
+        }
+
         /**
         * Begins a marked content sequence. This sequence will be tagged with the structure <CODE>struc</CODE>.
         * The same structure can be used several times to connect text that belongs to the same logical segment
         * but is in a different location, like the same paragraph crossing to another page, for example.
         * @param struc the tagging structure
         */    
-        virtual public void BeginMarkedContentSequence(PdfStructureElement struc) {        
+        virtual public void BeginMarkedContentSequence(PdfStructureElement struc, String expansion) {        
             PdfObject obj = struc.Get(PdfName.K);
             int[] structParentMarkPoint = pdf.GetStructParentIndexAndNextMarkPoint(CurrentPage);
             int structParent = structParentMarkPoint[0];
@@ -4113,7 +4147,11 @@ namespace iTextSharp.text.pdf {
             }
             SetMcDepth(GetMcDepth() + 1);
             int contentSize = content.Size;
-            content.Append(struc.Get(PdfName.S).GetBytes()).Append(" <</MCID ").Append(mark).Append(">> BDC").Append_i(separator);
+            content.Append(struc.Get(PdfName.S).GetBytes()).Append(" <</MCID ").Append(mark);
+            if (expansion != null) {
+                content.Append("/E(").Append(expansion).Append(")");
+            }
+            content.Append(">> BDC").Append_i(separator);
             markedContentSize += content.Size - contentSize;
         }
 
@@ -4264,6 +4302,7 @@ namespace iTextSharp.text.pdf {
                         bool inTextLocal = inText;
                         if (inText)
                             EndText();
+
                         BeginMarkedContentSequence(element.Role, propertiesDict, true);
                         if (inTextLocal)
                             BeginText(true);
@@ -4273,7 +4312,15 @@ namespace iTextSharp.text.pdf {
                             bool inTextLocal = inText;
                             if (inText)
                                 EndText();
-                            BeginMarkedContentSequence(structureElement);
+                            if (null != element.GetAccessibleAttributes() && null != element.GetAccessibleAttribute(PdfName.E))
+                            {
+                                BeginMarkedContentSequence(structureElement, element.GetAccessibleAttribute(PdfName.E).ToString());
+                                element.SetAccessibleAttribute(PdfName.E, null);
+                            }
+                            else
+                            {
+                                BeginMarkedContentSequence(structureElement);
+                            }
                             if (inTextLocal)
                                 BeginText(true);
                         }

@@ -1394,11 +1394,13 @@ namespace iTextSharp.text.pdf {
             float yMarker = text.YTLM;
             bool adjustMatrix = false;
             float tabPosition = 0;
-            
+
+            bool isMCBlockOpened = false;
             // looping over all the chunks in 1 line
             foreach (PdfChunk chunk in line) {
                 if (IsTagged(writer) && chunk.accessibleElement != null) {
                     text.OpenMCBlock(chunk.accessibleElement);
+                    isMCBlockOpened = true;
                 }
                 BaseColor color = chunk.Color;
                 float fontSize = chunk.Font.Size;
@@ -1634,7 +1636,7 @@ namespace iTextSharp.text.pdf {
                             float[] matrix = image.GetMatrix(chunk.ImageScalePercentage);
                             matrix[Image.CX] = xMarker + chunk.ImageOffsetX - matrix[Image.CX];
                             matrix[Image.CY] = yMarker + chunk.ImageOffsetY - matrix[Image.CY];
-                            graphics.AddImage(image, matrix[0], matrix[1], matrix[2], matrix[3], matrix[4], matrix[5]);
+                            graphics.AddImage(image, matrix[0], matrix[1], matrix[2], matrix[3], matrix[4], matrix[5], false, isMCBlockOpened);
                             text.MoveText(xMarker + lastBaseFactor + chunk.ImageWidth - text.XTLM, 0);
                         }
                     }
