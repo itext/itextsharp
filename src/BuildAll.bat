@@ -4,8 +4,8 @@ if not defined msbuildExec (
 	set msbuildExec=msbuild
 )
 
-if not defined tortoiseProcExec (
-	set tortoiseProcExec=tortoiseProc
+if not defined gitExec (
+	set gitExec=git
 )
 
 if not defined sevenZipExec (
@@ -15,13 +15,10 @@ if not defined sevenZipExec (
 
 echo Cleaning up...
 
-rem update
-rem call TortoiseProc.exe /command:update /path:%~dp0 /closeonend:0
-
-rem cleanup   /revert  /refreshshell
-call "%tortoiseProcExec%" /command:cleanup /nodlg /noui /noprogressui /path:%~dp0 /cleanup /delunversioned /delignored /externals
+call "%gitExec%" reset --hard
+call "%gitExec%" pull
+call "%gitExec%" clean -qfdx
 if errorlevel 1 goto cleanUpFailed
-
 
 
 echo Creating archives with sources...
@@ -126,7 +123,7 @@ exit
 
 :cleanUpFailed
 echo:
-echo Cleaning up failed. Please, make sure that either tortoiseProcExec path variable is defined or tortoiseProc.exe is available to call from command line. The process will be aborted.
+echo Cleaning up failed. Please, make sure that either gitExec path variable is defined or git.exe is available to call from command line. The process will be aborted.
 echo:
 pause
 exit
