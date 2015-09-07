@@ -1305,6 +1305,20 @@ namespace iTextSharp.text.pdf {
         virtual public bool SetField(String name, String value) {
             return SetField(name, value, null);
         }
+
+        /** Sets the field value.
+        * @param name the fully qualified field name or the partial name in the case of XFA forms
+        * @param value the field value
+        * @param saveAppearance save the current appearance of the field or not
+        * @throws IOException on error
+        * @throws DocumentException on error
+        * @return <CODE>true</CODE> if the field was found and changed,
+        * <CODE>false</CODE> otherwise
+        */
+        virtual public bool SetField(String name, String value, bool saveAppearance)
+        {
+            return SetField(name, value, null, saveAppearance);
+        }
         
         /**
          * Sets the rich value for the given field.  See <a href="http://www.adobe.com/content/dam/Adobe/en/devnet/pdf/pdfs/PDF32000_2008.pdf">PDF Reference</a> chapter 
@@ -1367,8 +1381,26 @@ namespace iTextSharp.text.pdf {
         * <CODE>false</CODE> otherwise
         * @throws IOException on error
         * @throws DocumentException on error
-        */    
-        virtual public bool SetField(String name, String value, String display) {
+        */
+        public virtual bool SetField(String name, String value, String display) {
+            return SetField(name, value, false);
+        }
+
+        /** Sets the field value and the display string. The display string
+        * is used to build the appearance in the cases where the value
+        * is modified by Acrobat with JavaScript and the algorithm is
+        * known.
+        * @param name the fully qualified field name or the partial name in the case of XFA forms
+        * @param value the field value
+        * @param display the string that is used for the appearance. If <CODE>null</CODE>
+        * the <CODE>value</CODE> parameter will be used
+        * @param saveAppearance save the current appearance of the field or not
+        * @return <CODE>true</CODE> if the field was found and changed,
+        * <CODE>false</CODE> otherwise
+        * @throws IOException on error
+        * @throws DocumentException on error
+        */
+        virtual public bool SetField(String name, String value, String display, bool saveAppearance) {
             if (writer == null)
                 throw new DocumentException(MessageLocalization.GetComposedMessage("this.acrofields.instance.is.read.only"));
             if (xfa.XfaPresent) {
@@ -1489,7 +1521,7 @@ namespace iTextSharp.text.pdf {
                         merged.Put(PdfName.AS, PdfName.Off_);
                         widget.Put(PdfName.AS, PdfName.Off_);
                     }
-                    if (generateAppearances) {
+                    if (generateAppearances && !saveAppearance) {
                         PdfAppearance app = GetAppearance(merged, display, name);
                         if (normal != null)
                             normal.Put(merged.GetAsName(PdfName.AS), app.IndirectReference);
