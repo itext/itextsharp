@@ -1434,7 +1434,11 @@ namespace iTextSharp.text.pdf {
                 PdfNumber prev = (PdfNumber)trailer2.Get(PdfName.PREV);
                 if (prev == null)
                     break;
-                tokens.Seek(prev.LongValue);
+                if (prev.LongValue == startxref) {
+                    throw new InvalidPdfException(MessageLocalization.GetComposedMessage("trailer.prev.entry.points.to.its.own.cross.reference.section"));
+                }
+                startxref = prev.LongValue;
+                tokens.Seek(startxref);
                 trailer2 = ReadXrefSection();
             }
         }
