@@ -313,6 +313,7 @@
     <Compile Include="iTextSharp\tool\xml\examples\css\text\align\text\Align_text01.cs" />
     <Compile Include="iTextSharp\tool\xml\examples\css\text\decoration\cell\Decoration_cell01.cs" />
     <Compile Include="iTextSharp\tool\xml\examples\css\text\decoration\div\Decoration_div01.cs" />
+    <Compile Include="iTextSharp\tool\xml\examples\css\text\decoration\div\Decoration_div02.cs" />
     <Compile Include="iTextSharp\tool\xml\examples\css\text\decoration\list\Decoration_list01.cs" />
     <Compile Include="iTextSharp\tool\xml\examples\css\text\decoration\table\Decoration_table01.cs" />
     <Compile Include="iTextSharp\tool\xml\examples\css\text\decoration\text\Decoration_text01.cs" />

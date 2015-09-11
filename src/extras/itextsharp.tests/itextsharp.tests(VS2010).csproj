@@ -190,6 +190,11 @@
     <Content Include="resources\text\pdf\TaggedPdfTest\xml\test18.xml" />
     <Content Include="resources\text\pdf\TaggedPdfTest\xml\test19.xml" />
     <Content Include="resources\text\pdf\TaggedPdfTest\xml\test2.xml" />
+    <Content Include="resources\text\pdf\TaggedPdfTest\xml\test20.xml" />
+    <Content Include="resources\text\pdf\TaggedPdfTest\xml\test22.xml" />
+    <Content Include="resources\text\pdf\TaggedPdfTest\xml\test23.xml" />
+    <Content Include="resources\text\pdf\TaggedPdfTest\xml\test24.xml" />
+    <Content Include="resources\text\pdf\TaggedPdfTest\xml\test25.xml" />
     <Content Include="resources\text\pdf\TaggedPdfTest\xml\test3.xml" />
     <Content Include="resources\text\pdf\TaggedPdfTest\xml\test4.xml" />
     <Content Include="resources\text\pdf\TaggedPdfTest\xml\test5.xml" />
@@ -242,6 +247,7 @@
     <None Include="resources\text\pdf\FontFamilyTest\NotoSansCJKjp-Bold.otf" />
     <None Include="resources\text\pdf\FontFamilyTest\NotoSansCJKjp-Regular.otf" />
     <None Include="resources\text\pdf\fonts\cmaps\CMapParserExTest\cmap_results_in_empty_map.cmap" />
+    <None Include="resources\text\pdf\FreeMonoBold.ttf" />
     <None Include="resources\text\pdf\mc\SF2809.pdf" />
     <None Include="resources\text\pdf\mc\SF2809_alt.pdf" />
     <None Include="resources\text\pdf\MultithreadedTtfTest\FreeSans.ttf" />
@@ -369,6 +375,7 @@
     <None Include="resources\text\pdf\table\RowspanTest\nestedtabletest.pdf" />
     <None Include="resources\text\pdf\table\RowspanTest\rowspantest.pdf" />
     <None Include="resources\text\pdf\table\nestedTablesTest\cmp_nestedTablesTest.pdf" />
+    <None Include="resources\text\pdf\TaggedPdfTest\out25.pdf" />
     <None Include="resources\text\pdf\TextFieldTest\textfield-top-visible-0.pdf" />
     <None Include="resources\text\pdf\TextFieldTest\textfield-top-visible-1.pdf" />
     <None Include="resources\text\pdf\TextFieldTest\textfield-top-visible-2.pdf" />

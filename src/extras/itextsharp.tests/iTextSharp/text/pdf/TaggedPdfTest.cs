@@ -46,6 +46,7 @@
 using System;
 using System.Diagnostics;
 using System.IO;
+using iTextSharp.testutils;
 using Microsoft.XmlDiffPatch;
 using NUnit.Framework;
 using iTextSharp.text;
@@ -1088,9 +1089,10 @@ namespace itextsharp.tests.text.pdf {
             p.SetAccessibleAttribute(PdfName.ACTUALTEXT, new PdfString("Paragraph ALT Text"));
             p.SetAccessibleAttribute(PdfName.ALT, new PdfString("Paragraph ALT Text"));
             document.Add(p);
-
-
-            Chunk ck = new Chunk("Span testing testing", FontFactory.GetFont(RESOURCES + @"..\FreeMonoBold.ttf", BaseFont.WINANSI, BaseFont.EMBEDDED, 12));
+            
+            BaseFont bFont = BaseFont.CreateFont(RESOURCES + @"..\FreeMonoBold.ttf", BaseFont.WINANSI, BaseFont.EMBEDDED);
+            Font font = new Font(bFont, 12);
+            Chunk ck = new Chunk("Span testing testing", font);
             ck.SetAccessibleAttribute(PdfName.ACTUALTEXT, new PdfString("Span ALT Text"));
             ck.SetAccessibleAttribute(PdfName.ALT, new PdfString("Span ALT Text"));
             p = new Paragraph(ck);
@@ -1109,6 +1111,54 @@ namespace itextsharp.tests.text.pdf {
 
             fos.Close();
             CompareResults("24");
+        }
+
+        [Test]
+        public virtual void CreateTagedPdf25() {
+            Document document = new Document();
+            MemoryStream baos = new MemoryStream();
+
+            PdfWriter writer = PdfWriter.GetInstance(document, baos);
+
+            writer.ViewerPreferences = PdfWriter.DisplayDocTitle;
+
+            writer.PdfVersion = PdfWriter.VERSION_1_7;
+            writer.SetTagged();
+            PdfDictionary info = writer.Info;
+            info.Put(PdfName.TITLE, new PdfString("Testing"));
+            writer.CreateXmpMetadata();
+
+            document.Open();
+            document.AddLanguage("en_US");
+            document.SetAccessibleAttribute(PdfName.LANG, new PdfString("en_US"));
+
+            string longParagraphString = "Long teeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeext Paragraph testing testing";
+            BaseFont bFont = BaseFont.CreateFont(RESOURCES + @"..\FreeMonoBold.ttf", BaseFont.WINANSI, BaseFont.EMBEDDED);
+            Font font = new Font(bFont, 12);
+            Paragraph p = new Paragraph(longParagraphString, font);
+            document.Add(p);
+
+            string longChunkString = "Long teeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeext Span testing testing";
+            Chunk ck = new Chunk(longChunkString, font);
+            p = new Paragraph(ck);
+            document.Add(p);
+
+            document.Close();
+            FileStream fos = new FileStream("TaggedPdfTest/pdf/out25.pdf", FileMode.Create);
+            byte[] buff = baos.ToArray();
+            fos.Write(buff, 0, buff.Length);
+            fos.Flush();
+            fos.Close();
+            CompareResults("25");
+
+            CompareTool compareTool = new CompareTool();
+            string cmpFile = RESOURCES + @"out25.pdf";
+            string errorMessage = compareTool.CompareByContent("TaggedPdfTest/pdf/out25.pdf", cmpFile,
+                "TaggedPdfTest/pdf/", "diff_");
+            if (errorMessage != null) {
+                Assert.Fail(errorMessage);
+            }
+
         }
 
         [TearDown]
