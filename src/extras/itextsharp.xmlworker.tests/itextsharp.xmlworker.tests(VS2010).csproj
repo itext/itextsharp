@@ -325,6 +325,7 @@
     <Compile Include="iTextSharp\tool\xml\examples\css\text\align\text\Align_text01.cs" />
     <Compile Include="iTextSharp\tool\xml\examples\css\text\decoration\cell\Decoration_cell01.cs" />
     <Compile Include="iTextSharp\tool\xml\examples\css\text\decoration\div\Decoration_div01.cs" />
+    <Compile Include="iTextSharp\tool\xml\examples\css\text\decoration\div\Decoration_div02.cs" />
     <Compile Include="iTextSharp\tool\xml\examples\css\text\decoration\list\Decoration_list01.cs" />
     <Compile Include="iTextSharp\tool\xml\examples\css\text\decoration\table\Decoration_table01.cs" />
     <Compile Include="iTextSharp\tool\xml\examples\css\text\decoration\text\Decoration_text01.cs" />
@@ -574,6 +575,8 @@
     <Content Include="resources\com\itextpdf\tool\xml\examples\css\background\background_color\list\background_color_list02\background_color_list02.html" />
     <Content Include="resources\com\itextpdf\tool\xml\examples\css\background\background_color\table\background_color_table01\background_color_table01.html" />
     <Content Include="resources\com\itextpdf\tool\xml\examples\css\background\background_color\text\background_color_text01\background_color_text01.html" />
+    <Content Include="resources\com\itextpdf\tool\xml\examples\css\background\background_image\div\background_image_div01\background_image_div01.html" />
+    <Content Include="resources\com\itextpdf\tool\xml\examples\css\background\background_image\div\background_image_div01\Desert.jpg" />
     <Content Include="resources\com\itextpdf\tool\xml\examples\css\border\border\cell\border_cell01\border_cell01.html" />
     <Content Include="resources\com\itextpdf\tool\xml\examples\css\border\border\cell\inheritedTableBorder\inheritedTableBorder.html" />
     <Content Include="resources\com\itextpdf\tool\xml\examples\css\border\border\div\border_div01\border_div01.html" />
@@ -880,6 +883,7 @@
     <Content Include="resources\com\itextpdf\tool\xml\examples\css\text\align\text\align_text01\align_text01.html" />
     <Content Include="resources\com\itextpdf\tool\xml\examples\css\text\decoration\cell\decoration_cell01\decoration_cell01.html" />
     <Content Include="resources\com\itextpdf\tool\xml\examples\css\text\decoration\div\decoration_div01\decoration_div01.html" />
+    <Content Include="resources\com\itextpdf\tool\xml\examples\css\text\decoration\div\decoration_div02\decoration_div02.html" />
     <Content Include="resources\com\itextpdf\tool\xml\examples\css\text\decoration\list\decoration_list01\decoration_list01.html" />
     <Content Include="resources\com\itextpdf\tool\xml\examples\css\text\decoration\table\decoration_table01\decoration_table01.html" />
     <Content Include="resources\com\itextpdf\tool\xml\examples\css\text\decoration\text\decoration_text01\decoration_text01.html" />
@@ -1121,6 +1125,7 @@
     <None Include="resources\com\itextpdf\tool\xml\examples\css\background\background_color\list\background_color_list02\background_color_list02.pdf" />
     <None Include="resources\com\itextpdf\tool\xml\examples\css\background\background_color\table\background_color_table01\background_color_table01.pdf" />
     <None Include="resources\com\itextpdf\tool\xml\examples\css\background\background_color\text\background_color_text01\background_color_text01.pdf" />
+    <None Include="resources\com\itextpdf\tool\xml\examples\css\background\background_image\div\background_image_div01\background_image_div01.pdf" />
     <None Include="resources\com\itextpdf\tool\xml\examples\css\border\border\cell\border_cell01\border_cell01.pdf" />
     <None Include="resources\com\itextpdf\tool\xml\examples\css\border\border\cell\inheritedTableBorder\inheritedTableBorder.pdf" />
     <None Include="resources\com\itextpdf\tool\xml\examples\css\border\border\div\border_div01\border_div01.pdf" />
@@ -1317,6 +1322,7 @@
     <None Include="resources\com\itextpdf\tool\xml\examples\css\text\align\list\align_list01\align_list01.pdf" />
     <None Include="resources\com\itextpdf\tool\xml\examples\css\text\align\table\align_table01\align_table01.pdf" />
     <None Include="resources\com\itextpdf\tool\xml\examples\css\text\align\text\align_text01\align_text01.pdf" />
+    <None Include="resources\com\itextpdf\tool\xml\examples\css\text\decoration\div\decoration_div02\decoration_div02.pdf" />
     <None Include="resources\com\itextpdf\tool\xml\examples\css\text\indent\text\indent_text01\indent_text01.pdf" />
     <None Include="resources\com\itextpdf\tool\xml\examples\css\text_layout\align001\align001.pdf" />
     <None Include="resources\com\itextpdf\tool\xml\examples\css\text_layout\align002\align002.pdf" />

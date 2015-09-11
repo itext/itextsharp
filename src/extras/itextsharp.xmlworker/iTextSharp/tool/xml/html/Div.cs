@@ -6,6 +6,8 @@ using iTextSharp.tool.xml;
 using iTextSharp.tool.xml.css.apply;
 using iTextSharp.tool.xml.exceptions;
 using iTextSharp.tool.xml.html.pdfelement;
+using iTextSharp.tool.xml.pipeline.html;
+
 /*
  * $Id: Div.java 157 2011-06-07 08:57:34Z emielackermann $
  *
@@ -65,18 +67,17 @@ namespace iTextSharp.tool.xml.html {
             List<Chunk> sanitizedChunks = HTMLUtils.Sanitize(content, false);
             List<IElement> l = new List<IElement>(1);
             NoNewLineParagraph sanitizedNoNewLineParagraph = new NoNewLineParagraph();
-            foreach (Chunk sanitized in sanitizedChunks) {
-                Font f = GetCssAppliers().ChunkCssAplier.ApplyFontStyles(tag);
-                sanitized.Font = f;
-                sanitizedNoNewLineParagraph.Add(sanitized);
+            try {
+                HtmlPipelineContext htmlPipelineContext = GetHtmlPipelineContext(ctx);
+                foreach (Chunk sanitized in sanitizedChunks) {
+                    sanitizedNoNewLineParagraph.Add(GetCssAppliers().Apply(sanitized, tag, htmlPipelineContext));
+                }
+                if (sanitizedNoNewLineParagraph.Count > 0) {
+                    l.Add(GetCssAppliers().Apply(sanitizedNoNewLineParagraph, tag, htmlPipelineContext));
+                }
             }
-            if (sanitizedNoNewLineParagraph.Count > 0) {
-                try {
-                    l.Add(GetCssAppliers().Apply(sanitizedNoNewLineParagraph, tag, GetHtmlPipelineContext(ctx)));
-                }
-                catch (NoCustomContextException e) {
-                    throw new RuntimeWorkerException(LocaleMessages.GetInstance().GetMessage(LocaleMessages.NO_CUSTOM_CONTEXT), e);
-                }
+            catch (NoCustomContextException e) {
+                throw new RuntimeWorkerException(e);
             }
             return l;
         }
