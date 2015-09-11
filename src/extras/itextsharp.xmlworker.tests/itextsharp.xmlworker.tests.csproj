@@ -68,7 +68,6 @@
     <Compile Include="iTextSharp\tool\xml\css\FontSizeTranslatorTest.cs" />
     <Compile Include="iTextSharp\tool\xml\css\WidthCalculatorTest.cs" />
     <Compile Include="iTextSharp\tool\xml\examples\css\at_rule\AtMedia_Rule_IgnoringTest.cs" />
-    <Compile Include="iTextSharp\tool\xml\examples\css\background\backgorund_image\div\Background_image_div01Test.cs" />
     <Compile Include="iTextSharp\tool\xml\examples\css\background\background_color\cell\Background_color_cell01Test.cs" />
     <Compile Include="iTextSharp\tool\xml\examples\css\background\background_color\cell\Background_color_cell02Test.cs" />
     <Compile Include="iTextSharp\tool\xml\examples\css\background\background_color\div\Background_color_div01Test.cs" />
@@ -77,6 +76,7 @@
     <Compile Include="iTextSharp\tool\xml\examples\css\background\background_color\list\Background_color_list02Test.cs" />
     <Compile Include="iTextSharp\tool\xml\examples\css\background\background_color\table\Background_color_table01Test.cs" />
     <Compile Include="iTextSharp\tool\xml\examples\css\background\background_color\text\Background_color_text01Test.cs" />
+    <Compile Include="iTextSharp\tool\xml\examples\css\background\background_image\div\Background_image_div01Test.cs" />
     <Compile Include="iTextSharp\tool\xml\examples\css\border\border\cell\Border_cell01Test.cs" />
     <Compile Include="iTextSharp\tool\xml\examples\css\border\border\cell\InheritedTableBorderTest.cs" />
     <Compile Include="iTextSharp\tool\xml\examples\css\border\border\div\Border_div01Test.cs" />
