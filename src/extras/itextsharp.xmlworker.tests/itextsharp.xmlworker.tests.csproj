@@ -68,6 +68,7 @@
     <Compile Include="iTextSharp\tool\xml\css\FontSizeTranslatorTest.cs" />
     <Compile Include="iTextSharp\tool\xml\css\WidthCalculatorTest.cs" />
     <Compile Include="iTextSharp\tool\xml\examples\css\at_rule\AtMedia_Rule_IgnoringTest.cs" />
+    <Compile Include="iTextSharp\tool\xml\examples\css\background\backgorund_image\div\Background_image_div01Test.cs" />
     <Compile Include="iTextSharp\tool\xml\examples\css\background\background_color\cell\Background_color_cell01Test.cs" />
     <Compile Include="iTextSharp\tool\xml\examples\css\background\background_color\cell\Background_color_cell02Test.cs" />
     <Compile Include="iTextSharp\tool\xml\examples\css\background\background_color\div\Background_color_div01Test.cs" />
@@ -242,7 +243,7 @@
     <Compile Include="iTextSharp\tool\xml\examples\css\page_break\before\list\Before_list01.cs" />
     <Compile Include="iTextSharp\tool\xml\examples\css\page_break\before\table\Before_table01.cs" />
     <Compile Include="iTextSharp\tool\xml\examples\css\page_break\before\text\Before_text01.cs" />
-	<Compile Include="iTextSharp\tool\xml\examples\css\page_break\inside\div\Inside_div01.cs" />
+    <Compile Include="iTextSharp\tool\xml\examples\css\page_break\inside\div\Inside_div01.cs" />
     <Compile Include="iTextSharp\tool\xml\examples\css\page_break\inside\div\Inside_div02.cs" />
     <Compile Include="iTextSharp\tool\xml\examples\css\page_break\inside\table\Inside_table01.cs" />
     <Compile Include="iTextSharp\tool\xml\examples\css\position\div\Position_div01.cs" />

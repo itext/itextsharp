@@ -120,6 +120,12 @@ namespace iTextSharp.text.pdf {
         private float paddingBottom = 0;
 
         private BaseColor backgroundColor = null;
+        
+        private Image backgroundImage = null;
+
+        private float? backgroundImageWidth;
+
+        private float backgroundImageHeight = 0;
 
         /**
          * The spacing before the table.
@@ -285,6 +291,20 @@ namespace iTextSharp.text.pdf {
         {
             get { return backgroundColor; }
             set { backgroundColor = value; }
+        }
+
+        virtual public Image BackgroundImage 
+        {
+            set { backgroundImage = value; }
+        }
+
+        /** 	
+          * Image will be scaled to fit in the div occupied area.
+          */
+        virtual public void SetBackgroundImage(Image image, float width, float height) {
+            backgroundImage = image;
+            backgroundImageWidth = width;
+            backgroundImageHeight = height;
         }
 
         virtual public float YLine
@@ -471,7 +491,7 @@ namespace iTextSharp.text.pdf {
 
             if (!simulate)
             {
-                if (backgroundColor != null && getActualWidth() > 0 && getActualHeight() > 0)
+                if ((backgroundColor != null || backgroundImage != null) && getActualWidth() > 0 && getActualHeight() > 0)
                 {
                     float backgroundWidth = getActualWidth();
                     float backgroundHeight = getActualHeight();
@@ -482,11 +502,25 @@ namespace iTextSharp.text.pdf {
                     if (backgroundWidth > 0 && backgroundHeight > 0)
                     {
                         Rectangle background = new Rectangle(leftX, maxY - backgroundHeight, leftX + backgroundWidth, maxY);
-                        background.BackgroundColor = backgroundColor;
-                        PdfArtifact artifact = new PdfArtifact();
-                        canvas.OpenMCBlock(artifact);
-                        canvas.Rectangle(background);
-                        canvas.CloseMCBlock(artifact);
+                        if (backgroundColor != null) {
+                            background.BackgroundColor = backgroundColor;
+                            PdfArtifact artifact = new PdfArtifact();
+                            canvas.OpenMCBlock(artifact);
+                            canvas.Rectangle(background);
+                            canvas.CloseMCBlock(artifact);
+                        }
+                        if (backgroundImage != null) {
+                            if (backgroundImageWidth == null) {
+                                backgroundImage.ScaleToFit(background);
+                            }
+                            else {
+                                backgroundImage.ScaleAbsolute((float)backgroundImageWidth, backgroundImageHeight);
+                            }
+                            backgroundImage.SetAbsolutePosition(background.Left, background.Bottom);
+                            canvas.OpenMCBlock(backgroundImage);
+                            canvas.AddImage(backgroundImage);
+                            canvas.CloseMCBlock(backgroundImage);
+                        }
                     }
                 }
             }

@@ -88,7 +88,7 @@ namespace iTextSharp.tool.xml.html {
          * @see com.itextpdf.tool.xml.html.CssAppliers#apply(com.itextpdf.text.Element, com.itextpdf.tool.xml.Tag, com.itextpdf.tool.xml.css.apply.MarginMemory, com.itextpdf.tool.xml.css.apply.PageSizeContainable, com.itextpdf.tool.xml.pipeline.html.ImageProvider)
          */
 
-        virtual public IElement Apply(IElement e, Tag t, IMarginMemory mm, IPageSizeContainable psc, IImageProvider ip)
+        virtual public IElement Apply(IElement e, Tag t, IMarginMemory mm, IPageSizeContainable psc, HtmlPipelineContext ctx)
         {
             // warning, mapping is done by instance of, make sure to add things in the right order when adding more.
             if (e is Chunk)
@@ -110,7 +110,7 @@ namespace iTextSharp.tool.xml.html {
             }
             else if (e is List)
             {
-                e = list.Apply((List) e, t, ip);
+                e = list.Apply((List) e, t, ctx);
             }
             else if (e is LineSeparator)
             {
@@ -120,7 +120,7 @@ namespace iTextSharp.tool.xml.html {
             {
                 e = image.Apply((text.Image) e, t);
             } else if (e is PdfDiv) {
-                e = div.Apply((PdfDiv)e, t, mm, psc);
+                e = div.Apply((PdfDiv)e, t, mm, psc, ctx);
             }
             return e;
 
@@ -132,7 +132,7 @@ namespace iTextSharp.tool.xml.html {
 
         virtual public IElement Apply(IElement e, Tag t, HtmlPipelineContext ctx)
         {
-            return this.Apply(e, t, ctx, ctx, ctx.GetImageProvider());
+            return this.Apply(e, t, ctx, ctx, ctx);
         }
 
         virtual public ChunkCssApplier GetChunkCssAplier()

@@ -12,6 +12,8 @@ using iTextSharp.tool.xml.html;
 using iTextSharp.tool.xml.net;
 using iTextSharp.tool.xml.net.exc;
 using iTextSharp.tool.xml.pipeline.html;
+using Image = iTextSharp.text.Image;
+
 /*
  * $Id: ListStyleTypeCssApplier.java 165 2011-06-07 14:22:09Z emielackermann $
  *
@@ -78,7 +80,7 @@ namespace iTextSharp.tool.xml.css.apply {
          * This means: <strong>Always replace your list with the returned one and add content to the list after applying!</strong>
          */
         // not implemented: list-style-type:armenian, georgian, decimal-leading-zero.
-        virtual public List Apply(List list, Tag t, IImageProvider htmlPipelineContext) {
+        virtual public List Apply(List list, Tag t, HtmlPipelineContext context) {
             float fontSize = FontSizeTranslator.GetInstance().GetFontSize(t);
             List lst = list;
             IDictionary<String, String> css = t.CSS;
@@ -154,33 +156,16 @@ namespace iTextSharp.tool.xml.css.apply {
                     && !Util.EqualsIgnoreCase(css[CSS.Property.LIST_STYLE_IMAGE], CSS.Value.NONE)) {
                 lst = new List();
                 String url = utils.ExtractUrl(css[CSS.Property.LIST_STYLE_IMAGE]);
-                iTextSharp.text.Image img = null;
                 try {
-                    if (htmlPipelineContext == null) {
-                        img = new ImageRetrieve().RetrieveImage(url);
-                    } else {
-                        try {
-                            img = new ImageRetrieve(htmlPipelineContext).RetrieveImage(url);
-                        } catch (NoImageException) {
-                            if (LOG.IsLogging(Level.TRACE)) {
-                                LOG.Trace(String.Format(LocaleMessages.GetInstance().GetMessage("css.applier.list.noimage")));
-                            }
-                            img = new ImageRetrieve().RetrieveImage(url);
-                        }
-                    }
+                    Image img = new ImageRetrieve(context.ResourcePath, context.GetImageProvider()).RetrieveImage(url);
                     lst.ListSymbol = new Chunk(img, 0, 0, false);
                     lst.SymbolIndent = img.Width;
                     if (LOG.IsLogging(Level.TRACE)) {
                         LOG.Trace(String.Format(LocaleMessages.GetInstance().GetMessage("html.tag.list"), url));
                     }
-                } catch (IOException e) {
-                    if (LOG.IsLogging(Level.ERROR)) {
-                        LOG.Error(String.Format(LocaleMessages.GetInstance().GetMessage("html.tag.list.failed"), url), e);
-                    }
-                    lst = new List(List.UNORDERED);
                 } catch (NoImageException e) {
                     if (LOG.IsLogging(Level.ERROR)) {
-                        LOG.Error(e.Message, e);
+                        LOG.Error(String.Format(LocaleMessages.GetInstance().GetMessage("html.tag.img.failed"), url), e);
                     }
                     lst = new List(List.UNORDERED);
                 }

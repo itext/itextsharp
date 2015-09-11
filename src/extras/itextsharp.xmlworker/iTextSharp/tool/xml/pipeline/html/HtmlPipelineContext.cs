@@ -81,6 +81,7 @@ namespace iTextSharp.tool.xml.pipeline.html {
         private bool autoBookmark = true;
         private IDictionary<String, Object> memory;
         private CssAppliers cssAppliers;
+        private string resourcePath;
         /**
          * Construct a new HtmlPipelineContext object
          */
@@ -388,5 +389,11 @@ namespace iTextSharp.tool.xml.pipeline.html {
 
         virtual public CssAppliers GetCssAppliers() {            return cssAppliers;        }        
         
-        virtual public void SetCssAppliers(CssAppliers cssAppliers) {            this.cssAppliers = cssAppliers;        }    }
+        virtual public void SetCssAppliers(CssAppliers cssAppliers) {            this.cssAppliers = cssAppliers;        }
+
+        virtual public string ResourcePath {
+            get { return resourcePath; }
+            set { resourcePath = value; }
+        }
+    }
 }

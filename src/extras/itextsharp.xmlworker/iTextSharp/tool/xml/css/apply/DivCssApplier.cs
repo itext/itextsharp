@@ -45,18 +45,26 @@
 
 using System;
 using System.Collections.Generic;
+using System.IO;
 using System.util;
 using iTextSharp.text;
 using iTextSharp.text.html;
+using iTextSharp.text.log;
 using iTextSharp.text.pdf;
+using iTextSharp.tool.xml.exceptions;
 using iTextSharp.tool.xml.html;
+using iTextSharp.tool.xml.net;
+using iTextSharp.tool.xml.net.exc;
+using iTextSharp.tool.xml.pipeline.html;
+using Image = iTextSharp.text.Image;
 
 namespace iTextSharp.tool.xml.css.apply {
 
     public class DivCssApplier {
         private CssUtils utils = CssUtils.GetInstance();
+        private static ILogger LOG = LoggerFactory.GetLogger(typeof(DivCssApplier));
 
-        virtual public PdfDiv Apply(PdfDiv div, Tag t, IMarginMemory memory, IPageSizeContainable psc) {
+        virtual public PdfDiv Apply(PdfDiv div, Tag t, IMarginMemory memory, IPageSizeContainable psc, HtmlPipelineContext context) {
             IDictionary<String, String> css = t.CSS;
             float fontSize = FontSizeTranslator.GetInstance().TranslateFontSize(t);
             if (fontSize == Font.UNDEFINED) {
@@ -127,7 +135,20 @@ namespace iTextSharp.tool.xml.css.apply {
                     }
                 } else if (Util.EqualsIgnoreCase(key, CSS.Property.BACKGROUND_COLOR)) {
 				    div.BackgroundColor = HtmlUtilities.DecodeColor(value);
-                } else if (Util.EqualsIgnoreCase(key, CSS.Property.PADDING_LEFT)) {
+                } else if (Util.EqualsIgnoreCase(key, CSS.Property.BACKGROUND_IMAGE)) {
+                    string url = utils.ExtractUrl(value);
+                    try {
+                        Image img =
+                            new ImageRetrieve(context.ResourcePath, context.GetImageProvider()).RetrieveImage(url);
+                        div.BackgroundImage = img;
+                    }
+                    catch (NoImageException e) {
+                        if (LOG.IsLogging(Level.ERROR)) {
+                            LOG.Error(string.Format(LocaleMessages.GetInstance().GetMessage("html.tag.img.failed"), url), e);
+                        }
+                    }
+                }
+                else if (Util.EqualsIgnoreCase(key, CSS.Property.PADDING_LEFT)) {
                     div.PaddingLeft = utils.ParseValueToPt(value, fontSize);
                 } else if (Util.EqualsIgnoreCase(key, CSS.Property.PADDING_RIGHT)) {
                     div.PaddingRight = utils.ParseValueToPt(value, fontSize);

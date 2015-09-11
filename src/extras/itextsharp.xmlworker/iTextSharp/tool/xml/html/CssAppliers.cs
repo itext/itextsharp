@@ -60,10 +60,10 @@ namespace iTextSharp.tool.xml.html {
          * @param t the tag
          * @param mm the MarginMemory
          * @param psc the {@link PageSize} container
-         * @param ip an ImageProvider
+         * @param ctx a HtmlPipelineContext
          * @return the element with CSS applied onto, note: the element can be a new element.
          */
-        IElement Apply(IElement e, Tag t, IMarginMemory mm, IPageSizeContainable psc, IImageProvider ip);
+        IElement Apply(IElement e, Tag t, IMarginMemory mm, IPageSizeContainable psc, HtmlPipelineContext ctx);
 
         /**
          * Convenience method.
