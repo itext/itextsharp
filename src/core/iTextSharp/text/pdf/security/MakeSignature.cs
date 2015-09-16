@@ -10,7 +10,7 @@ using iTextSharp.text.io;
  * $Id: MakeSignature.java 5199 2012-06-18 20:14:38Z psoares33 $
  *
  * This file is part of the iText (R) project.
- * Copyright (c) 1998-2014 iText Group NV
+ * Copyright (c) 1998-2015 iText Group NV
  * Authors: Bruno Lowagie, Paulo Soares, et al.
  *
  * This program is free software; you can redistribute it and/or modify
@@ -120,16 +120,15 @@ namespace iTextSharp.text.pdf.security {
             IDigest messageDigest = DigestUtilities.GetDigest(hashAlgorithm);
             Stream data = sap.GetRangeStream();
             byte[] hash = DigestAlgorithms.Digest(data, hashAlgorithm);
-            DateTime cal = DateTime.Now;
             byte[] ocsp = null;
             if (chain.Count >= 2 && ocspClient != null) {
                 ocsp = ocspClient.GetEncoded(certa[0], certa[1], null);
             }
-            byte[] sh = sgn.getAuthenticatedAttributeBytes(hash, cal, ocsp, crlBytes, sigtype);
+            byte[] sh = sgn.getAuthenticatedAttributeBytes(hash, ocsp, crlBytes, sigtype);
             byte[] extSignature = externalSignature.Sign(sh);
             sgn.SetExternalDigest(extSignature, null, externalSignature.GetEncryptionAlgorithm());
 
-            byte[] encodedSig = sgn.GetEncodedPKCS7(hash, cal, tsaClient, ocsp, crlBytes, sigtype);
+            byte[] encodedSig = sgn.GetEncodedPKCS7(hash, tsaClient, ocsp, crlBytes, sigtype);
 
             if (estimatedSize < encodedSig.Length)
                 throw new IOException("Not enough space");

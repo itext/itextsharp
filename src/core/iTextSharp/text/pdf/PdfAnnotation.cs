@@ -13,7 +13,7 @@ using iTextSharp.text.pdf.intern;
  * 
  *
  * This file is part of the iText project.
- * Copyright (c) 1998-2014 iText Group NV
+ * Copyright (c) 1998-2015 iText Group NV
  * Authors: Bruno Lowagie, Paulo Soares, et al.
  *
  * This program is free software; you can redistribute it and/or modify
@@ -218,8 +218,9 @@ namespace iTextSharp.text.pdf {
         public static PdfAnnotation CreateLink(PdfWriter writer, Rectangle rect, PdfName highlight, int page, PdfDestination dest) {
             PdfAnnotation annot = CreateLink(writer, rect, highlight);
             PdfIndirectReference piref = writer.GetPageReference(page);
-            dest.AddPage(piref);
-            annot.Put(PdfName.DEST, dest);
+            PdfDestination d = new PdfDestination(dest);
+            d.AddPage(piref);
+            annot.Put(PdfName.DEST, d);
             return annot;
         }
     

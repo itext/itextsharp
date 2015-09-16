@@ -2,7 +2,7 @@
  * $Id: ParagraphCssApplier.java 287 2012-02-27 16:56:22Z blowagie $
  *
  * This file is part of the iText (R) project.
- * Copyright (c) 1998-2014 iText Group NV
+ * Copyright (c) 1998-2015 iText Group NV
  * Authors: Balder Van Camp, Emiel Ackermann, et al.
  *
  * This program is free software; you can redistribute it and/or modify
@@ -118,15 +118,7 @@ namespace iTextSharp.tool.xml.css.apply {
                 } else if (Util.EqualsIgnoreCase(CSS.Property.PADDING_RIGHT, key)) {
                     p.IndentationRight = p.IndentationRight + utils.ParseValueToPt(value, fontSize);
                 } else if (Util.EqualsIgnoreCase(CSS.Property.TEXT_ALIGN, key)) {
-                    if (Util.EqualsIgnoreCase(CSS.Value.RIGHT, value)) {
-                        p.Alignment = Element.ALIGN_RIGHT;
-                    } else if (Util.EqualsIgnoreCase(CSS.Value.CENTER, value)) {
-                        p.Alignment = Element.ALIGN_CENTER;
-                    } else if (Util.EqualsIgnoreCase(CSS.Value.LEFT, value)) {
-                        p.Alignment = Element.ALIGN_LEFT;
-                    } else if (Util.EqualsIgnoreCase(CSS.Value.JUSTIFY, value)) {
-                        p.Alignment = Element.ALIGN_JUSTIFIED;
-                    }
+                    p.Alignment = CSS.GetElementAlignment(value);
                 } else if (Util.EqualsIgnoreCase(CSS.Property.TEXT_INDENT, key)) {
                     p.FirstLineIndent = utils.ParseValueToPt(value, fontSize);
                 } else if (Util.EqualsIgnoreCase(CSS.Property.LINE_HEIGHT, key)) {
@@ -144,15 +136,7 @@ namespace iTextSharp.tool.xml.css.apply {
                 String value = t.Attributes[HTML.Attribute.ALIGN];
 
                 if (value != null) {
-                    if (Util.EqualsIgnoreCase(value, CSS.Value.RIGHT)) {
-                        p.Alignment = Element.ALIGN_RIGHT;
-                    } else if (Util.EqualsIgnoreCase(value, CSS.Value.LEFT)) {
-                        p.Alignment = Element.ALIGN_LEFT;
-                    } else if (Util.EqualsIgnoreCase(value, CSS.Value.CENTER)) {
-                        p.Alignment = Element.ALIGN_CENTER;
-                    } else if (Util.EqualsIgnoreCase(value, CSS.Value.JUSTIFY)) {
-                        p.Alignment = Element.ALIGN_JUSTIFIED;
-                    }
+                    p.Alignment = CSS.GetElementAlignment(value);
                 }
             }
 

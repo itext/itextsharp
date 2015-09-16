@@ -15,7 +15,7 @@ using iTextSharp.tool.xml.pipeline.css;
  * $Id: StyleAttrCSSResolver.java 137 2011-05-30 20:25:16Z redlab_b $
  *
  * This file is part of the iText (R) project.
- * Copyright (c) 1998-2014 iText Group NV
+ * Copyright (c) 1998-2015 iText Group NV
  * Authors: Balder Van Camp, Emiel Ackermann, et al.
  *
  * This program is free software; you can redistribute it and/or modify
@@ -189,25 +189,31 @@ namespace iTextSharp.tool.xml.css {
             IDictionary<String, String> css = t.CSS;
             if (t.Name != null)
             {
-                if (t.Name.Equals(HTML.Tag.I) || t.Name.Equals(HTML.Tag.CITE)
-                    || t.Name.Equals(HTML.Tag.EM) || t.Name.Equals(HTML.Tag.VAR)
-                    || t.Name.Equals(HTML.Tag.DFN) || t.Name.Equals(HTML.Tag.ADDRESS)) {
+                if (Util.EqualsIgnoreCase(t.Name, HTML.Tag.I) || Util.EqualsIgnoreCase(t.Name, HTML.Tag.CITE)
+                    || Util.EqualsIgnoreCase(t.Name, HTML.Tag.EM) || Util.EqualsIgnoreCase(t.Name, HTML.Tag.VAR)
+                    || Util.EqualsIgnoreCase(t.Name, HTML.Tag.DFN) || Util.EqualsIgnoreCase(t.Name, HTML.Tag.ADDRESS))
+                {
                         tagCss[CSS.Property.FONT_STYLE] = CSS.Value.ITALIC;
                 }
-                else if (t.Name.Equals(HTML.Tag.B) || t.Name.Equals(HTML.Tag.STRONG)) {
+                else if (Util.EqualsIgnoreCase(t.Name, HTML.Tag.B) || Util.EqualsIgnoreCase(t.Name, HTML.Tag.STRONG))
+                {
                     tagCss[CSS.Property.FONT_WEIGHT] = CSS.Value.BOLD;
                 }
-                else if (t.Name.Equals(HTML.Tag.U) || t.Name.Equals(HTML.Tag.INS)) {
+                else if (Util.EqualsIgnoreCase(t.Name, HTML.Tag.U) || Util.EqualsIgnoreCase(t.Name, HTML.Tag.INS))
+                {
                     tagCss[CSS.Property.TEXT_DECORATION] = CSS.Value.UNDERLINE;
                 }
-                else if (t.Name.Equals(HTML.Tag.S) || t.Name.Equals(HTML.Tag.STRIKE) 
-                         || t.Name.Equals(HTML.Tag.DEL)) {
+                else if (Util.EqualsIgnoreCase(t.Name, HTML.Tag.S) || Util.EqualsIgnoreCase(t.Name, HTML.Tag.STRIKE)
+                         || Util.EqualsIgnoreCase(t.Name, HTML.Tag.DEL))
+                {
                              tagCss[CSS.Property.TEXT_DECORATION] = CSS.Value.LINE_THROUGH;
                 }
-                else if (t.Name.Equals(HTML.Tag.BIG)) {
+                else if (Util.EqualsIgnoreCase(t.Name, HTML.Tag.BIG))
+                {
                     tagCss[CSS.Property.FONT_SIZE] = CSS.Value.LARGER;
                 }
-                else if (t.Name.Equals(HTML.Tag.SMALL)) {
+                else if (Util.EqualsIgnoreCase(t.Name, HTML.Tag.SMALL))
+                {
                     tagCss[CSS.Property.FONT_SIZE] = CSS.Value.SMALLER;
                 }
             }

@@ -12,7 +12,7 @@ using iTextSharp.tool.xml.exceptions;
  * $Id: CssUtils.java 126 2011-05-27 13:02:27Z emielackermann $
  *
  * This file is part of the iText (R) project.
- * Copyright (c) 1998-2014 iText Group NV
+ * Copyright (c) 1998-2015 iText Group NV
  * Authors: Balder Van Camp, Emiel Ackermann, et al.
  *
  * This program is free software; you can redistribute it and/or modify
@@ -294,7 +294,7 @@ namespace iTextSharp.tool.xml.css {
                         string style2 = style+" "+rules[CSS.Property.BACKGROUND_POSITION];
                         rules[CSS.Property.BACKGROUND_POSITION] = style2;
                     }
-                } else if (style.Contains("rgb(") || style.Contains("#") || WebColors.NAMES.ContainsKey(style.ToLowerInvariant())) {
+                } else if (style.Contains("rgb(") || style.Contains("rgba(")|| style.Contains("#") || WebColors.NAMES.ContainsKey(style.ToLowerInvariant())) {
                     rules[CSS.Property.BACKGROUND_COLOR] = style;
                 }
             }
@@ -601,9 +601,11 @@ namespace iTextSharp.tool.xml.css {
                 if (urlString.StartsWith("'") && urlString.EndsWith("'")) {
                     int st = urlString.IndexOf("'")+1;
                     str = urlString.Substring(st, urlString.LastIndexOf("'") - st);
-                } else if ( urlString.StartsWith("\"") && urlString.EndsWith("\"") ) {
-                    int st = urlString.IndexOf('"')+1;
+                } else if (urlString.StartsWith("\"") && urlString.EndsWith("\"")) {
+                    int st = urlString.IndexOf('"') + 1;
                     str = urlString.Substring(st, urlString.LastIndexOf('"') - st);
+                } else {
+                    str = urlString;
                 }
             } else {
                 // assume it's an url without url

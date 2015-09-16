@@ -14,7 +14,7 @@ using iTextSharp.tool.xml.pipeline.html;
  * $Id: Image.java 118 2011-05-27 11:10:19Z redlab_b $
  *
  * This file is part of the iText (R) project.
- * Copyright (c) 1998-2014 iText Group NV
+ * Copyright (c) 1998-2015 iText Group NV
  * Authors: Balder Van Camp, Emiel Ackermann, et al.
  *
  * This program is free software; you can redistribute it and/or modify
@@ -86,14 +86,11 @@ namespace iTextSharp.tool.xml.html {
                     if (logger.IsLogging(Level.TRACE)) {
                         logger.Trace(String.Format(LocaleMessages.GetInstance().GetMessage(LocaleMessages.HTML_IMG_USE), src));
                     }
-                    img = new ImageRetrieve(GetHtmlPipelineContext(ctx).GetImageProvider()).RetrieveImage(src);
-                } catch (IOException e) {
-                    if (logger.IsLogging(Level.ERROR)) {
-                        logger.Error(String.Format(LocaleMessages.GetInstance().GetMessage(LocaleMessages.HTML_IMG_RETRIEVE_FAIL), src), e);
-                    }
+                    HtmlPipelineContext context = GetHtmlPipelineContext(ctx);
+                    img = new ImageRetrieve(context.ResourcePath, context.GetImageProvider()).RetrieveImage(src);
                 } catch (NoImageException e) {
                     if (logger.IsLogging(Level.ERROR)) {
-                        logger.Error("", e);
+                        logger.Error(string.Format(LocaleMessages.GetInstance().GetMessage(LocaleMessages.HTML_IMG_RETRIEVE_FAIL), src), e);
                     }
                 } catch (NoCustomContextException e) {
                     throw new RuntimeWorkerException(LocaleMessages.GetInstance().GetMessage(LocaleMessages.NO_CUSTOM_CONTEXT), e);

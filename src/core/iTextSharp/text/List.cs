@@ -10,7 +10,7 @@ using iTextSharp.text.pdf.interfaces;
  * 
  *
  * This file is part of the iText project.
- * Copyright (c) 1998-2014 iText Group NV
+ * Copyright (c) 1998-2015 iText Group NV
  * Authors: Bruno Lowagie, Paulo Soares, et al.
  *
  * This program is free software; you can redistribute it and/or modify
@@ -305,6 +305,21 @@ namespace iTextSharp.text {
                 return true;
             }
             return false;
+        }
+
+        public virtual List CloneShallow() {
+            List clone = new List();
+            PopulateProperties(clone);
+            return clone;
+        }
+
+        protected void PopulateProperties(List clone) {
+            clone.indentationLeft = indentationLeft;
+            clone.indentationRight = indentationRight;
+            clone.autoindent = autoindent;
+            clone.alignindent = alignindent;
+            clone.symbolIndent = symbolIndent;
+            clone.symbol = symbol;
         }
     
         // extra methods

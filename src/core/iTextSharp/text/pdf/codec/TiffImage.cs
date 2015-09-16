@@ -7,7 +7,7 @@ using System.util.zlib;
 using iTextSharp.text.error_messages;
 /*
  * This file is part of the iText project.
- * Copyright (c) 1998-2014 iText Group NV
+ * Copyright (c) 1998-2015 iText Group NV
  * Authors: Bruno Lowagie, Paulo Soares, et al.
  *
  * This program is free software; you can redistribute it and/or modify
@@ -118,7 +118,7 @@ namespace iTextSharp.text.pdf.codec {
             Image img = null;
             long tiffT4Options = 0;
             long tiffT6Options = 0;
-            int fillOrder = 1;
+            long fillOrder = 1;
             int h = (int)dir.GetFieldAsLong(TIFFConstants.TIFFTAG_IMAGELENGTH);
             int w = (int)dir.GetFieldAsLong(TIFFConstants.TIFFTAG_IMAGEWIDTH);
             int dpiX = 0;
@@ -148,7 +148,7 @@ namespace iTextSharp.text.pdf.codec {
             bool reverse = false;
             TIFFField fillOrderField =  dir.GetField(TIFFConstants.TIFFTAG_FILLORDER);
             if (fillOrderField != null)
-                fillOrder = fillOrderField.GetAsInt(0);
+                fillOrder = fillOrderField.GetAsLong(0);
             reverse = (fillOrder == TIFFConstants.FILLORDER_LSB2MSB);
             int paramsn = 0;
             if (dir.IsTagPresent(TIFFConstants.TIFFTAG_PHOTOMETRIC)) {

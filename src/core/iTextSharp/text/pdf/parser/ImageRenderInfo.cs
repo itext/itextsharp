@@ -2,7 +2,7 @@
  * $Id$
  *
  * This file is part of the iText project.
- * Copyright (c) 1998-2014 iText Group NV
+ * Copyright (c) 1998-2015 iText Group NV
  * Authors: Kevin Day, Bruno Lowagie, Paulo Soares, et al.
  *
  * This program is free software; you can redistribute it and/or modify
@@ -49,8 +49,8 @@ namespace iTextSharp.text.pdf.parser {
      * @since 5.0.1
      */
     public class ImageRenderInfo {
-        /** The coordinate transformation matrix that was in effect when the image was rendered */
-        private Matrix ctm;
+        /** The graphics state that was in effect when the image was rendered */
+        private GraphicsState gs;
         /** A reference to the image XObject */
         private PdfIndirectReference refi;
         /** A reference to an inline image */
@@ -59,16 +59,18 @@ namespace iTextSharp.text.pdf.parser {
         private PdfDictionary colorSpaceDictionary;
         /** the image object to be rendered, if it has been parsed already.  Null otherwise. */
         private PdfImageObject imageObject = null;
-        
-        private ImageRenderInfo(Matrix ctm, PdfIndirectReference refi, PdfDictionary colorSpaceDictionary) {
-            this.ctm = ctm;
+
+        private ImageRenderInfo(GraphicsState gs, PdfIndirectReference refi, PdfDictionary colorSpaceDictionary)
+        {
+            this.gs = gs;
             this.refi = refi;
             this.inlineImageInfo = null;
             this.colorSpaceDictionary = colorSpaceDictionary;
         }
 
-        private ImageRenderInfo(Matrix ctm, InlineImageInfo inlineImageInfo, PdfDictionary colorSpaceDictionary) {
-            this.ctm = ctm;
+        private ImageRenderInfo(GraphicsState gs, InlineImageInfo inlineImageInfo, PdfDictionary colorSpaceDictionary)
+        {
+            this.gs = gs;
             this.refi = null;
             this.inlineImageInfo = inlineImageInfo;
             this.colorSpaceDictionary = colorSpaceDictionary;
@@ -81,8 +83,9 @@ namespace iTextSharp.text.pdf.parser {
          * @return the ImageRenderInfo representing the rendered XObject
          * @since 5.0.1
          */
-        public static ImageRenderInfo CreateForXObject(Matrix ctm, PdfIndirectReference refi, PdfDictionary colorSpaceDictionary){
-            return new ImageRenderInfo(ctm, refi, colorSpaceDictionary);
+        public static ImageRenderInfo CreateForXObject(GraphicsState gs, PdfIndirectReference refi, PdfDictionary colorSpaceDictionary)
+        {
+            return new ImageRenderInfo(gs, refi, colorSpaceDictionary);
         }
         
         /**
@@ -93,8 +96,9 @@ namespace iTextSharp.text.pdf.parser {
          * @return the ImageRenderInfo representing the rendered embedded image
          * @since 5.0.1
          */
-        protected internal static ImageRenderInfo CreateForEmbeddedImage(Matrix ctm, InlineImageInfo inlineImageInfo, PdfDictionary colorSpaceDictionary) {
-            ImageRenderInfo renderInfo = new ImageRenderInfo(ctm, inlineImageInfo, colorSpaceDictionary);
+        protected internal static ImageRenderInfo CreateForEmbeddedImage(GraphicsState gs, InlineImageInfo inlineImageInfo, PdfDictionary colorSpaceDictionary)
+        {
+            ImageRenderInfo renderInfo = new ImageRenderInfo(gs, inlineImageInfo, colorSpaceDictionary);
             return renderInfo;
         }
         
@@ -124,7 +128,7 @@ namespace iTextSharp.text.pdf.parser {
          * @return a vector in User space representing the start point of the xobject
          */
         virtual public Vector GetStartPoint(){ 
-            return new Vector(0, 0, 1).Cross(ctm); 
+            return new Vector(0, 0, 1).Cross(gs.ctm); 
         }
 
         /**
@@ -132,7 +136,7 @@ namespace iTextSharp.text.pdf.parser {
          * @since 5.0.3
          */
         virtual public Matrix GetImageCTM(){
-            return ctm;
+            return gs.ctm;
         }
         
         /**
@@ -140,7 +144,7 @@ namespace iTextSharp.text.pdf.parser {
          */
         virtual public float GetArea(){
             // the image space area is 1, so we multiply that by the determinant of the CTM to get the transformed area
-            return ctm.GetDeterminant();
+            return gs.ctm.GetDeterminant();
         }
         
         /**
@@ -150,5 +154,14 @@ namespace iTextSharp.text.pdf.parser {
         virtual public PdfIndirectReference GetRef() {
             return refi;
         }
+
+        /**
+        * @return the current fill color from the graphics state at the time this render operation occured
+        * @since 5.5.7
+        */
+        public BaseColor GetCurrentFillColor() {
+            return gs.fillColor;
+        }
+
     }
 }

@@ -76,6 +76,7 @@
     <Compile Include="iTextSharp\tool\xml\examples\css\background\background_color\list\Background_color_list02Test.cs" />
     <Compile Include="iTextSharp\tool\xml\examples\css\background\background_color\table\Background_color_table01Test.cs" />
     <Compile Include="iTextSharp\tool\xml\examples\css\background\background_color\text\Background_color_text01Test.cs" />
+    <Compile Include="iTextSharp\tool\xml\examples\css\background\background_image\div\Background_image_div01Test.cs" />
     <Compile Include="iTextSharp\tool\xml\examples\css\border\border\cell\Border_cell01Test.cs" />
     <Compile Include="iTextSharp\tool\xml\examples\css\border\border\cell\InheritedTableBorderTest.cs" />
     <Compile Include="iTextSharp\tool\xml\examples\css\border\border\div\Border_div01Test.cs" />
@@ -242,6 +243,9 @@
     <Compile Include="iTextSharp\tool\xml\examples\css\page_break\before\list\Before_list01.cs" />
     <Compile Include="iTextSharp\tool\xml\examples\css\page_break\before\table\Before_table01.cs" />
     <Compile Include="iTextSharp\tool\xml\examples\css\page_break\before\text\Before_text01.cs" />
+    <Compile Include="iTextSharp\tool\xml\examples\css\page_break\inside\div\Inside_div01.cs" />
+    <Compile Include="iTextSharp\tool\xml\examples\css\page_break\inside\div\Inside_div02.cs" />
+    <Compile Include="iTextSharp\tool\xml\examples\css\page_break\inside\table\Inside_table01.cs" />
     <Compile Include="iTextSharp\tool\xml\examples\css\position\div\Position_div01.cs" />
     <Compile Include="iTextSharp\tool\xml\examples\css\position\Overflow01Test.cs" />
     <Compile Include="iTextSharp\tool\xml\examples\css\position\text\Position_text01.cs" />
@@ -309,6 +313,7 @@
     <Compile Include="iTextSharp\tool\xml\examples\css\text\align\text\Align_text01.cs" />
     <Compile Include="iTextSharp\tool\xml\examples\css\text\decoration\cell\Decoration_cell01.cs" />
     <Compile Include="iTextSharp\tool\xml\examples\css\text\decoration\div\Decoration_div01.cs" />
+    <Compile Include="iTextSharp\tool\xml\examples\css\text\decoration\div\Decoration_div02.cs" />
     <Compile Include="iTextSharp\tool\xml\examples\css\text\decoration\list\Decoration_list01.cs" />
     <Compile Include="iTextSharp\tool\xml\examples\css\text\decoration\table\Decoration_table01.cs" />
     <Compile Include="iTextSharp\tool\xml\examples\css\text\decoration\text\Decoration_text01.cs" />
@@ -506,6 +511,7 @@
     <Compile Include="iTextSharp\tool\xml\html\LineHeightLetterSpacingTest.cs" />
     <Compile Include="iTextSharp\tool\xml\html\LoadCssThroughLinkStyleTagTest.cs" />
     <Compile Include="iTextSharp\tool\xml\html\PandBTest.cs" />
+    <Compile Include="iTextSharp\tool\xml\html\pdfelement\NoNewLineParagraphTest.cs" />
     <Compile Include="iTextSharp\tool\xml\html\SamplesTest.cs" />
     <Compile Include="iTextSharp\tool\xml\html\SnippetUtil.cs" />
     <Compile Include="iTextSharp\tool\xml\html\SpecialCharInPDFTest.cs" />

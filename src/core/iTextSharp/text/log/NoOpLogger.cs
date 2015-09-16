@@ -2,7 +2,7 @@ using System;
 /*
  * $Id: NoOpLogger.java 4863 2011-05-12 07:01:55Z redlab_b $
  *
- * This file is part of the iText (R) project. Copyright (c) 1998-2014 iText Group NV
+ * This file is part of the iText (R) project. Copyright (c) 1998-2015 iText Group NV
  * BVBA Authors: Bruno Lowagie, Paulo Soares, et al.
  *
  * This program is free software; you can redistribute it and/or modify it under

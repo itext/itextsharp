@@ -8,7 +8,7 @@ using iTextSharp.text.pdf;
  * 
  *
  * This file is part of the iText project.
- * Copyright (c) 1998-2014 iText Group NV
+ * Copyright (c) 1998-2015 iText Group NV
  * Authors: Bruno Lowagie, Paulo Soares, et al.
  *
  * This program is free software; you can redistribute it and/or modify
@@ -640,7 +640,7 @@ namespace iTextSharp.text {
         /// Replaces the attributes that are equal to null with
         /// the attributes of a given font.
         /// </summary>
-        /// <param name="font">the font of a bigger element class</param>
+        /// <param name="font"> the font of a lower element class (ex. this - paragraph font, font - chunk font)
         /// <returns>a Font</returns>
         public virtual Font Difference(Font font) {
             if (font == null) return this;

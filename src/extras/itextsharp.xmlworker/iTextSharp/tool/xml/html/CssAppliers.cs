@@ -2,7 +2,7 @@
  * $Id: CssAppliers.java 287 2012-02-27 16:56:22Z blowagie $
  * 
  * This file is part of the iText (R) project.
- * Copyright (c) 1998-2014 iText Group NV
+ * Copyright (c) 1998-2015 iText Group NV
  * Authors: Balder Van Camp, Emiel Ackermann, et al.
  * 
  * This program is free software; you can redistribute it and/or modify it under the terms of the GNU Affero General
@@ -60,10 +60,10 @@ namespace iTextSharp.tool.xml.html {
          * @param t the tag
          * @param mm the MarginMemory
          * @param psc the {@link PageSize} container
-         * @param ip an ImageProvider
+         * @param ctx a HtmlPipelineContext
          * @return the element with CSS applied onto, note: the element can be a new element.
          */
-        IElement Apply(IElement e, Tag t, IMarginMemory mm, IPageSizeContainable psc, IImageProvider ip);
+        IElement Apply(IElement e, Tag t, IMarginMemory mm, IPageSizeContainable psc, HtmlPipelineContext ctx);
 
         /**
          * Convenience method.

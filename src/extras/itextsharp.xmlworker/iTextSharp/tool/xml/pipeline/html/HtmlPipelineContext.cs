@@ -10,7 +10,7 @@ using iTextSharp.tool.xml.html;
  * $Id: HtmlPipelineContext.java 144 2011-06-03 22:52:42Z redlab_b $
  *
  * This file is part of the iText (R) project.
- * Copyright (c) 1998-2014 iText Group NV
+ * Copyright (c) 1998-2015 iText Group NV
  * Authors: Balder Van Camp, Emiel Ackermann, et al.
  *
  * This program is free software; you can redistribute it and/or modify
@@ -81,6 +81,7 @@ namespace iTextSharp.tool.xml.pipeline.html {
         private bool autoBookmark = true;
         private IDictionary<String, Object> memory;
         private CssAppliers cssAppliers;
+        private string resourcePath;
         /**
          * Construct a new HtmlPipelineContext object
          */
@@ -124,15 +125,15 @@ namespace iTextSharp.tool.xml.pipeline.html {
 
         /**
          * Retrieves, but does not remove, the head (first element) of this list.
-         * @return a StackKeeper
-         * @throws NoStackException if there are no elements on the stack
+         * @return a StackKeeper or null if there are no elements on the stack
          */
 
         virtual protected internal StackKeeper Peek()
         {
             if (queue.Count == 0)
-                throw new NoStackException();
-            return this.queue.First.Value;
+                return null;
+            else
+                return this.queue.First.Value;
         }
 
         /**
@@ -388,5 +389,11 @@ namespace iTextSharp.tool.xml.pipeline.html {
 
         virtual public CssAppliers GetCssAppliers() {            return cssAppliers;        }        
         
-        virtual public void SetCssAppliers(CssAppliers cssAppliers) {            this.cssAppliers = cssAppliers;        }    }
+        virtual public void SetCssAppliers(CssAppliers cssAppliers) {            this.cssAppliers = cssAppliers;        }
+
+        virtual public string ResourcePath {
+            get { return resourcePath; }
+            set { resourcePath = value; }
+        }
+    }
 }

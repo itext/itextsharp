@@ -1,4 +1,49 @@
-﻿using System;
+/*
+ * $Id$
+ *
+ * This file is part of the iText (R) project.
+ * Copyright (c) 1998-2015 iText Group NV
+ * Authors: Bruno Lowagie, Paulo Soares, et al.
+ *
+ * This program is free software; you can redistribute it and/or modify
+ * it under the terms of the GNU Affero General Public License version 3
+ * as published by the Free Software Foundation with the addition of the
+ * following permission added to Section 15 as permitted in Section 7(a):
+ * FOR ANY PART OF THE COVERED WORK IN WHICH THE COPYRIGHT IS OWNED BY
+ * ITEXT GROUP. ITEXT GROUP DISCLAIMS THE WARRANTY OF NON INFRINGEMENT
+ * OF THIRD PARTY RIGHTS
+ *
+ * This program is distributed in the hope that it will be useful, but
+ * WITHOUT ANY WARRANTY; without even the implied warranty of MERCHANTABILITY
+ * or FITNESS FOR A PARTICULAR PURPOSE.
+ * See the GNU Affero General Public License for more details.
+ * You should have received a copy of the GNU Affero General Public License
+ * along with this program; if not, see http://www.gnu.org/licenses or write to
+ * the Free Software Foundation, Inc., 51 Franklin Street, Fifth Floor,
+ * Boston, MA, 02110-1301 USA, or download the license from the following URL:
+ * http://itextpdf.com/terms-of-use/
+ *
+ * The interactive user interfaces in modified source and object code versions
+ * of this program must display Appropriate Legal Notices, as required under
+ * Section 5 of the GNU Affero General Public License.
+ *
+ * In accordance with Section 7(b) of the GNU Affero General Public License,
+ * a covered work must retain the producer line in every PDF that is created
+ * or manipulated using iText.
+ *
+ * You can be released from the requirements of the license by purchasing
+ * a commercial license. Buying such a license is mandatory as soon as you
+ * develop commercial activities involving the iText software without
+ * disclosing the source code of your own applications.
+ * These activities include: offering paid services to customers as an ASP,
+ * serving PDFs on the fly in a web application, shipping iText with a closed
+ * source product.
+ *
+ * For more information, please contact iText Software Corp. at this
+ * address: sales@itextpdf.com
+ */
+
+using System;
 using System.Text;
 using iTextSharp.awt.geom;
 using iTextSharp.text;
@@ -32,6 +77,7 @@ namespace iTextSharp.xtra.iTextSharp.text.pdf.pdfcleanup {
         private static readonly byte[] eoW = DocWriter.GetISOBytes("W*\n");
         private static readonly byte[] q = DocWriter.GetISOBytes("q\n");
         private static readonly byte[] Q = DocWriter.GetISOBytes("Q\n");
+        private static readonly byte[] cs = DocWriter.GetISOBytes("cs\n");
 
         private static readonly HashSet2<String> textShowingOperators = new HashSet2<String>(new string[] {"TJ", "Tj", "'", "\""});
         private static readonly HashSet2<String> pathConstructionOperators = new HashSet2<String>(new string[] {"m", "l", "c", "v", "y", "h", "re"});
@@ -74,6 +120,7 @@ namespace iTextSharp.xtra.iTextSharp.text.pdf.pdfcleanup {
             PdfContentByte canvas = cleanUpStrategy.Context.Canvas;
             PRStream xFormStream = null;
             bool disableOutput = pathConstructionOperators.Contains(operatorStr) || pathPaintingOperators.Contains(operatorStr) || clippingPathOperators.Contains(operatorStr);
+            GraphicsState gs = pdfContentStreamProcessor.Gs();
 
             // key - number of a string in the TJ operator, value - number following the string; the first number without string (if it's presented) is stored under 0.
             // BE AWARE: zero-length strings are ignored!!!
@@ -133,12 +180,10 @@ namespace iTextSharp.xtra.iTextSharp.text.pdf.pdfcleanup {
                     structuredTJoperands = StructureTJarray((PdfArray) operands[0]);
                 }
 
-                GraphicsState gs = pdfContentStreamProcessor.Gs();
-
                 WriteTextChunks(structuredTJoperands, chunks, canvas, gs.CharacterSpacing, gs.WordSpacing, 
                     gs.FontSize, gs.HorizontalScaling);
             } else if (pathPaintingOperators.Contains(operatorStr)) {
-                WritePath(operatorStr, canvas);
+                WritePath(operatorStr, canvas, gs.ColorSpaceStroke);
             } else if (strokeColorOperators.Contains(operatorStr)) {
                 // Replace current color with the new one.
                 cleanUpStrategy.Context.PopStrokeColor();
@@ -337,7 +382,7 @@ namespace iTextSharp.xtra.iTextSharp.text.pdf.pdfcleanup {
             imageStream.SetDataRaw(image.GetBytes());
         }
 
-        private void WritePath(String operatorStr, PdfContentByte canvas) {
+        private void WritePath(String operatorStr, PdfContentByte canvas, PdfName strokeColorSpace) {
             if (nwFillOperators.Contains(operatorStr)) {
                 WritePath(cleanUpStrategy.CurrentFillPath, f, canvas);
             } else if (eoFillOperators.Contains(operatorStr)) {
@@ -345,7 +390,7 @@ namespace iTextSharp.xtra.iTextSharp.text.pdf.pdfcleanup {
             }
 
             if (strokeOperators.Contains(operatorStr)) {
-                WriteStroke(canvas, cleanUpStrategy.CurrentStrokePath);
+                WriteStroke(canvas, cleanUpStrategy.CurrentStrokePath, strokeColorSpace);
             }
 
             if (cleanUpStrategy.Clipped && !cleanUpStrategy.NewClipPath.IsEmpty()) {
@@ -424,8 +469,13 @@ namespace iTextSharp.xtra.iTextSharp.text.pdf.pdfcleanup {
             canvas.InternalBuffer.Append(l);
         }
 
-        private void WriteStroke(PdfContentByte canvas, Path path) {
+        private void WriteStroke(PdfContentByte canvas, Path path, PdfName strokeColorSpace) {
             canvas.InternalBuffer.Append(q);
+
+            if (strokeColorSpace != null) {
+                strokeColorSpace.ToPdf(canvas.PdfWriter, canvas.InternalBuffer);
+                canvas.InternalBuffer.Append(' ').Append(cs);
+            }
 
             IList<PdfObject> strokeColorOperands = cleanUpStrategy.Context.PeekStrokeColor();
             String strokeOperatorStr = strokeColorOperands[strokeColorOperands.Count - 1].ToString();

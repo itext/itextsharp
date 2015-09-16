@@ -10,7 +10,7 @@ using iTextSharp.text;
  * 
  *
  * This file is part of the iText project.
- * Copyright (c) 1998-2014 iText Group NV
+ * Copyright (c) 1998-2015 iText Group NV
  * Authors: Bruno Lowagie, Paulo Soares, et al.
  *
  * This program is free software; you can redistribute it and/or modify
@@ -254,8 +254,9 @@ namespace iTextSharp.text.pdf {
                             glyph[i++] = (char)m0;
                         }
                     }
-                    string s = new String(glyph, 0, i);
-                    b = PdfEncodings.ConvertToBytes(s, CJKFont.CJK_ENCODING);
+                    char[] copyGlyph = new char[i];
+                    Array.Copy(glyph, copyGlyph, i);
+                    b = StringUtils.ConvertCharsToBytes(copyGlyph);
                     break;
                 }
             }

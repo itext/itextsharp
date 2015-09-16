@@ -2,7 +2,7 @@
  * $Id: MCParser.java 5948 2013-08-08 13:52:26Z blowagie $
  *
  * This file is part of the iText (R) project.
- * Copyright (c) 1998-2014 iText Group NV
+ * Copyright (c) 1998-2015 iText Group NV
  * Authors: Bruno Lowagie, et al.
  *
  * This program is free software; you can redistribute it and/or modify

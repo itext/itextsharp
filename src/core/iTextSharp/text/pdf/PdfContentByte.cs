@@ -14,7 +14,7 @@ using iTextSharp.text.error_messages;
  * 
  *
  * This file is part of the iText project.
- * Copyright (c) 1998-2014 iText Group NV
+ * Copyright (c) 1998-2015 iText Group NV
  * Authors: Bruno Lowagie, Paulo Soares, et al.
  *
  * This program is free software; you can redistribute it and/or modify
@@ -103,8 +103,8 @@ namespace iTextSharp.text.pdf {
             /** The current word spacing */
             protected internal float wordSpace = 0;
 
-            protected internal BaseColor colorFill = new GrayColor(0);
-            protected internal BaseColor colorStroke = new GrayColor(0);
+            protected internal BaseColor colorFill = BaseColor.BLACK;
+            protected internal BaseColor colorStroke = BaseColor.BLACK;
             protected internal int textRenderMode = TEXT_RENDER_MODE_FILL;
             protected internal AffineTransform CTM = new AffineTransform();
             protected internal PdfObject extGState = null;
@@ -1644,149 +1644,198 @@ namespace iTextSharp.text.pdf {
         * @param inlineImage <CODE>true</CODE> to place this image inline, <CODE>false</CODE> otherwise
         * @throws DocumentException on error
         */
-        public virtual void AddImage(Image image, double a, double b, double c, double d, double e, double f, bool inlineImage) {
-            AffineTransform transform = new AffineTransform(a, b, c, d, e, f);
 
-            if (image.Layer != null)
-                BeginLayer(image.Layer);
-            if (IsTagged()) {
-                if (inText)
-                    EndText();
+        public virtual void AddImage(Image image, double a, double b, double c, double d, double e, double f,
+            bool inlineImage) {
+            AddImage(image, a, b, c, d, e, f, inlineImage, false);
+        }
 
-                Point2D[] src = new Point2D.Float[] { new Point2D.Float(0, 0), new Point2D.Float(1, 0), new Point2D.Float(1, 1), new Point2D.Float(0, 1) };
-                Point2D[] dst = new Point2D.Float[4];
-                transform.Transform(src, 0, dst, 0, 4);
-                float left = float.MaxValue;
-                float right = float.MinValue;
-                float bottom = float.MaxValue;
-                float top = float.MinValue;
-                for (int i = 0; i < 4; i++) {
-                    if (dst[i].GetX() < left)
-                        left = (float) dst[i].GetX();
-                    if (dst[i].GetX() > right)
-                        right = (float) dst[i].GetX();
-                    if (dst[i].GetY() < bottom)
-                        bottom = (float) dst[i].GetY();
-                    if (dst[i].GetY() > top)
-                        top = (float) dst[i].GetY();
-                }
-                image.SetAccessibleAttribute(PdfName.BBOX, new PdfArray(new float[] {left, bottom, right, top}));
-            }
-            if (writer != null && image.IsImgTemplate()) {
-                writer.AddDirectImageSimple(image);
-                PdfTemplate template = image.TemplateData;
-                if (image.GetAccessibleAttributes() != null) {
-                    foreach (PdfName key in image.GetAccessibleAttributes().Keys) {
-                        template.SetAccessibleAttribute(key, image.GetAccessibleAttribute(key));
+        /**
+         * Adds an <CODE>Image</CODE> to the page. The positioning of the <CODE>Image</CODE>
+         * is done with the transformation matrix. To position an <CODE>image</CODE> at (x,y)
+         * The image can be placed inline.
+         * @param image the <CODE>Image</CODE> object
+         * @param a an element of the transformation matrix
+         * @param b an element of the transformation matrix
+         * @param c an element of the transformation matrix
+         * @param d an element of the transformation matrix
+         * @param e an element of the transformation matrix
+         * @param f an element of the transformation matrix
+         * @param inlineImage <CODE>true</CODE> to place this image inline, <CODE>false</CODE> otherwise
+         * @param isMCBlockOpened <CODE>true</CODE> not to open MCBlock, <CODE>false</CODE> otherwise
+         * @throws DocumentException on error
+         */
+        protected internal void AddImage(Image image, double a, double b, double c, double d, double e, double f, bool inlineImage, bool isMCBlockOpened) {
+            try
+            {
+                AffineTransform transform = new AffineTransform(a, b, c, d, e, f);
+
+                if (image.Layer != null)
+                    BeginLayer(image.Layer);
+                if (IsTagged())
+                {
+                    if (inText)
+                        EndText();
+
+                    Point2D[] src = new Point2D.Float[]
+                    {new Point2D.Float(0, 0), new Point2D.Float(1, 0), new Point2D.Float(1, 1), new Point2D.Float(0, 1)};
+                    Point2D[] dst = new Point2D.Float[4];
+                    transform.Transform(src, 0, dst, 0, 4);
+                    float left = float.MaxValue;
+                    float right = float.MinValue;
+                    float bottom = float.MaxValue;
+                    float top = float.MinValue;
+                    for (int i = 0; i < 4; i++)
+                    {
+                        if (dst[i].GetX() < left)
+                            left = (float) dst[i].GetX();
+                        if (dst[i].GetX() > right)
+                            right = (float) dst[i].GetX();
+                        if (dst[i].GetY() < bottom)
+                            bottom = (float) dst[i].GetY();
+                        if (dst[i].GetY() > top)
+                            top = (float) dst[i].GetY();
                     }
+                    image.SetAccessibleAttribute(PdfName.BBOX, new PdfArray(new float[] {left, bottom, right, top}));
                 }
-                float w = template.Width;
-                float h = template.Height;
-                AddTemplate(template, a / w, b / w, c / h, d / h, e, f);
-            }
-            else {
-                content.Append("q ");
-
-                if (!transform.IsIdentity()) {
-                    content.Append(a).Append(' ');
-                    content.Append(b).Append(' ');
-                    content.Append(c).Append(' ');
-                    content.Append(d).Append(' ');
-                    content.Append(e).Append(' ');
-                    content.Append(f).Append(" cm");
-                }
-
-                if (inlineImage) {
-                    content.Append("\nBI\n");
-                    PdfImage pimage = new PdfImage(image, "", null);
-                    if (image is ImgJBIG2) {
-                        byte[] globals = ((ImgJBIG2)image).GlobalBytes;
-                        if (globals != null) {
-                            PdfDictionary decodeparms = new PdfDictionary();
-                            decodeparms.Put(PdfName.JBIG2GLOBALS, writer.GetReferenceJBIG2Globals(globals));
-                            pimage.Put(PdfName.DECODEPARMS, decodeparms);
+                if (writer != null && image.IsImgTemplate())
+                {
+                    writer.AddDirectImageSimple(image);
+                    PdfTemplate template = image.TemplateData;
+                    if (image.GetAccessibleAttributes() != null)
+                    {
+                        foreach (PdfName key in image.GetAccessibleAttributes().Keys)
+                        {
+                            template.SetAccessibleAttribute(key, image.GetAccessibleAttribute(key));
                         }
                     }
-                    PdfWriter.CheckPdfIsoConformance(writer, PdfIsoKeys.PDFISOKEY_INLINE_IMAGE, pimage);
-                    foreach (PdfName key in pimage.Keys) {
-                        if (!abrev.ContainsKey(key))
-                            continue;
-                        PdfObject value = pimage.Get(key);
-                        String s = abrev[key];
-                        content.Append(s);
-                        bool check = true;
-                        if (key.Equals(PdfName.COLORSPACE) && value.IsArray()) {
-                            PdfArray ar = (PdfArray)value;
-                            if (ar.Size == 4 
-                                && PdfName.INDEXED.Equals(ar.GetAsName(0)) 
-                                && ar.GetPdfObject(1).IsName()
-                                && ar.GetPdfObject(2).IsNumber()
-                                && ar.GetPdfObject(3).IsString()
-                            ) {
-                                check = false;
+                    float w = template.Width;
+                    float h = template.Height;
+                    AddTemplate(template, a/w, b/w, c/h, d/h, e, f, isMCBlockOpened);
+                }
+                else
+                {
+                    content.Append("q ");
+
+                    if (!transform.IsIdentity())
+                    {
+                        content.Append(a).Append(' ');
+                        content.Append(b).Append(' ');
+                        content.Append(c).Append(' ');
+                        content.Append(d).Append(' ');
+                        content.Append(e).Append(' ');
+                        content.Append(f).Append(" cm");
+                    }
+
+                    if (inlineImage)
+                    {
+                        content.Append("\nBI\n");
+                        PdfImage pimage = new PdfImage(image, "", null);
+                        if (image is ImgJBIG2)
+                        {
+                            byte[] globals = ((ImgJBIG2) image).GlobalBytes;
+                            if (globals != null)
+                            {
+                                PdfDictionary decodeparms = new PdfDictionary();
+                                decodeparms.Put(PdfName.JBIG2GLOBALS, writer.GetReferenceJBIG2Globals(globals));
+                                pimage.Put(PdfName.DECODEPARMS, decodeparms);
                             }
-                            
                         }
-                        if (check && key.Equals(PdfName.COLORSPACE) && !value.IsName()) {
-                            PdfName cs = writer.GetColorspaceName();
-                            PageResources prs = PageResources;
-                            prs.AddColor(cs, writer.AddToBody(value).IndirectReference);
-                            value = cs;
+                        PdfWriter.CheckPdfIsoConformance(writer, PdfIsoKeys.PDFISOKEY_INLINE_IMAGE, pimage);
+                        foreach (PdfName key in pimage.Keys)
+                        {
+                            if (!abrev.ContainsKey(key))
+                                continue;
+                            PdfObject value = pimage.Get(key);
+                            String s = abrev[key];
+                            content.Append(s);
+                            bool check = true;
+                            if (key.Equals(PdfName.COLORSPACE) && value.IsArray())
+                            {
+                                PdfArray ar = (PdfArray) value;
+                                if (ar.Size == 4
+                                    && PdfName.INDEXED.Equals(ar.GetAsName(0))
+                                    && ar.GetPdfObject(1).IsName()
+                                    && ar.GetPdfObject(2).IsNumber()
+                                    && ar.GetPdfObject(3).IsString()
+                                    )
+                                {
+                                    check = false;
+                                }
+
+                            }
+                            if (check && key.Equals(PdfName.COLORSPACE) && !value.IsName())
+                            {
+                                PdfName cs = writer.GetColorspaceName();
+                                PageResources prs = PageResources;
+                                prs.AddColor(cs, writer.AddToBody(value).IndirectReference);
+                                value = cs;
+                            }
+                            value.ToPdf(null, content);
+                            content.Append('\n');
                         }
-                        value.ToPdf(null, content);
-                        content.Append('\n');
+                        content.Append("ID\n");
+                        pimage.WriteContent(content);
+                        content.Append("\nEI\nQ").Append_i(separator);
                     }
-                    content.Append("ID\n");
-                    pimage.WriteContent(content);
-                    content.Append("\nEI\nQ").Append_i(separator);
-                }
-                else {
-                    PdfName name;
-                    PageResources prs = PageResources;
-                    Image maskImage = image.ImageMask;
-                    if (maskImage != null) {
-                        name = writer.AddDirectImageSimple(maskImage);
-                        prs.AddXObject(name, writer.GetImageReference(name));
+                    else
+                    {
+                        PdfName name;
+                        PageResources prs = PageResources;
+                        Image maskImage = image.ImageMask;
+                        if (maskImage != null)
+                        {
+                            name = writer.AddDirectImageSimple(maskImage);
+                            prs.AddXObject(name, writer.GetImageReference(name));
+                        }
+                        name = writer.AddDirectImageSimple(image);
+                        name = prs.AddXObject(name, writer.GetImageReference(name));
+                        content.Append(' ').Append(name.GetBytes()).Append(" Do Q").Append_i(separator);
                     }
-                    name = writer.AddDirectImageSimple(image);
-                    name = prs.AddXObject(name, writer.GetImageReference(name));
-                    content.Append(' ').Append(name.GetBytes()).Append(" Do Q").Append_i(separator);
                 }
+                if (image.HasBorders())
+                {
+                    SaveState();
+                    float w = image.Width;
+                    float h = image.Height;
+                    ConcatCTM(a/w, b/w, c/h, d/h, e, f);
+                    Rectangle(image);
+                    RestoreState();
+                }
+                if (image.Layer != null)
+                    EndLayer();
+                Annotation annot = image.Annotation;
+                if (annot == null)
+                    return;
+                double[] r = new double[unitRect.Length];
+                for (int k = 0; k < unitRect.Length; k += 2)
+                {
+                    r[k] = a*unitRect[k] + c*unitRect[k + 1] + e;
+                    r[k + 1] = b*unitRect[k] + d*unitRect[k + 1] + f;
+                }
+                double llx = r[0];
+                double lly = r[1];
+                double urx = llx;
+                double ury = lly;
+                for (int k = 2; k < r.Length; k += 2)
+                {
+                    llx = Math.Min(llx, r[k]);
+                    lly = Math.Min(lly, r[k + 1]);
+                    urx = Math.Max(urx, r[k]);
+                    ury = Math.Max(ury, r[k + 1]);
+                }
+                annot = new Annotation(annot);
+                annot.SetDimensions((float) llx, (float) lly, (float) urx, (float) ury);
+                PdfAnnotation an = PdfAnnotationsImp.ConvertAnnotation(writer, annot,
+                    new Rectangle((float) llx, (float) lly, (float) urx, (float) ury));
+                if (an == null)
+                    return;
+                AddAnnotation(an);
+            } catch (IOException ioe) {
+                String path = image != null && image.Url != null ? image.Url.AbsolutePath
+                    : MessageLocalization.GetComposedMessage("unknown");
+                throw new DocumentException(MessageLocalization.GetComposedMessage("add.image.exception", path), ioe);
             }
-            if (image.HasBorders()) {
-                SaveState();
-                float w = image.Width;
-                float h = image.Height;
-                ConcatCTM(a / w, b / w, c / h, d / h, e, f);
-                Rectangle(image);
-                RestoreState();
-            }
-            if (image.Layer != null)
-                EndLayer();
-            Annotation annot = image.Annotation;
-            if (annot == null)
-                return;
-            double[] r = new double[unitRect.Length];
-            for (int k = 0; k < unitRect.Length; k += 2) {
-                r[k] = a * unitRect[k] + c * unitRect[k + 1] + e;
-                r[k + 1] = b * unitRect[k] + d * unitRect[k + 1] + f;
-            }
-            double llx = r[0];
-            double lly = r[1];
-            double urx = llx;
-            double ury = lly;
-            for (int k = 2; k < r.Length; k += 2) {
-                llx = Math.Min(llx, r[k]);
-                lly = Math.Min(lly, r[k + 1]);
-                urx = Math.Max(urx, r[k]);
-                ury = Math.Max(ury, r[k + 1]);
-            }
-            annot = new Annotation(annot);
-            annot.SetDimensions((float)llx, (float)lly, (float)urx, (float)ury);
-            PdfAnnotation an = PdfAnnotationsImp.ConvertAnnotation(writer, annot, new Rectangle((float)llx, (float)lly, (float)urx, (float)ury));
-            if (an == null)
-                return;
-            AddAnnotation(an);
         }
     
         /**
@@ -3235,6 +3284,14 @@ namespace iTextSharp.text.pdf {
                     SetRGBColorStroke(value.R, value.G, value.B);
                     break;
             }
+
+            int alpha = value.A;
+            if (alpha < 255) {
+                PdfGState gState = new PdfGState();
+                gState.StrokeOpacity = alpha / 255f;
+                SetGState(gState);
+            }
+
         }
     
         /** Sets the fill color. <CODE>color</CODE> can be an
@@ -3282,6 +3339,15 @@ namespace iTextSharp.text.pdf {
                     SetRGBColorFill(value.R, value.G, value.B);
                     break;
             }
+
+            int alpha = value.A;
+            if (alpha < 255) {
+                PdfGState gState = new PdfGState();
+                gState.FillOpacity = alpha / 255f ;
+                SetGState(gState);
+            }
+
+
         }
     
         /** Sets the fill color to a spot color.
@@ -4058,13 +4124,24 @@ namespace iTextSharp.text.pdf {
         }
 #endif// DRAWING
 
+         /**
+        * Begins a marked content sequence. This sequence will be tagged with the structure <CODE>struc</CODE>.
+        * The same structure can be used several times to connect text that belongs to the same logical segment
+        * but is in a different location, like the same paragraph crossing to another page, for example.
+        * @param struc the tagging structure
+        */
+
+        public virtual void BeginMarkedContentSequence(PdfStructureElement struc) {
+            BeginMarkedContentSequence(struc    , null);
+        }
+
         /**
         * Begins a marked content sequence. This sequence will be tagged with the structure <CODE>struc</CODE>.
         * The same structure can be used several times to connect text that belongs to the same logical segment
         * but is in a different location, like the same paragraph crossing to another page, for example.
         * @param struc the tagging structure
         */    
-        virtual public void BeginMarkedContentSequence(PdfStructureElement struc) {        
+        virtual public void BeginMarkedContentSequence(PdfStructureElement struc, String expansion) {        
             PdfObject obj = struc.Get(PdfName.K);
             int[] structParentMarkPoint = pdf.GetStructParentIndexAndNextMarkPoint(CurrentPage);
             int structParent = structParentMarkPoint[0];
@@ -4096,7 +4173,11 @@ namespace iTextSharp.text.pdf {
             }
             SetMcDepth(GetMcDepth() + 1);
             int contentSize = content.Size;
-            content.Append(struc.Get(PdfName.S).GetBytes()).Append(" <</MCID ").Append(mark).Append(">> BDC").Append_i(separator);
+            content.Append(struc.Get(PdfName.S).GetBytes()).Append(" <</MCID ").Append(mark);
+            if (expansion != null) {
+                content.Append("/E(").Append(expansion).Append(")");
+            }
+            content.Append(">> BDC").Append_i(separator);
             markedContentSize += content.Size - contentSize;
         }
 
@@ -4247,6 +4328,7 @@ namespace iTextSharp.text.pdf {
                         bool inTextLocal = inText;
                         if (inText)
                             EndText();
+
                         BeginMarkedContentSequence(element.Role, propertiesDict, true);
                         if (inTextLocal)
                             BeginText(true);
@@ -4256,7 +4338,15 @@ namespace iTextSharp.text.pdf {
                             bool inTextLocal = inText;
                             if (inText)
                                 EndText();
-                            BeginMarkedContentSequence(structureElement);
+                            if (null != element.GetAccessibleAttributes() && null != element.GetAccessibleAttribute(PdfName.E))
+                            {
+                                BeginMarkedContentSequence(structureElement, element.GetAccessibleAttribute(PdfName.E).ToString());
+                                element.SetAccessibleAttribute(PdfName.E, null);
+                            }
+                            else
+                            {
+                                BeginMarkedContentSequence(structureElement);
+                            }
                             if (inTextLocal)
                                 BeginText(true);
                         }

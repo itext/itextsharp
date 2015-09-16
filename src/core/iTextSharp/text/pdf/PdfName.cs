@@ -9,7 +9,7 @@ using iTextSharp.text.error_messages;
  * 
  *
  * This file is part of the iText project.
- * Copyright (c) 1998-2014 iText Group NV
+ * Copyright (c) 1998-2015 iText Group NV
  * Authors: Bruno Lowagie, Paulo Soares, et al.
  *
  * This program is free software; you can redistribute it and/or modify
@@ -1655,6 +1655,10 @@ namespace iTextSharp.text.pdf {
          * @since 5.5.4
          */
         public static readonly PdfName REPEAT = new PdfName("Repeat");
+
+       
+        public static readonly PdfName REVERSEDCHARS = new PdfName("ReversedChars");
+
         /** A name */
         public static readonly PdfName RESETFORM = new PdfName("ResetForm");
         /** A name */

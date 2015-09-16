@@ -11,7 +11,7 @@ using iTextSharp.text.pdf.intern;
  * 
  *
  * This file is part of the iText project.
- * Copyright (c) 1998-2014 iText Group NV
+ * Copyright (c) 1998-2015 iText Group NV
  * Authors: Bruno Lowagie, Paulo Soares, et al.
  *
  * This program is free software; you can redistribute it and/or modify
@@ -386,10 +386,11 @@ namespace iTextSharp.text.pdf {
          */    
         public static PdfAction GotoLocalPage(int page, PdfDestination dest, PdfWriter writer) {
             PdfIndirectReference piref = writer.GetPageReference(page);
-            dest.AddPage(piref);
+            PdfDestination d = new PdfDestination(dest);
+            d.AddPage(piref);
             PdfAction action = new PdfAction();
             action.Put(PdfName.S, PdfName.GOTO);
-            action.Put(PdfName.D, dest);
+            action.Put(PdfName.D, d);
             return action;
         }
 

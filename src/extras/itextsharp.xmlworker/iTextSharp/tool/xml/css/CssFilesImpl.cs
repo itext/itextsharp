@@ -2,7 +2,7 @@
  * $Id: CssFilesImpl.java 287 2012-02-27 16:56:22Z blowagie $
  *
  * This file is part of the iText (R) project.
- * Copyright (c) 1998-2014 iText Group NV Authors: Balder Van Camp, Emiel
+ * Copyright (c) 1998-2015 iText Group NV Authors: Balder Van Camp, Emiel
  * Ackermann, et al.
  *
  * This program is free software; you can redistribute it and/or modify it under the terms of the GNU Affero General
@@ -143,7 +143,7 @@ namespace iTextSharp.tool.xml.css {
                     CssUtils.MapPutAll(css, utils.ProcessFont(value));
                 } else if (Util.EqualsIgnoreCase(CSS.Property.LIST_STYLE, key)) {
                     CssUtils.MapPutAll(css, utils.ProcessListStyle(value));
-                } else if (Util.EqualsIgnoreCase(CSS.Property.BACKGROUND, key)) {
+                } else if (key.ToLowerInvariant().Contains(CSS.Property.BACKGROUND)) {
                     IDictionary<String, String> backgroundStyles = utils.ProcessBackground(value);
                     foreach (String backgroundKey in backgroundStyles.Keys) {
                         if (!css.ContainsKey(backgroundKey)) {

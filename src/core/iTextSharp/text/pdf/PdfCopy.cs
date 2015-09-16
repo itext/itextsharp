@@ -12,7 +12,7 @@ using System.util;
  * 
  *
  * This file is part of the iText project.
- * Copyright (c) 1998-2014 iText Group NV
+ * Copyright (c) 1998-2015 iText Group NV
  * Authors: Bruno Lowagie, Paulo Soares, et al.
  *
  * This program is free software; you can redistribute it and/or modify
@@ -143,7 +143,7 @@ namespace iTextSharp.text.pdf {
         private static readonly PdfName iTextTag = new PdfName("_iTextTag_");
         internal static int zero = 0;
         private HashSet2<Object> mergedRadioButtons = new HashSet2<object>();
-        private Dictionary<Object, PdfString> mergedTextFields = new Dictionary<Object, PdfString>();
+        private Dictionary<Object, PdfObject> mergedTextFields = new Dictionary<Object, PdfObject>();
 
         private HashSet2<PdfReader> readersWithImportedStructureTreeRootKids = new HashSet2<PdfReader>();
 
@@ -900,6 +900,7 @@ namespace iTextSharp.text.pdf {
                                     pageFields.ArrayList.Remove(@ref);
                                 }
                             }
+                            indirectMap.TryGetValue(page.reader, out indirects);
                             foreach (PdfObject @ref in pageFields.ArrayList)
                                 page.mergedFields.Add(CopyObject(@ref));
                         }
@@ -1376,60 +1377,60 @@ namespace iTextSharp.text.pdf {
                         obj = new Dictionary<String, Object>();
                         map[s] = obj;
                         map = (Dictionary<String, Object>)obj;
-                        continue;
-                    }
-                    else if (obj is Dictionary<String, Object>)
-                        map = (Dictionary<String, Object>)obj;
-                    else
+                    } else if (obj is Dictionary<String, Object>) {
+                        map = (Dictionary<String, Object>) obj;
+                    } else {
                         return;
-                }
-                else {
+                    }
+                } else {
                     if (obj is Dictionary<String, Object>)
                         return;
                     PdfDictionary merged = item.GetMerged(0);
-                    if (obj == null) {
-                        PdfDictionary field = new PdfDictionary();
-                        if (PdfName.SIG.Equals(merged.Get(PdfName.FT)))
-                            hasSignature = true;
-                        foreach (PdfName key in merged.Keys) {
-                            if(fieldKeys.Contains(key))
-                                field.Put(key, merged.Get(key));
-                        }
-                        List<Object> list = new List<Object>();
-                        list.Add(field);
-                        CreateWidgets(list, item);
-                        map[s] =  list;
-                    } else {
-                        List<Object> list = (List<Object>)obj;
-                        PdfDictionary field = (PdfDictionary)list[0];
-                        PdfName type1 = (PdfName)field.Get(PdfName.FT);
-                        PdfName type2 = (PdfName)merged.Get(PdfName.FT);
-                        if (type1 == null || !type1.Equals(type2))
-                            return;
-                        int flag1 = 0;
-                        PdfObject f1 = field.Get(PdfName.FF);
-                        if (f1 != null && f1.IsNumber())
-                            flag1 = ((PdfNumber)f1).IntValue;
-                        int flag2 = 0;
-                        PdfObject f2 = merged.Get(PdfName.FF);
-                        if (f2 != null && f2.IsNumber())
-                            flag2 = ((PdfNumber)f2).IntValue;
-                        if (type1.Equals(PdfName.BTN)) {
-                            if (((flag1 ^ flag2) & PdfFormField.FF_PUSHBUTTON) != 0)
-                                return;
-                            if ((flag1 & PdfFormField.FF_PUSHBUTTON) == 0 && ((flag1 ^ flag2) & PdfFormField.FF_RADIO) != 0)
-                                return;
-                        }
-                        else if (type1.Equals(PdfName.CH)) {
-                            if (((flag1 ^ flag2) & PdfFormField.FF_COMBO) != 0)
-                                return;
-                        }
-                        CreateWidgets(list, item);
+
+                    // if a field with this name already exists, we try to rename it
+                    // so a new field will be created.
+                    if (obj != null) {
+                        s = RenameField(obj, map, merged);
                     }
+                    // generate a new field
+                    PdfDictionary field = new PdfDictionary();
+                    if (PdfName.SIG.Equals(merged.Get(PdfName.FT)))
+                        hasSignature = true;
+                    foreach (PdfName key in merged.Keys) {
+                        if(fieldKeys.Contains(key))
+                            field.Put(key, merged.Get(key));
+                    }
+                    List<Object> list = new List<Object>();
+                    list.Add(field);
+                    CreateWidgets(list, item);
+                    map[s] =  list;
                     return;
                 }
             }
         }
+
+        private String RenameField(Object obj, Dictionary<String, Object> map, PdfDictionary merged)
+        {
+            String fieldN = null;
+            if (obj != null) {
+                PdfString fieldName = merged.GetAsString(PdfName.T);
+                if (fieldName != null) {
+                    fieldN = fieldName.ToUnicodeString();
+                }
+            }
+            if (fieldN != null) {
+                for (int i = 1; i < int.MaxValue; i++) {
+                    String tmpFieldName = String.Format("{0}_{1}", fieldN, i);
+                    if (!map.ContainsKey(tmpFieldName)) {
+                        fieldN = tmpFieldName;
+                        break;
+                    }
+                }
+                merged.Put(PdfName.T, new PdfString(fieldN));
+            }
+            return fieldN;
+        }
+
 
         private void CreateWidgets(List<Object> list, AcroFields.Item item) {
             for (int k = 0; k < item.Size; ++k) {
@@ -1562,8 +1563,7 @@ namespace iTextSharp.text.pdf {
                     dic.Put(PdfName.KIDS, BranchForm((Dictionary<String, Object>) obj, ind, fname2));
                     arr.Add(ind);
                     AddToBody(dic, ind, true);
-                }
-                else {
+                } else {
                     List<Object> list = (List<Object>)obj;
                     dic.MergeDifferent((PdfDictionary) list[0]);
                     if (list.Count == 3) {
@@ -1587,24 +1587,13 @@ namespace iTextSharp.text.pdf {
                             widget.Remove(iTextTag);
                             if (PdfCopy.IsTextField(field)) {
                                 PdfString v = field.GetAsString(PdfName.V);
-                                PdfObject ap = widget.GetDirectObject(PdfName.AP);
+                                PdfObject ap = widget.Get(PdfName.AP);
                                 if (v != null && ap != null) {
                                     if (!mergedTextFields.ContainsKey(list)) {
-                                        mergedTextFields[list] = v;
+                                        mergedTextFields[list] = ap;
                                     } else {
-                                        try {
-                                            TextField tx = new TextField(this, null, null);
-                                            fields[0].DecodeGenericDictionary(widget, tx);
-                                            Rectangle box = PdfReader.GetNormalizedRectangle(widget.GetAsArray(PdfName.RECT));
-                                            if (tx.Rotation == 90 || tx.Rotation == 270)
-                                                box = box.Rotate();
-                                            tx.Box = box;
-                                            tx.Text = mergedTextFields[list].ToUnicodeString();
-                                            PdfAppearance app = tx.GetAppearance();
-                                            ((PdfDictionary)ap).Put(PdfName.N, app.IndirectReference);
-                                        } catch (DocumentException e) {
-                                            //do nothing
-                                        }
+                                        PdfObject ap1 = mergedTextFields[list];
+                                        widget.Put(PdfName.AP, CopyObject(ap1));
                                     }
                                 }
                             } else if (PdfCopy.IsCheckButton(field)) {

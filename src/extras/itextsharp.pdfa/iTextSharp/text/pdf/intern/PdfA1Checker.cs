@@ -6,7 +6,7 @@ using iTextSharp.text.error_messages;
  * $Id: PdfA1Checker.java 5827 2013-05-31 08:56:23Z blowagie $
  *
  * This file is part of the iText (R) project.
- * Copyright (c) 1998-2014 iText Group NV
+ * Copyright (c) 1998-2015 iText Group NV
  * Authors: Alexander Chingarev, Bruno Lowagie, et al.
  *
  * This program is free software; you can redistribute it and/or modify
@@ -66,8 +66,7 @@ namespace iTextSharp.text.pdf.intern
             PdfName.MOVIE, PdfName.RESETFORM, PdfName.IMPORTDATA, PdfName.JAVASCRIPT});
 
         public static readonly HashSet2<PdfName> contentAnnotations = new HashSet2<PdfName>(new PdfName[] {PdfName.TEXT,
-            PdfName.LINK, PdfName.FREETEXT, PdfName.LINE, PdfName.SQUARE, PdfName.CIRCLE, PdfName.STAMP,
-            PdfName.INK, PdfName.POPUP, PdfName.WIDGET});
+            PdfName.FREETEXT, PdfName.LINE, PdfName.SQUARE, PdfName.CIRCLE, PdfName.STAMP, PdfName.INK, PdfName.POPUP});
 
         private static readonly HashSet2<PdfName> keysForCheck = new HashSet2<PdfName>(new PdfName[] {PdfName.FONTDESCRIPTOR,
             PdfName.FONTFILE, PdfName.FONTFILE2, PdfName.FONTFILE3, PdfName.FILTER, PdfName.GROUP, PdfName.S,

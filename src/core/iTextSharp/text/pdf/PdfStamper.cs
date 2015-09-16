@@ -10,7 +10,7 @@ using iTextSharp.text.xml.xmp;
 
 /*
  * This file is part of the iText project.
- * Copyright (c) 1998-2014 iText Group NV
+ * Copyright (c) 1998-2015 iText Group NV
  * Authors: Bruno Lowagie, Paulo Soares, et al.
  *
  * This program is free software; you can redistribute it and/or modify
@@ -602,11 +602,12 @@ namespace iTextSharp.text.pdf {
                 return stamper.FullCompression;
             }
         }
-        
-        /**
-        * Sets the document's compression to the new 1.5 mode with object streams and xref
-        * streams. It can be set at any time but once set it can't be unset.
-        */
+
+         /**
+         * Sets the document's compression to the new 1.5 mode with object streams and xref
+         * streams. Be attentive!!! If you want set full compression , you should set immediately after creating PdfStamper,
+         * before editing the document.It can be set once and it can't be unset.
+         */
         virtual public void SetFullCompression() {
             if (stamper.append)
                 return;

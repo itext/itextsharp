@@ -7,7 +7,7 @@ using iTextSharp.text.pdf.interfaces;
  * 
  *
  * This file is part of the iText project.
- * Copyright (c) 1998-2014 iText Group NV
+ * Copyright (c) 1998-2015 iText Group NV
  * Authors: Bruno Lowagie, Paulo Soares, et al.
  *
  * This program is free software; you can redistribute it and/or modify
@@ -66,7 +66,6 @@ namespace iTextSharp.text.pdf {
 
 
         private static char[] singleSpace = {' '};
-        private static PdfChunk[] thisChunk = new PdfChunk[1];
         private const float ITALIC_ANGLE = 0.21256f;
 
         /** The allowed attributes in variable <CODE>attributes</CODE>. */
@@ -167,7 +166,6 @@ namespace iTextSharp.text.pdf {
          */
     
         internal PdfChunk(string str, PdfChunk other) {
-            thisChunk[0] = this;
             value = str;
             this.font = other.font;
             this.attributes = other.attributes;
@@ -202,7 +200,6 @@ namespace iTextSharp.text.pdf {
          */
    
         internal PdfChunk(Chunk chunk, PdfAction action) {
-            thisChunk[0] = this;
             value = chunk.Content;
         
             Font f = chunk.Font;
@@ -396,7 +393,7 @@ namespace iTextSharp.text.pdf {
                     if (currentWidth > width)
                         break;
                     // if a split-character is encountered, the splitPosition is altered
-                    if (splitCharacter.IsSplitCharacter(0, currentPosition, length, valueArray, thisChunk))
+                    if (splitCharacter.IsSplitCharacter(0, currentPosition, length, valueArray, new PdfChunk[] {this}))
                         splitPosition = currentPosition + 1;
                     currentPosition++;
                 }

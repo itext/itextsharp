@@ -1,12 +1,15 @@
 using System;
 using System.Collections.Generic;
 using System.IO;
+using iTextSharp.text.exceptions;
+using iTextSharp.text.log;
+
 //using System.util;
 /*
  * $Id$
  *
  * This file is part of the iText project.
- * Copyright (c) 1998-2014 iText Group NV
+ * Copyright (c) 1998-2015 iText Group NV
  * Authors: Bruno Lowagie, Kevin Day, Paulo Soares, et al.
  *
  * This program is free software; you can redistribute it and/or modify
@@ -54,6 +57,8 @@ namespace iTextSharp.text.pdf.parser {
      * @since 5.0.4
      */
     public static class InlineImageUtils {
+         private static ILogger LOGGER = LoggerFactory.GetLogger(typeof(InlineImageUtils));
+
         /**
          * Simple class in case users need to differentiate an exception from processing
          * inline images vs other exceptions 
@@ -379,9 +384,12 @@ namespace iTextSharp.text.pdf.parser {
             try {
                 PdfReader.DecodeBytes(samples, imageDictionary, FilterHandlers.GetDefaultFilterHandlers());
                 return true;
+            } catch (UnsupportedPdfException e) {
+                LOGGER.Warn(e.Message);
+                return true;
             } catch (IOException e) {
                 return false;
-            }
+            } 
         }
     }
 }

@@ -12,7 +12,7 @@ using iTextSharp.text;
  * 
  *
  * This file is part of the iText project.
- * Copyright (c) 1998-2014 iText Group NV
+ * Copyright (c) 1998-2015 iText Group NV
  * Authors: Bruno Lowagie, Paulo Soares, et al.
  *
  * This program is free software; you can redistribute it and/or modify
@@ -222,10 +222,16 @@ namespace iTextSharp.text.pdf {
          * the 'Name ID' 6.
          */
         protected string fontName;
-    
-        /** The full name of the font
-         */    
-        protected string[][] fullName;
+
+        /**
+         * The font subfamily
+         * This subFamily name is usually extracted from the table 'name' with
+         * the 'Name ID' 2 or 'Name ID' 17.
+         */
+        protected String[][] subFamily;
+
+        /** The full name of the font 'Name ID' 1 or 'Name ID' 16 */
+        protected String[][] fullName;
 
         /** All the names auf the Names-Table
         */
@@ -686,7 +692,19 @@ namespace iTextSharp.text.pdf {
                 CheckCff();
                 fontName = BaseFont;
                 fullName = GetNames(4); //full name
-                familyName = GetNames(1); //family name
+                //author Daniel Lichtenberger, CHEMDOX
+                String[][] otfFamilyName = GetNames(16);
+                if (otfFamilyName.Length > 0) {
+                    familyName = otfFamilyName;
+                } else {
+                    familyName = GetNames(1);
+                }
+                String[][] otfSubFamily = GetNames(17);
+                if (otfFamilyName.Length > 0) {
+                    subFamily = otfSubFamily;
+                } else {
+                    subFamily = GetNames(2);
+                }
                 allNameEntries = GetAllNames();
                 if (!justNames) {
                     FillTables();
@@ -1494,6 +1512,22 @@ namespace iTextSharp.text.pdf {
         public override string[][] FullFontName {
             get {
                 return fullName;
+            }
+        }
+
+        /**
+         * Gets the full subfamily name of the font. If it is a True Type font
+         * each array element will have {Platform ID, Platform Encoding ID,
+         * Language ID, subfamily}. The interpretation of this values can be
+         * found in the Open Type specification, chapter 2, in the 'name' table.<br>
+         * @return the full subfamily name of the font
+         */
+        public override string Subfamily {
+            get {
+                if (subFamily != null && subFamily.Length > 0) {
+                    return subFamily[0][3];
+                }
+                return base.Subfamily;
             }
         }
     

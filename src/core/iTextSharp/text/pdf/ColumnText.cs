@@ -7,7 +7,7 @@ using iTextSharp.text.error_messages;
 
 /*
  * This file is part of the iText project.
- * Copyright (c) 1998-2014 iText Group NV
+ * Copyright (c) 1998-2015 iText Group NV
  * Authors: Bruno Lowagie, Paulo Soares, et al.
  *
  * This program is free software; you can redistribute it and/or modify
@@ -248,8 +248,10 @@ namespace iTextSharp.text.pdf {
         /**
          * The index of the last row that needed to be splitted.
          * @since 5.0.1 changed a boolean into an int
+         * -2 value mean it is the first attempt to split the first row.
+         * -1 means that we try to avoid splitting current row.
          */
-        private int splittedRow = -1;
+        private int splittedRow = -2;
 
     
         protected Phrase waitPhrase;
@@ -288,10 +290,12 @@ namespace iTextSharp.text.pdf {
          * @return itself
          */    
         virtual public ColumnText SetACopy(ColumnText org) {
-            SetSimpleVars(org);
-            if (org.bidiLine != null)
-                bidiLine = new BidiLine(org.bidiLine);
-            return this;
+            if (org != null) {
+                SetSimpleVars(org);
+                if (org.bidiLine != null)
+                    bidiLine = new BidiLine(org.bidiLine);
+            }
+            return this;    
         }
     
         virtual protected internal void SetSimpleVars(ColumnText org) {
@@ -897,6 +901,7 @@ namespace iTextSharp.text.pdf {
             PdfLine line;
             float x1;
             int status = 0;
+            bool rtl = false;
             while (true) {
                 firstIndent = (lastWasNewline ? indent : followingIndent); //
                 if (rectangularMode) {
@@ -928,8 +933,11 @@ namespace iTextSharp.text.pdf {
                         break;
                     }
                     yLine -= currentLeading;
-                    if (!simulate && !dirty)
-                    {
+                    if (!simulate && !dirty) {
+                        if (line.isRTL && canvas.IsTagged()) {
+                            canvas.BeginMarkedContentSequence(PdfName.REVERSEDCHARS);
+                            rtl = true;
+                        }
                         text.BeginText();
                         dirty = true;
                     }
@@ -958,10 +966,15 @@ namespace iTextSharp.text.pdf {
                     }
                     x1 = Math.Max(xx[0], xx[2]);
                     float x2 = Math.Min(xx[1], xx[3]);
-                    if (x2 - x1 <= firstIndent + rightIndent)
+                    if (x2 - x1 <= firstIndent + rightIndent) {
                         continue;
-                    if (!simulate && !dirty)
-                    {
+                    }
+                    line = bidiLine.ProcessLine(x1, x2 - x1 - firstIndent - rightIndent, alignment, localRunDirection, arabicOptions, minY, yLine, descender);
+                    if (!simulate && !dirty) {
+                        if (line.isRTL && canvas.IsTagged()) {
+                            canvas.BeginMarkedContentSequence(PdfName.REVERSEDCHARS);
+                            rtl = true;
+                        }
                         text.BeginText();
                         dirty = true;
                     }
@@ -1010,9 +1023,14 @@ namespace iTextSharp.text.pdf {
 
             if (dirty) {
                 text.EndText();
-            
-                if (canvas != text)
+
+                if (canvas != text) {
                     canvas.Add(text);
+                }
+
+                if (rtl && canvas.IsTagged()) {
+                    canvas.EndMarkedContentSequence();
+                }
             }
             return status;
         }
@@ -1531,33 +1549,44 @@ namespace iTextSharp.text.pdf {
                     int headerRows = table.HeaderRows;
                     int footerRows = table.FooterRows;
                     int realHeaderRows = headerRows - footerRows;
-                    float headerHeight = table.HeaderHeight;
                     float footerHeight = table.FooterHeight;
+                    float headerHeight = table.HeaderHeight - footerHeight;
 
                     // do we need to skip the header?
                     bool skipHeader = table.SkipFirstHeader && rowIdx <= realHeaderRows && (table.ElementComplete || rowIdx != realHeaderRows);
-                    
-                    // if not, we wan't to be able to add more than just a header and a footer
-                    if (!skipHeader) {
-                        yTemp -= headerHeight;
-                        if (yTemp < minY || yTemp > maxY) {
-                            return NO_MORE_COLUMN;
-                        }
-                    }
-                
-                    // MEASURE NECESSARY SPACE
 
+                    if (!skipHeader)
+                    {
+                        yTemp -= headerHeight;
+                    }
+
+                    // MEASURE NECESSARY SPACE
                     // how many real rows (not header or footer rows) fit on a page?
                     int k = 0;
                     if (rowIdx < headerRows)
+                    {
                         rowIdx = headerRows;
-                    // if the table isn't complete, we need to be able to add a footer
-                    if (!table.ElementComplete) {
-                        yTemp -= footerHeight;
                     }
-                    // k will be the first row that doesn't fit
-                    // Contributed by Deutsche Bahn Systel GmbH (Thorsten Seitz), splitting row spans
-                    PdfPTable.FittingRows fittingRows = table.GetFittingRows(yTemp - minY, rowIdx);
+                    PdfPTable.FittingRows fittingRows = null;
+                    //if we skip the last header, firstly, we want to check if table is wholly fit to the page
+                    if (table.SkipLastFooter)
+                    {
+                        // Contributed by Deutsche Bahn Systel GmbH (Thorsten Seitz), splitting row spans
+                        fittingRows = table.GetFittingRows(yTemp - minY, rowIdx);
+                    }
+                    //if we skip the last footer, but the table doesn't fit to the page - we reserve space for footer
+                    //and recalculate fitting rows
+                    if (!table.SkipLastFooter || fittingRows.lastRow < table.Size - 1)
+                    {
+                        yTemp -= footerHeight;
+                        fittingRows = table.GetFittingRows(yTemp - minY, rowIdx);
+                    }
+
+                    //we want to be able to add more than just a header and a footer
+                    if (yTemp < minY || yTemp > maxY)
+                    {
+                        return NO_MORE_COLUMN;
+                    }
                     k = fittingRows.lastRow + 1;
                     yTemp -= fittingRows.height;
                     // splitting row spans
@@ -1567,7 +1596,10 @@ namespace iTextSharp.text.pdf {
                     while ((kTemp > rowIdx && kTemp < table.Size && table.GetRow(kTemp).MayNotBreak)) {
                         kTemp--;
                     }
-                    if ((kTemp > rowIdx && kTemp < k) || (kTemp == 0 && table.GetRow(0).MayNotBreak && table.LoopCheck)) {
+                    if (kTemp < (table.Size - 1) && !table.GetRow(kTemp).MayNotBreak) {
+                        kTemp++;
+                    }
+                    if ((kTemp > rowIdx && kTemp < k) || (kTemp == headerRows && table.GetRow(headerRows).MayNotBreak && table.LoopCheck)) {
                         yTemp = minY;
                         k = kTemp;
                 	    table.LoopCheck = false;
@@ -1598,7 +1630,7 @@ namespace iTextSharp.text.pdf {
                             else {
                                 // don't drop the row if the table is incomplete and if there's only one row (not counting the header rows)
                                 // if there's only one row and this check wasn't here the row would have been deleted and not added at all
-                                if (!table.Complete && k == 1) {
+                                if (!(!table.Complete && k == 1)) {
                                     table.Rows.RemoveAt(k);
                                 }
                                 return NO_MORE_COLUMN;
@@ -1608,7 +1640,12 @@ namespace iTextSharp.text.pdf {
                     // IF ROWS SHOULD NOT BE SPLIT
                     // Contributed by Deutsche Bahn Systel GmbH (Thorsten Seitz), splitting row spans
                     //else if (table.isSplitLate() && !table.hasRowspan(k) && rowIdx < k) {
-                    else if(table.SplitLate && rowIdx < k) {
+                    //if first row do not fit, splittedRow has value of -2, so in this case we try to avoid split.
+                    // Separate constant for the first attempt of splitting first row save us from infinite loop.
+                    // Also we check header rows, because in other case we may split right after header row,
+                    // while header row can't split before regular rows.
+                    else if (table.SplitLate && (rowIdx < k || (splittedRow == -2 && (table.HeaderRows == 0 || table.SkipFirstHeader))))
+                    {
                         splittedRow = -1;
                     }
                     // SPLIT ROWS (IF WANTED AND NECESSARY)
@@ -1705,81 +1742,93 @@ namespace iTextSharp.text.pdf {
                     	    footerRows = 0;
                         }
 
-                        // we need a correction if the last row needs to be extended
-                        float rowHeight = 0;
-                        int lastIdx = sub.Count - 1 - footerRows;
-                        PdfPRow last = sub[lastIdx];
-                        if (table.IsExtendLastRow(newPageFollows)) {
-                            rowHeight = last.MaxHeights;
-                            last.MaxHeights = yTemp - minY + rowHeight;
-                            yTemp = minY;
-                        }
-                    
-                        // newPageFollows indicates that this table is being split
-                        if (newPageFollows) {
-                            IPdfPTableEvent tableEvent = table.TableEvent;
-                            if (tableEvent is IPdfPTableEventSplit) {
-                                ((IPdfPTableEventSplit)tableEvent).SplitTable(table);
-                            }
-                        }
-                    
-                        // now we render the rows of the new table
-                        if (canvases != null)
+                        if (sub.Count > 0)
                         {
-                            if (IsTagged(canvases[PdfPTable.TEXTCANVAS]))
+                            // we need a correction if the last row needs to be extended
+                            float rowHeight = 0;
+                            int lastIdx = sub.Count - 1 - footerRows;
+                            PdfPRow last = sub[lastIdx];
+                            if (table.IsExtendLastRow(newPageFollows))
                             {
-                                canvases[PdfPTable.TEXTCANVAS].OpenMCBlock(table);
+                                rowHeight = last.MaxHeights;
+                                last.MaxHeights = yTemp - minY + rowHeight;
+                                yTemp = minY;
                             }
-                            nt.WriteSelectedRows(0, -1, 0, -1, x1, yLineWrite, canvases, false);
-                            if (IsTagged(canvases[PdfPTable.TEXTCANVAS]))
+
+                            // newPageFollows indicates that this table is being split
+                            if (newPageFollows)
                             {
-                                canvases[PdfPTable.TEXTCANVAS].CloseMCBlock(table);
+                                IPdfPTableEvent tableEvent = table.TableEvent;
+                                if (tableEvent is IPdfPTableEventSplit)
+                                {
+                                    ((IPdfPTableEventSplit) tableEvent).SplitTable(table);
+                                }
                             }
-                        }
-                        else
-                        {
-                            if (IsTagged(canvas))
+
+                            // now we render the rows of the new table
+                            if (canvases != null)
                             {
-                                canvas.OpenMCBlock(table);
+                                if (IsTagged(canvases[PdfPTable.TEXTCANVAS]))
+                                {
+                                    canvases[PdfPTable.TEXTCANVAS].OpenMCBlock(table);
+                                }
+                                nt.WriteSelectedRows(0, -1, 0, -1, x1, yLineWrite, canvases, false);
+                                if (IsTagged(canvases[PdfPTable.TEXTCANVAS]))
+                                {
+                                    canvases[PdfPTable.TEXTCANVAS].CloseMCBlock(table);
+                                }
                             }
-                            nt.WriteSelectedRows(0, -1, 0, -1, x1, yLineWrite, canvas, false);
-                            if (IsTagged(canvas))
+                            else
                             {
-                                canvas.CloseMCBlock(table);
+                                if (IsTagged(canvas))
+                                {
+                                    canvas.OpenMCBlock(table);
+                                }
+                                nt.WriteSelectedRows(0, -1, 0, -1, x1, yLineWrite, canvas, false);
+                                if (IsTagged(canvas))
+                                {
+                                    canvas.CloseMCBlock(table);
+                                }
                             }
-                        }
 
-                        if (!table.Complete) {
-                            table.AddNumberOfRowsWritten(k);
-                        }
+                            if (!table.Complete)
+                            {
+                                table.AddNumberOfRowsWritten(k);
+                            }
 
-                        // if the row was split, we copy the content of the last row
-                        // that was consumed into the first row shown on the next page
-                        if (splittedRow == k && k < table.Size) {
-                            PdfPRow splitted = table.Rows[k];
-                            splitted.CopyRowContent(nt, lastIdx);
-                        }
-                        // Contributed by Deutsche Bahn Systel GmbH (Thorsten Seitz), splitting row spans
-                        else if(k > 0 && k < table.Size) {
-                            // continue rowspans on next page
-                            // (as the row was not split there is no content to copy)
-                            PdfPRow row = table.GetRow(k);
-                            row.SplitRowspans(table, k - 1, nt, lastIdx);
-                        }
-                        // splitting row spans
-
-                        // reset the row height of the last row
-                        if (table.IsExtendLastRow(newPageFollows)) {
-                            last.MaxHeights = rowHeight;
-                        }
-
-                        // Contributed by Deutsche Bahn Systel GmbH (Thorsten Seitz)
-                        // newPageFollows indicates that this table is being split
-                        if (newPageFollows) {
-                            IPdfPTableEvent tableEvent = table.TableEvent;
-                            if (tableEvent is IPdfPTableEventAfterSplit) {
+                            // if the row was split, we copy the content of the last row
+                            // that was consumed into the first row shown on the next page
+                            if (splittedRow == k && k < table.Size)
+                            {
+                                PdfPRow splitted = table.Rows[k];
+                                splitted.CopyRowContent(nt, lastIdx);
+                            }
+                            // Contributed by Deutsche Bahn Systel GmbH (Thorsten Seitz), splitting row spans
+                            else if (k > 0 && k < table.Size)
+                            {
+                                // continue rowspans on next page
+                                // (as the row was not split there is no content to copy)
                                 PdfPRow row = table.GetRow(k);
-                                ((IPdfPTableEventAfterSplit)tableEvent).AfterSplitTable(table, row, k);
+                                row.SplitRowspans(table, k - 1, nt, lastIdx);
+                            }
+                            // splitting row spans
+
+                            // reset the row height of the last row
+                            if (table.IsExtendLastRow(newPageFollows))
+                            {
+                                last.MaxHeights = rowHeight;
+                            }
+
+                            // Contributed by Deutsche Bahn Systel GmbH (Thorsten Seitz)
+                            // newPageFollows indicates that this table is being split
+                            if (newPageFollows)
+                            {
+                                IPdfPTableEvent tableEvent = table.TableEvent;
+                                if (tableEvent is IPdfPTableEventAfterSplit)
+                                {
+                                    PdfPRow row = table.GetRow(k);
+                                    ((IPdfPTableEventAfterSplit) tableEvent).AfterSplitTable(table, row, k);
+                                }
                             }
                         }
                     }
@@ -1813,7 +1862,7 @@ namespace iTextSharp.text.pdf {
                         rowIdx = 0;
                     }
                     else {
-                        if (splittedRow != -1) {
+                        if (splittedRow > -1) {
                             List<PdfPRow> rows = table.Rows;
                             for (int i = rowIdx; i < k; ++i)
                                 rows[i] = null;

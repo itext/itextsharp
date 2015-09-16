@@ -1,6 +1,52 @@
+/*
+ * $Id$
+ *
+ * This file is part of the iText (R) project.
+ * Copyright (c) 1998-2015 iText Group NV
+ * Authors: Bruno Lowagie, Paulo Soares, et al.
+ *
+ * This program is free software; you can redistribute it and/or modify
+ * it under the terms of the GNU Affero General Public License version 3
+ * as published by the Free Software Foundation with the addition of the
+ * following permission added to Section 15 as permitted in Section 7(a):
+ * FOR ANY PART OF THE COVERED WORK IN WHICH THE COPYRIGHT IS OWNED BY
+ * ITEXT GROUP. ITEXT GROUP DISCLAIMS THE WARRANTY OF NON INFRINGEMENT
+ * OF THIRD PARTY RIGHTS
+ *
+ * This program is distributed in the hope that it will be useful, but
+ * WITHOUT ANY WARRANTY; without even the implied warranty of MERCHANTABILITY
+ * or FITNESS FOR A PARTICULAR PURPOSE.
+ * See the GNU Affero General Public License for more details.
+ * You should have received a copy of the GNU Affero General Public License
+ * along with this program; if not, see http://www.gnu.org/licenses or write to
+ * the Free Software Foundation, Inc., 51 Franklin Street, Fifth Floor,
+ * Boston, MA, 02110-1301 USA, or download the license from the following URL:
+ * http://itextpdf.com/terms-of-use/
+ *
+ * The interactive user interfaces in modified source and object code versions
+ * of this program must display Appropriate Legal Notices, as required under
+ * Section 5 of the GNU Affero General Public License.
+ *
+ * In accordance with Section 7(b) of the GNU Affero General Public License,
+ * a covered work must retain the producer line in every PDF that is created
+ * or manipulated using iText.
+ *
+ * You can be released from the requirements of the license by purchasing
+ * a commercial license. Buying such a license is mandatory as soon as you
+ * develop commercial activities involving the iText software without
+ * disclosing the source code of your own applications.
+ * These activities include: offering paid services to customers as an ASP,
+ * serving PDFs on the fly in a web application, shipping iText with a closed
+ * source product.
+ *
+ * For more information, please contact iText Software Corp. at this
+ * address: sales@itextpdf.com
+ */
+
 using System;
 using System.Diagnostics;
 using System.IO;
+using System.Security;
 using itextsharp.tests.iTextSharp.testutils;
 using iTextSharp.testutils;
 using iTextSharp.text;
@@ -84,6 +130,8 @@ namespace itextsharp.tests.iTextSharp.text.pdf
             return pdfBytes;
         }
 #endif// DRAWING
+
+
 
 
         [Test]
@@ -336,6 +384,38 @@ namespace itextsharp.tests.iTextSharp.text.pdf
         }
 
         [Test]
+        public virtual void CopyFields4Test() {
+            string target = "PdfCopyTest/";
+            Directory.CreateDirectory(target);
+            const string outfile = "copyFields4.pdf";
+            const string inputFile = "link.pdf";
+
+            Document document = new Document();
+            MemoryStream stream = new MemoryStream();
+            PdfWriter.GetInstance(document, stream);
+            Font font = new Font(BaseFont.CreateFont(RESOURCES + "fonts/georgia.ttf", BaseFont.IDENTITY_H, BaseFont.EMBEDDED), 9);
+            document.Open();
+            document.Add(new Phrase("text", font));
+            document.Close();
+
+            Document pdfDocument = new Document();
+            PdfCopy copier = new PdfCopy(pdfDocument, new FileStream(target + outfile, FileMode.Create));
+            copier.SetMergeFields();
+            pdfDocument.Open();
+
+            PdfReader reader1 = new PdfReader(RESOURCES + inputFile);
+            PdfReader reader2 = new PdfReader(stream.ToArray());
+
+            copier.AddDocument(reader1);
+            copier.AddDocument(reader2);
+            copier.Close();
+            CompareTool cmpTool = new CompareTool();
+            string errorMessage = cmpTool.CompareByContent(target + outfile, RESOURCES + "cmp_" + outfile, target, "diff");
+            if (errorMessage != null)
+                Assert.Fail(errorMessage);
+        }
+
+        [Test]
         [Timeout(60000)]
         public virtual void LargeFilePerformanceTest() {
             const string target = "PdfCopyTest/";
@@ -368,6 +448,56 @@ namespace itextsharp.tests.iTextSharp.text.pdf
             CompareTool cmpTool = new CompareTool();
             String errorMessage = cmpTool.CompareByContent(target + output, RESOURCES + cmp, target, "diff");
 
+            if (errorMessage != null) {
+                Assert.Fail(errorMessage);
+            }
+        }
+
+        [Test]
+        public void MergeNamedDestinationsTest()  {
+            string outputFolder = "PdfCopyTest/";
+            string outputFile = "namedDestinations.pdf";
+            Directory.CreateDirectory(outputFolder);
+
+            // Create simple document
+            MemoryStream main = new MemoryStream();
+            Document doc = new Document(new Rectangle(612f,792f),54f,54f,36f,36f);
+            PdfWriter pdfwrite = PdfWriter.GetInstance(doc, main);
+            doc.Open();
+            doc.Add(new Paragraph("Testing Page"));
+            doc.Close();
+
+            // Create TOC document
+            MemoryStream two = new MemoryStream();
+            Document doc2 = new Document(new Rectangle(612f,792f),54f,54f,36f,36f);
+            PdfWriter pdfwrite2 = PdfWriter.GetInstance(doc2, two);
+            doc2.Open();
+            Chunk chn = new Chunk("<<-- Link To Testing Page -->>");
+            chn.SetRemoteGoto("DUMMY.PDF","page-num-1");
+            doc2.Add(new Paragraph(chn));
+            doc2.Close();
+
+            // Merge documents
+            MemoryStream three = new MemoryStream();
+            PdfReader reader1 = new PdfReader(main.ToArray());
+            PdfReader reader2 = new PdfReader(two.ToArray());
+            Document doc3 = new Document();
+            PdfCopy DocCopy = new PdfCopy(doc3,three);
+            doc3.Open();
+            DocCopy.AddPage(DocCopy.GetImportedPage(reader2,1));
+            DocCopy.AddPage(DocCopy.GetImportedPage(reader1,1));
+            DocCopy.AddNamedDestination("page-num-1",2,new PdfDestination(PdfDestination.FIT));
+            doc3.Close();
+
+            // Fix references and write to file
+            PdfReader finalReader = new PdfReader(three.ToArray());
+            finalReader.MakeRemoteNamedDestinationsLocal();
+            PdfStamper stamper = new PdfStamper(finalReader,new  FileStream(outputFolder + outputFile, FileMode.Create));
+            stamper.Close();
+
+           
+            CompareTool compareTool = new CompareTool();
+            String errorMessage = compareTool.CompareByContent(outputFolder + outputFile, RESOURCES + "cmp_" + outputFile, outputFolder, "diff");
             if (errorMessage != null) {
                 Assert.Fail(errorMessage);
             }

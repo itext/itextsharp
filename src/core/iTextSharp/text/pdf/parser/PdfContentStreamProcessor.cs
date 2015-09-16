@@ -9,7 +9,7 @@ using iTextSharp.text.io;
  * $Id$
  *
  * This file is part of the iText project.
- * Copyright (c) 1998-2014 iText Group NV
+ * Copyright (c) 1998-2015 iText Group NV
  * Authors: Kevin Day, Bruno Lowagie, Paulo Soares, et al.
  *
  * This program is free software; you can redistribute it and/or modify
@@ -439,7 +439,7 @@ namespace iTextSharp.text.pdf.parser {
          */
         virtual protected void HandleInlineImage(InlineImageInfo info, PdfDictionary colorSpaceDic)
         {
-            ImageRenderInfo renderInfo = ImageRenderInfo.CreateForEmbeddedImage(Gs().ctm, info, colorSpaceDic);
+            ImageRenderInfo renderInfo = ImageRenderInfo.CreateForEmbeddedImage(Gs(), info, colorSpaceDic);
             renderListener.RenderImage(renderInfo);
         }
 
@@ -789,6 +789,13 @@ namespace iTextSharp.text.pdf.parser {
     	    float[] c = new float[nOperands];
     	    for (int i = 0; i < nOperands; i++) {
     		    c[i] = ((PdfNumber)operands[i]).FloatValue;
+                // fallbacks for illegal values: handled as Acrobat and Foxit do
+                if (c[i] > 1f) {
+                    c[i] = 1f;
+                }
+                else if (c[i] < 0f) {
+                    c[i] = 0f;
+                }
     	    }
     	    switch (nOperands) {
     	    case 1:
@@ -856,7 +863,7 @@ namespace iTextSharp.text.pdf.parser {
         }
 
         /**
-         * A content operator implementation (CS).
+         * A content operator implementation (cs).
          */
         private class SetColorSpaceFill : IContentOperator{
 		    virtual public void Invoke(PdfContentStreamProcessor processor, PdfLiteral oper, List<PdfObject> operands) {
@@ -865,7 +872,7 @@ namespace iTextSharp.text.pdf.parser {
         }
 
         /**
-         * A content operator implementation (cs).
+         * A content operator implementation (CS).
          */
         private class SetColorSpaceStroke : IContentOperator{
 		    virtual public void Invoke(PdfContentStreamProcessor processor, PdfLiteral oper, List<PdfObject> operands) {
@@ -1248,7 +1255,7 @@ namespace iTextSharp.text.pdf.parser {
 
             virtual public void HandleXObject(PdfContentStreamProcessor processor, PdfStream xobjectStream, PdfIndirectReference refi) {
                 PdfDictionary colorSpaceDic = processor.resources.GetAsDict(PdfName.COLORSPACE);
-                ImageRenderInfo renderInfo = ImageRenderInfo.CreateForXObject(processor.Gs().ctm, refi, colorSpaceDic);
+                ImageRenderInfo renderInfo = ImageRenderInfo.CreateForXObject(processor.Gs(), refi, colorSpaceDic);
                 processor.renderListener.RenderImage(renderInfo);
             }
         }

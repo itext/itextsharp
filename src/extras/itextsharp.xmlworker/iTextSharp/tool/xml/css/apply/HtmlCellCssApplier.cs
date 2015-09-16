@@ -14,7 +14,7 @@ using iTextSharp.tool.xml.pipeline.html;
  * $Id: HtmlCellCssApplier.java 170 2011-06-08 10:06:43Z emielackermann $
  *
  * This file is part of the iText (R) project.
- * Copyright (c) 1998-2014 iText Group NV
+ * Copyright (c) 1998-2015 iText Group NV
  * Authors: Balder Van Camp, Emiel Ackermann, et al.
  *
  * This program is free software; you can redistribute it and/or modify
@@ -183,13 +183,7 @@ namespace iTextSharp.tool.xml.css.apply {
                         cell.PaddingRight = cell.PaddingRight+utils.ParsePxInCmMmPcToPt(value);
                     }
                 } else if (key.Contains(CSS.Property.TEXT_ALIGN)) {
-                    if (Util.EqualsIgnoreCase(value, CSS.Value.LEFT)) {
-                        cell.HorizontalAlignment = Element.ALIGN_LEFT;
-                    } else if (Util.EqualsIgnoreCase(value, CSS.Value.CENTER)) {
-                        cell.HorizontalAlignment = Element.ALIGN_CENTER;
-                    } else if (Util.EqualsIgnoreCase(value, CSS.Value.RIGHT)) {
-                        cell.HorizontalAlignment = Element.ALIGN_RIGHT;
-                    }
+                    cell.HorizontalAlignment = CSS.GetElementAlignment(value);
                 }
             }
             cell.PaddingLeft = cell.PaddingLeft + values.HorBorderSpacing + values.BorderWidthLeft;

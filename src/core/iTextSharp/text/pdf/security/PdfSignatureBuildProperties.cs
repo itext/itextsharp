@@ -2,7 +2,7 @@
  * $Id: PdfSignatureBuildProperties.java 6037 2013-10-21 13:44:07Z blowagie $
  *
  * This file is part of the iText (R) project.
- * Copyright (c) 1998-2014 iText Group NV
+ * Copyright (c) 1998-2015 iText Group NV
  * Authors: Bruno Lowagie, Kwinten Pisman, et al.
  *
  * This program is free software; you can redistribute it and/or modify
@@ -44,14 +44,14 @@
  */
 
 namespace iTextSharp.text.pdf.security {
+
     /**
      * Dictionary that stores signature build properties.
      * @author Kwinten Pisman
      */
-
     internal class PdfSignatureBuildProperties : PdfDictionary {
-        /** Creates new PdfSignatureBuildProperties */
 
+        /** Creates new PdfSignatureBuildProperties */
         public PdfSignatureBuildProperties() : base() {
         }
 
@@ -61,7 +61,6 @@ namespace iTextSharp.text.pdf.security {
          * 
          * @param name
          */
-
         virtual public string SignatureCreator {
             set { GetPdfSignatureAppProperty().SignatureCreator = value; }
         }
@@ -73,7 +72,6 @@ namespace iTextSharp.text.pdf.security {
          * 
          * @return {@link PdfSignatureAppDictionary}
          */
-
         private PdfSignatureAppDictionary GetPdfSignatureAppProperty() {
             PdfSignatureAppDictionary appPropDic = (PdfSignatureAppDictionary) GetAsDict(PdfName.APP);
             if (appPropDic == null) {

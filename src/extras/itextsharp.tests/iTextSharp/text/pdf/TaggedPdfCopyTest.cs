@@ -1,3 +1,48 @@
+/*
+ * $Id$
+ *
+ * This file is part of the iText (R) project.
+ * Copyright (c) 1998-2015 iText Group NV
+ * Authors: Bruno Lowagie, Paulo Soares, et al.
+ *
+ * This program is free software; you can redistribute it and/or modify
+ * it under the terms of the GNU Affero General Public License version 3
+ * as published by the Free Software Foundation with the addition of the
+ * following permission added to Section 15 as permitted in Section 7(a):
+ * FOR ANY PART OF THE COVERED WORK IN WHICH THE COPYRIGHT IS OWNED BY
+ * ITEXT GROUP. ITEXT GROUP DISCLAIMS THE WARRANTY OF NON INFRINGEMENT
+ * OF THIRD PARTY RIGHTS
+ *
+ * This program is distributed in the hope that it will be useful, but
+ * WITHOUT ANY WARRANTY; without even the implied warranty of MERCHANTABILITY
+ * or FITNESS FOR A PARTICULAR PURPOSE.
+ * See the GNU Affero General Public License for more details.
+ * You should have received a copy of the GNU Affero General Public License
+ * along with this program; if not, see http://www.gnu.org/licenses or write to
+ * the Free Software Foundation, Inc., 51 Franklin Street, Fifth Floor,
+ * Boston, MA, 02110-1301 USA, or download the license from the following URL:
+ * http://itextpdf.com/terms-of-use/
+ *
+ * The interactive user interfaces in modified source and object code versions
+ * of this program must display Appropriate Legal Notices, as required under
+ * Section 5 of the GNU Affero General Public License.
+ *
+ * In accordance with Section 7(b) of the GNU Affero General Public License,
+ * a covered work must retain the producer line in every PDF that is created
+ * or manipulated using iText.
+ *
+ * You can be released from the requirements of the license by purchasing
+ * a commercial license. Buying such a license is mandatory as soon as you
+ * develop commercial activities involving the iText software without
+ * disclosing the source code of your own applications.
+ * These activities include: offering paid services to customers as an ASP,
+ * serving PDFs on the fly in a web application, shipping iText with a closed
+ * source product.
+ *
+ * For more information, please contact iText Software Corp. at this
+ * address: sales@itextpdf.com
+ */
+
 using System;
 using System.Collections.Generic;
 using System.IO;
@@ -177,7 +222,7 @@ namespace itextsharp.tests.text.pdf
             VerifyIsDictionary(obj, NO_PARENT_TREE);
 
             PdfArray array = ((PdfDictionary) obj).GetAsArray(PdfName.NUMS);
-            int[] nums = new int[] { 31, 0, 33, 40, 0, 0, 0, 0, 0, 0, 0, 0, 0, 81 };
+            int[] nums = new int[] { 44, 0, 65, 42, 0, 0, 0, 0, 0, 0, 0, 0, 0, 81 };
             for (int i = 0; i < n; ++i)
                 VerifyArraySize(PdfStructTreeController.GetDirectObject(array.GetDirectObject(i*2 + 1)), nums[i],
                                 "Nums of page " + (i + 1), true);
@@ -287,7 +332,7 @@ namespace itextsharp.tests.text.pdf
             VerifyIsDictionary(obj, NO_PARENT_TREE);
             PdfArray array = ((PdfDictionary) obj).GetAsArray(PdfName.NUMS);
             VerifyArraySize(array, 2, "Nums");
-            VerifyArraySize(PdfStructTreeController.GetDirectObject(array.GetDirectObject(1)), 4, "Nums of page 1");
+            VerifyArraySize(PdfStructTreeController.GetDirectObject(array.GetDirectObject(1)), 7, "Nums of page 1");
             reader.Close();
             CompareResults("2");
         }
@@ -311,7 +356,7 @@ namespace itextsharp.tests.text.pdf
             VerifyIsDictionary(obj, NO_PARENT_TREE);
             PdfArray array = ((PdfDictionary) obj).GetAsArray(PdfName.NUMS);
             VerifyArraySize(array, n*2, "Nums");
-            int[] nums = new int[] { 14, 19, 14, 12, 12, 12, 12 };
+            int[] nums = new int[] { 16, 87, 128, 74, 74, 74, 26 };
             for (int i = 0; i < n; ++i)
                 VerifyArraySize(PdfStructTreeController.GetDirectObject(array.GetDirectObject(i*2 + 1)), nums[i],
                                 "Nums of page " + (i + 1));
@@ -339,7 +384,7 @@ namespace itextsharp.tests.text.pdf
             VerifyIsDictionary(obj, NO_PARENT_TREE);
             PdfArray array = ((PdfDictionary) obj).GetAsArray(PdfName.NUMS);
             VerifyArraySize(array, n*2, "Nums");
-            int[] nums = new int[] { 12, 12, 12, 12, 14, 19, 14 };
+            int[] nums = new int[] { 26, 74, 74, 74, 128, 87, 16 };
             for (int i = 0; i < n; ++i)
                 VerifyArraySize(PdfStructTreeController.GetDirectObject(array.GetDirectObject(i*2 + 1)), nums[i],
                                 "Nums of page " + (i + 1));
@@ -368,7 +413,7 @@ namespace itextsharp.tests.text.pdf
             VerifyIsDictionary(obj, NO_PARENT_TREE);
             PdfArray array = ((PdfDictionary) obj).GetAsArray(PdfName.NUMS);
             VerifyArraySize(array, n*2, "Nums");
-            int[] nums = new int[] { 14, 14, 12 };
+            int[] nums = new int[] { 16, 128, 26 };
             for (int i = 0; i < n; ++i)
                 //nums[i] = ((PdfArray)PdfStructTreeController.GetDirectObject(array.GetDirectObject(i*2+1))).size();
                 VerifyArraySize(PdfStructTreeController.GetDirectObject(array.GetDirectObject(i*2 + 1)), nums[i],
@@ -403,7 +448,7 @@ namespace itextsharp.tests.text.pdf
             VerifyIsDictionary(obj, NO_PARENT_TREE);
             PdfArray array = ((PdfDictionary) obj).GetAsArray(PdfName.NUMS);
             VerifyArraySize(array, n*2, "Nums");
-            int[] nums = new int[] { 4, 0, 19, 10, 0, 26, 16, 92, 0, 0, 14, 19 };
+            int[] nums = new int[] { 5, 0, 33, 12, 0, 48, 35, 182, 0, 0, 17, 37 };
             for (int i = 0; i < n; ++i)
                 VerifyArraySize(PdfStructTreeController.GetDirectObject(array.GetDirectObject(i*2 + 1)), nums[i],
                                 "Nums of page " + (i + 1), true);
@@ -460,7 +505,7 @@ namespace itextsharp.tests.text.pdf
             VerifyIsDictionary(obj, NO_PARENT_TREE);
             PdfArray array = ((PdfDictionary) obj).GetAsArray(PdfName.NUMS);
             VerifyArraySize(array, n*2, "Nums");
-            int[] nums = new int[] {9, 9, 4, 4, 9, 4, 9, 4};
+            int[] nums = new int[] {48, 48, 7, 7, 48, 7, 48, 7};
             for (int i = 0; i < n; ++i)
                 VerifyArraySize(PdfStructTreeController.GetDirectObject(array.GetDirectObject(i*2 + 1)), nums[i],
                                 "Nums of page " + (i + 1));
@@ -547,7 +592,7 @@ namespace itextsharp.tests.text.pdf
             VerifyIsDictionary(obj, NO_PARENT_TREE);
             PdfArray array = ((PdfDictionary) obj).GetAsArray(PdfName.NUMS);
             VerifyArraySize(array, n*2, "Nums");
-            int[] nums = new int[] { 7, 19, 14, 12, 135, 0, 0, 83, 7, 135, 0, 0, 0, 0, 0, 0, 83, 116, 26, 14, 12, 14, 12, 0, 0, 38, 52, 61, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 7, 12 }; 
+            int[] nums = new int[] { 7, 87, 128, 26, 135, 0, 0, 83, 7, 135, 0, 0, 0, 0, 0, 0, 83, 116, 26, 128, 74, 16, 12, 0, 0, 38, 54, 61, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 7, 26 }; 
             for (int i = 0; i < n; ++i)
                 //            nums[i] = ((PdfArray)PdfStructTreeController.GetDirectObject(array.GetDirectObject(i*2+1))).size();
                 VerifyArraySize(PdfStructTreeController.GetDirectObject(array.GetDirectObject(i*2 + 1)), nums[i],
@@ -574,7 +619,7 @@ namespace itextsharp.tests.text.pdf
             VerifyIsDictionary(obj, NO_PARENT_TREE);
             PdfArray array = ((PdfDictionary) obj).GetAsArray(PdfName.NUMS);
             VerifyArraySize(array, 2, "Nums");
-            VerifyArraySize(PdfStructTreeController.GetDirectObject(array.GetDirectObject(1)), 4, "Nums of page 1");
+            VerifyArraySize(PdfStructTreeController.GetDirectObject(array.GetDirectObject(1)), 7, "Nums of page 1");
             reader.Close();
             CompareResults("10");
         }
@@ -690,7 +735,7 @@ namespace itextsharp.tests.text.pdf
             VerifyIsDictionary(obj, NO_PARENT_TREE);
             PdfArray array = ((PdfDictionary)obj).GetAsArray(PdfName.NUMS);
             VerifyArraySize(array, 8, "Nums");
-            VerifyArraySize(PdfStructTreeController.GetDirectObject(array[1]), 15, "Nums of page 1");
+            VerifyArraySize(PdfStructTreeController.GetDirectObject(array[1]), 20, "Nums of page 1");
             reader.Close();
         }
 
@@ -724,7 +769,7 @@ namespace itextsharp.tests.text.pdf
             Assert.AreEqual(4, nums.GetAsNumber(8).IntValue);
 
             Assert.AreEqual(12, nums.Size);
-            Assert.AreEqual(3, acroForm.GetAsArray(PdfName.FIELDS).Size);
+            Assert.AreEqual(4, acroForm.GetAsArray(PdfName.FIELDS).Size);
 
             reader.Close();
         }

@@ -5,7 +5,7 @@ using iTextSharp.tool.xml.exceptions;
  * $Id: DefaultTagProcessorFactory.java 151 2011-06-06 10:52:12Z redlab_b $
  *
  * This file is part of the iText (R) project.
- * Copyright (c) 1998-2014 iText Group NV
+ * Copyright (c) 1998-2015 iText Group NV
  * Authors: Balder Van Camp, Emiel Ackermann, et al.
  *
  * This program is free software; you can redistribute it and/or modify
@@ -139,7 +139,7 @@ namespace iTextSharp.tool.xml.html {
          */
         virtual public ITagProcessor GetProcessor(String tag, String nameSpace) {
             FactoryObject fo;
-            if (map.TryGetValue(tag, out fo) && fo != null) {
+            if (map.TryGetValue(tag.ToLower(), out fo) && fo != null) {
                 return fo.Processor;
             }
             throw new NoTagProcessorException(tag);

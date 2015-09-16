@@ -1,9 +1,12 @@
 using System;
+using System.Collections.Generic;
+using iTextSharp.text;
+
 /*
  * $Id: CSS.java 168 2011-06-08 08:37:18Z redlab_b $
  *
  * This file is part of the iText (R) project.
- * Copyright (c) 1998-2014 iText Group NV
+ * Copyright (c) 1998-2015 iText Group NV
  * Authors: Balder Van Camp, Emiel Ackermann, et al.
  *
  * This program is free software; you can redistribute it and/or modify
@@ -133,6 +136,7 @@ namespace iTextSharp.tool.xml.css {
             public const String TAB_STOPS = "tab-stops";
             public const String XFA_TAB_STOPS = "xfa-tab-stops";
             public const String PAGE_BREAK_BEFORE = "page-break-before";
+            public const String PAGE_BREAK_INSIDE = "page-break-inside";
             public const String PAGE_BREAK_AFTER = "page-break-after";
             public const String REPEAT_HEADER = "repeat-header";
             public const String REPEAT_FOOTER = "repeat-footer";
@@ -222,6 +226,7 @@ namespace iTextSharp.tool.xml.css {
             public const String EM = "em";
             public const String EX = "ex";
             public const String ALWAYS = "always";
+            public const String AVOID = "avoid";
             public const String ABSOLUTE = "absolute";
             public const String AUTO = "auto";
 		    public const String INLINE = "inline";
@@ -244,5 +249,25 @@ namespace iTextSharp.tool.xml.css {
 		    public const String TABLE_ROW = "table-row";
 		    public const String TABLE_ROW_GROUP = "table-row-group";
         }
+
+        private static  Dictionary<String, int> cssAlignMap = new Dictionary<String, int>();
+        private static  String Default = "default";
+
+        static CSS() {
+            cssAlignMap.Add(Value.LEFT.ToLower(), Element.ALIGN_LEFT);
+            cssAlignMap.Add(Value.CENTER.ToLower(), Element.ALIGN_CENTER);
+            cssAlignMap.Add(Value.RIGHT.ToLower(), Element.ALIGN_RIGHT);
+            cssAlignMap.Add(Value.JUSTIFY.ToLower(), Element.ALIGN_JUSTIFIED);
+            cssAlignMap.Add(Default.ToLower(), Element.ALIGN_UNDEFINED);
+        }
+        
+        public static int GetElementAlignment(String cssAlignment) {
+            String lower = cssAlignment.ToLower();
+            if (cssAlignMap.ContainsKey(lower)) {
+                return cssAlignMap[lower];
+            }
+            return cssAlignMap[Default];
+        }
     }
 }
+

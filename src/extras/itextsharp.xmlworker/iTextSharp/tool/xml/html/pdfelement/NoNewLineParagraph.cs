@@ -1,11 +1,11 @@
 using System;
 using iTextSharp.text;
-using iTextSharp.tool.xml.html;
+
 /*
  * $Id: NoNewLineParagraph.java 124 2011-05-27 12:37:59Z redlab_b $
  *
  * This file is part of the iText (R) project.
- * Copyright (c) 1998-2014 iText Group NV
+ * Copyright (c) 1998-2015 iText Group NV
  * Authors: Balder Van Camp, Emiel Ackermann, et al.
  *
  * This program is free software; you can redistribute it and/or modify
@@ -208,7 +208,7 @@ namespace iTextSharp.tool.xml.html.pdfelement {
                 list.IndentationRight = indentationRight;
                 return base.Add(list);
             }
-            else if (o is Image) {
+            else if (o is text.Image) {
                 base.AddSpecial(o);
                 return true;
             }

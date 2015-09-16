@@ -219,5 +219,6 @@ $RECYCLE.BIN/
 # Windows shortcuts
 *.lnk
 
-/target/
+target/
 nbactions*.xml
+src/core/iTextSharp.xml

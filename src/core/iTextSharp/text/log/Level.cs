@@ -2,7 +2,7 @@ using System;
 /*
  * $Id: Logger.java 4847 2011-05-05 19:46:13Z redlab_b $
  *
- * This file is part of the iText (R) project. Copyright (c) 1998-2014 iText Group NV
+ * This file is part of the iText (R) project. Copyright (c) 1998-2015 iText Group NV
  * BVBA Authors: Balder Van Camp, Emiel Ackermann, et al.
  *
  * This program is free software; you can redistribute it and/or modify it under

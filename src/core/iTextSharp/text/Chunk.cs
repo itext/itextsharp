@@ -12,7 +12,7 @@ using iTextSharp.text.pdf.interfaces;
  * 
  *
  * This file is part of the iText project.
- * Copyright (c) 1998-2014 iText Group NV
+ * Copyright (c) 1998-2015 iText Group NV
  * Authors: Bruno Lowagie, Paulo Soares, et al.
  *
  * This program is free software; you can redistribute it and/or modify
@@ -400,7 +400,16 @@ namespace iTextSharp.text {
         /// </summary>
         /// <returns>false if there aren't any.</returns>
         virtual public bool HasAttributes() {
-            return attributes != null;
+            return attributes != null && attributes.Count > 0;
+        }
+
+        /**
+         * Checks  the accessible attributes of this <CODE>Chunk</CODE>.
+         *
+         * @return false if there aren't any.
+         */
+        public bool HasAccessibleAttributes() {
+            return accessibleAttributes != null && accessibleAttributes.Count > 0;
         }
 
         /// <summary>

@@ -5,7 +5,7 @@ using iTextSharp.text.pdf.draw;
 /*
  *
  * This file is part of the iText project.
- * Copyright (c) 1998-2014 iText Group NV
+ * Copyright (c) 1998-2015 iText Group NV
  * Authors: Bruno Lowagie, Paulo Soares, et al.
  *
  * This program is free software; you can redistribute it and/or modify
@@ -391,16 +391,13 @@ namespace iTextSharp.text.pdf {
                     }
                 }
                 if (ck.IsTab()) {
-                    if (ck.IsAttribute(Chunk.TABSETTINGS))
-                    {
+                    if (ck.IsAttribute(Chunk.TABSETTINGS)) {
                         lastSplit = currentChar;
-                        float currentWidth = width;
-                        if (tabStop != null)
-                        {
-                            float tabStopPosition = tabStop.GetPosition(tabPosition, originalWidth - width, tabStopAnchorPosition);
+                        if (tabStop != null) {
+                            float tabStopPosition = tabStop.GetPosition(tabPosition, originalWidth - width,
+                                tabStopAnchorPosition);
                             width = originalWidth - (tabStopPosition + (originalWidth - width - tabPosition));
-                            if (width < 0)
-                            {
+                            if (width < 0) {
                                 tabStopPosition += width;
                                 width = 0;
                             }
@@ -408,21 +405,17 @@ namespace iTextSharp.text.pdf {
                         }
 
                         tabStop = PdfChunk.GetTabStop(ck, originalWidth - width);
-                        if (tabStop.Position > originalWidth)
-                        {
+                        if (tabStop.Position > originalWidth) {
                             tabStop = null;
                             break;
                         }
                         ck.TabStop = tabStop;
-                        if (!isRTL && tabStop.Align == TabStop.Alignment.LEFT)
-                        {
+                        if (!isRTL && tabStop.Align == TabStop.Alignment.LEFT) {
                             width = originalWidth - tabStop.Position;
                             tabStop = null;
                             tabPosition = float.NaN;
                             tabStopAnchorPosition = float.NaN;
-                        }
-                        else
-                        {
+                        } else {
                             tabPosition = originalWidth - width;
                             tabStopAnchorPosition = float.NaN;
                         }
@@ -449,8 +442,7 @@ namespace iTextSharp.text.pdf {
                             width = 0;
                     }
                 } else {
-                    bool splitChar = ck.IsExtSplitCharacter(oldCurrentChar, currentChar, totalTextLength, text,
-                                                               detailChunks);
+                    bool splitChar = ck.IsExtSplitCharacter(oldCurrentChar, currentChar, totalTextLength, text, detailChunks);
                     if (splitChar && char.IsWhiteSpace((char) uniC))
                         lastSplit = currentChar;
                     if (width - charWidth < 0)
@@ -477,7 +469,7 @@ namespace iTextSharp.text.pdf {
 
             if (tabStop != null) {
                 float tabStopPosition = tabStop.GetPosition(tabPosition, originalWidth - width, tabStopAnchorPosition);
-                width = originalWidth - (tabStopPosition + (originalWidth - width - tabPosition));
+                width -= tabStopPosition - tabPosition;
                 if (width < 0) {
                     tabStopPosition += width;
                     width = 0;
@@ -517,7 +509,7 @@ namespace iTextSharp.text.pdf {
                 isWordSplit = true;
             if (lastSplit == -1 || lastSplit >= newCurrentChar) {
                 // no split point or split point ahead of end
-                return new PdfLine(0, originalWidth, width + GetWidth(newCurrentChar + 1, currentChar - 1), alignment, false, CreateArrayOfPdfChunks(oldCurrentChar, newCurrentChar), isRTL);
+                return new PdfLine(0, originalWidth, width + GetWidth(newCurrentChar + 1, currentChar - 1, originalWidth), alignment, false, CreateArrayOfPdfChunks(oldCurrentChar, newCurrentChar), isRTL);
             }
             // standard split
             currentChar = lastSplit + 1;
@@ -526,7 +518,7 @@ namespace iTextSharp.text.pdf {
                 // only WS again
                 newCurrentChar = currentChar - 1;
             }
-            return new PdfLine(0, originalWidth, originalWidth - GetWidth(oldCurrentChar, newCurrentChar), alignment, false, CreateArrayOfPdfChunks(oldCurrentChar, newCurrentChar), isRTL);
+            return new PdfLine(0, originalWidth, originalWidth - GetWidth(oldCurrentChar, newCurrentChar, originalWidth), alignment, false, CreateArrayOfPdfChunks(oldCurrentChar, newCurrentChar), isRTL);
         }
 
         /**
@@ -536,13 +528,23 @@ namespace iTextSharp.text.pdf {
         public virtual bool IsWordSplit() {
             return isWordSplit;
         }
-    
+
         /** Gets the width of a range of characters.
          * @param startIdx the first index to calculate
          * @param lastIdx the last inclusive index to calculate
          * @return the sum of all widths
          */    
-        virtual public float GetWidth(int startIdx, int lastIdx) {
+        public virtual float GetWidth(int startIdx, int lastIdx) {
+            return GetWidth(startIdx, lastIdx, 0);
+        }
+
+        /** Gets the width of a range of characters.
+         * @param startIdx the first index to calculate
+         * @param lastIdx the last inclusive index to calculate
+         * @param originalWidth the full width of the line. It is used in case of RTL and tab stops
+         * @return the sum of all widths
+         */
+        virtual public float GetWidth(int startIdx, int lastIdx, float originalWidth) {
             char c = (char)0;
             PdfChunk ck = null;
             float width = 0;
@@ -554,31 +556,30 @@ namespace iTextSharp.text.pdf {
                 bool surrogate = Utilities.IsSurrogatePair(text, startIdx);
                 if (detailChunks[startIdx].IsTab()
                     //Keep deprecated tab logic for backward compatibility...
-                   && detailChunks[startIdx].IsAttribute(Chunk.TABSETTINGS))
-                {
-                    if (tabStop != null)
-                    {
+                   && detailChunks[startIdx].IsAttribute(Chunk.TABSETTINGS)) {
+                    if (tabStop != null) {
                         float tabStopPosition = tabStop.GetPosition(tabPosition, width, tabStopAnchorPosition);
                         width = tabStopPosition + (width - tabPosition);
                         tabStop.Position = tabStopPosition;
                     }
                     tabStop = detailChunks[startIdx].TabStop;
-                    if (tabStop == null)
-                    {
+                    if (tabStop == null) {
                         tabStop = PdfChunk.GetTabStop(detailChunks[startIdx], width);
                         tabPosition = width;
                         tabStopAnchorPosition = float.NaN;
                     }
-                    else
-                    {
-                        width = tabStop.Position;
+                    else {
+                        if (runDirection == PdfWriter.RUN_DIRECTION_RTL) {
+                            width = originalWidth - tabStop.Position;
+                        } else {
+                            width = tabStop.Position;
+                        }
                         tabStop = null;
                         tabPosition = float.NaN;
                         tabStopAnchorPosition = float.NaN;
                     }
                 }
-                else if (surrogate)
-                {
+                else if (surrogate) {
                     width += detailChunks[startIdx].GetCharWidth(Utilities.ConvertToUtf32(text, startIdx));
                     ++startIdx;
                 }

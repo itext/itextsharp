@@ -10,7 +10,7 @@ using iTextSharp.text.pdf.intern;
  * $Id: PdfAWriter.java 5853 2013-06-13 13:21:03Z eugenemark $
  *
  * This file is part of the iText (R) project.
- * Copyright (c) 1998-2014 iText Group NV
+ * Copyright (c) 1998-2015 iText Group NV
  * Authors: Alexander Chingarev, Bruno Lowagie, et al.
  *
  * This program is free software; you can redistribute it and/or modify

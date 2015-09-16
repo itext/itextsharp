@@ -3,7 +3,7 @@
  * 
  *
  * This file is part of the iText project.
- * Copyright (c) 1998-2014 iText Group NV
+ * Copyright (c) 1998-2015 iText Group NV
  * Authors: Bruno Lowagie, Paulo Soares, et al.
  *
  * This program is free software; you can redistribute it and/or modify
@@ -130,6 +130,15 @@ namespace iTextSharp.text.pdf {
                         content.RemoveAt(0);
 
                         status = floatingElement.Layout(canvas, useAscender, true, floatLeftX, minY, floatRightX, yLine);
+
+                        if (floatingElement.KeepTogether && (status & ColumnText.NO_MORE_TEXT) == 0)
+                        {
+                            //check for empty page
+                            if (compositeColumn.Canvas.PdfDocument.currentHeight > 0 || yLine != maxY) {
+                                content.Insert(0,floatingElement);
+                                break;
+                            }
+                        }
 
                         if (!simulate) {
                             canvas.OpenMCBlock(floatingElement);
@@ -286,6 +295,26 @@ namespace iTextSharp.text.pdf {
                         }
                     }
                 }
+               if (nextElement is Paragraph) {
+                Paragraph p = (Paragraph) nextElement;
+                foreach (IElement e in p) {
+                    if (e is WritableDirectElement) {
+                        WritableDirectElement writableElement = (WritableDirectElement) e;
+                        if (writableElement.DirectElemenType == WritableDirectElement.DIRECT_ELEMENT_TYPE_HEADER && !simulate) {
+                            PdfWriter writer = compositeColumn.Canvas.PdfWriter;
+                            PdfDocument doc = compositeColumn.Canvas.PdfDocument;
+
+                            // here is used a little hack:
+                            // writableElement.write() method implementation uses PdfWriter.getVerticalPosition() to create PdfDestination (see com.itextpdf.tool.xml.html.Header),
+                            // so here we are adjusting document's currentHeight in order to make getVerticalPosition() return value corresponding to real current position
+                            float savedHeight = doc.currentHeight;
+                            doc.currentHeight = doc.Top - yLine - doc.indentation.indentTop;
+                            writableElement.Write(writer, doc);
+                            doc.currentHeight = savedHeight;
+                        }
+                    }
+                }
+            } 
                 if (ignoreSpacingBefore && nextElement.Chunks.Count == 0)
                 {
                     if (nextElement is Paragraph)

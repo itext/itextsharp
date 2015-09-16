@@ -19,7 +19,7 @@ using iTextSharp.xmp;
  * 
  *
  * This file is part of the iText project.
- * Copyright (c) 1998-2014 iText Group NV
+ * Copyright (c) 1998-2015 iText Group NV
  * Authors: Bruno Lowagie, Paulo Soares, et al.
  *
  * This program is free software; you can redistribute it and/or modify
@@ -1623,8 +1623,9 @@ namespace iTextSharp.text.pdf {
         * @since    iText 5.0
         */
         virtual public void AddNamedDestination(String name, int page, PdfDestination dest) {
-            dest.AddPage(GetPageReference(page));
-            pdf.LocalDestination(name, dest);
+            PdfDestination d = new PdfDestination(dest);
+            d.AddPage(GetPageReference(page));
+            pdf.LocalDestination(name, d);
         }
         
         /**
@@ -2785,7 +2786,7 @@ namespace iTextSharp.text.pdf {
             d.Put(PdfName.LISTMODE, PdfName.VISIBLEPAGES);
         }
         
-        internal void RegisterLayer(IPdfOCG layer) {
+        virtual internal void RegisterLayer(IPdfOCG layer) {
             PdfWriter.CheckPdfIsoConformance(this, PdfIsoKeys.PDFISOKEY_LAYER, layer);
             if (layer is PdfLayer) {
                 PdfLayer la = (PdfLayer)layer;

@@ -7,7 +7,7 @@ using iTextSharp.tool.xml.net.exc;
  * $Id: ImageRetrieve.java 122 2011-05-27 12:20:58Z redlab_b $
  *
  * This file is part of the iText (R) project.
- * Copyright (c) 1998-2014 iText Group NV
+ * Copyright (c) 1998-2015 iText Group NV
  * Authors: Balder Van Camp, Emiel Ackermann, et al.
  *
  * This program is free software; you can redistribute it and/or modify
@@ -55,18 +55,33 @@ namespace iTextSharp.tool.xml.net {
      */
     public class ImageRetrieve {
         private IImageProvider provider;
+        private string resourceRootPath;
         /**
          * @param imageProvider the provider to use.
          *
          */
+        public ImageRetrieve(string resourceRootPath, IImageProvider imageProvider)
+        {
+            this.provider = imageProvider;
+            this.resourceRootPath = resourceRootPath;
+        }
+
+        public ImageRetrieve(string resourceRootPath)
+        {
+            this.provider = null;
+            this.resourceRootPath = resourceRootPath;
+        }
+
         public ImageRetrieve(IImageProvider imageProvider) {
             this.provider = imageProvider;
+            this.resourceRootPath = null;
         }
         /**
          *
          */
         public ImageRetrieve() {
             this.provider = null;
+            this.resourceRootPath = null;
         }
         /**
          * @param src an URI that can be used to retrieve an image
@@ -75,45 +90,46 @@ namespace iTextSharp.tool.xml.net {
          * @throws IOException if an IOException occurred
          */
         virtual public Image RetrieveImage(String src) {
-            Image img = null;
-            if (null != provider) {
-                img = provider.Retrieve(src);
+            Image img = TryRetrieveImageWithImageProvider(src);
+
+            if (img == null) {
+                try {
+                    Uri url = GetImageUrl(src);
+                    img = Image.GetInstance(url);
+                }
+                catch (Exception e) {
+                    throw new NoImageException(src, e);
+                }
             }
 
-            if (null == img) {
-                String path = null;
-                if (src.StartsWith("http")) {
-                    // full url available
-                    path = src;
-                } else if (null != provider){
-                    String root = this.provider.GetImageRootPath();
-                    if (null != root) {
-                        if (root.EndsWith("/") && src.StartsWith("/")) {
-                            root = root.Substring(0, root.Length - 1);
-                        }
-                        path = root + src;
-                    }
-                } else {
-                    path = src;
-                }
-                if (null != path) {
-                    try {
-                        if (path.StartsWith("http")) {
-                            img = Image.GetInstance(path);
-                        } else {
-                            img = Image.GetInstance(Path.GetFullPath(path));
-                        }
-                        if (null != provider && null != img) {
-                            provider.Store(src, img);
-                        }
-                    } catch (Exception e) {
-                        throw new NoImageException(src, e);
-                    }
-                } else {
-                    throw new NoImageException(src);
-                }
+            if (provider != null && img != null) {
+                provider.Store(src, img);
             }
+            
             return img;
+        }
+
+        private Image TryRetrieveImageWithImageProvider(string src) {
+            if (provider != null) {
+                return provider.Retrieve(src);
+            }
+            return null;
+        }
+
+        private Uri GetImageUrl(string src) {
+            UrlLinkResolver linkResolver = new UrlLinkResolver();
+            Uri url = null;
+            if (provider != null) {
+                linkResolver.SetLocalRootPath(provider.GetImageRootPath());
+                url = linkResolver.ResolveUrl(src);
+            }
+
+            if (url == null) {
+                linkResolver.SetLocalRootPath(resourceRootPath);
+                url = linkResolver.ResolveUrl(src);
+            }
+
+            return url;
         }
     }
 }

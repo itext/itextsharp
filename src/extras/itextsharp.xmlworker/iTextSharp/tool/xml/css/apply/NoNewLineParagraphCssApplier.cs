@@ -11,7 +11,7 @@ using iTextSharp.tool.xml.pipeline.html;
  * $Id: NoNewLineParagraphCssApplier.java 124 2011-05-27 12:37:59Z redlab_b $
  *
  * This file is part of the iText (R) project.
- * Copyright (c) 1998-2014 iText Group NV
+ * Copyright (c) 1998-2015 iText Group NV
  * Authors: Balder Van Camp, Emiel Ackermann, et al.
  *
  * This program is free software; you can redistribute it and/or modify
@@ -97,15 +97,7 @@ namespace iTextSharp.tool.xml.css.apply {
                 } else if (Util.EqualsIgnoreCase(CSS.Property.PADDING_RIGHT, key)) {
                     p.IndentationRight = p.IndentationRight + utils.ParseValueToPt(value, fontSize);
                 } else if (Util.EqualsIgnoreCase(CSS.Property.TEXT_ALIGN, key)) {
-                    if (Util.EqualsIgnoreCase(CSS.Value.RIGHT, value)){
-                        p.Alignment = Element.ALIGN_RIGHT;
-                    } else if (Util.EqualsIgnoreCase(CSS.Value.CENTER, value)){
-                        p.Alignment = Element.ALIGN_CENTER;
-                    } else if (Util.EqualsIgnoreCase(CSS.Value.LEFT, value)){
-                        p.Alignment = Element.ALIGN_LEFT;
-                    } else if (Util.EqualsIgnoreCase(CSS.Value.JUSTIFY, value)) {
-                        p.Alignment = Element.ALIGN_JUSTIFIED;
-                    }
+                    p.Alignment = CSS.GetElementAlignment(value);
                 } else if (Util.EqualsIgnoreCase(CSS.Property.TEXT_INDENT, key)) {
                     p.FirstLineIndent = utils.ParseValueToPt(value, fontSize);
                 }

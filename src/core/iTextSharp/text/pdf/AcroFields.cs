@@ -12,7 +12,7 @@ using iTextSharp.text.io;
 
 /*
  * This file is part of the iText project.
- * Copyright (c) 1998-2014 iText Group NV
+ * Copyright (c) 1998-2015 iText Group NV
  * Authors: Bruno Lowagie, Paulo Soares, et al.
  *
  * This program is free software; you can redistribute it and/or modify
@@ -539,6 +539,7 @@ namespace iTextSharp.text.pdf {
             // the text size and color
             PdfString da = merged.GetAsString(PdfName.DA);
             if (da != null) {
+                bool fontFallBack = false;
                 Object[] dab = SplitDAelements(da.ToUnicodeString());
                 if (dab[DA_SIZE] != null)
                     tx.FontSize = (float)dab[DA_SIZE];
@@ -549,9 +550,9 @@ namespace iTextSharp.text.pdf {
                     if (dr != null) {
                         PdfDictionary font = dr.GetAsDict(PdfName.FONT);
                         if (font != null) {
-                            PdfObject po = font.Get(new PdfName((String)dab[DA_FONT]));
+                            PdfObject po = font.Get(new PdfName((String) dab[DA_FONT]));
                             if (po != null && po.Type == PdfObject.INDIRECT) {
-                                PRIndirectReference por = (PRIndirectReference)po;
+                                PRIndirectReference por = (PRIndirectReference) po;
                                 BaseFont bp = new DocumentFont((PRIndirectReference) po, dr.GetAsDict(PdfName.ENCODING));
                                 tx.Font = bp;
                                 int porkey = por.Number;
@@ -559,18 +560,19 @@ namespace iTextSharp.text.pdf {
                                 extensionFonts.TryGetValue(porkey, out porf);
                                 if (porf == null) {
                                     if (!extensionFonts.ContainsKey(porkey)) {
-                                        PdfDictionary fo = (PdfDictionary)PdfReader.GetPdfObject(po);
+                                        PdfDictionary fo = (PdfDictionary) PdfReader.GetPdfObject(po);
                                         PdfDictionary fd = fo.GetAsDict(PdfName.FONTDESCRIPTOR);
                                         if (fd != null) {
-                                            PRStream prs = (PRStream)PdfReader.GetPdfObject(fd.Get(PdfName.FONTFILE2));
+                                            PRStream prs = (PRStream) PdfReader.GetPdfObject(fd.Get(PdfName.FONTFILE2));
                                             if (prs == null)
-                                                prs = (PRStream)PdfReader.GetPdfObject(fd.Get(PdfName.FONTFILE3));
+                                                prs = (PRStream) PdfReader.GetPdfObject(fd.Get(PdfName.FONTFILE3));
                                             if (prs == null) {
                                                 extensionFonts[porkey] = null;
                                             }
                                             else {
                                                 try {
-                                                    porf = BaseFont.CreateFont("font.ttf", BaseFont.IDENTITY_H, true, false, PdfReader.GetStreamBytes(prs), null);
+                                                    porf = BaseFont.CreateFont("font.ttf", BaseFont.IDENTITY_H, true,
+                                                        false, PdfReader.GetStreamBytes(prs), null);
                                                 }
                                                 catch {
                                                 }
@@ -580,30 +582,40 @@ namespace iTextSharp.text.pdf {
                                     }
                                 }
                                 if (tx is TextField)
-                                    ((TextField)tx).ExtensionFont = porf;
+                                    ((TextField) tx).ExtensionFont = porf;
                             }
                             else {
-                                BaseFont bf;
-                                if (!localFonts.TryGetValue((string)dab[DA_FONT], out bf)) {
-                                    String[] fn;
-                                    stdFieldFontNames.TryGetValue((string)dab[DA_FONT], out fn);
-                                    if (fn != null) {
-                                        try {
-                                            String enc = "winansi";
-                                            if (fn.Length > 1)
-                                                enc = fn[1];
-                                            bf = BaseFont.CreateFont(fn[0], enc, false);
-                                            tx.Font = bf;
-                                        }
-                                        catch {
-                                            // empty
-                                        }
-                                    }
-                                }
-                                else
-                                    tx.Font = bf;
+                                fontFallBack = true;
                             }
                         }
+                        else {
+                            fontFallBack = true;
+                        }
+                    }
+                    if (fontFallBack) {
+                        BaseFont bf;
+                        if (!localFonts.TryGetValue((string)dab[DA_FONT], out bf))
+                        {
+                            String[] fn;
+                            stdFieldFontNames.TryGetValue((string)dab[DA_FONT], out fn);
+                            if (fn != null)
+                            {
+                                try
+                                {
+                                    String enc = "winansi";
+                                    if (fn.Length > 1)
+                                        enc = fn[1];
+                                    bf = BaseFont.CreateFont(fn[0], enc, false);
+                                    tx.Font = bf;
+                                }
+                                catch
+                                {
+                                    // empty
+                                }
+                            }
+                        }
+                        else
+                            tx.Font = bf;
                     }
                 }
             }
@@ -686,6 +698,8 @@ namespace iTextSharp.text.pdf {
             PdfName fieldType = merged.GetAsName(PdfName.FT);
 
             if (PdfName.BTN.Equals(fieldType)) {
+                PdfNumber fieldFlags = merged.GetAsNumber(PdfName.FF);
+                bool isRadio = fieldFlags != null && (fieldFlags.IntValue & PdfFormField.FF_RADIO) != 0;
                 RadioCheckField field = new RadioCheckField(writer, null, null, null);
                 DecodeGenericDictionary(merged, field);
                 //rect
@@ -694,8 +708,10 @@ namespace iTextSharp.text.pdf {
                 if (field.Rotation == 90 || field.Rotation == 270)
                     box = box.Rotate();
                 field.Box = box;
-                field.CheckType = RadioCheckField.TYPE_CROSS;
-                return field.GetAppearance(false, !(merged.GetAsName(PdfName.AS).Equals(PdfName.Off_)));
+                if (!isRadio) {
+                    field.CheckType = RadioCheckField.TYPE_CROSS;    
+                }
+                return field.GetAppearance(isRadio, !(merged.GetAsName(PdfName.AS).Equals(PdfName.Off_)));
             }
 
             topFirst = 0;
@@ -1289,6 +1305,20 @@ namespace iTextSharp.text.pdf {
         virtual public bool SetField(String name, String value) {
             return SetField(name, value, null);
         }
+
+        /** Sets the field value.
+        * @param name the fully qualified field name or the partial name in the case of XFA forms
+        * @param value the field value
+        * @param saveAppearance save the current appearance of the field or not
+        * @throws IOException on error
+        * @throws DocumentException on error
+        * @return <CODE>true</CODE> if the field was found and changed,
+        * <CODE>false</CODE> otherwise
+        */
+        virtual public bool SetField(String name, String value, bool saveAppearance)
+        {
+            return SetField(name, value, null, saveAppearance);
+        }
         
         /**
          * Sets the rich value for the given field.  See <a href="http://www.adobe.com/content/dam/Adobe/en/devnet/pdf/pdfs/PDF32000_2008.pdf">PDF Reference</a> chapter 
@@ -1351,8 +1381,26 @@ namespace iTextSharp.text.pdf {
         * <CODE>false</CODE> otherwise
         * @throws IOException on error
         * @throws DocumentException on error
-        */    
-        virtual public bool SetField(String name, String value, String display) {
+        */
+        public virtual bool SetField(String name, String value, String display) {
+            return SetField(name, value, false);
+        }
+
+        /** Sets the field value and the display string. The display string
+        * is used to build the appearance in the cases where the value
+        * is modified by Acrobat with JavaScript and the algorithm is
+        * known.
+        * @param name the fully qualified field name or the partial name in the case of XFA forms
+        * @param value the field value
+        * @param display the string that is used for the appearance. If <CODE>null</CODE>
+        * the <CODE>value</CODE> parameter will be used
+        * @param saveAppearance save the current appearance of the field or not
+        * @return <CODE>true</CODE> if the field was found and changed,
+        * <CODE>false</CODE> otherwise
+        * @throws IOException on error
+        * @throws DocumentException on error
+        */
+        virtual public bool SetField(String name, String value, String display, bool saveAppearance) {
             if (writer == null)
                 throw new DocumentException(MessageLocalization.GetComposedMessage("this.acrofields.instance.is.read.only"));
             if (xfa.XfaPresent) {
@@ -1473,7 +1521,7 @@ namespace iTextSharp.text.pdf {
                         merged.Put(PdfName.AS, PdfName.Off_);
                         widget.Put(PdfName.AS, PdfName.Off_);
                     }
-                    if (generateAppearances) {
+                    if (generateAppearances && !saveAppearance) {
                         PdfAppearance app = GetAppearance(merged, display, name);
                         if (normal != null)
                             normal.Put(merged.GetAsName(PdfName.AS), app.IndirectReference);

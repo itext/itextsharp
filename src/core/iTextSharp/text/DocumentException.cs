@@ -5,7 +5,7 @@ using System;
  * 
  *
  * This file is part of the iText project.
- * Copyright (c) 1998-2014 iText Group NV
+ * Copyright (c) 1998-2015 iText Group NV
  * Authors: Bruno Lowagie, Paulo Soares, et al.
  *
  * This program is free software; you can redistribute it and/or modify
@@ -72,5 +72,12 @@ namespace iTextSharp.text {
         public DocumentException(string message) : base(message) {}
 
 		protected DocumentException(System.Runtime.Serialization.SerializationInfo info, System.Runtime.Serialization.StreamingContext context) : base(info, context) { }
+
+        /// <summary>
+        /// Constructs a DocumentException with a message and a Exception.
+        /// </summary>
+        /// <param name="message">a message describing the exception</param>
+        /// <param name="ex">an exception that has to be turned into a DocumentException</param>
+        public DocumentException(String message, Exception ex) : base (message, ex) { }
     }
 }

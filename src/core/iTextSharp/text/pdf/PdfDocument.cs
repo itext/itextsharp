@@ -12,7 +12,7 @@ using iTextSharp.text.error_messages;
  * $Id$
  *
  * This file is part of the iText project.
- * Copyright (c) 1998-2014 iText Group NV
+ * Copyright (c) 1998-2015 iText Group NV
  * Authors: Bruno Lowagie, Paulo Soares, et al.
  *
  * This program is free software; you can redistribute it and/or modify
@@ -233,9 +233,7 @@ namespace iTextSharp.text.pdf {
                         destmap[name] = dest.reference;
                     }
                     if (destmap.Count > 0) {
-                        PdfDictionary dests = new PdfDictionary();
-                        dests.Put(PdfName.NAMES, PdfNameTree.WriteTree(destmap, writer));
-                        names.Put(PdfName.DESTS, writer.AddToBody(dests).IndirectReference);
+                        names.Put(PdfName.DESTS, writer.AddToBody(PdfNameTree.WriteTree(destmap, writer)).IndirectReference);
                     }
                 }
                 if (documentLevelJS.Count > 0) {
@@ -1396,11 +1394,13 @@ namespace iTextSharp.text.pdf {
             float yMarker = text.YTLM;
             bool adjustMatrix = false;
             float tabPosition = 0;
-            
+
+            bool isMCBlockOpened = false;
             // looping over all the chunks in 1 line
             foreach (PdfChunk chunk in line) {
                 if (IsTagged(writer) && chunk.accessibleElement != null) {
                     text.OpenMCBlock(chunk.accessibleElement);
+                    isMCBlockOpened = true;
                 }
                 BaseColor color = chunk.Color;
                 float fontSize = chunk.Font.Size;
@@ -1465,27 +1465,34 @@ namespace iTextSharp.text.pdf {
                             tabPosition = tmp;
                         }
                         if (chunk.IsAttribute(Chunk.BACKGROUND)) {
-                            bool inText = graphics.InText;
-                            if (inText && IsTagged(writer)) {
-                                graphics.EndText();
-                            }
-                            float subtract = lastBaseFactor;
-                            if (nextChunk != null && nextChunk.IsAttribute(Chunk.BACKGROUND))
-                                subtract = 0;
-                            if (nextChunk == null)
-                                subtract += hangingCorrection;
-                            Object[] bgr = (Object[])chunk.GetAttribute(Chunk.BACKGROUND);
-                            graphics.SetColorFill((BaseColor)bgr[0]);
-                            float[] extra = (float[])bgr[1];
-                            graphics.Rectangle(xMarker - extra[0],
-                                yMarker + descender - extra[1] + chunk.TextRise,
-                                width - subtract + extra[0] + extra[2],
-                                ascender - descender + extra[1] + extra[3]);
-                            graphics.Fill();
-                            graphics.SetGrayFill(0);
-                            if (inText && IsTagged(writer)) {
-                                graphics.BeginText(true);
-                            }
+                             Object[] bgr = (Object[])chunk.GetAttribute(Chunk.BACKGROUND);
+                            if (bgr[0] != null) {
+                                bool inText = graphics.InText;
+                                if (inText && IsTagged(writer)) {
+                                    graphics.EndText();
+                                }
+                                graphics.SaveState();
+                                float subtract = lastBaseFactor;
+                                if (nextChunk != null && nextChunk.IsAttribute(Chunk.BACKGROUND)) {
+                                    subtract = 0;
+                                }
+                                if (nextChunk == null) {
+                                    subtract += hangingCorrection;
+                                }
+                                BaseColor c = (BaseColor)bgr[0];
+                                graphics.SetColorFill(c);
+                                float[] extra = (float[]) bgr[1];
+                                graphics.Rectangle(xMarker - extra[0],
+                                        yMarker + descender - extra[1] + chunk.TextRise,
+                                        width - subtract + extra[0] + extra[2],
+                                        ascender - descender + extra[1] + extra[3]);
+                                graphics.Fill();
+                                graphics.SetGrayFill(0);
+                                graphics.RestoreState();
+                                if (inText && IsTagged(writer)) {
+                                    graphics.BeginText(true);
+                                }
+                        }
                         }
                         if (chunk.IsAttribute(Chunk.UNDERLINE)) {
                             bool inText = graphics.InText;
@@ -1629,7 +1636,7 @@ namespace iTextSharp.text.pdf {
                             float[] matrix = image.GetMatrix(chunk.ImageScalePercentage);
                             matrix[Image.CX] = xMarker + chunk.ImageOffsetX - matrix[Image.CX];
                             matrix[Image.CY] = yMarker + chunk.ImageOffsetY - matrix[Image.CY];
-                            graphics.AddImage(image, matrix[0], matrix[1], matrix[2], matrix[3], matrix[4], matrix[5]);
+                            graphics.AddImage(image, matrix[0], matrix[1], matrix[2], matrix[3], matrix[4], matrix[5], false, isMCBlockOpened);
                             text.MoveText(xMarker + lastBaseFactor + chunk.ImageWidth - text.XTLM, 0);
                         }
                     }

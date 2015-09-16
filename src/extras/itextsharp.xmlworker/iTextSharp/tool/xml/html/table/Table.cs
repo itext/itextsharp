@@ -14,7 +14,7 @@ using iTextSharp.tool.xml.pipeline.html;
  * $Id: Table.java 170 2011-06-08 10:06:43Z emielackermann $
  *
  * This file is part of the iText (R) project.
- * Copyright (c) 1998-2014 iText Group NV
+ * Copyright (c) 1998-2015 iText Group NV
  * Authors: Balder Van Camp, Emiel Ackermann, et al.
  *
  * This program is free software; you can redistribute it and/or modify
@@ -132,11 +132,24 @@ namespace iTextSharp.tool.xml.html.table {
                 table.HeaderRows = headerRows + footerRows;
                 table.FooterRows = footerRows;
 
+                if (tag.Attributes.ContainsKey(HTML.Attribute.ALIGN)) {
+                    String value = tag.Attributes[HTML.Attribute.ALIGN];
+                    table.HorizontalAlignment = CSS.GetElementAlignment(value);
+                }
+
+
                 int direction = GetRunDirection(tag);
 
                 if (direction != PdfWriter.RUN_DIRECTION_DEFAULT) {
                     table.RunDirection = direction;
                 }
+                foreach (KeyValuePair<String, String> entry in tag.CSS) {
+				    if (Util.EqualsIgnoreCase(entry.Key,CSS.Property.PAGE_BREAK_INSIDE)) {
+					    if (Util.EqualsIgnoreCase(entry.Value,CSS.Value.AVOID.ToLower())) {
+						    table.KeepTogether = true;
+					    }
+				    }
+			    }
 
                 TableStyleValues styleValues = SetStyleValues(tag);
                 table.TableEvent = new TableBorderEvent(styleValues);

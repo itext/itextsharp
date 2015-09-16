@@ -14,11 +14,13 @@ using Org.BouncyCastle.Cms;
 using Org.BouncyCastle.X509;
 using iTextSharp.text.error_messages;
 using iTextSharp.text.io;
+using System.util.collections;
+
 /*
  * $Id$
  *
  * This file is part of the iText project.
- * Copyright (c) 1998-2014 iText Group NV
+ * Copyright (c) 1998-2015 iText Group NV
  * Authors: Bruno Lowagie, Paulo Soares, et al.
  *
  * This program is free software; you can redistribute it and/or modify
@@ -347,6 +349,11 @@ namespace iTextSharp.text.pdf {
             this.cryptoRef = (PRIndirectReference)DuplicatePdfObject(reader.cryptoRef, this);
             this.ownerPasswordUsed = reader.ownerPasswordUsed;
         }
+
+        // Explicit static constructor to tell C# compiler
+        // not to mark type as beforefieldinit. It prevents
+        // problems with Logger initialization.
+        static PdfReader() { }
                                                                                       
         /**
          * Utility method that checks the provided byte source to see if it has junk bytes at the beginning.  If junk bytes
@@ -1067,8 +1074,13 @@ namespace iTextSharp.text.pdf {
             if(catalog == null)
                 throw new InvalidPdfException(MessageLocalization.GetComposedMessage("the.document.has.no.catalog.object"));
             rootPages = catalog.GetAsDict(PdfName.PAGES);
-            if(rootPages == null || !PdfName.PAGES.Equals(rootPages.Get(PdfName.TYPE)))
-                throw new InvalidPdfException(MessageLocalization.GetComposedMessage("the.document.has.no.page.root"));
+            if (rootPages == null || !PdfName.PAGES.Equals(rootPages.Get(PdfName.TYPE))) {
+                if (debugmode && LOGGER.IsLogging(Level.ERROR)) {
+                    LOGGER.Error(MessageLocalization.GetComposedMessage("the.document.has.no.page.root"));
+                } else {
+                    throw new InvalidPdfException(MessageLocalization.GetComposedMessage("the.document.has.no.page.root"));
+                }
+            }
 
             pageRefs = new PageRefs(this);
         }
@@ -1422,7 +1434,11 @@ namespace iTextSharp.text.pdf {
                 PdfNumber prev = (PdfNumber)trailer2.Get(PdfName.PREV);
                 if (prev == null)
                     break;
-                tokens.Seek(prev.LongValue);
+                if (prev.LongValue == startxref) {
+                    throw new InvalidPdfException(MessageLocalization.GetComposedMessage("trailer.prev.entry.points.to.its.own.cross.reference.section"));
+                }
+                startxref = prev.LongValue;
+                tokens.Seek(startxref);
                 trailer2 = ReadXrefSection();
             }
         }
@@ -2273,7 +2289,7 @@ namespace iTextSharp.text.pdf {
         * @throws IOException on error
         */    
         virtual public void SetPageContent(int pageNum, byte[] content) {
-    	    SetPageContent(pageNum, content, PdfStream.DEFAULT_COMPRESSION);
+    	    SetPageContent(pageNum, content, PdfStream.DEFAULT_COMPRESSION,false);
         }
 
         /** Sets the contents of the page.
@@ -2281,13 +2297,15 @@ namespace iTextSharp.text.pdf {
         * @param pageNum the page number. 1 is the first
         * @since   2.1.3   (the method already existed without param compressionLevel)
         */
-        virtual public void SetPageContent(int pageNum, byte[] content, int compressionLevel) {
+        virtual public void SetPageContent(int pageNum, byte[] content, int compressionLevel,bool killOldXRefRecursively) {
             PdfDictionary page = GetPageN(pageNum);
             if (page == null)
                 return;
             PdfObject contents = page.Get(PdfName.CONTENTS);
             freeXref = -1;
-            KillXref(contents);
+            if (killOldXRefRecursively) {
+                KillXref(contents);
+            }
             if (freeXref == -1) {
                 xrefObj.Add(null);
                 freeXref = xrefObj.Count - 1;
@@ -2348,7 +2366,7 @@ namespace iTextSharp.text.pdf {
                     PdfObject dpEntry = GetPdfObject(dp[j]);
                     if (dpEntry is PdfDictionary){
                         decodeParams = (PdfDictionary)dpEntry;
-                    } else if (dpEntry == null || dpEntry is PdfNull) {
+                    } else if (dpEntry == null || dpEntry is PdfNull || (dpEntry is PdfLiteral && Util.ArraysAreEqual(Encoding.UTF8.GetBytes("null"), ((PdfLiteral)dpEntry).GetBytes()))) {
                         decodeParams = null;
                     } else {
                         throw new UnsupportedPdfException(MessageLocalization.GetComposedMessage("the.decode.parameter.type.1.is.not.supported", dpEntry.GetType().FullName));
@@ -2620,7 +2638,8 @@ namespace iTextSharp.text.pdf {
                 return decrypt;
             }
         }
-        
+
+        //possible IndexOutException 
         internal static bool Equalsn(byte[] a1, byte[] a2) {
             int length = a2.Length;
             for (int k = 0; k < length; ++k) {
@@ -3453,6 +3472,10 @@ namespace iTextSharp.text.pdf {
             private int lastPageRead = -1;
             private int sizep;
             private bool keepPages;
+            /**
+            * Keeps track of all pages nodes to avoid circular references.
+            */
+            private HashSet2<PdfObject> pagesNodes = new HashSet2<PdfObject>();
             
             internal PageRefs(PdfReader reader) {
                 this.reader = reader;
@@ -3645,7 +3668,10 @@ namespace iTextSharp.text.pdf {
             }
 
             private void IteratePages(PRIndirectReference rpage) {
-                PdfDictionary page = (PdfDictionary)GetPdfObject(rpage);
+
+                PdfDictionary page = (PdfDictionary)GetPdfObject(rpage);                
+                if (!pagesNodes.AddAndCheck(page))
+                    throw new InvalidPdfException(MessageLocalization.GetComposedMessage("illegal.pages.tree"));
                 if (page == null)
                     return;
                 PdfArray kidsPR = page.GetAsArray(PdfName.KIDS);

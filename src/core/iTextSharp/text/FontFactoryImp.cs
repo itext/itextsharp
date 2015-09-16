@@ -2,7 +2,7 @@ using System;
 using System.IO;
 using System.Collections.Generic;
 using System.Globalization;
-
+using System.Security.Permissions;
 using iTextSharp.text.pdf;
 using iTextSharp.text.log;
 using iTextSharp.text;
@@ -12,7 +12,7 @@ using iTextSharp.text;
  * 
  *
  * This file is part of the iText project.
- * Copyright (c) 1998-2014 iText Group NV
+ * Copyright (c) 1998-2015 iText Group NV
  * Authors: Bruno Lowagie, Paulo Soares, et al.
  *
  * This program is free software; you can redistribute it and/or modify
@@ -58,8 +58,13 @@ namespace iTextSharp.text {
     /// to this class first and then create fonts in your code using one of the getFont method
     /// without having to enter a path as parameter.
     /// </summary>
-    public class FontFactoryImp : IFontProvider {
-        
+    /// 
+   
+    public class FontFactoryImp : IFontProvider
+    {
+
+        protected static string SystemPath = null;
+
         private static readonly ILogger LOGGER = LoggerFactory.GetLogger(typeof(FontFactoryImp));
         
         /// <summary> This is a map of postscriptfontnames of True Type fonts and the path of their ttf- or ttc-file. </summary>
@@ -380,8 +385,16 @@ namespace iTextSharp.text {
                             break;
                         }
                     }
-                    if (!inserted)
+                    if (!inserted) {
                         tmp.Add(fullName);
+                        String newFullName = fullName.ToLower();
+                        if (newFullName.EndsWith("regular")) {
+                            //remove "regular" at the end of the font name
+                            newFullName = newFullName.Substring(0, newFullName.Length - 7).Trim();
+                            //insert this font name at the first position for higher priority
+                            tmp.Insert(0, fullName.Substring(0, newFullName.Length));
+                        }
+                    }
                 }
             }
         }
@@ -405,12 +418,22 @@ namespace iTextSharp.text {
                     Object[] allNames = BaseFont.GetAllFontNames(path, BaseFont.WINANSI, null);
                     trueTypeFonts[((string)allNames[0]).ToLower(CultureInfo.InvariantCulture)] = path;
                     if (alias != null) {
-                        trueTypeFonts[alias.ToLower(CultureInfo.InvariantCulture)] = path;
+                        string lcAlias = alias.ToLower(CultureInfo.InvariantCulture);
+                        trueTypeFonts[lcAlias] = path;
+                        if (lcAlias.EndsWith("regular")) {
+                            //do this job to give higher priority to regular fonts in comparison with light, narrow, etc
+                            SaveCopyOfRegularFont(lcAlias, path);
+                        }
                     }
                     // register all the font names with all the locales
                     string[][] names = (string[][])allNames[2]; //full name
                     for (int i = 0; i < names.Length; i++) {
-                        trueTypeFonts[names[i][3].ToLower(CultureInfo.InvariantCulture)] = path;
+                        string lcName = names[i][3].ToLower(CultureInfo.InvariantCulture);
+                        trueTypeFonts[lcName] = path;
+                        if (lcName.EndsWith("regular")) {
+                            //do this job to give higher priority to regular fonts in comparison with light, narrow, etc
+                            SaveCopyOfRegularFont(lcName, path);
+                        };
                     }
                     string fullName = null;
                     string familyName = null;
@@ -469,6 +492,19 @@ namespace iTextSharp.text {
             catch (System.IO.IOException ioe) {
                 throw ioe;
             }
+        }
+
+        // remove regular and correct last symbol
+        // do this job to give higher priority to regular fonts in comparison with light, narrow, etc
+        // Don't use this method for not regular fonts!
+        protected bool SaveCopyOfRegularFont(string regularFontName, string path) {
+            //remove "regular" at the end of the font name
+            String alias = regularFontName.Substring(0, regularFontName.Length - 7).Trim();
+            if (!trueTypeFonts.ContainsKey(alias)) {
+                trueTypeFonts[alias] = path;
+                return true;
+            }
+            return false;
         }
     
         /** Register all the fonts in a directory.
@@ -553,8 +589,18 @@ namespace iTextSharp.text {
                 return count;
             }
 
-            string dir = Path.Combine(Path.GetDirectoryName(Environment.GetFolderPath(Environment.SpecialFolder.System)), "Fonts");
-            return RegisterDirectory(dir);
+            try {
+                
+                if (SystemPath == null) {
+                    SystemPath = Environment.GetFolderPath(Environment.SpecialFolder.System);
+                }
+                string dir = Path.Combine(SystemPath,"Fonts");
+
+                return RegisterDirectory(dir);
+            }
+            catch (Exception xc) {}
+            return 0;
+            
         }
 
         /// <summary>

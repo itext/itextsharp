@@ -9,7 +9,7 @@ using iTextSharp.text.pdf.interfaces;
  * 
  *
  * This file is part of the iText project.
- * Copyright (c) 1998-2014 iText Group NV
+ * Copyright (c) 1998-2015 iText Group NV
  * Authors: Bruno Lowagie, Paulo Soares, et al.
  *
  * This program is free software; you can redistribute it and/or modify
@@ -106,7 +106,7 @@ namespace iTextSharp.text {
         protected float paddingTop;
         protected PdfName role = PdfName.P;
         protected Dictionary<PdfName, PdfObject> accessibleAttributes = null;
-        protected AccessibleElementId id = new AccessibleElementId();
+        private AccessibleElementId id = new AccessibleElementId();
 
         // constructors
     
@@ -193,6 +193,11 @@ namespace iTextSharp.text {
          */
         public virtual Paragraph CloneShallow(bool spacingBefore) {
             Paragraph copy = new Paragraph();
+            PopulateProperties(copy, spacingBefore);
+    	    return copy;
+        }
+
+        protected void PopulateProperties(Paragraph copy, bool spacingBefore) {
             copy.Font = Font;
             copy.Alignment = Alignment;
             copy.SetLeading(Leading, multipliedLeading);
@@ -209,7 +214,6 @@ namespace iTextSharp.text {
                 copy.accessibleAttributes = new Dictionary<PdfName, PdfObject>(accessibleAttributes);
             copy.TabSettings = this.TabSettings;
             copy.KeepTogether = this.KeepTogether;
-            return copy;
         }
 
         /**

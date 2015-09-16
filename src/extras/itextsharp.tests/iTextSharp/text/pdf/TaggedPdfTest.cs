@@ -1,6 +1,52 @@
+/*
+ * $Id$
+ *
+ * This file is part of the iText (R) project.
+ * Copyright (c) 1998-2015 iText Group NV
+ * Authors: Bruno Lowagie, Paulo Soares, et al.
+ *
+ * This program is free software; you can redistribute it and/or modify
+ * it under the terms of the GNU Affero General Public License version 3
+ * as published by the Free Software Foundation with the addition of the
+ * following permission added to Section 15 as permitted in Section 7(a):
+ * FOR ANY PART OF THE COVERED WORK IN WHICH THE COPYRIGHT IS OWNED BY
+ * ITEXT GROUP. ITEXT GROUP DISCLAIMS THE WARRANTY OF NON INFRINGEMENT
+ * OF THIRD PARTY RIGHTS
+ *
+ * This program is distributed in the hope that it will be useful, but
+ * WITHOUT ANY WARRANTY; without even the implied warranty of MERCHANTABILITY
+ * or FITNESS FOR A PARTICULAR PURPOSE.
+ * See the GNU Affero General Public License for more details.
+ * You should have received a copy of the GNU Affero General Public License
+ * along with this program; if not, see http://www.gnu.org/licenses or write to
+ * the Free Software Foundation, Inc., 51 Franklin Street, Fifth Floor,
+ * Boston, MA, 02110-1301 USA, or download the license from the following URL:
+ * http://itextpdf.com/terms-of-use/
+ *
+ * The interactive user interfaces in modified source and object code versions
+ * of this program must display Appropriate Legal Notices, as required under
+ * Section 5 of the GNU Affero General Public License.
+ *
+ * In accordance with Section 7(b) of the GNU Affero General Public License,
+ * a covered work must retain the producer line in every PDF that is created
+ * or manipulated using iText.
+ *
+ * You can be released from the requirements of the license by purchasing
+ * a commercial license. Buying such a license is mandatory as soon as you
+ * develop commercial activities involving the iText software without
+ * disclosing the source code of your own applications.
+ * These activities include: offering paid services to customers as an ASP,
+ * serving PDFs on the fly in a web application, shipping iText with a closed
+ * source product.
+ *
+ * For more information, please contact iText Software Corp. at this
+ * address: sales@itextpdf.com
+ */
+
 using System;
 using System.Diagnostics;
 using System.IO;
+using iTextSharp.testutils;
 using Microsoft.XmlDiffPatch;
 using NUnit.Framework;
 using iTextSharp.text;
@@ -1043,9 +1089,10 @@ namespace itextsharp.tests.text.pdf {
             p.SetAccessibleAttribute(PdfName.ACTUALTEXT, new PdfString("Paragraph ALT Text"));
             p.SetAccessibleAttribute(PdfName.ALT, new PdfString("Paragraph ALT Text"));
             document.Add(p);
-
-
-            Chunk ck = new Chunk("Span testing testing", FontFactory.GetFont(RESOURCES + @"..\FreeMonoBold.ttf", BaseFont.WINANSI, BaseFont.EMBEDDED, 12));
+            
+            BaseFont bFont = BaseFont.CreateFont(RESOURCES + @"..\FreeMonoBold.ttf", BaseFont.WINANSI, BaseFont.EMBEDDED);
+            Font font = new Font(bFont, 12);
+            Chunk ck = new Chunk("Span testing testing", font);
             ck.SetAccessibleAttribute(PdfName.ACTUALTEXT, new PdfString("Span ALT Text"));
             ck.SetAccessibleAttribute(PdfName.ALT, new PdfString("Span ALT Text"));
             p = new Paragraph(ck);
@@ -1064,6 +1111,54 @@ namespace itextsharp.tests.text.pdf {
 
             fos.Close();
             CompareResults("24");
+        }
+
+        [Test]
+        public virtual void CreateTagedPdf25() {
+            Document document = new Document();
+            MemoryStream baos = new MemoryStream();
+
+            PdfWriter writer = PdfWriter.GetInstance(document, baos);
+
+            writer.ViewerPreferences = PdfWriter.DisplayDocTitle;
+
+            writer.PdfVersion = PdfWriter.VERSION_1_7;
+            writer.SetTagged();
+            PdfDictionary info = writer.Info;
+            info.Put(PdfName.TITLE, new PdfString("Testing"));
+            writer.CreateXmpMetadata();
+
+            document.Open();
+            document.AddLanguage("en_US");
+            document.SetAccessibleAttribute(PdfName.LANG, new PdfString("en_US"));
+
+            string longParagraphString = "Long teeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeext Paragraph testing testing";
+            BaseFont bFont = BaseFont.CreateFont(RESOURCES + @"..\FreeMonoBold.ttf", BaseFont.WINANSI, BaseFont.EMBEDDED);
+            Font font = new Font(bFont, 12);
+            Paragraph p = new Paragraph(longParagraphString, font);
+            document.Add(p);
+
+            string longChunkString = "Long teeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeext Span testing testing";
+            Chunk ck = new Chunk(longChunkString, font);
+            p = new Paragraph(ck);
+            document.Add(p);
+
+            document.Close();
+            FileStream fos = new FileStream("TaggedPdfTest/pdf/out25.pdf", FileMode.Create);
+            byte[] buff = baos.ToArray();
+            fos.Write(buff, 0, buff.Length);
+            fos.Flush();
+            fos.Close();
+            CompareResults("25");
+
+            CompareTool compareTool = new CompareTool();
+            string cmpFile = RESOURCES + @"out25.pdf";
+            string errorMessage = compareTool.CompareByContent("TaggedPdfTest/pdf/out25.pdf", cmpFile,
+                "TaggedPdfTest/pdf/", "diff_");
+            if (errorMessage != null) {
+                Assert.Fail(errorMessage);
+            }
+
         }
 
         [TearDown]

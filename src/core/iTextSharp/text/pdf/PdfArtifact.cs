@@ -7,7 +7,7 @@ using iTextSharp.text.pdf.interfaces;
  * $Id: PdfArtifact.java 5830 2013-05-31 09:29:15Z blowagie $
  *
  * This file is part of the iText (R) project.
- * Copyright (c) 1998-2014 iText Group NV
+ * Copyright (c) 1998-2015 iText Group NV
  * Authors: Alexander Chingarev, Bruno Lowagie, et al.
  *
  * This program is free software; you can redistribute it and/or modify

@@ -10,7 +10,7 @@ using iTextSharp.text.io;
  * $Id$
  *
  * This file is part of the iText (R) project.
- * Copyright (c) 1998-2014 iText Group NV
+ * Copyright (c) 1998-2015 iText Group NV
  * Authors: Bruno Lowagie, Paulo Soares, et al.
  *
  * This program is free software; you can redistribute it and/or modify
@@ -593,7 +593,6 @@ namespace iTextSharp.text.pdf {
             return t;
         }
 
-
         /** Indicates if we need to reuse the existing appearance as layer 0. */
         private bool reuseAppearance = false;
 
@@ -1140,7 +1139,24 @@ namespace iTextSharp.text.pdf {
         
         /** Indicates if the stamper has already been pre-closed. */
         private bool preClosed = false;
-        
+
+        /// <summary>
+        /// Signature field lock dictionary.
+        /// </summary>
+        private PdfSigLockDictionary fieldLock;
+
+        /// <summary>
+        /// Signature field lock dictionary.
+        /// </summary>
+        /// <remarks>
+        /// If a signature is created on an existing signature field, then its /Lock dictionary 
+        /// takes the precedence (if it exists).
+        /// </remarks>
+        public virtual PdfSigLockDictionary FieldLockDict {
+            get { return fieldLock; }
+            set { fieldLock = value; }
+        }
+
         /**
          * Checks if the document is in the process of closing.
          * @return <CODE>true</CODE> if the document is in the process of closing,
@@ -1178,26 +1194,37 @@ namespace iTextSharp.text.pdf {
             writer.SigFlags = 3;
             PdfDictionary fieldLock = null;
             if (fieldExists) {
-                PdfDictionary widget = af.GetFieldItem(name).GetWidget(0);
-                writer.MarkUsed(widget);
-                fieldLock = widget.GetAsDict(PdfName.LOCK);
-                widget.Put(PdfName.P, writer.GetPageReference(Page));
-                widget.Put(PdfName.V, refSig);
-                PdfObject obj = PdfReader.GetPdfObjectRelease(widget.Get(PdfName.F));
+                PdfDictionary merged = af.GetFieldItem(name).GetMerged(0);
+                writer.MarkUsed(merged);
+                fieldLock = merged.GetAsDict(PdfName.LOCK);
+
+                if (fieldLock == null && FieldLockDict != null) {
+                    merged.Put(PdfName.LOCK, writer.AddToBody(FieldLockDict).IndirectReference);
+                    fieldLock = FieldLockDict;
+                }
+
+                merged.Put(PdfName.P, writer.GetPageReference(Page));
+                merged.Put(PdfName.V, refSig);
+                PdfObject obj = PdfReader.GetPdfObjectRelease(merged.Get(PdfName.F));
                 int flags = 0;
                 if (obj != null && obj.IsNumber())
                     flags = ((PdfNumber)obj).IntValue;
                 flags |= PdfAnnotation.FLAGS_LOCKED;
-                widget.Put(PdfName.F, new PdfNumber(flags));
+                merged.Put(PdfName.F, new PdfNumber(flags));
                 PdfDictionary ap = new PdfDictionary();
                 ap.Put(PdfName.N, GetAppearance().IndirectReference);
-                widget.Put(PdfName.AP, ap);
+                merged.Put(PdfName.AP, ap);
             }
             else {
                 PdfFormField sigField = PdfFormField.CreateSignature(writer);
                 sigField.FieldName = name;
                 sigField.Put(PdfName.V, refSig);
                 sigField.Flags = PdfAnnotation.FLAGS_PRINT | PdfAnnotation.FLAGS_LOCKED;
+
+                if (FieldLockDict != null) {
+                    sigField.Put(PdfName.LOCK, writer.AddToBody(FieldLockDict).IndirectReference);
+                    fieldLock = FieldLockDict;
+                }
 
                 int pagen = Page;
                 if (!IsInvisible())

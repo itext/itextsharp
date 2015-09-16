@@ -4,7 +4,7 @@ using System;
  * $Id$
  *
  * This file is part of the iText project.
- * Copyright (c) 1998-2014 iText Group NV
+ * Copyright (c) 1998-2015 iText Group NV
  * Authors: Bruno Lowagie, Paulo Soares, et al.
  *
  * This program is free software; you can redistribute it and/or modify
@@ -136,5 +136,11 @@ namespace iTextSharp.text
             }
             return false;
         }
+
+	    public override List CloneShallow() {
+		    ZapfDingbatsList clone = new ZapfDingbatsList(zn);
+		    PopulateProperties(clone);
+		    return clone;
+	    }
     }
 }

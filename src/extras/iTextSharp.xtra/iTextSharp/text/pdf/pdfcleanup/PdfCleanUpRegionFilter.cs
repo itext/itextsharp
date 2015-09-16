@@ -1,4 +1,49 @@
-﻿using System;
+/*
+ * $Id$
+ *
+ * This file is part of the iText (R) project.
+ * Copyright (c) 1998-2015 iText Group NV
+ * Authors: Bruno Lowagie, Paulo Soares, et al.
+ *
+ * This program is free software; you can redistribute it and/or modify
+ * it under the terms of the GNU Affero General Public License version 3
+ * as published by the Free Software Foundation with the addition of the
+ * following permission added to Section 15 as permitted in Section 7(a):
+ * FOR ANY PART OF THE COVERED WORK IN WHICH THE COPYRIGHT IS OWNED BY
+ * ITEXT GROUP. ITEXT GROUP DISCLAIMS THE WARRANTY OF NON INFRINGEMENT
+ * OF THIRD PARTY RIGHTS
+ *
+ * This program is distributed in the hope that it will be useful, but
+ * WITHOUT ANY WARRANTY; without even the implied warranty of MERCHANTABILITY
+ * or FITNESS FOR A PARTICULAR PURPOSE.
+ * See the GNU Affero General Public License for more details.
+ * You should have received a copy of the GNU Affero General Public License
+ * along with this program; if not, see http://www.gnu.org/licenses or write to
+ * the Free Software Foundation, Inc., 51 Franklin Street, Fifth Floor,
+ * Boston, MA, 02110-1301 USA, or download the license from the following URL:
+ * http://itextpdf.com/terms-of-use/
+ *
+ * The interactive user interfaces in modified source and object code versions
+ * of this program must display Appropriate Legal Notices, as required under
+ * Section 5 of the GNU Affero General Public License.
+ *
+ * In accordance with Section 7(b) of the GNU Affero General Public License,
+ * a covered work must retain the producer line in every PDF that is created
+ * or manipulated using iText.
+ *
+ * You can be released from the requirements of the license by purchasing
+ * a commercial license. Buying such a license is mandatory as soon as you
+ * develop commercial activities involving the iText software without
+ * disclosing the source code of your own applications.
+ * These activities include: offering paid services to customers as an ASP,
+ * serving PDFs on the fly in a web application, shipping iText with a closed
+ * source product.
+ *
+ * For more information, please contact iText Software Corp. at this
+ * address: sales@itextpdf.com
+ */
+
+using System;
 using System.Collections;
 using System.Collections.Generic;
 using System.Text;
@@ -17,6 +62,8 @@ namespace iTextSharp.xtra.iTextSharp.text.pdf.pdfcleanup {
 
         private IList<Rectangle> rectangles;
 
+        private static readonly double circleApproximationConst = 0.55191502449;
+
         public PdfCleanUpRegionFilter(IList<Rectangle> rectangles) {
             this.rectangles = rectangles;
         }
@@ -25,13 +72,17 @@ namespace iTextSharp.xtra.iTextSharp.text.pdf.pdfcleanup {
             LineSegment ascent = renderInfo.GetAscentLine();
             LineSegment descent = renderInfo.GetDescentLine();
 
-            Rectangle r1 = new Rectangle(Math.Min(descent.GetStartPoint()[0], descent.GetEndPoint()[0]),
-                                         descent.GetStartPoint()[1],
-                                         Math.Max(descent.GetStartPoint()[0], descent.GetEndPoint()[0]),
-                                         ascent.GetEndPoint()[1]);
+        Point2D[] glyphRect = new Point2D[] {
+                new Point2D.Float(ascent.GetStartPoint()[0], ascent.GetStartPoint()[1]),
+                new Point2D.Float(ascent.GetEndPoint()[0], ascent.GetEndPoint()[1]),
+                new Point2D.Float(descent.GetEndPoint()[0], descent.GetEndPoint()[1]),
+                new Point2D.Float(descent.GetStartPoint()[0], descent.GetStartPoint()[1]),
+        };
 
             foreach (Rectangle rectangle in rectangles) {
-                if (Intersect(r1, rectangle)) {
+                Point2D[] redactRect = GetVertices(rectangle);
+
+                if (Intersect(glyphRect, redactRect)) {
                     return false;
                 }
             }
@@ -47,7 +98,7 @@ namespace iTextSharp.xtra.iTextSharp.text.pdf.pdfcleanup {
          * Calculates intersection of the image and the render filter region in the coordinate system relative to the image.
          * 
          * @return <code>null</code> if the image is not allowed, {@link java.util.List} of 
-         *         {@link com.itextpdf.text.Rectangle} objects otherwise.
+         * {@link com.itextpdf.text.Rectangle} objects otherwise.
          */
         protected internal virtual IList<Rectangle> GetCoveredAreas(ImageRenderInfo renderInfo) {
             Rectangle imageRect = CalcImageRect(renderInfo);
@@ -73,40 +124,50 @@ namespace iTextSharp.xtra.iTextSharp.text.pdf.pdfcleanup {
             return coveredAreas;
         }
 
-        protected internal virtual Path FilterStrokePath(Path path, Matrix ctm, float lineWidth, int lineCapStyle,
-                                                int lineJoinStyle, float miterLimit, LineDashPattern lineDashPattern) {
+        protected internal Path FilterStrokePath(Path sourcePath, Matrix ctm, float lineWidth, int lineCapStyle,
+                                int lineJoinStyle, float miterLimit, LineDashPattern lineDashPattern) {
+            Path path = sourcePath;
             JoinType joinType = GetJoinType(lineJoinStyle);
             EndType endType = GetEndType(lineCapStyle);
 
-            if (lineDashPattern != null) {
-                if (IsZeroDash(lineDashPattern)) {
-                    return new Path();
-                }
-                
-                if (!IsSolid(lineDashPattern)) {
-                    path = ApplyDashPattern(path, lineDashPattern);
-                }
+            if (lineDashPattern != null && !lineDashPattern.IsSolid()) {
+                path = ApplyDashPattern(path, lineDashPattern);
             }
 
             ClipperOffset offset = new ClipperOffset(miterLimit, PdfCleanUpProcessor.ArcTolerance * PdfCleanUpProcessor.FloatMultiplier);
-            AddPath(offset, path, joinType, endType);
+            IList<Subpath> degenerateSubpaths = AddPath(offset, path, joinType, endType);
 
             PolyTree resultTree = new PolyTree();
             offset.Execute(ref resultTree, lineWidth * PdfCleanUpProcessor.FloatMultiplier / 2);
+            Path offsetedPath = ConvertToPath(resultTree);
 
-            return FilterFillPath(ConvertToPath(resultTree), ctm, PathPaintingRenderInfo.NONZERO_WINDING_RULE);
+            if (degenerateSubpaths.Count > 0) {
+                if (endType == EndType.etOpenRound) {
+                    IList<Subpath> circles = ConvertToCircles(degenerateSubpaths, lineWidth / 2);
+                    offsetedPath.AddSubpaths(circles);
+                } else if (endType == EndType.etOpenSquare && lineDashPattern != null) {
+                    IList<Subpath> squares = ConvertToSquares(degenerateSubpaths, lineWidth, sourcePath);
+                    offsetedPath.AddSubpaths(squares);
+                }
+            }
+
+            return FilterFillPath(offsetedPath, ctm, PathPaintingRenderInfo.NONZERO_WINDING_RULE);
         }
 
         /**
+         * Note: this method will close all unclosed subpaths of the passed path.
+         *
          * @param fillingRule If the subpath is contour, pass any value.
          */
-        protected internal virtual Path FilterFillPath(Path path, Matrix ctm, int fillingRule) {
+        protected internal Path FilterFillPath(Path path, Matrix ctm, int fillingRule) {
+            path.CloseAllSubpaths();
+
             Clipper clipper = new Clipper();
             AddPath(clipper, path);
 
             foreach (Rectangle rectangle in rectangles) {
                 Point2D[] transfRectVertices = TransformPoints(ctm, true, GetVertices(rectangle));
-                AddRect(clipper, transfRectVertices);
+                AddRect(clipper, transfRectVertices, PolyType.ptClip);
             }
 
             PolyFillType fillType = PolyFillType.pftNonZero;
@@ -145,8 +206,151 @@ namespace iTextSharp.xtra.iTextSharp.text.pdf.pdfcleanup {
             return EndType.etOpenRound;
         }
 
-        private static void AddPath(ClipperOffset offset, Path path, JoinType joinType, EndType endType) {
+        /**
+     * Converts specified degenerate subpaths to circles.
+     * Note: actually the resultant subpaths are not real circles but approximated.
+     *
+     * @param radius Radius of each constructed circle.
+     * @return {@link java.util.List} consisting of circles constructed on given degenerated subpaths.
+     */
+        private static IList<Subpath> ConvertToCircles(IList<Subpath> degenerateSubpaths, double radius) {
+            IList<Subpath> circles = new List<Subpath>(degenerateSubpaths.Count);
+
+            foreach (Subpath subpath in degenerateSubpaths) {
+                BezierCurve[] circleSectors = ApproximateCircle(subpath.GetStartPoint(), radius);
+
+                Subpath circle = new Subpath();
+                circle.AddSegment(circleSectors[0]);
+                circle.AddSegment(circleSectors[1]);
+                circle.AddSegment(circleSectors[2]);
+                circle.AddSegment(circleSectors[3]);
+
+                circles.Add(circle);
+            }
+
+            return circles;
+        }
+
+        /**
+         * Converts specified degenerate subpaths to squares.
+         * Note: the list of degenerate subpaths should contain at least 2 elements. Otherwise
+         * we can't determine the direction which the rotation of each square depends on.
+         *
+         * @param squareWidth Width of each constructed square.
+         * @param sourcePath The path which dash pattern applied to. Needed to calc rotation angle of each square.
+         * @return {@link java.util.List} consisting of squares constructed on given degenerated subpaths.
+         */
+        private static IList<Subpath> ConvertToSquares(IList<Subpath> degenerateSubpaths, double squareWidth, Path sourcePath) {
+            IList<Point2D> pathApprox = GetPathApproximation(sourcePath);
+
+            if (pathApprox.Count < 2) {
+                return new List<Subpath>();
+            }
+
+            IEnumerator<Point2D> approxIter = pathApprox.GetEnumerator();
+
+            approxIter.MoveNext();
+            Point2D approxPt1 = approxIter.Current;
+
+            approxIter.MoveNext();
+            Point2D approxPt2 = approxIter.Current;
+
+            StandardLine line = new StandardLine(approxPt1, approxPt2);
+
+            IList<Subpath> squares = new List<Subpath>(degenerateSubpaths.Count);
+            float widthHalf = (float) squareWidth / 2;
+
+            for (int i = 0; i < degenerateSubpaths.Count; ++i) {
+                Point2D point = degenerateSubpaths[i].GetStartPoint();
+
+                while (!line.Contains(point)) {
+                    approxPt1 = approxPt2;
+
+                    approxIter.MoveNext();
+                    approxPt2 = approxIter.Current;
+
+                    line = new StandardLine(approxPt1, approxPt2);
+                }
+
+                float slope = line.GetSlope();
+                double angle;
+
+                if (!float.IsPositiveInfinity(slope)) {
+                    angle = Math.Atan(slope);
+                } else {
+                    angle = Math.PI / 2;
+                }
+
+                squares.Add(ConstructSquare(point, widthHalf, angle));
+            }
+
+            return squares;
+        }
+
+        private static IList<Point2D> GetPathApproximation(Path path) {
+            IList<Point2D> approx = new List<Point2D>();
+
             foreach (Subpath subpath in path.Subpaths) {
+                IList<Point2D> subpathApprox = subpath.GetPiecewiseLinearApproximation();
+                Point2D prevPoint = null;
+
+                foreach (Point2D approxPt in subpathApprox) {
+                    if (!approxPt.Equals(prevPoint)) {
+                        approx.Add(approxPt);
+                        prevPoint = approxPt;
+                    }
+                }
+            }
+
+            return approx;
+        }
+
+        private static Subpath ConstructSquare(Point2D squareCenter, double widthHalf, double rotationAngle) {
+            // Orthogonal square is the square with sides parallel to one of the axes.
+            Point2D[] ortogonalSquareVertices = {
+                new Point2D.Double(-widthHalf, -widthHalf),
+                new Point2D.Double(-widthHalf, widthHalf),
+                new Point2D.Double(widthHalf, widthHalf),
+                new Point2D.Double(widthHalf, -widthHalf)
+        };
+
+            Point2D[] rotatedSquareVertices = GetRotatedSquareVertices(ortogonalSquareVertices, rotationAngle, squareCenter);
+
+            Subpath square = new Subpath();
+            square.AddSegment(new Line(rotatedSquareVertices[0], rotatedSquareVertices[1]));
+            square.AddSegment(new Line(rotatedSquareVertices[1], rotatedSquareVertices[2]));
+            square.AddSegment(new Line(rotatedSquareVertices[2], rotatedSquareVertices[3]));
+            square.AddSegment(new Line(rotatedSquareVertices[3], rotatedSquareVertices[0]));
+
+            return square;
+        }
+
+        private static Point2D[] GetRotatedSquareVertices(Point2D[] orthogonalSquareVertices, double angle, Point2D squareCenter) {
+            Point2D[] rotatedSquareVertices = new Point2D[orthogonalSquareVertices.Length];
+
+            AffineTransform.GetRotateInstance(angle).
+                    Transform(orthogonalSquareVertices, 0, rotatedSquareVertices, 0, rotatedSquareVertices.Length);
+            AffineTransform.GetTranslateInstance(squareCenter.GetX(), squareCenter.GetY()).
+                    Transform(rotatedSquareVertices, 0, rotatedSquareVertices, 0, orthogonalSquareVertices.Length);
+
+            return rotatedSquareVertices;
+        }
+
+        /**
+         * Adds all subpaths of the path to the {@link ClipperOffset} object with one
+         * note: it doesn't add degenerate subpaths.
+         *
+         * @return {@link java.util.List} consisting of all degenerate subpaths of the path.
+         */
+        private static IList<Subpath> AddPath(ClipperOffset offset, Path path, JoinType joinType, EndType endType) {
+            IList<Subpath> degenerateSubpaths = new List<Subpath>();
+
+            foreach (Subpath subpath in path.Subpaths) {
+                if (subpath.IsDegenerate()) {
+                    degenerateSubpaths.Add(subpath);
+                    continue;
+                }
+
                 if (!subpath.IsSinglePointClosed() && !subpath.IsSinglePointOpen()) {
                     EndType et;
 
@@ -161,6 +365,46 @@ namespace iTextSharp.xtra.iTextSharp.text.pdf.pdfcleanup {
                     offset.AddPath(ConvertToIntPoints(linearApproxPoints), joinType, et);
                 }
             }
+
+            return degenerateSubpaths;
+        }
+
+        private static BezierCurve[] ApproximateCircle(Point2D center, double radius) {
+            // The circle is split into 4 sectors. Arc of each sector
+            // is approximated  with bezier curve separately.
+            BezierCurve[] approximation = new BezierCurve[4];
+            double x = center.GetX();
+            double y = center.GetY();
+
+            approximation[0] = new BezierCurve(new List<Point2D>(new Point2D[] {
+                new Point2D.Double(x, y + radius),
+                new Point2D.Double(x + radius * circleApproximationConst, y + radius),
+                new Point2D.Double(x + radius, y + radius * circleApproximationConst),
+                new Point2D.Double(x + radius, y)
+            }));
+
+            approximation[1] = new BezierCurve(new List<Point2D>(new Point2D[] {
+                new Point2D.Double(x + radius, y),
+                new Point2D.Double(x + radius, y - radius * circleApproximationConst),
+                new Point2D.Double(x + radius * circleApproximationConst, y - radius),
+                new Point2D.Double(x, y - radius)
+            }));
+
+            approximation[2] = new BezierCurve(new List<Point2D>(new Point2D[] {
+                new Point2D.Double(x, y - radius),
+                new Point2D.Double(x - radius * circleApproximationConst, y - radius),
+                new Point2D.Double(x - radius, y - radius * circleApproximationConst),
+                new Point2D.Double(x - radius, y)
+            }));
+
+            approximation[3] = new BezierCurve(new List<Point2D>(new Point2D[] {
+                new Point2D.Double(x - radius, y),
+                new Point2D.Double(x - radius, y + radius * circleApproximationConst),
+                new Point2D.Double(x - radius * circleApproximationConst, y + radius),
+                new Point2D.Double(x, y + radius)
+            }));
+
+            return approximation;
         }
 
         private static void AddPath(Clipper clipper, Path path) {
@@ -172,8 +416,8 @@ namespace iTextSharp.xtra.iTextSharp.text.pdf.pdfcleanup {
             }
         }
 
-        private static void AddRect(Clipper clipper, Point2D[] rectVertices) {
-            clipper.AddPath(ConvertToIntPoints(new List<Point2D>(rectVertices)), PolyType.ptClip, true);
+        private static void AddRect(Clipper clipper, Point2D[] rectVertices, PolyType polyType) {
+            clipper.AddPath(ConvertToIntPoints(new List<Point2D>(rectVertices)), polyType, true);
         }
 
         private static List<IntPoint> ConvertToIntPoints(IList<Point2D> points) {
@@ -238,9 +482,15 @@ namespace iTextSharp.xtra.iTextSharp.text.pdf.pdfcleanup {
         }
 
 
-        private bool Intersect(Rectangle r1, Rectangle r2) {
-            return (r1.Left < r2.Right && r1.Right > r2.Left &&
-                    r1.Bottom < r2.Top && r1.Top > r2.Bottom);
+        private bool Intersect(Point2D[] rect1, Point2D[] rect2) {
+            Clipper clipper = new Clipper();
+            AddRect(clipper, rect1, PolyType.ptSubject);
+            AddRect(clipper, rect2, PolyType.ptClip);
+
+            List<List<IntPoint>> paths = new List<List<IntPoint>>();
+            clipper.Execute(ClipType.ctIntersection, paths, PolyFillType.pftNonZero, PolyFillType.pftNonZero);
+
+            return paths.Count != 0;
         }
 
         /**
@@ -290,28 +540,6 @@ namespace iTextSharp.xtra.iTextSharp.text.pdf.pdfcleanup {
             double top = Util.Max(ys);
 
             return new Rectangle((float)left, (float)bottom, (float)right, (float)top);
-        }
-
-        private static bool IsZeroDash(LineDashPattern lineDashPattern) {
-            PdfArray dashArray = lineDashPattern.DashArray;
-            float total = 0;
-
-            // We should only iterate over the numbers specifying lengths of dashes
-            for (int i = 0; i < dashArray.Size; i += 2) {
-                float currentDash = dashArray.GetAsNumber(i).FloatValue;
-                // Should be nonnegative according to spec.
-                if (currentDash < 0) {
-                    currentDash = 0;
-                }
-
-                total += currentDash;
-            }
-
-            return Util.compare(total, 0) == 0;
-        }
-
-        private static bool IsSolid(LineDashPattern lineDashPattern) {
-            return lineDashPattern.DashArray.IsEmpty();
         }
 
         private static Path ApplyDashPattern(Path path, LineDashPattern lineDashPattern) {
@@ -410,23 +638,6 @@ namespace iTextSharp.xtra.iTextSharp.text.pdf.pdfcleanup {
                    point.GetY() <= Math.Max(segStart.GetY(), segEnd.GetY());
         }
 
-        private static bool ContainsAll(RectangleJ rect, params Point2D[] points) {
-            foreach (Point2D point in points) {
-                if (!rect.Contains(point)) {
-                    return false;
-                }
-            }
-
-            return true;
-        }
-
-        private Point2D[] TransformPoints(Matrix transormationMatrix, bool inverse, ICollection<Point2D> points) {
-            Point2D[] pointsArr = new Point2D[points.Count];
-            points.CopyTo(pointsArr, 0);
-
-            return TransformPoints(transormationMatrix, inverse, pointsArr);
-        }
-
         private Point2D[] TransformPoints(Matrix transormationMatrix, bool inverse, params Point2D[] points) {
             AffineTransform t = new AffineTransform(transormationMatrix[Matrix.I11], transormationMatrix[Matrix.I12],
                                                     transormationMatrix[Matrix.I21], transormationMatrix[Matrix.I22],
@@ -440,6 +651,32 @@ namespace iTextSharp.xtra.iTextSharp.text.pdf.pdfcleanup {
             t.Transform(points, 0, transformed, 0, points.Length);
 
             return transformed;
+        }
+
+        // Constants from the standard line representation: Ax+By+C
+        private class StandardLine {
+
+            float A;
+            float B;
+            float C;
+
+            internal StandardLine(Point2D p1, Point2D p2) {
+                A = (float) (p2.GetY() - p1.GetY());
+                B = (float) (p1.GetX() - p2.GetX());
+                C = (float) (p1.GetY() * (-B) - p1.GetX() * A);
+            }
+
+            internal float GetSlope() {
+                if (Util.compare(B, 0) == 0) {
+                    return Single.PositiveInfinity;
+                }
+
+                return -A / B;
+            }
+
+            internal bool Contains(Point2D point) {
+                return Util.compare(Math.Abs(A * (float) point.GetX() + B * (float) point.GetY() + C), 0.1f) < 0;
+            }
         }
     }
 }

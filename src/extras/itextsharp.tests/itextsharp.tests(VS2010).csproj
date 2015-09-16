@@ -97,6 +97,7 @@
     <Compile Include="iTextSharp\text\pdf\FlatteningTest.cs" />
     <Compile Include="iTextSharp\text\pdf\fonts\cmaps\CMapParserExTest.cs" />
     <Compile Include="iTextSharp\text\pdf\fonts\cmaps\CMapTest.cs" />
+    <Compile Include="iTextSharp\text\pdf\fonts\FontFamilyTest.cs" />
     <Compile Include="iTextSharp\text\pdf\fonts\SymbolTest.cs" />
     <Compile Include="iTextSharp\text\pdf\IndicLigatures.cs" />
     <Compile Include="iTextSharp\text\pdf\mc\AcroFieldsFlattenTest.cs" />
@@ -124,10 +125,17 @@
     <Compile Include="iTextSharp\text\pdf\PdfReaderTest.cs" />
     <Compile Include="iTextSharp\text\pdf\PRTokeniserTest.cs" />
     <Compile Include="iTextSharp\text\pdf\RandomAccessFileOrArrayTest.cs" />
+    <Compile Include="iTextSharp\text\pdf\StringUtilsTest.cs" />
+    <Compile Include="iTextSharp\text\pdf\table\KeepRowsTogetherTest.cs" />
     <Compile Include="iTextSharp\text\pdf\table\KeepTogetherTest.cs" />
+    <Compile Include="iTextSharp\text\pdf\table\LargeTableTest.cs" />
+    <Compile Include="iTextSharp\text\pdf\PdfStamperTest.cs" />
+    <Compile Include="iTextSharp\text\pdf\NamedDestinationsTest.cs" />
+    <Compile Include="iTextSharp\text\pdf\table\NestedTablesTest.cs" />
     <Compile Include="iTextSharp\text\pdf\table\RowspanTest.cs" />
     <Compile Include="iTextSharp\text\pdf\table\ColorsInTaggedDocumentsTest.cs" />
     <Compile Include="iTextSharp\text\pdf\TestPdfCopyAndStamp.cs" />
+    <Compile Include="iTextSharp\text\pdf\TextExpansionTest.cs" />
     <Compile Include="iTextSharp\text\pdf\TextFieldTest.cs" />
     <Compile Include="iTextSharp\text\pdf\ToUnicodeNonBreakableSpacesTest.cs" />
     <Compile Include="iTextSharp\text\pdf\UnbalancedOperatorsTest.cs" />
@@ -148,7 +156,9 @@
     </None>
     <Content Include="resources\text\ChunkTest\logo.gif" />
     <Content Include="resources\text\pdf\AcroFieldsTest\barcode.jpg" />
+    <Content Include="resources\text\pdf\FontFamilyTest\LICENSE_CJK.txt" />
     <Content Include="resources\text\pdf\fonts\cmaps\CMapParserExTest\cmap_with_def_dictionary_key.txt" />
+    <Content Include="resources\text\pdf\PdfStamperTest\Willi-1.jpg" />
     <Content Include="resources\text\pdf\signature\ds-ks\xfa.signed.package.xml" />
     <Content Include="resources\text\pdf\signature\ds-ks\xfa.signed.xml" />
     <Content Include="resources\text\pdf\signature\ds\xfa.signed.ki.package.xml" />
@@ -180,6 +190,11 @@
     <Content Include="resources\text\pdf\TaggedPdfTest\xml\test18.xml" />
     <Content Include="resources\text\pdf\TaggedPdfTest\xml\test19.xml" />
     <Content Include="resources\text\pdf\TaggedPdfTest\xml\test2.xml" />
+    <Content Include="resources\text\pdf\TaggedPdfTest\xml\test20.xml" />
+    <Content Include="resources\text\pdf\TaggedPdfTest\xml\test22.xml" />
+    <Content Include="resources\text\pdf\TaggedPdfTest\xml\test23.xml" />
+    <Content Include="resources\text\pdf\TaggedPdfTest\xml\test24.xml" />
+    <Content Include="resources\text\pdf\TaggedPdfTest\xml\test25.xml" />
     <Content Include="resources\text\pdf\TaggedPdfTest\xml\test3.xml" />
     <Content Include="resources\text\pdf\TaggedPdfTest\xml\test4.xml" />
     <Content Include="resources\text\pdf\TaggedPdfTest\xml\test5.xml" />
@@ -204,6 +219,7 @@
     <None Include="resources\text\pdf\cs\DeviceNColorSpaceTest\cmp_device_n_gradient_CmykRedRgbBlue.pdf" />
     <None Include="resources\text\pdf\cs\LabColorSpaceTest\cmp_lab_spot_based_gradient.pdf" />
     <None Include="resources\text\pdf\DocumentFontTest\type0FontWithoutToUnicodeMap.pdf" />
+    <None Include="resources\text\pdf\DocumentLayoutTest\phrases.pdf" />
     <None Include="resources\text\pdf\FlatteningTest\cmp\imdb0413300.pdf" />
     <None Include="resources\text\pdf\FlatteningTest\cmp\imdb0452623.pdf" />
     <None Include="resources\text\pdf\FlatteningTest\cmp\imdb0468569.pdf" />
@@ -228,11 +244,15 @@
     <None Include="resources\text\pdf\FlatteningTest\noappearances-needapp-true.pdf" />
     <None Include="resources\text\pdf\FlatteningTest\regenerateFieldFalse.pdf" />
     <None Include="resources\text\pdf\FlatteningTest\regenerateFieldTrue.pdf" />
+    <None Include="resources\text\pdf\FontFamilyTest\NotoSansCJKjp-Bold.otf" />
+    <None Include="resources\text\pdf\FontFamilyTest\NotoSansCJKjp-Regular.otf" />
     <None Include="resources\text\pdf\fonts\cmaps\CMapParserExTest\cmap_results_in_empty_map.cmap" />
+    <None Include="resources\text\pdf\FreeMonoBold.ttf" />
     <None Include="resources\text\pdf\mc\SF2809.pdf" />
     <None Include="resources\text\pdf\mc\SF2809_alt.pdf" />
     <None Include="resources\text\pdf\MultithreadedTtfTest\FreeSans.ttf" />
     <None Include="resources\text\pdf\MultithreadedTtfTest\test.pdf" />
+    <None Include="resources\text\pdf\NestedListInColumnTextTest\nestedListAtTheEndOfAnotherNestedList.pdf" />
     <None Include="resources\text\pdf\ocg\peek-a-boo2.pdf" />
     <None Include="resources\text\pdf\parser\GlyphTextRenderListenerTest\Sample.pdf" />
     <None Include="resources\text\pdf\parser\GlyphTextRenderListenerTest\test.pdf" />
@@ -257,12 +277,14 @@
     <None Include="resources\text\pdf\parser\SimpleTextExtractionStrategyTest\ISO-TC171-SC2_N0896_SC2WG5_Edinburgh_Agenda.pdf" />
     <None Include="resources\text\pdf\parser\SimpleTextExtractionStrategyTest\page229.pdf" />
     <None Include="resources\text\pdf\parser\TextRenderInfoTest\japanese_text.pdf" />
+    <None Include="resources\text\pdf\pdfcleanup\PdfCleanUpProcessorTest\absentICentry.pdf" />
     <None Include="resources\text\pdf\pdfcleanup\PdfCleanUpProcessorTest\BigImage-jpg.pdf" />
     <None Include="resources\text\pdf\pdfcleanup\PdfCleanUpProcessorTest\BigImage-png.pdf" />
     <None Include="resources\text\pdf\pdfcleanup\PdfCleanUpProcessorTest\BigImage-tif-lzw.pdf" />
     <None Include="resources\text\pdf\pdfcleanup\PdfCleanUpProcessorTest\BigImage-tif.pdf" />
     <None Include="resources\text\pdf\pdfcleanup\PdfCleanUpProcessorTest\clippingNWRule.pdf" />
     <None Include="resources\text\pdf\pdfcleanup\PdfCleanUpProcessorTest\closedBezier.pdf" />
+    <None Include="resources\text\pdf\pdfcleanup\PdfCleanUpProcessorTest\cmp_absentICentry.pdf" />
     <None Include="resources\text\pdf\pdfcleanup\PdfCleanUpProcessorTest\cmp_BigImage-jpg.pdf" />
     <None Include="resources\text\pdf\pdfcleanup\PdfCleanUpProcessorTest\cmp_BigImage-png.pdf" />
     <None Include="resources\text\pdf\pdfcleanup\PdfCleanUpProcessorTest\cmp_BigImage-tif-lzw.pdf" />
@@ -272,9 +294,12 @@
     <None Include="resources\text\pdf\pdfcleanup\PdfCleanUpProcessorTest\cmp_dashedBezier.pdf" />
     <None Include="resources\text\pdf\pdfcleanup\PdfCleanUpProcessorTest\cmp_dashedClosedRotatedTriangles.pdf" />
     <None Include="resources\text\pdf\pdfcleanup\PdfCleanUpProcessorTest\cmp_dashedStyledClosedBezier.pdf" />
+    <None Include="resources\text\pdf\pdfcleanup\PdfCleanUpProcessorTest\cmp_degenerateCases.pdf" />
     <None Include="resources\text\pdf\pdfcleanup\PdfCleanUpProcessorTest\cmp_hello_05.pdf" />
     <None Include="resources\text\pdf\pdfcleanup\PdfCleanUpProcessorTest\cmp_LineArtsCompletely.pdf" />
     <None Include="resources\text\pdf\pdfcleanup\PdfCleanUpProcessorTest\cmp_lineArtsPartially.pdf" />
+    <None Include="resources\text\pdf\pdfcleanup\PdfCleanUpProcessorTest\cmp_lotOfDashes.pdf" />
+    <None Include="resources\text\pdf\pdfcleanup\PdfCleanUpProcessorTest\cmp_miterTest.pdf" />
     <None Include="resources\text\pdf\pdfcleanup\PdfCleanUpProcessorTest\cmp_multiUseImage.pdf" />
     <None Include="resources\text\pdf\pdfcleanup\PdfCleanUpProcessorTest\cmp_multiUseIndirect.pdf" />
     <None Include="resources\text\pdf\pdfcleanup\PdfCleanUpProcessorTest\cmp_page166_03.pdf" />
@@ -289,9 +314,12 @@
     <None Include="resources\text\pdf\pdfcleanup\PdfCleanUpProcessorTest\dashedBezier.pdf" />
     <None Include="resources\text\pdf\pdfcleanup\PdfCleanUpProcessorTest\dashedClosedRotatedTriangles.pdf" />
     <None Include="resources\text\pdf\pdfcleanup\PdfCleanUpProcessorTest\dashedStyledClosedBezier.pdf" />
+    <None Include="resources\text\pdf\pdfcleanup\PdfCleanUpProcessorTest\degenerateCases.pdf" />
     <None Include="resources\text\pdf\pdfcleanup\PdfCleanUpProcessorTest\hello_05.pdf" />
     <None Include="resources\text\pdf\pdfcleanup\PdfCleanUpProcessorTest\lineArtsCompletely.pdf" />
     <None Include="resources\text\pdf\pdfcleanup\PdfCleanUpProcessorTest\lineArtsPartially.pdf" />
+    <None Include="resources\text\pdf\pdfcleanup\PdfCleanUpProcessorTest\lotOfDashes.pdf" />
+    <None Include="resources\text\pdf\pdfcleanup\PdfCleanUpProcessorTest\miterTest.pdf" />
     <None Include="resources\text\pdf\pdfcleanup\PdfCleanUpProcessorTest\multiUseImage.pdf" />
     <None Include="resources\text\pdf\pdfcleanup\PdfCleanUpProcessorTest\multiUseIndirect.pdf" />
     <None Include="resources\text\pdf\pdfcleanup\PdfCleanUpProcessorTest\page166_03.pdf" />
@@ -335,12 +363,19 @@
     <None Include="resources\text\pdf\PdfReaderTest\getLinkTest1.pdf" />
     <None Include="resources\text\pdf\PdfReaderTest\getLinkTest2.pdf" />
     <None Include="resources\text\pdf\PdfReaderTest\RomeoJuliet.pdf" />
+    <None Include="resources\text\pdf\PdfStamperTest\cmp_House_Plan_Final.pdf" />
+    <None Include="resources\text\pdf\PdfStamperTest\cmp_out1.pdf" />
+    <None Include="resources\text\pdf\PdfStamperTest\cmp_out2.pdf" />
+    <None Include="resources\text\pdf\PdfStamperTest\House_Plan_Final.pdf" />
+    <None Include="resources\text\pdf\PdfStamperTest\in.pdf" />
     <None Include="resources\text\pdf\table\keeptogether\tagged_false-keeptogether_false.pdf" />
     <None Include="resources\text\pdf\table\keeptogether\tagged_false-keeptogether_true.pdf" />
     <None Include="resources\text\pdf\table\keeptogether\tagged_true-keeptogether_false.pdf" />
     <None Include="resources\text\pdf\table\keeptogether\tagged_true-keeptogether_true.pdf" />
     <None Include="resources\text\pdf\table\RowspanTest\nestedtabletest.pdf" />
     <None Include="resources\text\pdf\table\RowspanTest\rowspantest.pdf" />
+    <None Include="resources\text\pdf\table\nestedTablesTest\cmp_nestedTablesTest.pdf" />
+    <None Include="resources\text\pdf\TaggedPdfTest\out25.pdf" />
     <None Include="resources\text\pdf\TextFieldTest\textfield-top-visible-0.pdf" />
     <None Include="resources\text\pdf\TextFieldTest\textfield-top-visible-1.pdf" />
     <None Include="resources\text\pdf\TextFieldTest\textfield-top-visible-2.pdf" />
@@ -392,6 +427,7 @@
       <Name>itextsharp.xtra%28VS2010%29</Name>
     </ProjectReference>
   </ItemGroup>
+  <ItemGroup />
   <Import Project="$(MSBuildBinPath)\Microsoft.CSharp.targets" />
   <!-- To modify your build process, add your task inside one of the targets below and uncomment it. 
        Other similar extension points exist, see Microsoft.Common.targets.

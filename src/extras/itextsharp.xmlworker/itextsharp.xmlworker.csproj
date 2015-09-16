@@ -197,6 +197,7 @@
     <Compile Include="iTextSharp\tool\xml\pipeline\html\NoImageProviderException.cs" />
     <Compile Include="iTextSharp\tool\xml\pipeline\html\NoStackException.cs" />
     <Compile Include="iTextSharp\tool\xml\pipeline\html\StackKeeper.cs" />
+    <Compile Include="iTextSharp\tool\xml\pipeline\html\UrlLinkResolver.cs" />
     <Compile Include="iTextSharp\tool\xml\pipeline\WritableElement.cs" />
     <Compile Include="iTextSharp\tool\xml\ProcessObject.cs" />
     <Compile Include="iTextSharp\tool\xml\Tag.cs" />

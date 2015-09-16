@@ -6,7 +6,7 @@ using iTextSharp.text.pdf;
  * 
  *
  * This file is part of the iText project.
- * Copyright (c) 1998-2014 iText Group NV
+ * Copyright (c) 1998-2015 iText Group NV
  * Authors: Bruno Lowagie, Paulo Soares, et al.
  *
  * This program is free software; you can redistribute it and/or modify
@@ -225,6 +225,12 @@ namespace iTextSharp.text {
         }
     
         // methods
+
+        public override Paragraph CloneShallow(bool spacingBefore) {
+            ListItem copy = new ListItem();
+            PopulateProperties(copy, spacingBefore);
+            return copy;
+        }
     
         // methods to retrieve information
     

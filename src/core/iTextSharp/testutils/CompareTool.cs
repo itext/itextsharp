@@ -9,7 +9,7 @@ using System.util;
  * 
  *
  * This file is part of the iText project.
- * Copyright (c) 1998-2014 iText Group NV
+ * Copyright (c) 1998-2015 iText Group NV
  * Authors: Bruno Lowagie, Paulo Soares, et al.
  *
  * This program is free software; you can redistribute it and/or modify
@@ -49,13 +49,9 @@ using System.util;
  * For more inFormation, please contact iText Software Corp. at this
  * address: sales@itextpdf.com
  */
-using System.util;
-using System.Collections;
 using System.Xml;
 using iTextSharp.text;
 using iTextSharp.text.pdf;
-using iTextSharp.xmp.impl;
-using System.util;
 using System.util.collections;
 
 namespace iTextSharp.testutils {
@@ -195,7 +191,9 @@ public class CompareTool {
         }
 
         public override int GetHashCode() {
-            int hashCode = baseCmpObject.GetHashCode() * 31 + baseOutObject.GetHashCode();
+            int code1 = baseCmpObject != null ? baseCmpObject.GetHashCode() : 1;
+            int code2 = baseOutObject != null ? baseOutObject.GetHashCode() : 1;
+            int hashCode = code1 * 31 + code2;
 
             foreach (PathItem pathItem in path) {
                 hashCode *= 31;
@@ -329,11 +327,20 @@ public class CompareTool {
 
     private int compareByContentErrorsLimit = 1;
     private bool generateCompareByContentXmlReport = false;
+    private String xmlReportName = "report";
 
 
     public CompareTool() {
         gsExec = Environment.GetEnvironmentVariable("gsExec");
         compareExec = Environment.GetEnvironmentVariable("compareExec");
+    }
+
+    public void SetXmlReportName(String reportName) {
+        this.xmlReportName = reportName;
+    }
+
+    public String GetXmlReportName() {
+        return this.xmlReportName;
     }
 
     private String Compare(String outPath, String differenceImagePrefix, IDictionary<int, IList<Rectangle>> ignoredAreas) {
@@ -583,8 +590,8 @@ public class CompareTool {
 
         PdfObject outOcProperties = outReader.Catalog.Get(PdfName.OCPROPERTIES);
         PdfObject cmpOcProperties = cmpReader.Catalog.Get(PdfName.OCPROPERTIES);
-        RefKey outOcPropertiesRef = outOcProperties == null ? null : new RefKey((PdfIndirectReference)outOcProperties);
-        RefKey cmpOcPropertiesRef = cmpOcProperties == null ? null : new RefKey((PdfIndirectReference)cmpOcProperties);
+        RefKey outOcPropertiesRef = outOcProperties is PdfIndirectReference ? new RefKey((PdfIndirectReference)outOcProperties) : null;
+        RefKey cmpOcPropertiesRef = cmpOcProperties is PdfIndirectReference ? new RefKey((PdfIndirectReference)cmpOcProperties) : null;
         CompareObjects(outOcProperties, cmpOcProperties, new ObjectPath(outOcPropertiesRef, cmpOcPropertiesRef), compareResult);
 
 
@@ -593,7 +600,7 @@ public class CompareTool {
 
         if (generateCompareByContentXmlReport) {
             try {
-                compareResult.WriteReportToXml(new FileStream(outPath + "/report.xml", FileMode.Create));
+                compareResult.WriteReportToXml(new FileStream(outPath + "/" +xmlReportName+ ".xml", FileMode.Create));
             }
             catch (Exception exc) { }
         }
@@ -969,6 +976,8 @@ public class CompareTool {
 
         return message;
     }
+
+   
 
     private bool LinksAreSame(PdfAnnotation.PdfImportedLink cmpLink, PdfAnnotation.PdfImportedLink outLink) {
         // Compare link boxes, page numbers the links refer to, and simple parameters (non-indirect, non-arrays, non-dictionaries)

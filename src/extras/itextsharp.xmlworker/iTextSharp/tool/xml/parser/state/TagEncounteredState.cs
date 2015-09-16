@@ -5,7 +5,7 @@ using iTextSharp.tool.xml.html;
  * $Id: TagEncounteredState.java 105 2011-05-26 10:18:21Z redlab_b $
  *
  * This file is part of the iText (R) project.
- * Copyright (c) 1998-2014 iText Group NV
+ * Copyright (c) 1998-2015 iText Group NV
  * Authors: Balder Van Camp, Emiel Ackermann, et al.
  *
  * This program is free software; you can redistribute it and/or modify
@@ -69,7 +69,7 @@ namespace iTextSharp.tool.xml.parser.state {
          */
         virtual public void Process(char character) {
             String tag = this.parser.BufferToString();
-            if (HTMLUtils.IsWhiteSpace(character) || character == '>' || character == '/' || character == ':' || tag.Equals("!--") || tag.Equals("![CDATA[") || character == '?') {
+            if (HTMLUtils.IsWhiteSpace(character) || character == '>' || character == '/' || character == ':' || tag.Equals("!--") || tag.Equals("![CDATA") && character == '[' || character == '?') {
                 // cope with <? xml and <! DOCTYPE
                 if (tag.Length > 0) {
                     if (tag.Equals("!--")) {
@@ -86,10 +86,9 @@ namespace iTextSharp.tool.xml.parser.state {
                         } else {
                             this.parser.Memory().Comment().Append(character);
                         }
-                    } else if (tag.Equals("![CDATA[")) {
+                    } else if (tag.Equals("![CDATA") && character == '[') {
                         this.parser.Flush();
                         parser.SelectState().Cdata();
-                        this.parser.Append(character);
                     } else if (tag.Equals("!DOCTYPE")) {
                         this.parser.Flush();
                         parser.SelectState().Doctype();

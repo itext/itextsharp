@@ -5,7 +5,7 @@ using iTextSharp.tool.xml.exceptions;
  * $Id: WorkerContextImpl.java 160 2011-06-07 09:34:57Z redlab_b $
  *
  * This file is part of the iText (R) project.
- * Copyright (c) 1998-2014 iText Group NV
+ * Copyright (c) 1998-2015 iText Group NV
  * Authors: Balder Van Camp, Emiel Ackermann, et al.
  *
  * This program is free software; you can redistribute it and/or modify
