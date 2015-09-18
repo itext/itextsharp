@@ -1,6 +1,4 @@
 ﻿using System;
-using System.Collections.Generic;
-using System.Text;
 using iTextSharp.text.pdf;
 using NUnit.Framework;
 
@@ -11,7 +9,7 @@ namespace itextsharp.tests.iTextSharp.text.pdf.fonts {
     */
     public class FontFamilyTest {
 
-        private static string srcFolder = @"..\..\resources\text\pdf\FontFamilyTest\";
+        private static string srcFolder = @"..\..\resources\text\pdf\fonts\NotoFont\";
 
         [Test]
         public void TestNotoFontFamily() {

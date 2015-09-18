@@ -97,6 +97,7 @@
     <Compile Include="iTextSharp\text\pdf\FlatteningTest.cs" />
     <Compile Include="iTextSharp\text\pdf\fonts\cmaps\CMapParserExTest.cs" />
     <Compile Include="iTextSharp\text\pdf\fonts\cmaps\CMapTest.cs" />
+    <Compile Include="iTextSharp\text\pdf\fonts\FontEmbeddingTest.cs" />
     <Compile Include="iTextSharp\text\pdf\fonts\FontFamilyTest.cs" />
     <Compile Include="iTextSharp\text\pdf\fonts\SymbolTest.cs" />
     <Compile Include="iTextSharp\text\pdf\IndicLigatures.cs" />
@@ -156,7 +157,7 @@
     </None>
     <Content Include="resources\text\ChunkTest\logo.gif" />
     <Content Include="resources\text\pdf\AcroFieldsTest\barcode.jpg" />
-    <Content Include="resources\text\pdf\FontFamilyTest\LICENSE_CJK.txt" />
+    <Content Include="resources\text\pdf\fonts\NotoFont\LICENSE_CJK.txt" />
     <Content Include="resources\text\pdf\fonts\cmaps\CMapParserExTest\cmap_with_def_dictionary_key.txt" />
     <Content Include="resources\text\pdf\PdfStamperTest\Willi-1.jpg" />
     <Content Include="resources\text\pdf\signature\ds-ks\xfa.signed.package.xml" />
@@ -244,8 +245,8 @@
     <None Include="resources\text\pdf\FlatteningTest\noappearances-needapp-true.pdf" />
     <None Include="resources\text\pdf\FlatteningTest\regenerateFieldFalse.pdf" />
     <None Include="resources\text\pdf\FlatteningTest\regenerateFieldTrue.pdf" />
-    <None Include="resources\text\pdf\FontFamilyTest\NotoSansCJKjp-Bold.otf" />
-    <None Include="resources\text\pdf\FontFamilyTest\NotoSansCJKjp-Regular.otf" />
+    <None Include="resources\text\pdf\fonts\NotoFont\NotoSansCJKjp-Bold.otf" />
+    <None Include="resources\text\pdf\fonts\NotoFont\NotoSansCJKjp-Regular.otf" />
     <None Include="resources\text\pdf\fonts\cmaps\CMapParserExTest\cmap_results_in_empty_map.cmap" />
     <None Include="resources\text\pdf\FreeMonoBold.ttf" />
     <None Include="resources\text\pdf\mc\SF2809.pdf" />

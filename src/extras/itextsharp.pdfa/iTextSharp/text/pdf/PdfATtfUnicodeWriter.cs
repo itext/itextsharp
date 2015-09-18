@@ -96,7 +96,19 @@ namespace iTextSharp.text.pdf
                 byte[] b = font.ReadCffFont();
                 if (font.Subset || font.SubsetRanges != null) {
                     CFFFontSubset cff = new CFFFontSubset(new RandomAccessFileOrArray(b),longTag);
-                    b = cff.Process(cff.GetNames()[0]);
+                    try
+                    {
+                        b = cff.Process(cff.GetNames()[0]);
+                    }
+                    catch (Exception e)
+                    {
+                        //temporary fix for cff subset failure
+                        font.Subset = false;
+                        font.AddRangeUni(longTag, true, font.Subset);
+                        metrics = new int[longTag.Count][];
+                        longTag.Values.CopyTo(metrics, 0);
+                        Array.Sort(metrics, font);
+                    }
                 }
                 pobj = new BaseFont.StreamFont(b, "CIDFontType0C", font.CompressionLevel);
                 obj = writer.AddToBody(pobj);

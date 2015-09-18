@@ -83,6 +83,7 @@
     <Reference Include="System.Drawing" />
   </ItemGroup>
   <ItemGroup>
+    <Compile Include="iTextSharp\text\pdfa\PdfAFontEmbeddingTest.cs" />
     <Compile Include="iTextSharp\text\pdfa\PdfA1CheckerTest.cs" />
     <Compile Include="iTextSharp\text\pdfa\PdfA2CheckerTest.cs" />
     <Compile Include="iTextSharp\text\pdfa\PdfA3CheckerTest.cs" />
@@ -118,6 +119,7 @@
     <None Include="resources\text\pdfa\jpeg2000\p0_02.j2k" />
     <None Include="resources\text\pdfa\jpeg2000\p1_01.j2k" />
     <None Include="resources\text\pdfa\jpeg2000\p1_02.j2k" />
+    <None Include="resources\text\pdfa\NotoSansCJKjp-Bold.otf" />
     <None Include="resources\text\xml\xmp\pdf_metadata.pdf" />
     <None Include="resources\text\xml\xmp\xmp_metadata.pdf" />
     <None Include="resources\text\xml\xmp\xmp_metadata_added.pdf" />
