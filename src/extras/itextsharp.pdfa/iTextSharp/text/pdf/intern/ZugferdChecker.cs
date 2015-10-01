@@ -67,6 +67,9 @@ namespace itextsharp.pdfa.iTextSharp.text.pdf.intern {
         public override void Close(PdfWriter writer) {
             base.Close(writer);
             bool ok = false;
+            if (writer.XmpWriter == null) {
+                writer.CreateXmpMetadata();
+            }
             IXmpMeta xmpMeta = writer.XmpWriter.XmpMeta;
             try {
                 String docFileName = xmpMeta.GetPropertyString(PdfAXmpWriter.zugferdSchemaNS,
