@@ -44,9 +44,7 @@
  */
 
 using System;
-using System.Collections.Generic;
 using System.IO;
-using System.Text;
 using iTextSharp.testutils;
 using iTextSharp.text;
 using iTextSharp.text.pdf;
@@ -55,7 +53,7 @@ using NUnit.Framework;
 namespace itextsharp.tests.iTextSharp.text.pdf {
     public class DocumentLayoutTest {
         private const string TEST_RESOURCES_PATH = @"..\..\resources\text\pdf\DocumentLayoutTest\";
-        private const string OUTPUT_FOLDER = @"AcroFieldsTest\";
+        private const string OUTPUT_FOLDER = @"DocumentLayoutTest\";
 
         [SetUp]
         public static void Init() {

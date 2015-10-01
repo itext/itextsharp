@@ -2536,7 +2536,6 @@ namespace iTextSharp.text.pdf {
         * @throws DocumentException on error
         */        
         virtual protected internal void Add(Image image) {
-            
             if (image.HasAbsolutePosition()) {
                 graphics.AddImage(image);
                 pageEmpty = false;
@@ -2642,6 +2641,7 @@ namespace iTextSharp.text.pdf {
                 if (loop == 3) {
                     throw new DocumentException(MessageLocalization.GetComposedMessage("infinite.table.loop"));
                 }
+                currentHeight = IndentTop - ct.YLine;
                 NewPage();
                 if (IsTagged(writer))
                     ct.Canvas = text;
