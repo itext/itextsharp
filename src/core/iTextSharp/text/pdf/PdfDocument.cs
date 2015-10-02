@@ -829,9 +829,8 @@ namespace iTextSharp.text.pdf {
                 }
             } else
                 writer.FlushAcroFields();
-            bool wasImage = (imageWait != null);
-            NewPage();
-            if (imageWait != null || wasImage) NewPage();
+            if (imageWait != null) NewPage();
+            EndPage();
             if (annotationsImp.HasUnusedAnnotations())
                 throw new Exception(MessageLocalization.GetComposedMessage("not.all.annotations.could.be.added.to.the.document.the.document.doesn.t.have.enough.pages"));
             IPdfPageEvent pageEvent = writer.PageEvent;
@@ -870,17 +869,14 @@ namespace iTextSharp.text.pdf {
                 writer.AddPageDictEntry(PdfName.METADATA, writer.AddToBody(xmp).IndirectReference);
             }
         }
-        
+
         /**
         * Makes a new page and sends it to the <CODE>PdfWriter</CODE>.
         *
-        * @return a <CODE>bool</CODE>
+        * @return true if new page was added
         * @throws DocumentException on error
         */
         public override bool NewPage() {
-            FlushFloatingElements();
-
-            lastElementType = -1;
             if (PageEmpty) {
                 SetNewPageSizeAndMargins();
                 return false;
@@ -888,9 +884,9 @@ namespace iTextSharp.text.pdf {
             if (!open || close) {
                 throw new Exception(MessageLocalization.GetComposedMessage("the.document.is.not.open"));
             }
-            IPdfPageEvent pageEvent = writer.PageEvent;
-            if (pageEvent != null)
-                pageEvent.OnEndPage(writer, this);
+
+            //we end current page
+            IList<IAccessibleElement> savedMcBlocks = EndPage();
             
             //Added to inform any listeners that we are moving to a new page (added by David Freels)
             base.NewPage();
@@ -899,13 +895,40 @@ namespace iTextSharp.text.pdf {
             indentation.imageIndentLeft = 0;
             indentation.imageIndentRight = 0;
             
+            
+            // we initialize the new page
+            InitPage();
+            if (IsTagged(writer)) {
+                writer.DirectContentUnder.RestoreMCBlocks(savedMcBlocks);
+            }
+
+            if (body != null && body.BackgroundColor != null)
+                graphics.Rectangle(body);
+
+            return true;
+        }
+
+        public IList<IAccessibleElement> EndPage() {
+            if (PageEmpty) {
+                return null;
+            }
+
+            IList<IAccessibleElement> savedMcBlocks = null;
+
+            FlushFloatingElements();
+            lastElementType = -1;
+
+            IPdfPageEvent pageEvent = writer.PageEvent;
+            if (pageEvent != null)
+                pageEvent.OnEndPage(writer, this);
+
             // we flush the arraylist with recently written lines
             FlushLines();
             // we prepare the elements of the page dictionary
-            
+
             // [U1] page size and rotation
             int rotation = pageSize.Rotation;
-            
+
             // [C10]
             if (writer.IsPdfIso()) {
                 if (thisBoxSize.ContainsKey("art") && thisBoxSize.ContainsKey("trim"))
@@ -917,18 +940,18 @@ namespace iTextSharp.text.pdf {
                         thisBoxSize["trim"] = new PdfRectangle(pageSize, pageSize.Rotation);
                 }
             }
-            
+
             // [M1]
-            pageResources.AddDefaultColorDiff(writer.DefaultColorspace);        
+            pageResources.AddDefaultColorDiff(writer.DefaultColorspace);
             if (writer.RgbTransparencyBlending) {
                 PdfDictionary dcs = new PdfDictionary();
                 dcs.Put(PdfName.CS, PdfName.DEVICERGB);
                 pageResources.AddDefaultColorDiff(dcs);
             }
             PdfDictionary resources = pageResources.Resources;
-            
+
             // we create the page dictionary
-            
+
             PdfPage page = new PdfPage(new PdfRectangle(pageSize, rotation), thisBoxSize, resources, rotation);
             if (IsTagged(writer)) {
                 page.Put(PdfName.TABS, PdfName.S);
@@ -939,43 +962,37 @@ namespace iTextSharp.text.pdf {
             writer.ResetPageDictEntries();
 
             // we complete the page dictionary
-            
-        	// [U3] page actions: additional actions
+
+            // [U3] page actions: additional actions
             if (pageAA != null) {
                 page.Put(PdfName.AA, writer.AddToBody(pageAA).IndirectReference);
                 pageAA = null;
             }
-            
+
             // [C5] and [C8] we add the annotations
             if (annotationsImp.HasUnusedAnnotations()) {
                 PdfArray array = annotationsImp.RotateAnnotations(writer, pageSize);
                 if (array.Size != 0)
                     page.Put(PdfName.ANNOTS, array);
             }
-            
+
             // [F12] we add tag info
             if (IsTagged(writer))
                 page.Put(PdfName.STRUCTPARENTS, new PdfNumber(GetStructParentIndex(writer.CurrentPage)));
 
-             if (text.Size > textEmptySize || IsTagged(writer))
+            if (text.Size > textEmptySize || IsTagged(writer))
                 text.EndText();
             else
                 text = null;
-             IList<IAccessibleElement> mcBlocks = null;
-             if (IsTagged(writer)) {
-                 mcBlocks = writer.DirectContent.SaveMCBlocks();
-             }
-            writer.Add(page, new PdfContents(writer.DirectContentUnder, graphics, !IsTagged(writer) ? text : null, writer.DirectContent, pageSize));
-            // we initialize the new page
-            InitPage();
             if (IsTagged(writer)) {
-                writer.DirectContentUnder.RestoreMCBlocks(mcBlocks);
+                savedMcBlocks = writer.DirectContent.SaveMCBlocks();
             }
+            writer.Add(page, new PdfContents(writer.DirectContentUnder, graphics, !IsTagged(writer) ? text : null, writer.DirectContent, pageSize));
 
-            if (body != null && body.BackgroundColor != null)
-                graphics.Rectangle(body);
+            annotationsImp.ResetAnnotations();
+            writer.ResetContent();
 
-            return true;
+            return savedMcBlocks;
         }
 
     //  [L4] DocListener interface
@@ -1094,10 +1111,8 @@ namespace iTextSharp.text.pdf {
             pageN++;
             
             // initialisation of some page objects
-            annotationsImp.ResetAnnotations();
             pageResources = new PageResources();
 
-            writer.ResetContent();
             if (IsTagged(writer)) {
                 graphics = writer.DirectContentUnder.Duplicate;
                 writer.DirectContent.duplicatedFrom = graphics;

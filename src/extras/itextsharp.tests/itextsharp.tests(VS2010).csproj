@@ -106,6 +106,7 @@
     <Compile Include="iTextSharp\text\pdf\MultithreadedTtfTest.cs" />
     <Compile Include="iTextSharp\text\pdf\NestedListInColumnTextTest.cs" />
     <Compile Include="iTextSharp\text\pdf\ocg\OcgRemovalTest.cs" />
+    <Compile Include="iTextSharp\text\pdf\PageEventTest.cs" />
     <Compile Include="iTextSharp\text\pdf\parser\FilteredTextRenderListenerTest.cs" />
     <Compile Include="iTextSharp\text\pdf\parser\GlyphTextRenderListenerTest.cs" />
     <Compile Include="iTextSharp\text\pdf\parser\HighlightItemsTest.cs" />
@@ -158,6 +159,7 @@
     </None>
     <Content Include="resources\text\ChunkTest\logo.gif" />
     <Content Include="resources\text\pdf\AcroFieldsTest\barcode.jpg" />
+    <Content Include="resources\text\pdf\DocumentLayoutTest\Desert.jpg" />
     <Content Include="resources\text\pdf\fonts\NotoFont\LICENSE_CJK.txt" />
     <Content Include="resources\text\pdf\fonts\cmaps\CMapParserExTest\cmap_with_def_dictionary_key.txt" />
     <Content Include="resources\text\pdf\PdfStamperTest\Willi-1.jpg" />
@@ -222,6 +224,7 @@
     <None Include="resources\text\pdf\cs\LabColorSpaceTest\cmp_lab_spot_based_gradient.pdf" />
     <None Include="resources\text\pdf\DocumentFontTest\type0FontWithoutToUnicodeMap.pdf" />
     <None Include="resources\text\pdf\DocumentLayoutTest\phrases.pdf" />
+    <None Include="resources\text\pdf\DocumentLayoutTest\waitingImage.pdf" />
     <None Include="resources\text\pdf\FlatteningTest\cmp\imdb0413300.pdf" />
     <None Include="resources\text\pdf\FlatteningTest\cmp\imdb0452623.pdf" />
     <None Include="resources\text\pdf\FlatteningTest\cmp\imdb0468569.pdf" />
@@ -256,6 +259,7 @@
     <None Include="resources\text\pdf\MultithreadedTtfTest\test.pdf" />
     <None Include="resources\text\pdf\NestedListInColumnTextTest\nestedListAtTheEndOfAnotherNestedList.pdf" />
     <None Include="resources\text\pdf\ocg\peek-a-boo2.pdf" />
+    <None Include="resources\text\pdf\PageEventTest\pageEventTest01.pdf" />
     <None Include="resources\text\pdf\parser\GlyphTextRenderListenerTest\Sample.pdf" />
     <None Include="resources\text\pdf\parser\GlyphTextRenderListenerTest\test.pdf" />
     <None Include="resources\text\pdf\parser\HighlightItemsTest\cmp_HeaderFooter.pdf" />

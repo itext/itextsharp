@@ -92,6 +92,35 @@ namespace itextsharp.tests.iTextSharp.text.pdf {
                 Assert.Fail(errorMessage);
             }
         }
-    }
+    
+        [Test]
+        public void WaitingImageTest() {
+            String file = "waitingImage.pdf";
 
+            Document document = new Document();
+            PdfWriter.GetInstance(document, File.Create(OUTPUT_FOLDER + file));
+            document.Open();
+
+            String longTextString = "asdsaddsdadasddasasdsaddsdadasddasasdsaddsdadasddasasdsaddsdadasddasasdsaddsdadasddasasdsaddsdadasddasasdsaddsdadasddasasdsaddsdadasddas" +
+                                    "asdsaddsdadasddasasdsaddsdadasddasasdsaddsdadasddasasdsaddsdadasddasasdsaddsdadasddasasdsaddsdadasddasasdsaddsdadasddasasdsaddsdadasddasasdsaddsdadasddas" +
+                                    "asdsaddsdadasddasasdsaddsdadasddasasdsaddsdadasddasasdsaddsdadasddasasdsaddsdadasddasasdsaddsdadasddasasdsaddsdadasddasasdsaddsdadasddasasdsaddsdadasddas" +
+                                    "asdsaddsdadasddasasdsaddsdadasddasasdsaddsdadasddasasdsaddsdadasddasasdsaddsdadasddasasdsaddsdadasddasasdsaddsdadasddasasdsaddsdadasddasasdsaddsdadasddas" +
+                                    "asdsaddsdadasddasasdsaddsdadasddasasdsaddsdadasddasasdsaddsdadasddasasdsaddsdadasddasasdsaddsdadasddasasdsaddsdadasddasasdsaddsdadasddasasdsaddsdadasddas" +
+                                    "asdsaddsdadasddasasdsaddsdadasddasasdsaddsdadasddasasdsaddsdadasddasasdsaddsdadasddasasdsaddsdadasddasasdsaddsdadasddasasdsaddsdadasddasasdsaddsdadasddas" +
+                                    "asdsaddsdadasddasasdsaddsdadasddasasdsaddsdadasddasasdsaddsdadasddasasdsaddsdadasddasasdsaddsdadasddasasdsaddsdadasddasasdsaddsdadasddasasdsaddsdadasddas";
+            String extraLongTextString = longTextString + longTextString;
+            document.Add(new Paragraph(extraLongTextString));
+            String imageFile = "Desert.jpg";
+            document.Add(Image.GetInstance(TEST_RESOURCES_PATH + imageFile));
+
+            document.Close();
+
+            // compare
+            CompareTool compareTool = new CompareTool();
+            String errorMessage = compareTool.CompareByContent(OUTPUT_FOLDER + file, TEST_RESOURCES_PATH + file, OUTPUT_FOLDER, "diff");
+            if (errorMessage != null) {
+                Assert.Fail(errorMessage);
+            }
+        }
+    }
 }

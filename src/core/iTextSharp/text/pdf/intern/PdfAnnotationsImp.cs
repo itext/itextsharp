@@ -60,7 +60,7 @@ namespace iTextSharp.text.pdf.intern {
         * This is the array containing the references to annotations
         * that were added to the document.
         */
-        protected internal List<PdfAnnotation> annotations;
+        protected internal List<PdfAnnotation> annotations = new List<PdfAnnotation>();
         
         /**
         * This is an array containg references to some delayed annotations
