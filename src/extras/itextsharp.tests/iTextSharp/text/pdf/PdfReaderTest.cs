@@ -49,6 +49,7 @@ using System.IO;
 using itextsharp.tests.iTextSharp.testutils;
 using iTextSharp.text;
 using iTextSharp.text.exceptions;
+using iTextSharp.text.io;
 using iTextSharp.text.pdf;
 using NUnit.Framework;
 
@@ -125,6 +126,30 @@ namespace itextsharp.tests.iTextSharp.text.pdf
                 Assert.AreEqual(PdfName.PAGE.ToString(), p.GetAsName(PdfName.TYPE).ToString());
             }
             rdr.Close();
+        }
+
+        [Test]
+        public void PartialReadFromByteArrayTest() {
+            byte[] pdfFile = TestResourceUtils.GetResourceAsByteArray(TEST_RESOURCES_PATH, "iphone_user_guide.pdf");
+            PdfReader reader = new PdfReader(new RandomAccessFileOrArray(new RandomAccessSourceFactory().CreateSource(pdfFile)), null, true);
+
+            int pagesNum = 0;
+            PdfDictionary pagesObj = reader.Catalog.GetAsDict(PdfName.PAGES);
+            Stack<PdfDictionary> pages = new Stack<PdfDictionary>();
+            pages.Push(pagesObj);
+            while(pages.Count > 0) {
+                PdfDictionary page = pages.Pop();
+                PdfArray kids = page.GetAsArray(PdfName.KIDS);
+                if (kids != null) {
+                    for (int i = 0; i < kids.Size; ++i) {
+                        pages.Push(kids.GetAsDict(i));
+                    }
+                } else {
+                    ++pagesNum;
+                }
+            }
+
+            Assert.True(pagesNum == 130, String.Format("There is 130 pages in document, but iText counted {0}", pagesNum));
         }
 
          

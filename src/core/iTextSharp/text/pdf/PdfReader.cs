@@ -293,24 +293,35 @@ namespace iTextSharp.text.pdf {
         */
         public PdfReader(Stream isp) : this(isp, null) {
         }
-        
-        /**
-        * Reads and parses a pdf document. Contrary to the other constructors only the xref is read
-        * into memory. The reader is said to be working in "partial" mode as only parts of the pdf
-        * are read as needed.
-        * @param raf the document location
-        * @param ownerPassword the password or <CODE>null</CODE> for no password
-        * @throws IOException on error
-        */
-        [Obsolete("Use the constructor that takes a RandomAccessFileOrArray")]
-        public PdfReader(RandomAccessFileOrArray raf, byte[] ownerPassword) : this(
-            raf.GetByteSource(),
-            true,
-            ownerPassword,
-            null,
-            null,
-            false) {
-        }
+
+    /**
+     * Reads and parses a pdf document. Contrary to the other constructors only the xref is read
+     * into memory. The reader is said to be working in "partial" mode as only parts of the pdf
+     * are read as needed.
+     * @param raf the document location
+     * @param ownerPassword the password or <CODE>null</CODE> for no password
+     * @throws IOException on error
+     */
+    public PdfReader(RandomAccessFileOrArray raf, byte[] ownerPassword) : 
+        this(raf, ownerPassword, true) {
+    }
+
+    /**
+     * Reads and parses a pdf document.
+     * @param raf the document location
+     * @param ownerPassword the password or <CODE>null</CODE> for no password
+     * @param partial indicates if the reader needs to read the document only partially. See {@link PdfReader#PdfReader(RandomAccessFileOrArray, byte[])}
+     * @throws IOException on error
+     */
+    public PdfReader(RandomAccessFileOrArray raf, byte[] ownerPassword, bool partial) : 
+        this(
+        		raf.GetByteSource(),
+    			partial,
+    			ownerPassword,
+    			null,
+                null,
+    			false) {
+    }
         
         /** Creates an independent duplicate.
         * @param reader the <CODE>PdfReader</CODE> to duplicate
