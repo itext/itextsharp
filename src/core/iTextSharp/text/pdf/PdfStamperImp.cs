@@ -1150,6 +1150,7 @@ namespace iTextSharp.text.pdf {
                             ? (PdfDictionary) PdfReader.GetPdfObject(obj1)
                             : (PdfDictionary) obj1;
                         PdfObject obj = appDic.Get(PdfName.N);
+                        PdfDictionary objDict = appDic.GetAsStream(PdfName.N);
                         PdfAppearance app = null;
                         PdfObject objReal = PdfReader.GetPdfObject(obj);
 
@@ -1175,9 +1176,13 @@ namespace iTextSharp.text.pdf {
                         }
                         if (app != null) {
                             Rectangle box = PdfReader.GetNormalizedRectangle(annDic.GetAsArray(PdfName.RECT));
+                            Rectangle bbox = PdfReader.GetNormalizedRectangle(objDict.GetAsArray(PdfName.BBOX));
                             PdfContentByte cb = GetOverContent(page);
                             cb.SetLiteral("Q ");
-                            cb.AddTemplate(app, box.Left, box.Bottom);
+                            //Changed so that when the annotation has a difference scale than the xObject in the appearance dictionary, the image is consistent between
+                            //the input and the flattened document.  When the annotation is rotated or skewed, it will still be flattened incorrectly.  
+                            cb.AddTemplate(app, (box.Width / bbox.Width), 0, 0, (box.Height / bbox.Height), box.Left, box.Bottom);
+                            //cb.AddTemplate(app, box.Left, box.Bottom);
                             cb.SetLiteral("q ");
 
                             annots.Remove(idx);
