@@ -136,6 +136,7 @@
     <Compile Include="iTextSharp\text\pdf\table\NestedTablesTest.cs" />
     <Compile Include="iTextSharp\text\pdf\table\RowspanTest.cs" />
     <Compile Include="iTextSharp\text\pdf\table\ColorsInTaggedDocumentsTest.cs" />
+    <Compile Include="iTextSharp\text\pdf\TaggedPdfOnEndPageTest.cs" />
     <Compile Include="iTextSharp\text\pdf\TestPdfCopyAndStamp.cs" />
     <Compile Include="iTextSharp\text\pdf\TextExpansionTest.cs" />
     <Compile Include="iTextSharp\text\pdf\TextFieldTest.cs" />

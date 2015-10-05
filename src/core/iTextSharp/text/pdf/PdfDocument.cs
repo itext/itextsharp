@@ -798,9 +798,9 @@ namespace iTextSharp.text.pdf {
                 rootOutline = new PdfOutline(writer);
                 currentOutline = rootOutline;
             }
-            InitPage();
             if (IsTagged(writer))
                 openMCDocument = true;
+            InitPage();
         }
         
     //  [L2] DocListener interface
@@ -818,7 +818,6 @@ namespace iTextSharp.text.pdf {
             if (IsTagged(writer)) {
                 FlushFloatingElements();
                 FlushLines();
-                writer.DirectContent.CloseMCBlock(this);
                 writer.FlushAcroFields();
                 writer.FlushTaggedObjects();
                 if (PageEmpty) {
@@ -831,6 +830,9 @@ namespace iTextSharp.text.pdf {
                 writer.FlushAcroFields();
             if (imageWait != null) NewPage();
             EndPage();
+            if (IsTagged(writer)) {
+                writer.DirectContent.CloseMCBlock(this);
+            }
             if (annotationsImp.HasUnusedAnnotations())
                 throw new Exception(MessageLocalization.GetComposedMessage("not.all.annotations.could.be.added.to.the.document.the.document.doesn.t.have.enough.pages"));
             IPdfPageEvent pageEvent = writer.PageEvent;
