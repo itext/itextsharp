@@ -1517,10 +1517,6 @@ namespace iTextSharp.text.pdf {
                         merged.Put(PdfName.AS, vt);
                         widget.Put(PdfName.AS, vt);
                     }
-                    else {
-                        merged.Put(PdfName.AS, PdfName.Off_);
-                        widget.Put(PdfName.AS, PdfName.Off_);
-                    }
                     if (generateAppearances && !saveAppearance) {
                         PdfAppearance app = GetAppearance(merged, display, name);
                         if (normal != null)
