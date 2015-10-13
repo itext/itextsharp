@@ -1853,5 +1853,10 @@ namespace iTextSharp.text.pdf {
                 throw new InvalidOperationException(MessageLocalization.GetComposedMessage("use.pdfstamper.getundercontent.or.pdfstamper.getovercontent"));
             }
         }
+
+        public PdfReader GetPdfReader() {
+            return reader;
+        }
+
     }
 }

@@ -61,6 +61,9 @@ namespace iTextSharp.text.pdf {
     public class PdfAStamperImp : PdfStamperImp {
 
         protected ICounter COUNTER = CounterFactory.GetCounter(typeof(PdfAStamper));
+
+        protected  IXmpMeta xmpMeta = null;
+
         protected override ICounter GetCounter() {
             return COUNTER;
         }
@@ -148,7 +151,7 @@ namespace iTextSharp.text.pdf {
 
         private void ReadPdfAInfo() {
             byte[] metadata = null;
-            IXmpMeta xmpMeta = null;
+            
             IXmpProperty pdfaidConformance = null;
             IXmpProperty pdfaidPart = null;
             try {
@@ -218,6 +221,10 @@ namespace iTextSharp.text.pdf {
             if (!PdfName.POPUP.Equals(subtype))
                 a.Put(PdfName.F, new PdfNumber(PdfAnnotation.FLAGS_PRINT));
             return a;
+        }
+
+        public IXmpMeta GetXmpMeta() {
+            return xmpMeta;
         }
     }
 }
