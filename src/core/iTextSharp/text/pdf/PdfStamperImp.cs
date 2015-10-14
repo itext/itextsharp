@@ -122,6 +122,12 @@ namespace iTextSharp.text.pdf {
                 if (reader.IsRebuilt())
                     throw new DocumentException(MessageLocalization.GetComposedMessage("append.mode.requires.a.document.without.errors.even.if.recovery.was.possible"));
                 pdf_version.SetAppendmode(true);
+                if (pdfVersion == 0) {
+                    pdf_version.PdfVersion = reader.PdfVersion;
+                }
+                else {
+                    pdf_version.PdfVersion = pdfVersion;
+                }
                 byte[] buf = new byte[8192];
                 int n;
                 while ((n = file.Read(buf)) > 0)
