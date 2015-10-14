@@ -310,5 +310,22 @@ namespace itextsharp.tests.iTextSharp.text.pdf {
                 Assert.Fail(errorMessage);
             }
         }
+
+        [Test]
+        public void TestAnnotationFlatteningWithSkewAndRotation() {
+            String file = "annotationWithTransformMatrix.pdf";
+            PdfReader reader = new PdfReader(RESOURCES_FOLDER + file);
+            PdfStamper stamper = new PdfStamper(reader, new FileStream(OUTPUT_FOLDER + file, FileMode.Create));
+            stamper.Writer.CompressionLevel = 0;
+            stamper.AnnotationFlattening = true;
+            stamper.Close();
+            // compare
+            CompareTool compareTool = new CompareTool();
+            String errorMessage = compareTool.CompareByContent(OUTPUT_FOLDER + file, RESOURCES_FOLDER + "cmp_" + file, OUTPUT_FOLDER, "diff");
+            if (errorMessage != null)
+            {
+                Assert.Fail(errorMessage);
+            }
+        }
     }
 }
