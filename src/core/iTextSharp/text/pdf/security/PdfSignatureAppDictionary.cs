@@ -61,7 +61,7 @@ namespace iTextSharp.text.pdf.security {
          * @param name
          */
         virtual public string SignatureCreator {
-            set { Put(PdfName.NAME, new PdfName(value)); }
+            set { Put(PdfName.NAME, new PdfString(value, TEXT_UNICODE)); }
         }
     }
 }
