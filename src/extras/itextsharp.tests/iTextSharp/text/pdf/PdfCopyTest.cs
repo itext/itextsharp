@@ -507,20 +507,20 @@ namespace itextsharp.tests.iTextSharp.text.pdf
 
         [Test]
         public void RecursiveSmartMergeTest() {
-            var pathPrefix = @"PdfCopyTest/";
-            var inputDocPath = @"recursiveSmartMerge.pdf";
+            string pathPrefix = @"PdfCopyTest/";
+            string inputDocPath = @"recursiveSmartMerge.pdf";
 
-            var part1 = ExtractPages(Path.Combine(RESOURCES, inputDocPath), 1, 2);
-            var outputPath1 = Path.Combine(pathPrefix, "part1_c.pdf");
+            byte[]  part1 = ExtractPages(Path.Combine(RESOURCES, inputDocPath), 1, 2);
+            string outputPath1 = Path.Combine(pathPrefix, "part1_c.pdf");
             File.WriteAllBytes(outputPath1, part1);
 
-            var part2 = ExtractPages(Path.Combine(RESOURCES, inputDocPath), 3,7);
-            var outputPath2 = Path.Combine(pathPrefix, "part2_c.pdf");
+            byte[] part2 = ExtractPages(Path.Combine(RESOURCES, inputDocPath), 3,7);
+            string outputPath2 = Path.Combine(pathPrefix, "part2_c.pdf");
             File.WriteAllBytes(outputPath2, part2);
 
-            var merged = Merge(new[] {outputPath1, outputPath2});
+            byte[] merged = Merge(new[] {outputPath1, outputPath2});
 
-            var mergedPath = Path.Combine(pathPrefix, "output_c.pdf");
+            string mergedPath = Path.Combine(pathPrefix, "output_c.pdf");
             File.WriteAllBytes(mergedPath, merged);
 
             CompareTool compareTool = new CompareTool();
@@ -541,13 +541,13 @@ namespace itextsharp.tests.iTextSharp.text.pdf
                 PdfSmartCopy pdfSmartCopy = new PdfSmartCopy(document, memoryStream);
                 document.Open();
 
-                foreach (var docPath in documentPaths)
+                foreach (string docPath in documentPaths)
                 {
                     PdfReader reader = new PdfReader(docPath);
                     try
                     {
                         reader.ConsolidateNamedDestinations();
-                        var numberOfPages = reader.NumberOfPages;
+                        int numberOfPages = reader.NumberOfPages;
                         for (int page = 0; page < numberOfPages; )
                         {
                             PdfImportedPage pdfImportedPage = pdfSmartCopy.GetImportedPage(reader, ++page);
@@ -569,21 +569,21 @@ namespace itextsharp.tests.iTextSharp.text.pdf
 
 
         public static byte[] ExtractPages(string pdfDocument, int startPage, int endPage ) {
-            var reader = new PdfReader(pdfDocument);
-            var numberOfPages = reader.NumberOfPages;
-            var endPageResolved = endPage;
+            PdfReader reader = new PdfReader(pdfDocument);
+            int numberOfPages = reader.NumberOfPages;
+            int endPageResolved = endPage;
             if (startPage > numberOfPages || endPageResolved > numberOfPages)
                 return null;
 
             byte[] outputDocument;
-            using (var doc = new Document())
-            using (var msOut = new MemoryStream())
+            using (Document doc = new Document())
+            using (MemoryStream msOut = new MemoryStream())
             {
-                var pdfCopyProvider = new PdfCopy(doc, msOut);
+                PdfCopy pdfCopyProvider = new PdfCopy(doc, msOut);
                 doc.Open();
-                for (var i = startPage; i <= endPageResolved; i++)
+                for (int i = startPage; i <= endPageResolved; i++)
                 {
-                    var page = pdfCopyProvider.GetImportedPage(reader, i);
+                    PdfImportedPage page = pdfCopyProvider.GetImportedPage(reader, i);
                     pdfCopyProvider.AddPage(page);
                 }
                 doc.Close();
