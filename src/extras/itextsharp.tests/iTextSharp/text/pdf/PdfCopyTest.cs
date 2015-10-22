@@ -568,10 +568,10 @@ namespace itextsharp.tests.iTextSharp.text.pdf
         }
 
 
-        public static byte[] ExtractPages(string pdfDocument, int startPage, int? endPage = null) {
+        public static byte[] ExtractPages(string pdfDocument, int startPage, int endPage ) {
             var reader = new PdfReader(pdfDocument);
             var numberOfPages = reader.NumberOfPages;
-            var endPageResolved = endPage.HasValue ? endPage.Value : numberOfPages;
+            var endPageResolved = endPage;
             if (startPage > numberOfPages || endPageResolved > numberOfPages)
                 return null;
 
