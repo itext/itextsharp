@@ -518,7 +518,7 @@ namespace itextsharp.tests.iTextSharp.text.pdf
             string outputPath2 = Path.Combine(pathPrefix, "part2_c.pdf");
             File.WriteAllBytes(outputPath2, part2);
 
-            byte[] merged = Merge(new[] {outputPath1, outputPath2});
+            byte[] merged = Merge(new string[] {outputPath1, outputPath2});
 
             string mergedPath = Path.Combine(pathPrefix, "output_c.pdf");
             File.WriteAllBytes(mergedPath, merged);
