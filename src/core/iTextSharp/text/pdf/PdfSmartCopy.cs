@@ -152,7 +152,7 @@ namespace iTextSharp.text.pdf {
         internal class ByteStore {
             private readonly byte[] b;
             private readonly int hash;
-            private void SerObject(PdfObject obj, int level, ByteBuffer bb, Dictionary<RefKey, int> serialized)
+            private void SerObject(PdfObject obj, int level,  ByteBuffer bb, Dictionary<RefKey, int> serialized)
             {
                 if (level <= 0)
                     return;
@@ -179,16 +179,16 @@ namespace iTextSharp.text.pdf {
                 obj = PdfReader.GetPdfObject(obj);
                 if (obj.IsStream()) {
                     bb.Append("$B");
-                    SerDic((PdfDictionary)obj, level - 1, bb, serialized);
+                    SerDic((PdfDictionary)obj, level - 1,  bb, serialized);
                     if (level > 0) {
                         bb.Append(DigestAlgorithms.Digest("MD5", PdfReader.GetStreamBytesRaw((PRStream)obj)));
                     }
                 }
                 else if (obj.IsDictionary()) {
-                    SerDic((PdfDictionary)obj, level - 1, bb,serialized);
+                    SerDic((PdfDictionary)obj, level - 1,  bb,serialized);
                 }
                 else if (obj.IsArray()) {
-                    SerArray((PdfArray)obj, level - 1, bb,serialized);
+                    SerArray((PdfArray)obj, level - 1,   bb,serialized);
                 }
                 else if (obj.IsString()) {
                     bb.Append("$S").Append(obj.ToString());
@@ -207,27 +207,30 @@ namespace iTextSharp.text.pdf {
                 }
             }
 
-            private void SerDic(PdfDictionary dic, int level, ByteBuffer bb, Dictionary<RefKey, int> serialized)
+            private void SerDic(PdfDictionary dic, int level,  ByteBuffer bb, Dictionary<RefKey, int> serialized)
             {
                 bb.Append("$D");
                 if (level <= 0)
                     return;
                 PdfName[] keys = new PdfName[dic.Size];
                 dic.Keys.CopyTo(keys, 0);
-                Array.Sort<PdfName>(keys);
+                Array.Sort(keys);
                 for (int k = 0; k < keys.Length; ++k) {
-                    SerObject(keys[k], level, bb, serialized);
-                    SerObject(dic.Get(keys[k]), level, bb, serialized);
+                    if (keys[k].Equals(PdfName.P) && (dic.Get(keys[k]).IsIndirect() || dic.Get(keys[k]).IsDictionary())) // ignore recursive call
+                        continue;
+                        SerObject(keys[k], level, bb, serialized);
+                        SerObject(dic.Get(keys[k]), level, bb, serialized);
+                    
                 }
             }
 
-            private void SerArray(PdfArray array, int level, ByteBuffer bb, Dictionary<RefKey, int> serialized)
+            private void SerArray(PdfArray array, int level,  ByteBuffer bb, Dictionary<RefKey, int> serialized)
             {
                 bb.Append("$A");
                 if (level <= 0)
                     return;
                 for (int k = 0; k < array.Size; ++k) {
-                    SerObject(array[k], level, bb, serialized);
+                    SerObject(array[k], level,  bb, serialized);
                 }
             }
 
@@ -235,7 +238,7 @@ namespace iTextSharp.text.pdf {
             {
                 ByteBuffer bb = new ByteBuffer();
                 int level = 100;
-                SerObject(str, level, bb, serialized);
+                SerObject(str, level,  bb, serialized);
                 this.b = bb.ToByteArray();
                 hash = CalculateHash(this.b);
             }
