@@ -64,10 +64,6 @@ namespace iTextSharp.tool.xml {
         private static LocalDataStoreSlot context = Thread.AllocateDataSlot();
         protected bool parseHtml;
 
-        static XMLWorker() {
-            Thread.SetData(context, new WorkerContextImpl());
-        }
-
         /**
          * Constructs a new XMLWorker
          *
@@ -210,7 +206,7 @@ namespace iTextSharp.tool.xml {
         }
 
         virtual public void Close() {
-            Thread.SetData(context, new WorkerContextImpl());
+            CloseLocalWC();
         }
 
         /**
@@ -227,13 +223,17 @@ namespace iTextSharp.tool.xml {
          *
          * @return the local WorkerContext
          */
-        virtual protected internal IWorkerContext GetLocalWC() {
+        static protected internal IWorkerContext GetLocalWC() {
             IWorkerContext ik = (IWorkerContext)Thread.GetData(context);
             if (ik == null) {
                 ik = new WorkerContextImpl();
                 Thread.SetData(context, ik);
             }
             return ik;
+        }
+
+        static protected internal void CloseLocalWC() {
+            Thread.SetData(context, null);
         }
 
         virtual protected bool IgnoreCdata()
