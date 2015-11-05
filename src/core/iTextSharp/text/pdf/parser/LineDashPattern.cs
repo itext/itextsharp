@@ -135,7 +135,7 @@ namespace iTextSharp.text.pdf.parser {
                 unitsOffSum += dashArray.GetAsNumber(i).FloatValue;
             }
 
-            return Util.compare(unitsOffSum, 0) == 0;
+            return Util.Compare(unitsOffSum, 0) == 0;
         }
 
         /**

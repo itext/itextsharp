@@ -99,7 +99,7 @@ namespace System.util {
             return result;
         }
 
-        public static int compare(float f1, float f2) {
+        public static int Compare(float f1, float f2) {
             if (f1 < f2) {
                 return -1;
             }

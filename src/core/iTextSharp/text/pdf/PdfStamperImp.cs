@@ -1190,8 +1190,7 @@ namespace iTextSharp.text.pdf {
                             PdfContentByte cb = GetOverContent(page);
                             cb.SetLiteral("Q ");
                             if (objDict.GetAsArray(PdfName.MATRIX) != null &&
-                                !Utilities.EqualsArray(DEFAULT_MATRIX,
-                                    objDict.GetAsArray(PdfName.MATRIX).AsDoubleArray()))
+                                !Util.ArraysAreEqual(DEFAULT_MATRIX, objDict.GetAsArray(PdfName.MATRIX).AsDoubleArray()))
                             {
                                 double[] matrix = objDict.GetAsArray(PdfName.MATRIX).AsDoubleArray();
                                 Rectangle transformBBox = TransformBBoxByMatrix(bbox, matrix);

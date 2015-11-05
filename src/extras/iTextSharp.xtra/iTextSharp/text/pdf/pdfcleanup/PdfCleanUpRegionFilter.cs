@@ -563,7 +563,7 @@ namespace iTextSharp.xtra.iTextSharp.text.pdf.pdfcleanup {
                             remainingDist = ApplyDash(dashedPath, subpathApprox[i - 1], subpathApprox[i], nextPoint, remainingIsGap);
                         }
 
-                        while ((Util.compare(remainingDist, 0) == 0) && !dashedPath.CurrentPoint.Equals(subpathApprox[i])) {
+                        while ((Util.Compare(remainingDist, 0) == 0) && !dashedPath.CurrentPoint.Equals(subpathApprox[i])) {
                             LineDashPattern.DashArrayElem currentElem = lineDashPattern.Next();
                             nextPoint = GetNextPoint(nextPoint ?? subpathApprox[i - 1], subpathApprox[i], currentElem.Value);
                             remainingDist = ApplyDash(dashedPath, subpathApprox[i - 1], subpathApprox[i], nextPoint, currentElem.IsGap);
@@ -667,7 +667,7 @@ namespace iTextSharp.xtra.iTextSharp.text.pdf.pdfcleanup {
             }
 
             internal float GetSlope() {
-                if (Util.compare(B, 0) == 0) {
+                if (Util.Compare(B, 0) == 0) {
                     return Single.PositiveInfinity;
                 }
 
@@ -675,7 +675,7 @@ namespace iTextSharp.xtra.iTextSharp.text.pdf.pdfcleanup {
             }
 
             internal bool Contains(Point2D point) {
-                return Util.compare(Math.Abs(A * (float) point.GetX() + B * (float) point.GetY() + C), 0.1f) < 0;
+                return Util.Compare(Math.Abs(A * (float) point.GetX() + B * (float) point.GetY() + C), 0.1f) < 0;
             }
         }
     }

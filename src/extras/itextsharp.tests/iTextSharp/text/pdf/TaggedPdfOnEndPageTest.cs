@@ -32,7 +32,6 @@ namespace itextsharp.tests.iTextSharp.text.pdf {
 
             PdfPageHeader header = new CustomPdfPageHeader(writer, 10, headerTable);
 
-
             writer.PageEvent = header;
 
             document.Open();
@@ -43,7 +42,7 @@ namespace itextsharp.tests.iTextSharp.text.pdf {
             document.Close();
 
             // compare
-            CompareTool compareTool = new CompareTool();
+            CompareTool compareTool = new CompareTool().SetFloatRelativeError(1e-4f);
             String errorMessage = compareTool.CompareByContent(OUTPUT_FOLDER + file, TEST_RESOURCES_PATH + file,
                 OUTPUT_FOLDER, "diff");
             if (errorMessage != null) {
