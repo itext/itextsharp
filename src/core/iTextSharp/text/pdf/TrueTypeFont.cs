@@ -454,49 +454,88 @@ namespace iTextSharp.text.pdf {
         
             tables.TryGetValue("OS/2", out table_location);
 
-            if (table_location == null)
-                throw new DocumentException(MessageLocalization.GetComposedMessage("table.1.does.not.exist.in.2", "OS/2", fileName + style));
-            rf.Seek(table_location[0]);
-            int version = rf.ReadUnsignedShort();
-            os_2.xAvgCharWidth = rf.ReadShort();
-            os_2.usWeightClass = rf.ReadUnsignedShort();
-            os_2.usWidthClass = rf.ReadUnsignedShort();
-            os_2.fsType = rf.ReadShort();
-            os_2.ySubscriptXSize = rf.ReadShort();
-            os_2.ySubscriptYSize = rf.ReadShort();
-            os_2.ySubscriptXOffset = rf.ReadShort();
-            os_2.ySubscriptYOffset = rf.ReadShort();
-            os_2.ySuperscriptXSize = rf.ReadShort();
-            os_2.ySuperscriptYSize = rf.ReadShort();
-            os_2.ySuperscriptXOffset = rf.ReadShort();
-            os_2.ySuperscriptYOffset = rf.ReadShort();
-            os_2.yStrikeoutSize = rf.ReadShort();
-            os_2.yStrikeoutPosition = rf.ReadShort();
-            os_2.sFamilyClass = rf.ReadShort();
-            rf.ReadFully(os_2.panose);
-            rf.SkipBytes(16);
-            rf.ReadFully(os_2.achVendID);
-            os_2.fsSelection = rf.ReadUnsignedShort();
-            os_2.usFirstCharIndex = rf.ReadUnsignedShort();
-            os_2.usLastCharIndex = rf.ReadUnsignedShort();
-            os_2.sTypoAscender = rf.ReadShort();
-            os_2.sTypoDescender = rf.ReadShort();
-            if (os_2.sTypoDescender > 0)
-                os_2.sTypoDescender = (short)(-os_2.sTypoDescender);
-            os_2.sTypoLineGap = rf.ReadShort();
-            os_2.usWinAscent = rf.ReadUnsignedShort();
-            os_2.usWinDescent = rf.ReadUnsignedShort();
-            os_2.ulCodePageRange1 = 0;
-            os_2.ulCodePageRange2 = 0;
-            if (version > 0) {
-                os_2.ulCodePageRange1 = rf.ReadInt();
-                os_2.ulCodePageRange2 = rf.ReadInt();
+            if (table_location != null)
+            {
+
+                rf.Seek(table_location[0]);
+                int version = rf.ReadUnsignedShort();
+                os_2.xAvgCharWidth = rf.ReadShort();
+                os_2.usWeightClass = rf.ReadUnsignedShort();
+                os_2.usWidthClass = rf.ReadUnsignedShort();
+                os_2.fsType = rf.ReadShort();
+                os_2.ySubscriptXSize = rf.ReadShort();
+                os_2.ySubscriptYSize = rf.ReadShort();
+                os_2.ySubscriptXOffset = rf.ReadShort();
+                os_2.ySubscriptYOffset = rf.ReadShort();
+                os_2.ySuperscriptXSize = rf.ReadShort();
+                os_2.ySuperscriptYSize = rf.ReadShort();
+                os_2.ySuperscriptXOffset = rf.ReadShort();
+                os_2.ySuperscriptYOffset = rf.ReadShort();
+                os_2.yStrikeoutSize = rf.ReadShort();
+                os_2.yStrikeoutPosition = rf.ReadShort();
+                os_2.sFamilyClass = rf.ReadShort();
+                rf.ReadFully(os_2.panose);
+                rf.SkipBytes(16);
+                rf.ReadFully(os_2.achVendID);
+                os_2.fsSelection = rf.ReadUnsignedShort();
+                os_2.usFirstCharIndex = rf.ReadUnsignedShort();
+                os_2.usLastCharIndex = rf.ReadUnsignedShort();
+                os_2.sTypoAscender = rf.ReadShort();
+                os_2.sTypoDescender = rf.ReadShort();
+                if (os_2.sTypoDescender > 0)
+                    os_2.sTypoDescender = (short) (-os_2.sTypoDescender);
+                os_2.sTypoLineGap = rf.ReadShort();
+                os_2.usWinAscent = rf.ReadUnsignedShort();
+                os_2.usWinDescent = rf.ReadUnsignedShort();
+                os_2.ulCodePageRange1 = 0;
+                os_2.ulCodePageRange2 = 0;
+                if (version > 0)
+                {
+                    os_2.ulCodePageRange1 = rf.ReadInt();
+                    os_2.ulCodePageRange2 = rf.ReadInt();
+                }
+                if (version > 1)
+                {
+                    rf.SkipBytes(2);
+                    os_2.sCapHeight = rf.ReadShort();
+                }
+                else
+                    os_2.sCapHeight = (int) (0.7 * head.unitsPerEm);
+            } else if (tables["hhea"] != null && tables["head"] != null) {
+
+                if (head.macStyle == 0) {
+                    os_2.usWeightClass = 700;
+                    os_2.usWidthClass = 5;
+                }
+                else if (head.macStyle == 5) {
+                    os_2.usWeightClass = 400;
+                    os_2.usWidthClass = 3;
+                }
+                else if (head.macStyle == 6) {
+                    os_2.usWeightClass = 400;
+                    os_2.usWidthClass = 7;
+                }
+                else {
+                    os_2.usWeightClass = 400;
+                    os_2.usWidthClass = 5;
+                }
+                os_2.fsType = 0;
+
+                os_2.ySubscriptYSize = 0;
+                os_2.ySubscriptYOffset = 0;
+                os_2.ySuperscriptYSize = 0;
+                os_2.ySuperscriptYOffset = 0;
+                os_2.yStrikeoutSize = 0;
+                os_2.yStrikeoutPosition = 0;
+                os_2.sTypoAscender = (short)(hhea.Ascender - 0.21 * hhea.Ascender);
+                os_2.sTypoDescender = (short)-(Math.Abs(hhea.Descender) - Math.Abs(hhea.Descender) * 0.07);
+                os_2.sTypoLineGap = (short)(hhea.LineGap * 2);
+                os_2.usWinAscent = hhea.Ascender;
+                os_2.usWinDescent = hhea.Descender;
+                os_2.ulCodePageRange1 = 0;
+                os_2.ulCodePageRange2 = 0;
+                os_2.sCapHeight = (int)(0.7 * head.unitsPerEm);
             }
-            if (version > 1) {
-                rf.SkipBytes(2);
-                os_2.sCapHeight = rf.ReadShort();
-            } else
-                os_2.sCapHeight = (int) (0.7*head.unitsPerEm);
 
             tables.TryGetValue("post", out table_location);
             if (table_location == null) {
