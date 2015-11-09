@@ -196,8 +196,7 @@ namespace iTextSharp.tool.xml.css.apply {
                 String key = entry.Key;
                 String value = entry.Value;
                 if (Util.EqualsIgnoreCase(CSS.Property.FONT_WEIGHT, key)) {
-                    if (CSS.Value.BOLD.Contains(value))
-                    {
+                    if (IsBoldValue(value)) {
                         if (style == Font.ITALIC) {
                             style = Font.BOLDITALIC;
                         } else {
@@ -267,6 +266,13 @@ namespace iTextSharp.tool.xml.css.apply {
 
             return fontProvider.GetFont(fontName, encoding, BaseFont.EMBEDDED, size, style, color);
         }
+
+        protected bool IsBoldValue(String value) {
+            value = value.Trim();
+            return CSS.Value.BOLD.Contains(value) ||
+                    (value.Length == 3 && value.EndsWith("00") && value[0] >= '6' && value[0] <= '9');
+        }
+
 
         /**
          * Method used for retrieving the widest word of a chunk of text. All styles of the chunk will be taken into account when calculating the width of the words.

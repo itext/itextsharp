@@ -172,6 +172,8 @@
     <Compile Include="iTextSharp\tool\xml\examples\css\font\font_weight\list\Font_weight_list01.cs" />
     <Compile Include="iTextSharp\tool\xml\examples\css\font\font_weight\table\Font_weight_table01.cs" />
     <Compile Include="iTextSharp\tool\xml\examples\css\font\font_weight\text\Font_weight_text01.cs" />
+    <Compile Include="iTextSharp\tool\xml\examples\css\font\font_weight\text\Font_weight_text02.cs" />
+    <Compile Include="iTextSharp\tool\xml\examples\css\font\font_weight\numericFontWeight\Font_weight_numeric01.cs" />
     <Compile Include="iTextSharp\tool\xml\examples\css\height\cell\Height_cell01.cs" />
     <Compile Include="iTextSharp\tool\xml\examples\css\height\div\Height_div01.cs" />
     <Compile Include="iTextSharp\tool\xml\examples\css\height\image\Height_image01.cs" />
