@@ -592,7 +592,11 @@ namespace iTextSharp.text.pdf {
                             fontFallBack = true;
                         }
                     }
-                    if (fontFallBack) {
+                    else {
+                        fontFallBack = true;
+                    }
+                }
+                if (fontFallBack) {
                         BaseFont bf;
                         if (!localFonts.TryGetValue((string)dab[DA_FONT], out bf))
                         {
@@ -616,7 +620,6 @@ namespace iTextSharp.text.pdf {
                         }
                         else
                             tx.Font = bf;
-                    }
                 }
             }
             //rotation, border and backgound color
