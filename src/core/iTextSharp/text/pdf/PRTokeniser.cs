@@ -78,7 +78,8 @@ namespace iTextSharp.text.pdf {
         protected int reference;
         protected int generation;
         protected bool hexString;
-        
+        private StringBuilder outBuf;
+
         /**
          * Creates a PRTokeniser for the specified {@link RandomAccessSource}.
          * The beginning of the file is read to determine the location of the header, and the data source is adjusted
@@ -87,6 +88,7 @@ namespace iTextSharp.text.pdf {
          */
         public PRTokeniser(RandomAccessFileOrArray file) {
             this.file = file;
+            outBuf = new StringBuilder();
         }
 
         virtual public void Seek(long pos) {
@@ -311,7 +313,7 @@ namespace iTextSharp.text.pdf {
             // Note:  We have to initialize stringValue here, after we've looked for the end of the stream,
             // to ensure that we don't lose the value of a token that might end exactly at the end
             // of the stream
-            StringBuilder outBuf = new StringBuilder();
+            outBuf.Length = 0;
             stringValue = EMPTY;
             switch (ch) {
                 case '[':

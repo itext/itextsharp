@@ -3141,7 +3141,7 @@ namespace iTextSharp.text.pdf {
         
         protected internal static PdfDictionary DuplicatePdfDictionary(PdfDictionary original, PdfDictionary copy, PdfReader newReader) {
             if (copy == null)
-                copy = new PdfDictionary();
+                copy = new PdfDictionary(original.Size);
             foreach (PdfName key in original.Keys) {
                 copy.Put(key, DuplicatePdfObject(original.Get(key), newReader));
             }
@@ -3162,8 +3162,9 @@ namespace iTextSharp.text.pdf {
                     return stream;
                 }
                 case PdfObject.ARRAY: {
-                    PdfArray arr = new PdfArray();
-                    for (ListIterator<PdfObject> it = ((PdfArray)original).GetListIterator(); it.HasNext();) {
+                    PdfArray originalArray = (PdfArray)original;
+                    PdfArray arr = new PdfArray(originalArray.Size);
+                    for (ListIterator<PdfObject> it = originalArray.GetListIterator(); it.HasNext(); ) {
                         arr.Add(DuplicatePdfObject((PdfObject)it.Next(), newReader));
                     }
                     return arr;

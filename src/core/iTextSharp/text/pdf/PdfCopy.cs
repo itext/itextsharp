@@ -459,7 +459,7 @@ namespace iTextSharp.text.pdf {
         * objects contained in it.
         */
         virtual protected PdfDictionary CopyDictionary(PdfDictionary inp, bool keepStruct, bool directRootKids) {
-            PdfDictionary outp = new PdfDictionary();
+            PdfDictionary outp = new PdfDictionary(inp.Size);
             PdfObject type = PdfReader.GetPdfObjectRelease(inp.Get(PdfName.TYPE));
 
             if (keepStruct)
@@ -547,7 +547,7 @@ namespace iTextSharp.text.pdf {
         * in it
         */
         virtual protected PdfArray CopyArray(PdfArray inp, bool keepStruct, bool directRootKids) {
-            PdfArray outp = new PdfArray();
+            PdfArray outp = new PdfArray(inp.Size);
             
             foreach (PdfObject value in inp.ArrayList) {
                 parentObjects[value] = inp;
