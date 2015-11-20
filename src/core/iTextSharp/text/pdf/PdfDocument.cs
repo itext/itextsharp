@@ -897,12 +897,13 @@ namespace iTextSharp.text.pdf {
             indentation.imageIndentLeft = 0;
             indentation.imageIndentRight = 0;
             
-            
-            // we initialize the new page
-            InitPage();
             if (IsTagged(writer)) {
+                // Java vs C# difference here because isToUseExternalCache is not ported into C#.
                 writer.DirectContentUnder.RestoreMCBlocks(savedMcBlocks);
             }
+
+            // we initialize the new page
+            InitPage();
 
             if (body != null && body.BackgroundColor != null)
                 graphics.Rectangle(body);

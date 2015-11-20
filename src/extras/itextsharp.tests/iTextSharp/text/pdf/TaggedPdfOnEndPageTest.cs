@@ -1,7 +1,6 @@
 ﻿using System;
 using System.Collections.Generic;
 using System.IO;
-using System.Text;
 using iTextSharp.testutils;
 using iTextSharp.text;
 using iTextSharp.text.pdf;
