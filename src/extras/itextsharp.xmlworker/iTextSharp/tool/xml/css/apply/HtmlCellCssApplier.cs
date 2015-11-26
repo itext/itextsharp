@@ -208,7 +208,7 @@ namespace iTextSharp.tool.xml.css.apply {
             }
             if (key.Contains("style")) {
     //          If any, which are the border styles in iText? simulate in the borderevent?
-                if (values.BorderWidthTop == 0){
+                if (!values.GetBorderWidthTop(false).HasValue){
                     values.BorderWidthTop = 2.25f;
                 }
             }
@@ -224,7 +224,7 @@ namespace iTextSharp.tool.xml.css.apply {
             }
             if (key.Contains("style")) {
     //          If any, which are the border styles in iText? simulate in the borderevent?
-                if (values.BorderWidthBottom == 0){
+                if (!values.GetBorderWidthBottom(false).HasValue){
                     values.BorderWidthBottom = 2.25f;
                 }
             }
@@ -240,7 +240,7 @@ namespace iTextSharp.tool.xml.css.apply {
             }
             if (key.Contains("style")) {
     //          If any, which are the border styles in iText? simulate in the borderevent?
-                if (values.BorderWidthLeft == 0){
+                if (!values.GetBorderWidthLeft(false).HasValue){
                     values.BorderWidthLeft = 2.25f;
                 }
             }
@@ -256,7 +256,7 @@ namespace iTextSharp.tool.xml.css.apply {
             }
             if (key.Contains("style")) {
     //          If any, which are the border styles in iText? simulate in the borderevent?
-                if (values.BorderWidthRight == 0){
+                if (!values.GetBorderWidthRight(false).HasValue){
                     values.BorderWidthRight = 2.25f;
                 }
             }
