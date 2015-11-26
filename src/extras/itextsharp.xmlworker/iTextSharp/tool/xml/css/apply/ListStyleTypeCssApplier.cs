@@ -146,7 +146,8 @@ namespace iTextSharp.tool.xml.css.apply {
                 }
             } else if (Util.EqualsIgnoreCase(t.Name, HTML.Tag.OL)) {
                 lst = new List(List.ORDERED);
-                 String type = t.Attributes["type"];
+                 String type = null;
+                 t.Attributes.TryGetValue("type", out type);
  		         if (type != null) {
                    if (type.Equals("A")) {
  	                     lst.Lettered = true;
