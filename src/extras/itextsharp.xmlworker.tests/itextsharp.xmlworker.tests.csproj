@@ -437,6 +437,8 @@
     <Compile Include="iTextSharp\tool\xml\examples\html\Ins02Test.cs" />
     <Compile Include="iTextSharp\tool\xml\examples\html\Ins03Test.cs" />
     <Compile Include="iTextSharp\tool\xml\examples\html\Kbd01Test.cs" />
+    <Compile Include="iTextSharp\tool\xml\examples\html\LetteredListLowerCaseTest.cs" />
+    <Compile Include="iTextSharp\tool\xml\examples\html\LetteredListTest.cs" />
     <Compile Include="iTextSharp\tool\xml\examples\html\List01Test.cs" />
     <Compile Include="iTextSharp\tool\xml\examples\html\List02Test.cs" />
     <Compile Include="iTextSharp\tool\xml\examples\html\List03Test.cs" />
