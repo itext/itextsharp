@@ -409,11 +409,8 @@ namespace iTextSharp.text.pdf {
         {
             if (columnWidth.Length != NumberOfColumns)
                 throw new ArgumentException(MessageLocalization.GetComposedMessage("wrong.number.of.columns"));
-            float totalWidth = 0;
-            for (int k = 0; k < columnWidth.Length; ++k)
-                totalWidth += columnWidth[k];
+            SetTotalWidth(columnWidth);
             widthPercentage = totalWidth/(pageSize.Right - pageSize.Left)*100f;
-            SetWidths(columnWidth);
         }
 
         /** Gets the full width of the table.
