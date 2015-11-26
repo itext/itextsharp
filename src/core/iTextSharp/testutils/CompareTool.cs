@@ -302,7 +302,7 @@ public class CompareTool {
 
         public void AddError(ObjectPath path, String message) {
             if (differences.Count < messageLimit && !differences.ContainsKey(path)) {
-                differences.Add(((ObjectPath) path.Clone()), message);
+                differences[((ObjectPath) path.Clone())] = message;
             }
         }
 

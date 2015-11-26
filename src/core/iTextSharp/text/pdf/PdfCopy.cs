@@ -856,7 +856,7 @@ namespace iTextSharp.text.pdf {
                         mergedSet.Add(iobj);
                     } else {
                         unmergedMap[annotId.IntValue] = iobj;
-                        unmergedIndirectRefsMap.Add(new RefKey(iobj.Number, iobj.Generation), iobj);
+                        unmergedIndirectRefsMap[new RefKey(iobj.Number, iobj.Generation)] = iobj;
                     }
                 }
             }

@@ -188,11 +188,15 @@ namespace iTextSharp.text.pdf {
          *   copied over
          */
         virtual public void PutAll(PdfDictionary dic) {
-            foreach (KeyValuePair<PdfName, PdfObject> item in dic.hashMap) {
-                if (hashMap.ContainsKey(item.Key))
-                    hashMap[item.Key] = item.Value;
-                else
-                    hashMap.Add(item.Key, item.Value);
+            if (hashMap.Count == 0) {
+                hashMap = new Dictionary<PdfName, PdfObject>(dic.hashMap);
+            } else {
+                foreach (KeyValuePair<PdfName, PdfObject> item in dic.hashMap) {
+                    if (hashMap.ContainsKey(item.Key))
+                        hashMap[item.Key] = item.Value;
+                    else
+                        hashMap.Add(item.Key, item.Value);
+                }
             }
         }
 

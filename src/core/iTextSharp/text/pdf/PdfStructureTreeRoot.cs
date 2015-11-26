@@ -107,13 +107,13 @@ namespace iTextSharp.text.pdf {
                 classMap = new PdfDictionary();
                 classes = new Dictionary<PdfName, PdfObject>();
             }
-            classes.Add(name,obj);
+            classes[name] = obj;
         }
 
         virtual internal void PutIDTree(string record, PdfObject reference) {
             if (idTreeMap == null)
                 idTreeMap = new Dictionary<string, PdfObject>();
-            idTreeMap.Add(record, reference);
+            idTreeMap[record] = reference;
         }
 
         virtual public PdfObject GetMappedClass(PdfName name) {
