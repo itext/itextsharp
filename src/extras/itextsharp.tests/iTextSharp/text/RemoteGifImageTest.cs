@@ -54,7 +54,7 @@ namespace itextsharp.tests.iTextSharp.text
     class RemoteGifImageTest
     {
         private String[] GIF_LOCATION = {
-            "http://itextpdf.com/img/logo.gif",
+            //"http://itextpdf.com/img/logo.gif",
             "http://itextsupport.com/files/testresources/img/remote_gif_test.gif",
             @"..\..\resources\text\ChunkTest\logo.gif" // non-remote gif
         };
