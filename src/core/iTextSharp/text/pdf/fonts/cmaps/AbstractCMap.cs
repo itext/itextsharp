@@ -88,10 +88,10 @@ namespace iTextSharp.text.pdf.fonts.cmaps {
             byte[] sout = null;
             if (code is PdfString)
                 sout = DecodeStringToByte((PdfString)code);
-            int start = a1[a1.Length - 1] & 0xff;
-            int end = a2[a2.Length - 1] & 0xff;
+            int start = ByteArrayToInt(a1);
+            int end = ByteArrayToInt(a2);
             for (int k = start; k <= end; ++k) {
-                a1[a1.Length - 1] = (byte)k;
+                IntToByteArray(k, a1);
                 PdfString s = new PdfString(a1);
                 s.SetHexWriting(true);
                 if (code is PdfArray) {
@@ -110,6 +110,22 @@ namespace iTextSharp.text.pdf.fonts.cmaps {
             }
         }
         
+        private static void IntToByteArray(int v, byte[] b) {
+            for (int k = b.Length - 1; k >= 0; --k) {
+                b[k] = (byte)v;
+                v = v >> 8;
+            }
+        }
+    
+        private static int ByteArrayToInt(byte[] b) {
+            int v = 0;
+            for (int k = 0; k < b.Length; ++k) {
+                v = v << 8;
+                v |= b[k] & 0xff;
+            }
+            return v;
+        }
+
         public static byte[] DecodeStringToByte(PdfString s) {
             byte[] b = s.GetBytes();
             byte[] br = new byte[b.Length];

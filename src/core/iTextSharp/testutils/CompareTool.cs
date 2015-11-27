@@ -53,6 +53,9 @@ using System.Xml;
 using iTextSharp.text;
 using iTextSharp.text.pdf;
 using System.util.collections;
+using iTextSharp.text.io;
+using iTextSharp.text.pdf.parser;
+using Path = System.IO.Path;
 
 namespace iTextSharp.testutils {
 
@@ -61,6 +64,7 @@ public class CompareTool {
         protected RefKey baseCmpObject;
         protected RefKey baseOutObject;
         protected Stack<PathItem> path = new Stack<PathItem>();
+        protected Stack<Pair<RefKey>> indirects = new Stack<Pair<RefKey>>();
 
         public ObjectPath() {
         }
@@ -74,6 +78,25 @@ public class CompareTool {
             this.baseCmpObject = baseCmpObject;
             this.baseOutObject = baseOutObject;
             this.path = path;
+        }
+
+        protected class Pair<T> {
+            private T first;
+            private T second;
+
+            public Pair(T first, T second) {
+                this.first = first;
+                this.second = second;
+            }
+
+            public override bool Equals(object obj) {
+                return (obj is Pair<T> && first.Equals(((Pair<T>) obj).first) &&
+                        second.Equals(((Pair<T>) obj).second));
+            }
+
+            public override int GetHashCode() {
+                return first.GetHashCode()*31 + second.GetHashCode();
+            }
         }
 
         protected abstract class PathItem {
@@ -160,6 +183,17 @@ public class CompareTool {
 
                 return element;
             }
+        }
+
+        public ObjectPath ResetDirectPath(RefKey baseCmpObject, RefKey baseOutObject) {
+            ObjectPath newPath = new ObjectPath(baseCmpObject, baseOutObject);
+            newPath.indirects = new Stack<Pair<RefKey>>(new Stack<Pair<RefKey>>(indirects));
+            newPath.indirects.Push(new Pair<RefKey>(baseCmpObject, baseOutObject));
+            return newPath;
+        }
+
+        public bool IsComparing(RefKey baseCmpObject, RefKey baseOutObject) {
+            return indirects.Contains(new Pair<RefKey>(baseCmpObject, baseOutObject));
         }
 
         public void PushArrayItemToPath(int index) {
@@ -268,7 +302,7 @@ public class CompareTool {
 
         public void AddError(ObjectPath path, String message) {
             if (differences.Count < messageLimit && !differences.ContainsKey(path)) {
-                differences.Add(((ObjectPath) path.Clone()), message);
+                differences[((ObjectPath) path.Clone())] = message;
             }
         }
 
@@ -328,19 +362,13 @@ public class CompareTool {
     private int compareByContentErrorsLimit = 1;
     private bool generateCompareByContentXmlReport = false;
     private String xmlReportName = "report";
-
+    private double floatComparisonError = 0;
+    // if false, the error will be relative
+    private bool absoluteError = true;
 
     public CompareTool() {
         gsExec = Environment.GetEnvironmentVariable("gsExec");
         compareExec = Environment.GetEnvironmentVariable("compareExec");
-    }
-
-    public void SetXmlReportName(String reportName) {
-        this.xmlReportName = reportName;
-    }
-
-    public String GetXmlReportName() {
-        return this.xmlReportName;
     }
 
     private String Compare(String outPath, String differenceImagePrefix, IDictionary<int, IList<Rectangle>> ignoredAreas) {
@@ -559,6 +587,36 @@ public class CompareTool {
         this.generateCompareByContentXmlReport = generateCompareByContentXmlReport;
     }
 
+    /**
+     * Sets the absolute error parameter which will be used in floating point numbers comparison.
+     * @param error the epsilon new value.
+     * @return Returns this.
+     */
+    public CompareTool SetFloatAbsoluteError(float error) {
+        this.floatComparisonError = error;
+        this.absoluteError = true;
+        return this;
+    }
+
+    /**
+     * Sets the relative error parameter which will be used in floating point numbers comparison.
+     * @param error the epsilon new value.
+     * @return Returns this.
+     */
+    public CompareTool SetFloatRelativeError(float error) {
+        this.floatComparisonError = error;
+        this.absoluteError = false;
+        return this;
+    }
+
+    public void SetXmlReportName(String reportName) {
+        this.xmlReportName = reportName;
+    }
+
+    public String GetXmlReportName() {
+        return this.xmlReportName;
+    }
+
     private String CompareByContent(String outPath, String differenceImagePrefix, IDictionary<int, IList<Rectangle>> ignoredAreas) {
         Console.Write("[itext] INFO  Comparing by content..........");
         PdfReader outReader = new PdfReader(outPdf);
@@ -670,31 +728,31 @@ public class CompareTool {
             return false;
         }
 
-        // This can be commented in order to always see the "full" paths of different objects.
         if (cmpObj.IsIndirect() && outObj.IsIndirect()) {
-            currentPath = new ObjectPath(new RefKey((PdfIndirectReference)cmpObj), new RefKey((PdfIndirectReference)outObj));
+            if (currentPath.IsComparing(new RefKey((PdfIndirectReference)cmpObj), new RefKey((PdfIndirectReference)outObj)))
+                return true;
+            currentPath = currentPath.ResetDirectPath(new RefKey((PdfIndirectReference)cmpObj), new RefKey((PdfIndirectReference)outObj));
+        }
+
+        if (cmpDirectObj.IsDictionary() && ((PdfDictionary)cmpDirectObj).IsPage()) {
+            if (!outDirectObj.IsDictionary() || !((PdfDictionary)outDirectObj).IsPage()) {
+                if (compareResult != null && currentPath != null)
+                    compareResult.AddError(currentPath, "Expected a page. Found not a page.");
+                return false;
+            }
+            RefKey cmpRefKey = new RefKey((PRIndirectReference)cmpObj);
+            RefKey outRefKey = new RefKey((PRIndirectReference)outObj);
+            // References to the same page
+            if (cmpPagesRef.Contains(cmpRefKey) && cmpPagesRef.IndexOf(cmpRefKey) == outPagesRef.IndexOf(outRefKey))
+                return true;
+            if (compareResult != null && currentPath != null)
+                compareResult.AddError(currentPath, String.Format("The dictionaries refer to different pages. Expected page number: {0}. Found: {1}",
+                        cmpPagesRef.IndexOf(cmpRefKey), outPagesRef.IndexOf(outRefKey)));
+            return false;
         }
 
         if (cmpDirectObj.IsDictionary()) {
-            PdfDictionary cmpDict = (PdfDictionary)cmpDirectObj;
-            PdfDictionary outDict = (PdfDictionary)outDirectObj;
-            if (cmpDict.IsPage()) {
-                if (!outDict.IsPage()) {
-                    if (compareResult != null && currentPath != null)
-                        compareResult.AddError(currentPath, String.Format("Expected a page. Found not a page."));
-                    return false;
-                }
-                RefKey cmpRefKey = new RefKey((PRIndirectReference)cmpObj);
-                RefKey outRefKey = new RefKey((PRIndirectReference)outObj);
-                // References to the same page
-                if (cmpPagesRef.Contains(cmpRefKey) && cmpPagesRef.IndexOf(cmpRefKey) == outPagesRef.IndexOf(outRefKey))
-                    return true;
-                if (compareResult != null && currentPath != null)
-                    compareResult.AddError(currentPath, String.Format("The dictionaries refer to different pages. Expected page number: {0}. Found: {1}",
-                            cmpPagesRef.IndexOf(cmpRefKey), outPagesRef.IndexOf(outRefKey)));
-                return false;
-            }
-            if (!CompareDictionariesExtended(outDict, cmpDict, currentPath, compareResult))
+            if (!CompareDictionariesExtended((PdfDictionary)outDirectObj, (PdfDictionary)cmpDirectObj, currentPath, compareResult))
                 return false;
         } else if (cmpDirectObj.IsStream()) {
             if (!CompareStreamsExtended((PRStream)outDirectObj, (PRStream)cmpDirectObj, currentPath, compareResult))
@@ -714,6 +772,9 @@ public class CompareTool {
         } else if (cmpDirectObj.IsBoolean()) {
             if (!CompareBooleansExtended((PdfBoolean)outDirectObj, (PdfBoolean)cmpDirectObj, currentPath, compareResult))
                 return false;
+        } else if (cmpDirectObj is PdfLiteral) {
+            if (!CompareLiteralsExtended((PdfLiteral) outDirectObj, (PdfLiteral) cmpDirectObj, currentPath, compareResult))
+                return false;
         } else if (outDirectObj.IsNull() && cmpDirectObj.IsNull()) {
         } else {
             throw new InvalidOperationException();
@@ -732,10 +793,10 @@ public class CompareTool {
         }
 
         bool dictsAreSame = true;
-
         // Iterate through the union of the keys of the cmp and out dictionaries!
         HashSet2<PdfName> mergedKeys = new HashSet2<PdfName>(cmpDict.Keys);
         mergedKeys.AddAll(outDict.Keys);
+
         foreach (PdfName key in mergedKeys) {
             if (key.CompareTo(PdfName.PARENT) == 0 || key.CompareTo(PdfName.P) == 0) continue;
             if (outDict.IsStream() && cmpDict.IsStream() && (key.Equals(PdfName.FILTER) || key.Equals(PdfName.LENGTH))) continue;
@@ -758,6 +819,16 @@ public class CompareTool {
                     continue;
                 }
             }
+
+            if (floatComparisonError != 0 && cmpDict.IsPage() && outDict.IsPage() && key.Equals(PdfName.CONTENTS)) {
+                if (!CompareContentStreamsByParsingExtended(outDict.GetDirectObject(key), cmpDict.GetDirectObject(key),
+                        (PdfDictionary)outDict.GetDirectObject(PdfName.RESOURCES), (PdfDictionary)cmpDict.GetDirectObject(PdfName.RESOURCES),
+                        currentPath, compareResult)) {
+                    dictsAreSame = false;
+                }
+                continue;
+            }
+
             if (currentPath != null)
                 currentPath.PushDictItemToPath(key.ToString());
             dictsAreSame = CompareObjects(outDict.Get(key), cmpDict.Get(key), currentPath, compareResult) && dictsAreSame;
@@ -768,6 +839,81 @@ public class CompareTool {
         }
 
         return dictsAreSame;
+    }
+
+    public bool ÑompareContentStreamsByParsing(PdfObject outObj, PdfObject cmpObj) {
+        return CompareContentStreamsByParsingExtended(outObj, cmpObj, null, null, null, null);
+    }
+
+    public bool ÑompareContentStreamsByParsing(PdfObject outObj, PdfObject cmpObj, PdfDictionary outResources, PdfDictionary cmpResources) {
+        return CompareContentStreamsByParsingExtended(outObj, cmpObj, outResources, cmpResources, null, null);
+    }
+
+    private bool CompareContentStreamsByParsingExtended(PdfObject outObj, PdfObject cmpObj, PdfDictionary outResources, PdfDictionary cmpResources, ObjectPath currentPath, CompareResult compareResult) {
+        if (outObj.Type != outObj.Type) {
+            compareResult.AddError(currentPath, String.Format(
+                    "PdfObject. Types are different. Expected: {0}. Found: {1}", cmpObj.Type, outObj.Type));
+            return false;
+        }
+
+        if (outObj.IsArray()) {
+            PdfArray outArr = (PdfArray) outObj;
+            PdfArray cmpArr = (PdfArray) cmpObj;
+            if (cmpArr.Size != outArr.Size) {
+                compareResult.AddError(currentPath, String.Format("PdfArray. Sizes are different. Expected: {0}. Found: {1}", cmpArr.Size, outArr.Size));
+                return false;
+            }
+            for (int i = 0; i < cmpArr.Size; i++) {
+                if (!CompareContentStreamsByParsingExtended(outArr.GetPdfObject(i), cmpArr.GetPdfObject(i), outResources, cmpResources, currentPath, compareResult)) {
+                    return false;
+                }
+            }
+        }
+
+        PRTokeniser cmpTokeniser = new PRTokeniser(new RandomAccessFileOrArray(
+                new RandomAccessSourceFactory().CreateSource(ContentByteUtils.GetContentBytesFromContentObject(cmpObj))));
+        PRTokeniser outTokeniser = new PRTokeniser(new RandomAccessFileOrArray(
+                new RandomAccessSourceFactory().CreateSource(ContentByteUtils.GetContentBytesFromContentObject(outObj))));
+
+        PdfContentParser cmpPs = new PdfContentParser(cmpTokeniser);
+        PdfContentParser outPs = new PdfContentParser(outTokeniser);
+
+        List<PdfObject> cmpOperands = new List<PdfObject>();
+        List<PdfObject> outOperands = new List<PdfObject>();
+
+        while (cmpPs.Parse(cmpOperands).Count > 0) {
+            outPs.Parse(outOperands);
+            if (cmpOperands.Count != outOperands.Count) {
+                compareResult.AddError(currentPath, String.Format(
+                        "PdfObject. Different commands lengths. Expected: {0}. Found: {1}", cmpOperands.Count, outOperands.Count));
+                return false;
+            }
+            if (cmpOperands.Count == 1 && CompareLiterals((PdfLiteral) cmpOperands[0], new PdfLiteral("BI")) && CompareLiterals((PdfLiteral) outOperands[0], new PdfLiteral("BI"))) {
+                PRStream cmpStr = (PRStream) cmpObj;
+                PRStream outStr = (PRStream) outObj;
+                if (null != outStr.GetDirectObject(PdfName.RESOURCES) && null != cmpStr.GetDirectObject(PdfName.RESOURCES)) {
+                    outResources = (PdfDictionary) outStr.GetDirectObject(PdfName.RESOURCES);
+                    cmpResources = (PdfDictionary) cmpStr.GetDirectObject(PdfName.RESOURCES);
+                }
+                if (!ÑompareInlineImagesExtended(outPs, cmpPs, outResources, cmpResources, currentPath, compareResult)) {
+                    return false;
+                }
+                continue;
+            }
+            for (int i = 0; i < cmpOperands.Count; i++) {
+                if (!CompareObjects(outOperands[i], cmpOperands[i], currentPath, compareResult)) {
+                    return false;
+                }
+            }
+        }
+        return true;
+    }
+
+    private bool ÑompareInlineImagesExtended(PdfContentParser outPs, PdfContentParser cmpPs, PdfDictionary outDict, PdfDictionary cmpDict, ObjectPath currentPath, CompareResult compareResult) {
+        InlineImageInfo cmpInfo = InlineImageUtils.ParseInlineImage(cmpPs, cmpDict);
+        InlineImageInfo outInfo = InlineImageUtils.ParseInlineImage(outPs, outDict);
+        return CompareObjects(outInfo.ImageDictionary, cmpInfo.ImageDictionary, currentPath, compareResult) &&
+               Util.ArraysAreEqual(outInfo.Samples, cmpInfo.Samples);
     }
 
     public bool CompareStreams(PRStream outStream, PRStream cmpStream) {
@@ -782,32 +928,46 @@ public class CompareTool {
             outStreamBytes = PdfReader.DecodeBytes(outStreamBytes, outStream);
             cmpStreamBytes = PdfReader.DecodeBytes(cmpStreamBytes, cmpStream);
         }
-        if (Util.ArraysAreEqual(outStreamBytes, cmpStreamBytes)) {
-            return CompareDictionariesExtended(outStream, cmpStream, currentPath, compareResult);
+        if (floatComparisonError != 0 &&
+            PdfName.XOBJECT.Equals(cmpStream.GetDirectObject(PdfName.TYPE)) &&
+            PdfName.XOBJECT.Equals(outStream.GetDirectObject(PdfName.TYPE)) &&
+            PdfName.FORM.Equals(cmpStream.GetDirectObject(PdfName.SUBTYPE)) &&
+            PdfName.FORM.Equals(outStream.GetDirectObject(PdfName.SUBTYPE))) {
+            return
+                CompareContentStreamsByParsingExtended(outStream, cmpStream, outStream.GetAsDict(PdfName.RESOURCES),
+                    cmpStream.GetAsDict(PdfName.RESOURCES), currentPath, compareResult) &&
+                CompareDictionariesExtended(outStream, cmpStream, currentPath, compareResult);
         } else {
-            if (cmpStreamBytes.Length != outStreamBytes.Length) {
-                if (compareResult != null && currentPath != null) {
-                    compareResult.AddError(currentPath, String.Format("PRStream. Lengths are different. Expected: {0}. Found: {1}", cmpStreamBytes.Length, outStreamBytes.Length));
-                }
+            if (Util.ArraysAreEqual(outStreamBytes, cmpStreamBytes)) {
+                return CompareDictionariesExtended(outStream, cmpStream, currentPath, compareResult);
             } else {
-                for (int i = 0; i < cmpStreamBytes.Length; i++) {
-                    if (cmpStreamBytes[i] != outStreamBytes[i]) {
-                        int l = Math.Max(0, i - 10);
-                        int r = Math.Min(cmpStreamBytes.Length, i + 10);
-
-                        if (compareResult != null && currentPath != null) {
-                            currentPath.PushOffsetToPath(i);
-                            compareResult.AddError(currentPath, String.Format("PRStream. The bytes differ at index {0}. Expected: {1} ({2}). Found: {3} ({4})",
-                                    i, System.Text.Encoding.Default.GetString(new byte[] {cmpStreamBytes[i]}), 
-                                    System.Text.Encoding.Default.GetString(cmpStreamBytes, l, r - l).Replace("\n", "\\n"),
-                                    System.Text.Encoding.Default.GetString(new byte[] {outStreamBytes[i]}), 
-                                    System.Text.Encoding.Default.GetString(outStreamBytes, l, r - l).Replace("\n", "\\n")));
-                            currentPath.Pop();
+                if (cmpStreamBytes.Length != outStreamBytes.Length) {
+                    if (compareResult != null && currentPath != null) {
+                        compareResult.AddError(currentPath,
+                            String.Format("PRStream. Lengths are different. Expected: {0}. Found: {1}",
+                                cmpStreamBytes.Length, outStreamBytes.Length));
+                    }
+                } else {
+                    for (int i = 0; i < cmpStreamBytes.Length; i++) {
+                        if (cmpStreamBytes[i] != outStreamBytes[i]) {
+                            int l = Math.Max(0, i - 10);
+                            int r = Math.Min(cmpStreamBytes.Length, i + 10);
+                            if (compareResult != null && currentPath != null) {
+                                currentPath.PushOffsetToPath(i);
+                                compareResult.AddError(currentPath,
+                                    String.Format(
+                                        "PRStream. The bytes differ at index {0}. Expected: {1} ({2}). Found: {3} ({4})",
+                                        i, Encoding.UTF8.GetString(new byte[] {cmpStreamBytes[i]}),
+                                        Encoding.UTF8.GetString(cmpStreamBytes, l, r - l).Replace("\n", "\\n"),
+                                        Encoding.UTF8.GetString(new byte[] { outStreamBytes[i] }),
+                                        Encoding.UTF8.GetString(outStreamBytes, l, r - l).Replace("\n", "\\n")));
+                                currentPath.Pop();
+                            }
                         }
                     }
                 }
+                return false;
             }
-            return false;
         }
     }
 
@@ -854,11 +1014,16 @@ public class CompareTool {
     }
 
     public bool CompareNumbers(PdfNumber outNumber, PdfNumber cmpNumber) {
-        return cmpNumber.DoubleValue == outNumber.DoubleValue;
+        double difference = Math.Abs(outNumber.DoubleValue - cmpNumber.DoubleValue);
+        if (!absoluteError && cmpNumber.DoubleValue != 0)
+        {
+            difference /= cmpNumber.DoubleValue;
+        }
+        return difference <= floatComparisonError;
     }
 
     private bool CompareNumbersExtended(PdfNumber outNumber, PdfNumber cmpNumber, ObjectPath currentPath, CompareResult compareResult) {
-        if (cmpNumber.DoubleValue == outNumber.DoubleValue) {
+        if (CompareNumbers(outNumber, cmpNumber)) {
             return true;
         } else {
             if (compareResult != null && currentPath != null)
@@ -898,6 +1063,22 @@ public class CompareTool {
                     }
                 }
             }
+            return false;
+        }
+    }
+
+    public bool CompareLiterals(PdfLiteral outLiteral, PdfLiteral cmpLiteral) {
+        return Util.ArraysAreEqual(cmpLiteral.GetBytes(), outLiteral.GetBytes());
+    }
+
+    private bool CompareLiteralsExtended(PdfLiteral outLiteral, PdfLiteral cmpLiteral, ObjectPath currentPath,
+        CompareResult compareResult) {
+        if (CompareLiterals(outLiteral, cmpLiteral)) {
+            return true;
+        } else {
+            if (compareResult != null && currentPath != null)
+                compareResult.AddError(currentPath, String.Format(
+                    "PdfLiteral. Expected: {0}. Found: {1}", cmpLiteral, outLiteral));
             return false;
         }
     }

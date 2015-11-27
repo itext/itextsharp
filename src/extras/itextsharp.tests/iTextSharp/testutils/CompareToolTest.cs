@@ -88,7 +88,20 @@ namespace itextsharp.tests.iTextSharp.testutils {
             Console.WriteLine(result);
         }
 
-   
+        [Test]
+        public void CompareToolErrorReportTest03() {
+            CompareTool compareTool = new CompareTool();
+            compareTool.SetCompareByContentErrorsLimit(10);
+            compareTool.SetGenerateCompareByContentXmlReport(true);
+            compareTool.SetXmlReportName("report03");
+            String outPdf = TEST_RESOURCES_PATH + "screenAnnotation.pdf";
+            String cmpPdf = TEST_RESOURCES_PATH + "cmp_screenAnnotation.pdf";
+            String result = compareTool.CompareByContent(outPdf, cmpPdf, OUT_FOLDER, "difference");
+            Assert.NotNull("CompareTool must return differences found between the files", result);
+            Assert.IsTrue(CompareXmls(TEST_RESOURCES_PATH + "cmp_report03.xml", OUT_FOLDER + "report03.xml"), "CompareTool report differs from the reference one");
+            Console.WriteLine(result);
+        }
+        
 
         virtual protected bool CompareXmls(String xml1, String xml2) {
             XmlDiff xmldiff = new XmlDiff(XmlDiffOptions.None);

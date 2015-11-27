@@ -44,11 +44,16 @@
  */
 
 using System;
+using System.Collections;
 using System.Collections.Generic;
+using System.IO;
+using System.Net;
 using Org.BouncyCastle.Ocsp;
 using Org.BouncyCastle.Security;
 using Org.BouncyCastle.X509;
 using iTextSharp.text.log;
+using Org.BouncyCastle.Asn1.Ocsp;
+using Org.BouncyCastle.Security.Certificates;
 using Org.BouncyCastle.Utilities.Date;
 
 /**
@@ -60,6 +65,8 @@ namespace iTextSharp.text.pdf.security {
         /** The Logger instance */
         private static ILogger LOGGER = LoggerFactory.GetLogger(typeof(OcspVerifier));
     	
+        protected readonly static String id_kp_OCSPSigning = "1.3.6.1.5.5.7.3.9";
+
 	    /** The list of OCSP responses. */
 	    protected List<BasicOcspResp> ocsps;
     	
@@ -109,18 +116,19 @@ namespace iTextSharp.text.pdf.security {
 		    // verify using the previous verifier in the chain (if any)
 		    return result;
 	    }
-    	
-    	
-	    /**
-	     * Verifies a certificate against a single OCSP response
-	     * @param ocspResp	the OCSP response
-	     * @param issuerCert
-	     * @param signDate
-	     * @return
-	     * @throws GeneralSecurityException
-	     * @throws IOException
-	     */
-	    virtual public bool Verify(BasicOcspResp ocspResp, X509Certificate signCert, X509Certificate issuerCert, DateTime signDate) {
+
+
+        /**
+         * Verifies a certificate against a single OCSP response
+         * @param ocspResp	the OCSP response
+         * @param signCert  the certificate that needs to be checked
+         * @param issuerCert  the certificate of CA
+         * @param signDate  sign date
+         * @return {@code true}, in case successful check, otherwise false.
+         * @throws GeneralSecurityException
+         * @throws IOException
+         */
+        virtual public bool Verify(BasicOcspResp ocspResp, X509Certificate signCert, X509Certificate issuerCert, DateTime signDate) {
 		    if (ocspResp == null)
 			    return false;
 		    // Getting the responses
@@ -162,62 +170,124 @@ namespace iTextSharp.text.pdf.security {
 		    }
 		    return false;
 	    }
-    	
-	    /**
-	     * Verifies if an OCSP response is genuine
-	     * @param ocspResp	the OCSP response
-	     * @param issuerCert	the issuer certificate
-	     * @throws GeneralSecurityException
-	     * @throws IOException
-	     */
-	    virtual public void IsValidResponse(BasicOcspResp ocspResp, X509Certificate issuerCert) {
-		    // by default the OCSP responder certificate is the issuer certificate
-		    X509Certificate responderCert = issuerCert;
-		    // check if there's a responder certificate
-		    X509Certificate[] certs = ocspResp.GetCerts();
-		    if (certs.Length > 0) {
-			    responderCert = certs[0];
-			    try {
-				    responderCert.Verify(issuerCert.GetPublicKey());
-			    }
-			    catch (GeneralSecurityException) {
-				    if (base.Verify(responderCert, issuerCert, DateTime.MaxValue).Count == 0)
-                        throw new VerificationException(responderCert, String.Format("{0} Responder certificate couldn't be verified", responderCert));
-			    }
-		    }
-		    // verify if the signature of the response is valid
-		    if (!VerifyResponse(ocspResp, responderCert))
-                throw new VerificationException(responderCert, String.Format("{0} OCSP response could not be verified", responderCert));
-	    }
-    	
-	    /**
-	     * Verifies if the signature of the response is valid.
-	     * If it doesn't verify against the responder certificate, it may verify
-	     * using a trusted anchor.
-	     * @param ocspResp	the response object
-	     * @param responderCert	the certificate that may be used to sign the response
-	     * @return	true if the response can be trusted
-	     */
-	    virtual public bool VerifyResponse(BasicOcspResp ocspResp, X509Certificate responderCert) {
-		    // testing using the responder certificate
-		    if (IsSignatureValid(ocspResp, responderCert))
-			    return true;
-		    // testing using trusted anchors
-		    if (certificates == null)
-			    return false;
-		    try {
-			    // loop over the certificates in the root store
-        	    foreach (X509Certificate anchor in certificates) {
-                    try {
-                        if (IsSignatureValid(ocspResp, anchor))
-	                        return true;
-				    } catch (GeneralSecurityException) {}
-        	    }
-		    }
-            catch (GeneralSecurityException) {
-        	    return false;
+
+        /**
+         * Verifies if an OCSP response is genuine
+         *  If it doesn't verify against the issuer certificate and response's certificates, it may verify
+         * using a trusted anchor or cert.
+         * @param ocspResp	the OCSP response
+         * @param issuerCert	the issuer certificate
+         * @throws GeneralSecurityException
+         * @throws IOException
+         */
+        virtual public void IsValidResponse(BasicOcspResp ocspResp, X509Certificate issuerCert) {
+            //OCSP response might be signed by the issuer certificate or
+            //the Authorized OCSP responder certificate containing the id-kp-OCSPSigning extended key usage extension
+            X509Certificate responderCert = null;
+
+            //first check if the issuer certificate signed the response
+            //since it is expected to be the most common case
+            if (IsSignatureValid(ocspResp, issuerCert)) {
+                responderCert = issuerCert;
             }
-		    return false;
+
+            //if the issuer certificate didn't sign the ocsp response, look for authorized ocsp responses
+            // from properties or from certificate chain received with response
+            if (responderCert == null) {
+                if (ocspResp.GetCerts() != null) {
+                    //look for existence of Authorized OCSP responder inside the cert chain in ocsp response
+                    X509Certificate[] certs = ocspResp.GetCerts();
+                    foreach (X509Certificate cert in certs) {
+                        X509Certificate tempCert;
+                        try {
+                            tempCert = cert;
+                        } catch (Exception ex) {
+                            continue;
+                        }
+                        IList keyPurposes = null;
+                        try {
+                            keyPurposes = tempCert.GetExtendedKeyUsage();
+                            if ((keyPurposes != null) && keyPurposes.Contains(id_kp_OCSPSigning) && IsSignatureValid(ocspResp, tempCert)) {
+                                responderCert = tempCert;
+                                break;
+                            }
+                        } catch (CertificateParsingException ignored) {
+                        }
+                    }
+                    // Certificate signing the ocsp response is not found in ocsp response's certificate chain received
+                    // and is not signed by the issuer certificate.
+                    if (responderCert == null) {
+                        throw new VerificationException(issuerCert, "OCSP response could not be verified");
+                    }
+                } else {
+                    //certificate chain is not present in response received
+                    //try to verify using rootStore
+                    if (certificates != null) {
+                        foreach (X509Certificate anchor in certificates) {
+                            try {
+                                if (IsSignatureValid(ocspResp, anchor)) {
+                                    responderCert = anchor;
+                                    break;
+                                }
+                            } catch (GeneralSecurityException ignored) {
+                            }
+                        }
+                    }
+
+                    // OCSP Response does not contain certificate chain, and response is not signed by any
+                    // of the rootStore or the issuer certificate.
+                    if (responderCert == null) {
+                        throw new VerificationException(issuerCert, "OCSP response could not be verified");
+                    }
+                }
+            }
+
+            //check "This certificate MUST be issued directly by the CA that issued the certificate in question".
+            responderCert.Verify(issuerCert.GetPublicKey());
+
+            // validating ocsp signers certificate
+            // Check if responders certificate has id-pkix-ocsp-nocheck extension,
+            // in which case we do not validate (perform revocation check on) ocsp certs for lifetime of certificate
+            if (responderCert.GetExtensionValue(OcspObjectIdentifiers.PkixOcspNocheck.Id) == null) {
+                X509Crl crl;
+                try {
+                    X509CrlParser crlParser = new X509CrlParser();
+			        // Creates the CRL
+		            Stream url = WebRequest.Create(CertificateUtil.GetCRLURL(responderCert)).GetResponse().GetResponseStream();
+			        crl = crlParser.ReadCrl(url);
+                } catch (Exception ignored) {
+                    crl = null;
+                }
+                if (crl != null) {
+                    CrlVerifier crlVerifier = new CrlVerifier(null, null);
+                    crlVerifier.Certificates = certificates;
+                    crlVerifier.OnlineCheckingAllowed = onlineCheckingAllowed;
+                    crlVerifier.Verify(crl, responderCert, issuerCert, DateTime.UtcNow);
+                    return;
+                }
+            }
+
+            //check if lifetime of certificate is ok
+            responderCert.CheckValidity();
+	    }
+
+        /**
+        * Verifies if the response is valid.
+        * If it doesn't verify against the issuer certificate and response's certificates, it may verify
+        * using a trusted anchor or cert.
+        * NOTE. Use {@code isValidResponse()} instead.
+        * @param ocspResp	the response object
+        * @param issuerCert the issuer certificate
+        * @return	true if the response can be trusted
+        */
+        [Obsolete]
+        virtual public bool VerifyResponse(BasicOcspResp ocspResp, X509Certificate issuerCert) {
+            try {
+                IsValidResponse(ocspResp, issuerCert);
+                return true;
+            } catch (Exception e) {
+                return false;
+            }
 	    }
     	
 	    /**

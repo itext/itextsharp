@@ -65,23 +65,38 @@ namespace iTextSharp.tool.xml.html.table {
             get { return verBorderSpacing; }
             set { verBorderSpacing = value; }
         }
-        private float borderLeftWidth;
+        private float? borderLeftWidth;
 
         virtual public float BorderWidthLeft {
-            get { return borderLeftWidth; }
+            get { return GetBorderWidthLeft(true).Value; }
             set { borderLeftWidth = value; }
         }
+
+        virtual public float? GetBorderWidthLeft(bool defaultIfNotSet) {
+            if (!borderLeftWidth.HasValue && defaultIfNotSet) {
+                return 0;
+            }
+            return borderLeftWidth;
+        }
+
         private BaseColor borderLeftColor;
 
         virtual public BaseColor BorderColorLeft {
             get { return borderLeftColor; }
             set { borderLeftColor = value; }
         }
-        private float borderRightWidth;
+        private float? borderRightWidth;
 
         virtual public float BorderWidthRight {
-            get { return borderRightWidth; }
+            get { return GetBorderWidthRight(true).Value; }
             set { borderRightWidth = value; }
+        }
+
+        virtual public float? GetBorderWidthRight(bool defaultIfNotSet) {
+            if (!borderRightWidth.HasValue && defaultIfNotSet) {
+                return 0;
+            }
+            return borderRightWidth;
         }
         private BaseColor borderRightColor;
 
@@ -89,11 +104,18 @@ namespace iTextSharp.tool.xml.html.table {
             get { return borderRightColor; }
             set { borderRightColor = value; }
         }
-        private float borderTopWidth;
+        private float? borderTopWidth;
 
         virtual public float BorderWidthTop {
-            get { return borderTopWidth; }
+            get { return GetBorderWidthTop(true).Value; }
             set { borderTopWidth = value; }
+        }
+
+        virtual public float? GetBorderWidthTop(bool defaultIfNotSet) {
+            if (!borderTopWidth.HasValue && defaultIfNotSet) {
+                return 0;
+            }
+            return borderTopWidth;
         }
         private BaseColor borderTopColor;
 
@@ -101,11 +123,18 @@ namespace iTextSharp.tool.xml.html.table {
             get { return borderTopColor; }
             set { borderTopColor = value; }
         }
-        private float borderBottomWidth;
+        private float? borderBottomWidth;
 
         virtual public float BorderWidthBottom {
-            get { return borderBottomWidth; }
+            get { return GetBorderWidthBottom(true).Value; }
             set { borderBottomWidth = value; }
+        }
+
+        virtual public float? GetBorderWidthBottom(bool defaultIfNotSet) {
+            if (!borderBottomWidth.HasValue && defaultIfNotSet) {
+                return 0;
+            }
+            return borderBottomWidth;
         }
         private BaseColor borderBottomColor;
 

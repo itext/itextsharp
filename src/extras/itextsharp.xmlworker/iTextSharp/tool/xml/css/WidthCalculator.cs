@@ -94,7 +94,7 @@ namespace iTextSharp.tool.xml.css {
                     }
                 }
             } else if (rootTags.Contains(tag.Name)){
-                if (Util.compare(initialTotalWidth, -1) == 0) {
+                if (Util.Compare(initialTotalWidth, -1) == 0) {
                     width = pageWidth;
                 } else {
                     width = initialTotalWidth;

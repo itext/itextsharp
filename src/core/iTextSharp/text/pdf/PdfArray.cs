@@ -66,7 +66,7 @@ namespace iTextSharp.text.pdf {
      */
 
     public class PdfArray : PdfObject, IEnumerable<PdfObject> {
-        
+
         // membervariables
         
     /** this is the actual array of PdfObjects */
@@ -80,6 +80,10 @@ namespace iTextSharp.text.pdf {
         
         public PdfArray() : base(ARRAY) {
             arrayList = new List<PdfObject>();
+        }
+
+        public PdfArray(int capcity) : base(ARRAY) {
+            arrayList = new List<PdfObject>(capcity);
         }
         
     /**

@@ -755,6 +755,25 @@ namespace iTextSharp.text.pdf {
             Draw(data, full, dm);
             return DM_NO_ERROR;
         }
+
+        virtual public void PlaceBarcode(PdfContentByte cb, BaseColor foreground, float moduleHeight, float moduleWidth) {
+            int w = width + 2*ws;
+            int h = height + 2*ws;
+            int stride = (w + 7)/8;
+            int ptr = 0;
+            cb.SetColorFill(foreground);
+            for (int k = 0; k < h; ++k) {
+                int p = k*stride;
+                for (int j = 0; j < w; ++j) {
+                    int b = image[p + j/8] & 0xff;
+                    b <<= j%8;
+                    if ((b & 0x80) != 0) {
+                        cb.Rectangle(j*moduleWidth, (h - k - 1)*moduleHeight, moduleWidth, moduleHeight);
+                    }
+                }
+            }
+            cb.Fill();
+        }
         
         /** Gets an <CODE>Image</CODE> with the barcode. A successful call to the method <CODE>generate()</CODE>
         * before calling this method is required.

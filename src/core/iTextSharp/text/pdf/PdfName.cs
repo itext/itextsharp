@@ -153,6 +153,13 @@ namespace iTextSharp.text.pdf {
          * For various types of alternate texts in Tagged PDF, use {@link #ALT}
          */
         public static readonly PdfName ALTERNATE = new PdfName("Alternate");
+
+         /**
+         * A name
+         * @since 5.5.8
+         */
+        public static readonly PdfName AF = new PdfName("AF");
+
         /**
          * A name
          * @since 5.4.5

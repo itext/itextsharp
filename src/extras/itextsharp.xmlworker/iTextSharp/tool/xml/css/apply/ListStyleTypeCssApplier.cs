@@ -146,6 +146,16 @@ namespace iTextSharp.tool.xml.css.apply {
                 }
             } else if (Util.EqualsIgnoreCase(t.Name, HTML.Tag.OL)) {
                 lst = new List(List.ORDERED);
+                 String type = null;
+                 t.Attributes.TryGetValue("type", out type);
+ 		         if (type != null) {
+                   if (type.Equals("A")) {
+ 	                     lst.Lettered = true;
+ 	                    } else if (type.Equals("a")) {
+ 		                 lst.Lettered = true;
+ 	                     lst.Lowercase = true;
+ 		                }
+ 	               }
                 SynchronizeSymbol(fontSize, lst, color);
                 lst.Autoindent = true;
             } else if (Util.EqualsIgnoreCase(t.Name, HTML.Tag.UL)) {

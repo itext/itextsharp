@@ -65,6 +65,82 @@ namespace iTextSharp.text.pdf.security {
     public class OcspClientBouncyCastle : IOcspClient {
         private static readonly ILogger LOGGER = LoggerFactory.GetLogger(typeof(OcspClientBouncyCastle));
         
+        private readonly OcspVerifier verifier;
+
+        /**
+         * Create default implemention of {@code OcspClient}.
+         * Note, if you use this constructor, OCSP response will not be verified.
+         */
+        [Obsolete]
+        public OcspClientBouncyCastle() {
+            verifier = null;
+        }
+
+        /**
+         * Create {@code OcspClient}
+         * @param verifier will be used for response verification. {@see OCSPVerifier}.
+         */
+        public OcspClientBouncyCastle(OcspVerifier verifier) {
+            this.verifier = verifier;
+        }
+
+        /**
+         * Gets OCSP response. If {@see OCSPVerifier} was set, the response will be checked.
+         */
+        public virtual BasicOcspResp GetBasicOCSPResp(X509Certificate checkCert, X509Certificate rootCert, String url) {
+            try {
+                OcspResp ocspResponse = GetOcspResponse(checkCert, rootCert, url);
+                if (ocspResponse == null) {
+                    return null;
+                }
+                if (ocspResponse.Status != OcspRespStatus.Successful) {
+                    return null;
+                }
+                BasicOcspResp basicResponse = (BasicOcspResp) ocspResponse.GetResponseObject();
+                if (verifier != null) {
+                    verifier.IsValidResponse(basicResponse, rootCert);
+                }
+                return basicResponse;
+            } catch (Exception ex) {
+                if (LOGGER.IsLogging(Level.ERROR))
+                    LOGGER.Error(ex.Message);
+            }
+            return null;
+        }
+
+        /**
+         * Gets an encoded byte array with OCSP validation. The method should not throw an exception.
+         *
+         * @param checkCert to certificate to check
+         * @param rootCert  the parent certificate
+         * @param url       to get the verification. It it's null it will be taken
+         *                  from the check cert or from other implementation specific source
+         * @return a byte array with the validation or null if the validation could not be obtained
+         */
+        public byte[] GetEncoded(X509Certificate checkCert, X509Certificate rootCert, String url) {
+            try {
+                BasicOcspResp basicResponse = GetBasicOCSPResp(checkCert, rootCert, url);
+                if (basicResponse != null) {
+                    SingleResp[] responses = basicResponse.Responses;
+                    if (responses.Length == 1) {
+                        SingleResp resp = responses[0];
+                        Object status = resp.GetCertStatus();
+                        if (status == CertificateStatus.Good) {
+                            return basicResponse.GetEncoded();
+                        } else if (status is RevokedStatus) {
+                            throw new IOException(MessageLocalization.GetComposedMessage("ocsp.status.is.revoked"));
+                        } else {
+                            throw new IOException(MessageLocalization.GetComposedMessage("ocsp.status.is.unknown"));
+                        }
+                    }
+                }
+            } catch (Exception ex) {
+                if (LOGGER.IsLogging(Level.ERROR))
+                    LOGGER.Error(ex.Message);
+            }
+            return null;
+        }
+
         /**
         * Generates an OCSP request using BouncyCastle.
         * @param issuerCert	certificate of the issues
@@ -79,7 +155,6 @@ namespace iTextSharp.text.pdf.security {
             
             // basic request generation with nonce
             OcspReqGenerator gen = new OcspReqGenerator();
-            
             gen.AddRequest(id);
             
             // create details for nonce extension
@@ -88,7 +163,6 @@ namespace iTextSharp.text.pdf.security {
             extensions[OcspObjectIdentifiers.PkixOcspNonce] = new X509Extension(false, new DerOctetString(new DerOctetString(PdfEncryption.CreateDocumentId()).GetEncoded()));
             
             gen.SetRequestExtensions(new X509Extensions(extensions));
-            
             return gen.Generate();
         }
         
@@ -120,58 +194,6 @@ namespace iTextSharp.text.pdf.security {
             inp.Close();
             response.Close();
             return ocspResponse;
-        }
-        
-        virtual public BasicOcspResp GetBasicOCSPResp(X509Certificate checkCert, X509Certificate rootCert, String url) {
-            try {
-                OcspResp ocspResponse = GetOcspResponse(checkCert, rootCert, url);
-                if (ocspResponse == null)
-            	    return null;
-                if (ocspResponse.Status != 0)
-                    return null;
-                return (BasicOcspResp) ocspResponse.GetResponseObject();
-            }
-            catch (Exception ex) {
-                if (LOGGER.IsLogging(Level.ERROR))
-                    LOGGER.Error(ex.Message);
-            }
-            return null;
-        }
-        
-
-        /**
-         * Gets an encoded byte array with OCSP validation. The method should not throw an exception.
-         * @param checkCert to certificate to check
-         * @param rootCert the parent certificate
-         * @param the url to get the verification. It it's null it will be taken
-         * from the check cert or from other implementation specific source
-         * @return  a byte array with the validation or null if the validation could not be obtained
-         */
-        public virtual byte[] GetEncoded(X509Certificate checkCert, X509Certificate rootCert, String url) {
-            try {
-                BasicOcspResp basicResponse = GetBasicOCSPResp(checkCert, rootCert, url);
-                if (basicResponse != null) {
-                    SingleResp[] responses = basicResponse.Responses;
-                    if (responses.Length == 1) {
-                        SingleResp resp = responses[0];
-                        Object status = resp.GetCertStatus();
-                        if (status == CertificateStatus.Good) {
-                            return basicResponse.GetEncoded();
-                        }
-                        else if (status is Org.BouncyCastle.Ocsp.RevokedStatus) {
-                            throw new IOException(MessageLocalization.GetComposedMessage("ocsp.status.is.revoked"));
-                        }
-                        else {
-                            throw new IOException(MessageLocalization.GetComposedMessage("ocsp.status.is.unknown"));
-                        }
-                    }
-                }
-            }
-            catch (Exception ex) {
-                if (LOGGER.IsLogging(Level.ERROR))
-                    LOGGER.Error(ex.Message);
-            }
-            return null;
         }
     }
 }

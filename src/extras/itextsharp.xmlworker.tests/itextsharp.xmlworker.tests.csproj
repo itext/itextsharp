@@ -121,6 +121,7 @@
     <Compile Include="iTextSharp\tool\xml\examples\css\border\border_top_color\table\Border_top_color_table01Test.cs" />
     <Compile Include="iTextSharp\tool\xml\examples\css\border\border_top_width\cell\Border_top_width_cell01Test.cs" />
     <Compile Include="iTextSharp\tool\xml\examples\css\border\border_top_width\table\Border_top_width_table01Test.cs" />
+    <Compile Include="iTextSharp\tool\xml\examples\css\border\border_style_width_order\cell\Border_style_width_order_cell01Test.cs" />
     <Compile Include="iTextSharp\tool\xml\examples\css\bottom\image\Bottom_image01.cs" />
     <Compile Include="iTextSharp\tool\xml\examples\css\bottom\text\Bottom_text01.cs" />
     <Compile Include="iTextSharp\tool\xml\examples\css\caption_side\table\Caption_side_table01.cs" />
@@ -172,6 +173,8 @@
     <Compile Include="iTextSharp\tool\xml\examples\css\font\font_weight\list\Font_weight_list01.cs" />
     <Compile Include="iTextSharp\tool\xml\examples\css\font\font_weight\table\Font_weight_table01.cs" />
     <Compile Include="iTextSharp\tool\xml\examples\css\font\font_weight\text\Font_weight_text01.cs" />
+    <Compile Include="iTextSharp\tool\xml\examples\css\font\font_weight\text\Font_weight_text02.cs" />
+    <Compile Include="iTextSharp\tool\xml\examples\css\font\font_weight\numericFontWeight\Font_weight_numeric01.cs" />
     <Compile Include="iTextSharp\tool\xml\examples\css\height\cell\Height_cell01.cs" />
     <Compile Include="iTextSharp\tool\xml\examples\css\height\div\Height_div01.cs" />
     <Compile Include="iTextSharp\tool\xml\examples\css\height\image\Height_image01.cs" />
@@ -434,6 +437,8 @@
     <Compile Include="iTextSharp\tool\xml\examples\html\Ins02Test.cs" />
     <Compile Include="iTextSharp\tool\xml\examples\html\Ins03Test.cs" />
     <Compile Include="iTextSharp\tool\xml\examples\html\Kbd01Test.cs" />
+    <Compile Include="iTextSharp\tool\xml\examples\html\LetteredListLowerCaseTest.cs" />
+    <Compile Include="iTextSharp\tool\xml\examples\html\LetteredListTest.cs" />
     <Compile Include="iTextSharp\tool\xml\examples\html\List01Test.cs" />
     <Compile Include="iTextSharp\tool\xml\examples\html\List02Test.cs" />
     <Compile Include="iTextSharp\tool\xml\examples\html\List03Test.cs" />
@@ -617,6 +622,7 @@
     <Content Include="resources\com\itextpdf\tool\xml\examples\css\border\border_right_width\cell\border_right_width_cell01\border_right_width_cell01.html" />
     <Content Include="resources\com\itextpdf\tool\xml\examples\css\border\border_right_width\table\border_right_width_table01\border_right_width_table01.html" />
     <Content Include="resources\com\itextpdf\tool\xml\examples\css\border\border_spacing\cell\border_spacing_cell01\border_spacing_cell01.html" />
+    <Content Include="resources\com\itextpdf\tool\xml\examples\css\border\border_style_width_order\cell\border_style_width_order_cell01\border_style_width_order_cell01.html" />
     <Content Include="resources\com\itextpdf\tool\xml\examples\css\border\border_top_color\cell\border_top_color_cell01\border_top_color_cell01.html" />
     <Content Include="resources\com\itextpdf\tool\xml\examples\css\border\border_top_color\table\border_top_color_table01\border_top_color_table01.html" />
     <Content Include="resources\com\itextpdf\tool\xml\examples\css\border\border_top_width\cell\border_top_width_cell01\border_top_width_cell01.html" />
@@ -1109,6 +1115,7 @@
     <None Include="resources\com\itextpdf\tool\xml\examples\css\border\border_right_width\cell\border_right_width_cell01\border_right_width_cell01.pdf" />
     <None Include="resources\com\itextpdf\tool\xml\examples\css\border\border_right_width\table\border_right_width_table01\border_right_width_table01.pdf" />
     <None Include="resources\com\itextpdf\tool\xml\examples\css\border\border_spacing\cell\border_spacing_cell01\border_spacing_cell01.pdf" />
+    <None Include="resources\com\itextpdf\tool\xml\examples\css\border\border_style_width_order\cell\border_style_width_order_cell01\border_style_width_order_cell01.pdf" />
     <None Include="resources\com\itextpdf\tool\xml\examples\css\border\border_top_color\cell\border_top_color_cell01\border_top_color_cell01.pdf" />
     <None Include="resources\com\itextpdf\tool\xml\examples\css\border\border_top_color\table\border_top_color_table01\border_top_color_table01.pdf" />
     <None Include="resources\com\itextpdf\tool\xml\examples\css\border\border_top_width\cell\border_top_width_cell01\border_top_width_cell01.pdf" />

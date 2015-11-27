@@ -105,15 +105,20 @@ namespace iTextSharp.text.pdf {
         public PdfDictionary() : base(DICTIONARY) {
             hashMap = new Dictionary<PdfName,PdfObject>();
         }
-    
+
         /**
          * Constructs a <CODE>PdfDictionary</CODE>-object of a certain type.
          *
          * @param        type    a <CODE>PdfName</CODE>
          */
-        public PdfDictionary(PdfName type) : this() {
+        public PdfDictionary(PdfName type)
+            : this() {
             dictionaryType = type;
             Put(PdfName.TYPE, dictionaryType);
+        }
+
+        public PdfDictionary(int capacity): base(DICTIONARY) {
+            hashMap = new Dictionary<PdfName, PdfObject>(capacity);
         }
     
         // methods overriding some methods in PdfObject
@@ -183,11 +188,15 @@ namespace iTextSharp.text.pdf {
          *   copied over
          */
         virtual public void PutAll(PdfDictionary dic) {
-            foreach (KeyValuePair<PdfName, PdfObject> item in dic.hashMap) {
-                if (hashMap.ContainsKey(item.Key))
-                    hashMap[item.Key] = item.Value;
-                else
-                    hashMap.Add(item.Key, item.Value);
+            if (hashMap.Count == 0) {
+                hashMap = new Dictionary<PdfName, PdfObject>(dic.hashMap);
+            } else {
+                foreach (KeyValuePair<PdfName, PdfObject> item in dic.hashMap) {
+                    if (hashMap.ContainsKey(item.Key))
+                        hashMap[item.Key] = item.Value;
+                    else
+                        hashMap.Add(item.Key, item.Value);
+                }
             }
         }
 
@@ -285,8 +294,12 @@ namespace iTextSharp.text.pdf {
 
 
         virtual public void Merge(PdfDictionary other) {
-            foreach (PdfName key in other.hashMap.Keys) {
-                hashMap[key] = other.hashMap[key];
+            if (hashMap.Count == 0) { 
+                hashMap = new Dictionary<PdfName, PdfObject>(other.hashMap);
+            } else {
+                foreach (PdfName key in other.hashMap.Keys) {
+                    hashMap[key] = other.hashMap[key];
+                }
             }
         }
     

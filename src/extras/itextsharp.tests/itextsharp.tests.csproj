@@ -82,6 +82,8 @@
     <Compile Include="iTextSharp\text\pdf\FlatteningTest.cs" />
     <Compile Include="iTextSharp\text\pdf\fonts\cmaps\CMapParserExTest.cs" />
     <Compile Include="iTextSharp\text\pdf\fonts\cmaps\CMapTest.cs" />
+    <Compile Include="iTextSharp\text\pdf\fonts\EncodingTest.cs" />
+	<Compile Include="iTextSharp\text\pdf\fonts\FontEmbeddingTest.cs" />
     <Compile Include="iTextSharp\text\pdf\fonts\FontFamilyTest.cs" />
     <Compile Include="iTextSharp\text\pdf\fonts\SymbolTest.cs" />
     <Compile Include="iTextSharp\text\pdf\IndicLigatures.cs" />
@@ -90,6 +92,7 @@
     <Compile Include="iTextSharp\text\pdf\MultithreadedTtfTest.cs" />
     <Compile Include="iTextSharp\text\pdf\NestedListInColumnTextTest.cs" />
     <Compile Include="iTextSharp\text\pdf\ocg\OcgRemovalTest.cs" />
+    <Compile Include="iTextSharp\text\pdf\PageEventTest.cs" />
     <Compile Include="iTextSharp\text\pdf\parser\FilteredTextRenderListenerTest.cs" />
     <Compile Include="iTextSharp\text\pdf\parser\GlyphTextRenderListenerTest.cs" />
     <Compile Include="iTextSharp\text\pdf\parser\HighlightItemsTest.cs" />
@@ -113,6 +116,8 @@
     <Compile Include="iTextSharp\text\pdf\table\KeepTogetherTest.cs" />
     <Compile Include="iTextSharp\text\pdf\table\RowspanTest.cs" />
     <Compile Include="iTextSharp\text\pdf\table\ColorsInTaggedDocumentsTest.cs" />
+    <Compile Include="iTextSharp\text\pdf\TaggedPdfOnEndPageTest.cs" />
+    <Compile Include="iTextSharp\text\pdf\TaggedPdfPageEventsTest.cs" />
     <Compile Include="iTextSharp\text\pdf\table\LargeTableTest.cs" />
     <Compile Include="iTextSharp\text\pdf\PdfStamperTest.cs" />
     <Compile Include="iTextSharp\text\pdf\NamedDestinationsTest.cs" />
@@ -122,6 +127,7 @@
     <Compile Include="iTextSharp\text\pdf\TextFieldTest.cs" />
     <Compile Include="iTextSharp\text\pdf\ToUnicodeNonBreakableSpacesTest.cs" />
     <Compile Include="iTextSharp\text\pdf\UnbalancedOperatorsTest.cs" />
+    <Compile Include="iTextSharp\text\pdf\VerticalPositionTest.cs" />
     <Compile Include="iTextSharp\text\RemoteGifImageTest.cs" />
     <Compile Include="iTextSharp\text\signature\XadesTest.cs" />
     <Compile Include="iTextSharp\text\signature\XmlDSigKSTest.cs" />
@@ -138,7 +144,9 @@
   <ItemGroup>
     <None Include="lib\XmlDiffPatch.dll">
     </None>
-    <Content Include="resources\text\pdf\FontFamilyTest\LICENSE_CJK.txt" />
+    <Content Include="resources\text\pdf\AcroFieldsTest\barcode.jpg" />
+    <Content Include="resources\text\pdf\DocumentLayoutTest\Desert.jp" />
+    <Content Include="resources\text\pdf\fonts\NotoFont\LICENSE_CJK.txt" />
     <Content Include="resources\text\pdf\TaggedPdfCopyTest\xml\test0.xml" />
     <Content Include="resources\text\pdf\TaggedPdfCopyTest\xml\test1.xml" />
     <Content Include="resources\text\pdf\TaggedPdfCopyTest\xml\test10.xml" />
@@ -192,6 +200,7 @@
     <None Include="resources\text\pdf\cs\LabColorSpaceTest\cmp_lab_spot_based_gradient.pdf" />
     <None Include="resources\text\pdf\DocumentFontTest\type0FontWithoutToUnicodeMap.pdf" />
     <None Include="resources\text\pdf\DocumentLayoutTest\phrases.pdf" />
+    <None Include="resources\text\pdf\DocumentLayoutTest\waitingImage.pdf" />
     <None Include="resources\text\pdf\FlatteningTest\cmp\imdb0413300.pdf" />
     <None Include="resources\text\pdf\FlatteningTest\cmp\imdb0452623.pdf" />
     <None Include="resources\text\pdf\FlatteningTest\cmp\imdb0468569.pdf" />
@@ -216,8 +225,8 @@
     <None Include="resources\text\pdf\FlatteningTest\noappearances-needapp-true.pdf" />
     <None Include="resources\text\pdf\FlatteningTest\regenerateFieldFalse.pdf" />
     <None Include="resources\text\pdf\FlatteningTest\regenerateFieldTrue.pdf" />
-    <None Include="resources\text\pdf\FontFamilyTest\NotoSansCJKjp-Bold.otf" />
-    <None Include="resources\text\pdf\FontFamilyTest\NotoSansCJKjp-Regular.otf" />
+    <None Include="resources\text\pdf\fonts\NotoFont\NotoSansCJKjp-Bold.otf" />
+    <None Include="resources\text\pdf\fonts\NotoFont\NotoSansCJKjp-Regular.otf" />
     <None Include="resources\text\pdf\fonts\cmaps\CMapParserExTest\cmap_results_in_empty_map.cmap" />
     <None Include="resources\text\pdf\FreeMonoBold.ttf" />
     <None Include="resources\text\pdf\mc\SF2809.pdf" />
@@ -226,6 +235,7 @@
     <None Include="resources\text\pdf\MultithreadedTtfTest\test.pdf" />
     <None Include="resources\text\pdf\NestedListInColumnTextTest\nestedListAtTheEndOfAnotherNestedList.pdf" />
     <None Include="resources\text\pdf\ocg\peek-a-boo2.pdf" />
+    <None Include="resources\text\pdf\PageEventTest\pageEventTest01.pdf" />
     <None Include="resources\text\pdf\parser\GlyphTextRenderListenerTest\Sample.pdf" />
     <None Include="resources\text\pdf\parser\GlyphTextRenderListenerTest\test.pdf" />
     <None Include="resources\text\pdf\parser\HighlightItemsTest\cmp_HeaderFooter.pdf" />

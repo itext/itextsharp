@@ -67,12 +67,38 @@ namespace itextsharp.pdfa.iTextSharp.text.pdf.intern {
         public override void Close(PdfWriter writer) {
             base.Close(writer);
             bool ok = false;
-            IXmpMeta xmpMeta = writer.XmpWriter.XmpMeta;
+
+            IXmpMeta xmpMeta = null;
+            if (writer.XmpWriter == null) {
+               if (writer is PdfAStamperImp) {
+                xmpMeta = ((PdfAStamperImp) writer).GetXmpMeta();
+                PdfReader pdfReader = ((PdfAStamperImp) writer).GetPdfReader();
+                PdfArray pdfArray = pdfReader.Catalog.GetAsArray(PdfName.AF);
+                    if (pdfArray != null) {
+                        for (int i = 0; i < pdfArray.Size; i++) {
+                            PdfFileSpecification pdfFileSpecification = new PdfFileSpecification();
+                            pdfFileSpecification.PutAll((PdfDictionary) pdfArray.GetDirectObject(i));
+                            attachments.Add(pdfFileSpecification);
+                        }
+                    }
+                }
+            } else {
+                xmpMeta = writer.XmpWriter.XmpMeta;
+            }
+
+            if (xmpMeta == null) {
+                writer.CreateXmpMetadata();
+                xmpMeta = writer.XmpWriter.XmpMeta;
+            }
+
             try {
                 String docFileName = xmpMeta.GetPropertyString(PdfAXmpWriter.zugferdSchemaNS,
                     PdfAXmpWriter.zugferdDocumentFileName);
                 foreach (PdfFileSpecification attachment in attachments) {
-                    if (docFileName.Equals(attachment.GetAsString(PdfName.UF).ToString())) {
+                    if ((attachment.GetAsString(PdfName.UF) != null && docFileName.Equals(attachment.GetAsString(PdfName.UF).ToString()))
+                            || (attachment.GetAsString(PdfName.F) != null && docFileName.Equals(attachment.GetAsString(PdfName.F).ToString())))
+                    {
+
                         PdfName relationship = attachment.GetAsName(PdfName.AFRELATIONSHIP);
                         if (!AFRelationshipValue.Alternative.Equals(relationship)) {
                             attachments.Clear();

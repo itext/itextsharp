@@ -293,24 +293,35 @@ namespace iTextSharp.text.pdf {
         */
         public PdfReader(Stream isp) : this(isp, null) {
         }
-        
-        /**
-        * Reads and parses a pdf document. Contrary to the other constructors only the xref is read
-        * into memory. The reader is said to be working in "partial" mode as only parts of the pdf
-        * are read as needed.
-        * @param raf the document location
-        * @param ownerPassword the password or <CODE>null</CODE> for no password
-        * @throws IOException on error
-        */
-        [Obsolete("Use the constructor that takes a RandomAccessFileOrArray")]
-        public PdfReader(RandomAccessFileOrArray raf, byte[] ownerPassword) : this(
-            raf.GetByteSource(),
-            true,
-            ownerPassword,
-            null,
-            null,
-            false) {
-        }
+
+    /**
+     * Reads and parses a pdf document. Contrary to the other constructors only the xref is read
+     * into memory. The reader is said to be working in "partial" mode as only parts of the pdf
+     * are read as needed.
+     * @param raf the document location
+     * @param ownerPassword the password or <CODE>null</CODE> for no password
+     * @throws IOException on error
+     */
+    public PdfReader(RandomAccessFileOrArray raf, byte[] ownerPassword) : 
+        this(raf, ownerPassword, true) {
+    }
+
+    /**
+     * Reads and parses a pdf document.
+     * @param raf the document location
+     * @param ownerPassword the password or <CODE>null</CODE> for no password
+     * @param partial indicates if the reader needs to read the document only partially. See {@link PdfReader#PdfReader(RandomAccessFileOrArray, byte[])}
+     * @throws IOException on error
+     */
+    public PdfReader(RandomAccessFileOrArray raf, byte[] ownerPassword, bool partial) : 
+        this(
+        		raf.GetByteSource(),
+    			partial,
+    			ownerPassword,
+    			null,
+                null,
+    			false) {
+    }
         
         /** Creates an independent duplicate.
         * @param reader the <CODE>PdfReader</CODE> to duplicate
@@ -3130,7 +3141,7 @@ namespace iTextSharp.text.pdf {
         
         protected internal static PdfDictionary DuplicatePdfDictionary(PdfDictionary original, PdfDictionary copy, PdfReader newReader) {
             if (copy == null)
-                copy = new PdfDictionary();
+                copy = new PdfDictionary(original.Size);
             foreach (PdfName key in original.Keys) {
                 copy.Put(key, DuplicatePdfObject(original.Get(key), newReader));
             }
@@ -3151,8 +3162,9 @@ namespace iTextSharp.text.pdf {
                     return stream;
                 }
                 case PdfObject.ARRAY: {
-                    PdfArray arr = new PdfArray();
-                    for (ListIterator<PdfObject> it = ((PdfArray)original).GetListIterator(); it.HasNext();) {
+                    PdfArray originalArray = (PdfArray)original;
+                    PdfArray arr = new PdfArray(originalArray.Size);
+                    for (ListIterator<PdfObject> it = originalArray.GetListIterator(); it.HasNext(); ) {
                         arr.Add(DuplicatePdfObject((PdfObject)it.Next(), newReader));
                     }
                     return arr;

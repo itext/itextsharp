@@ -48,6 +48,7 @@ using System.Diagnostics;
 using System.IO;
 using System.Security;
 using itextsharp.tests.iTextSharp.testutils;
+using itextsharp.tests.iTextSharp.text.error_messages;
 using iTextSharp.testutils;
 using iTextSharp.text;
 using iTextSharp.text.pdf;
@@ -501,6 +502,96 @@ namespace itextsharp.tests.iTextSharp.text.pdf
             if (errorMessage != null) {
                 Assert.Fail(errorMessage);
             }
+        }
+
+
+        [Test]
+        public void RecursiveSmartMergeTest() {
+            string pathPrefix = @"PdfCopyTest/";
+            string inputDocPath = @"recursiveSmartMerge.pdf";
+
+            byte[]  part1 = ExtractPages(Path.Combine(RESOURCES, inputDocPath), 1, 2);
+            string outputPath1 = Path.Combine(pathPrefix, "part1_c.pdf");
+            File.WriteAllBytes(outputPath1, part1);
+
+            byte[] part2 = ExtractPages(Path.Combine(RESOURCES, inputDocPath), 3,7);
+            string outputPath2 = Path.Combine(pathPrefix, "part2_c.pdf");
+            File.WriteAllBytes(outputPath2, part2);
+
+            byte[] merged = Merge(new string[] {outputPath1, outputPath2});
+
+            string mergedPath = Path.Combine(pathPrefix, "output_c.pdf");
+            File.WriteAllBytes(mergedPath, merged);
+
+            CompareTool compareTool = new CompareTool();
+            String errorMessage = compareTool.CompareByContent(mergedPath, RESOURCES + "cmp_" + inputDocPath, "PdfCopyTest/" , "diff");
+            if (errorMessage != null)
+            {
+                Assert.Fail(errorMessage);
+            }
+        }
+
+
+        public static byte[] Merge(string[] documentPaths) {
+            byte[] mergedDocument;
+
+            using (MemoryStream memoryStream = new MemoryStream())
+            using (Document document = new Document())
+            {
+                PdfSmartCopy pdfSmartCopy = new PdfSmartCopy(document, memoryStream);
+                document.Open();
+
+                foreach (string docPath in documentPaths)
+                {
+                    PdfReader reader = new PdfReader(docPath);
+                    try
+                    {
+                        reader.ConsolidateNamedDestinations();
+                        int numberOfPages = reader.NumberOfPages;
+                        for (int page = 0; page < numberOfPages; )
+                        {
+                            PdfImportedPage pdfImportedPage = pdfSmartCopy.GetImportedPage(reader, ++page);
+                            pdfSmartCopy.AddPage(pdfImportedPage);
+                        }
+                    }
+                    finally
+                    {
+                        reader.Close();
+                    }
+                }
+
+                document.Close();
+                mergedDocument = memoryStream.ToArray();
+            }
+
+            return mergedDocument;
+        }
+
+
+        public static byte[] ExtractPages(string pdfDocument, int startPage, int endPage ) {
+            PdfReader reader = new PdfReader(pdfDocument);
+            int numberOfPages = reader.NumberOfPages;
+            int endPageResolved = endPage;
+            if (startPage > numberOfPages || endPageResolved > numberOfPages)
+                return null;
+
+            byte[] outputDocument;
+            using (Document doc = new Document())
+            using (MemoryStream msOut = new MemoryStream())
+            {
+                PdfCopy pdfCopyProvider = new PdfCopy(doc, msOut);
+                doc.Open();
+                for (int i = startPage; i <= endPageResolved; i++)
+                {
+                    PdfImportedPage page = pdfCopyProvider.GetImportedPage(reader, i);
+                    pdfCopyProvider.AddPage(page);
+                }
+                doc.Close();
+                reader.Close();
+                outputDocument = msOut.ToArray();
+            }
+
+            return outputDocument;
         }
     }
 }

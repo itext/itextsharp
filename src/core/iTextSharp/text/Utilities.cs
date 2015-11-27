@@ -295,5 +295,28 @@ namespace iTextSharp.text {
 
             return tab - width % tab;
         }
+
+        public static float Max(float[] array) {
+            float mxm = array[0];
+            for (int i=1; i < array.Length; i++){
+               if (array[i]>mxm) {    
+                        mxm = array[i];    
+               }
+            }
+            return mxm;
+        }
+
+        public static float Min(float[] array) {
+            float mn = array[0];
+            for (int i=1; i<array.Length; i++){        
+                if (array[i] < mn){           
+                    mn = array[i];
+                }
+            }
+            return mn;
+        }
+
     }
+
+
 }

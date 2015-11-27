@@ -75,15 +75,21 @@ namespace iTextSharp.text.pdf
             PdfIndirectObject obj = null;
             PdfIndirectReference cidset = null;
             if (pdfAConformanceLevel == PdfAConformanceLevel.PDF_A_1A ||
-                pdfAConformanceLevel == PdfAConformanceLevel.PDF_A_1B) {
+                pdfAConformanceLevel == PdfAConformanceLevel.PDF_A_1B)
+            {
                 PdfStream stream;
-                if (metrics.Length == 0) {
+                if (metrics.Length == 0)
+                {
                     stream = new PdfStream(new byte[] {(byte) 0x80});
                 }
-                else {
+                else
+                {
                     int top = metrics[metrics.Length - 1][0];
                     byte[] bt = new byte[top/8 + 1];
-                    for (int k = 0; k < metrics.Length; ++k) {
+                    // CID0 have to be added
+                    bt[0] |= rotbits[0];
+                    for (int k = 0; k < metrics.Length; ++k)
+                    {
                         int v = metrics[k][0];
                         bt[v/8] |= rotbits[v%8];
                     }
@@ -96,7 +102,19 @@ namespace iTextSharp.text.pdf
                 byte[] b = font.ReadCffFont();
                 if (font.Subset || font.SubsetRanges != null) {
                     CFFFontSubset cff = new CFFFontSubset(new RandomAccessFileOrArray(b),longTag);
-                    b = cff.Process(cff.GetNames()[0]);
+                    try
+                    {
+                        b = cff.Process(cff.GetNames()[0]);
+                    }
+                    catch (Exception e)
+                    {
+                        //temporary fix for cff subset failure
+                        font.Subset = false;
+                        font.AddRangeUni(longTag, true, font.Subset);
+                        metrics = new int[longTag.Count][];
+                        longTag.Values.CopyTo(metrics, 0);
+                        Array.Sort(metrics, font);
+                    }
                 }
                 pobj = new BaseFont.StreamFont(b, "CIDFontType0C", font.CompressionLevel);
                 obj = writer.AddToBody(pobj);

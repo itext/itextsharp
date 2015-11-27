@@ -1,9 +1,11 @@
 using System;
+using System.Collections;
 using System.IO;
 using System.Collections.Generic;
 using System.Text;
 using System.util;
 using System.util.collections;
+using iTextSharp.awt.geom;
 using iTextSharp.text.exceptions;
 using iTextSharp.text.log;
 using iTextSharp.text.pdf.intern;
@@ -82,7 +84,9 @@ namespace iTextSharp.text.pdf {
         protected IntHashtable marked;
         protected int initialXrefSize;
         protected PdfAction openAction;
-        
+
+        private double[] DEFAULT_MATRIX = { 1, 0, 0, 1, 0, 0 };
+
         protected ICounter COUNTER = CounterFactory.GetCounter(typeof(PdfStamper));
         protected override ICounter GetCounter() {
     	    return COUNTER;
@@ -118,6 +122,12 @@ namespace iTextSharp.text.pdf {
                 if (reader.IsRebuilt())
                     throw new DocumentException(MessageLocalization.GetComposedMessage("append.mode.requires.a.document.without.errors.even.if.recovery.was.possible"));
                 pdf_version.SetAppendmode(true);
+                if (pdfVersion == 0) {
+                    pdf_version.PdfVersion = reader.PdfVersion;
+                }
+                else {
+                    pdf_version.PdfVersion = pdfVersion;
+                }
                 byte[] buf = new byte[8192];
                 int n;
                 while ((n = file.Read(buf)) > 0)
@@ -1150,6 +1160,7 @@ namespace iTextSharp.text.pdf {
                             ? (PdfDictionary) PdfReader.GetPdfObject(obj1)
                             : (PdfDictionary) obj1;
                         PdfObject obj = appDic.Get(PdfName.N);
+                        PdfDictionary objDict = appDic.GetAsStream(PdfName.N);
                         PdfAppearance app = null;
                         PdfObject objReal = PdfReader.GetPdfObject(obj);
 
@@ -1174,10 +1185,25 @@ namespace iTextSharp.text.pdf {
                             }
                         }
                         if (app != null) {
-                            Rectangle box = PdfReader.GetNormalizedRectangle(annDic.GetAsArray(PdfName.RECT));
+                            Rectangle rect = PdfReader.GetNormalizedRectangle(annDic.GetAsArray(PdfName.RECT));
+                            Rectangle bbox = PdfReader.GetNormalizedRectangle(objDict.GetAsArray(PdfName.BBOX));
                             PdfContentByte cb = GetOverContent(page);
                             cb.SetLiteral("Q ");
-                            cb.AddTemplate(app, box.Left, box.Bottom);
+                            if (objDict.GetAsArray(PdfName.MATRIX) != null &&
+                                !Util.ArraysAreEqual(DEFAULT_MATRIX, objDict.GetAsArray(PdfName.MATRIX).AsDoubleArray()))
+                            {
+                                double[] matrix = objDict.GetAsArray(PdfName.MATRIX).AsDoubleArray();
+                                Rectangle transformBBox = TransformBBoxByMatrix(bbox, matrix);
+                                cb.AddTemplate(app, (rect.Width/transformBBox.Width), 0, 0,
+                                    (rect.Height/transformBBox.Height), rect.Left, rect.Bottom);
+                            }
+                            else {
+                                //Changed so that when the annotation has a difference scale than the xObject in the appearance dictionary, the image is consistent between
+                                //the input and the flattened document.  When the annotation is rotated or skewed, it will still be flattened incorrectly.  
+                                cb.AddTemplate(app, (rect.Width/bbox.Width), 0, 0, (rect.Height/bbox.Height), rect.Left,
+                                    rect.Bottom);
+                                //cb.AddTemplate(app, box.Left, box.Bottom);
+                            }
                             cb.SetLiteral("q ");
 
                             annots.Remove(idx);
@@ -1192,6 +1218,50 @@ namespace iTextSharp.text.pdf {
                 }
             }
         }
+
+        /*
+        * The transformation BBOX between two coordinate systems can be
+        * represented by a 3-by-3 transformation matrix and create new BBOX based min(x,y) and
+         * max(x,y) coordinate pairs
+        * */
+        private Rectangle TransformBBoxByMatrix(Rectangle bBox, double[] matrix)
+        {
+            float[] xArr = new float[4];
+            float[] yArr = new float[4];
+            
+            Point p1 = TransformPoint(bBox.Left, bBox.Bottom, matrix);
+            xArr[0] = (float) p1.x;
+            yArr[0] = (float) p1.y;
+            Point p2 = TransformPoint(bBox.Right, bBox.Top, matrix);
+            xArr[1] = (float) p2.x;
+            yArr[1] = (float) p2.y;
+            Point p3 = TransformPoint(bBox.Left, bBox.Top, matrix);
+            xArr[2] = (float) p3.x;
+            yArr[2] = (float) p3.y;
+            Point p4 = TransformPoint(bBox.Right, bBox.Bottom, matrix);
+            xArr[3] = (float) p4.x;
+            yArr[3] = (float) p4.y;
+
+            return new Rectangle(Utilities.Min(xArr),
+                                 Utilities.Min(yArr),
+                                 Utilities.Max(xArr),
+                                 Utilities.Max(yArr));
+        }
+
+        /*
+        *  transform point by algorithm
+        *  x? = a*x + c?y + e
+        *  y' = b*x + d*y + f
+        *  [ a b c d e f ] transformation matrix values
+        * */
+        private Point TransformPoint(double x, double y, double[] matrix)
+        {
+            Point point = new Point();
+            point.x = matrix[0] * x + matrix[2] * y + matrix[4];
+            point.y = matrix[1] * x + matrix[3] * y + matrix[5];
+            return point;
+        }
+
 
         protected internal virtual void FlatFreeTextFields() {
             FlattenAnnotations(true);
@@ -1848,5 +1918,10 @@ namespace iTextSharp.text.pdf {
                 throw new InvalidOperationException(MessageLocalization.GetComposedMessage("use.pdfstamper.getundercontent.or.pdfstamper.getovercontent"));
             }
         }
+
+        public PdfReader GetPdfReader() {
+            return reader;
+        }
+
     }
 }

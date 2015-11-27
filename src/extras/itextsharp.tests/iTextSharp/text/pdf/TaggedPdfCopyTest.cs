@@ -769,7 +769,7 @@ namespace itextsharp.tests.text.pdf
             Assert.AreEqual(4, nums.GetAsNumber(8).IntValue);
 
             Assert.AreEqual(12, nums.Size);
-            Assert.AreEqual(4, acroForm.GetAsArray(PdfName.FIELDS).Size);
+            Assert.AreEqual(3, acroForm.GetAsArray(PdfName.FIELDS).Size);
 
             reader.Close();
         }

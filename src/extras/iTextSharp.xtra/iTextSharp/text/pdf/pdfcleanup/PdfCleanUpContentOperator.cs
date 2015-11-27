@@ -308,7 +308,7 @@ namespace iTextSharp.xtra.iTextSharp.text.pdf.pdfcleanup {
                 }
 
                 if (textChunk.Visible) {
-                    if (Util.compare(shift, 0.0f) != 0 && Util.compare(shift, -0.0f) != 0) {
+                    if (Util.Compare(shift, 0.0f) != 0 && Util.Compare(shift, -0.0f) != 0) {
                         canvas.InternalBuffer.Append(shift).Append(' ');
                     }
 
@@ -324,18 +324,18 @@ namespace iTextSharp.xtra.iTextSharp.text.pdf.pdfcleanup {
                 prevChunk = textChunk;
             }
 
-            if (Util.compare(shift, 0) != 0 && Util.compare(shift, -0.0f) != 0) {
+            if (Util.Compare(shift, 0) != 0 && Util.Compare(shift, -0.0f) != 0) {
                 canvas.InternalBuffer.Append(shift);
             }
 
             canvas.InternalBuffer.Append(TJ);
 
-            if (Util.compare(characterSpacing, 0) != 0 && Util.compare(characterSpacing, -0.0f) != 0) {
+            if (Util.Compare(characterSpacing, 0) != 0 && Util.Compare(characterSpacing, -0.0f) != 0) {
                 new PdfNumber(characterSpacing).ToPdf(canvas.PdfWriter, canvas.InternalBuffer);
                 canvas.InternalBuffer.Append(Tc);
             }
 
-            if (Util.compare(wordSpacing, 0) != 0 && Util.compare(wordSpacing, -0.0f) != 0) {
+            if (Util.Compare(wordSpacing, 0) != 0 && Util.Compare(wordSpacing, -0.0f) != 0) {
                 new PdfNumber(wordSpacing).ToPdf(canvas.PdfWriter, canvas.InternalBuffer);
                 canvas.InternalBuffer.Append(Tw);
             }

@@ -228,7 +228,7 @@ namespace iTextSharp.text.pdf {
                 int w = dw;
                 if (widths.ContainsKey(i))
                     w = widths[i];
-                metrics.Add(i, new int[] { i, w });
+                metrics[i] = new int[] { i, w };
             }
         }
         
