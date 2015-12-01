@@ -1161,6 +1161,50 @@ namespace itextsharp.tests.text.pdf {
 
         }
 
+        [Test]
+        public virtual void CreateTagedPdf26() {
+            Document doc = new Document(PageSize.LETTER, 72, 72, 72, 72);
+            MemoryStream baos = new MemoryStream();
+            PdfWriter writer = PdfWriter.GetInstance(doc, baos);
+            writer.SetTagged();
+
+            doc.Open();
+
+            ColumnText ct = new ColumnText(writer.DirectContent);
+            ct.UseAscender = true;
+            ct.AdjustFirstLine = true;
+            ct.SetSimpleColumn(doc.Left, doc.Bottom, doc.Right, doc.Top);
+
+            Paragraph p = new Paragraph("before");
+            ct.AddElement(p);
+
+            List list = new List(List.ORDERED, List.NUMERICAL);
+            list.Autoindent = false;
+            list.IndentationLeft = 14;
+            list.SymbolIndent = 14;
+
+            list.Add("Item 1");
+
+            List nested = new List(List.ORDERED, List.NUMERICAL);
+            nested.Autoindent = false;
+            nested.IndentationLeft = 14;
+            nested.SymbolIndent = 14;
+            nested.Add("Nested 1");
+
+            list.Add(nested);
+            ct.AddElement(list);
+
+            p = new Paragraph("after");
+            ct.AddElement(p);
+
+            ct.Go();
+
+            doc.Close();
+
+            File.WriteAllBytes("TaggedPdfTest/pdf/out26.pdf", baos.ToArray());
+            CompareResults("26");
+        }
+
         [TearDown]
         virtual public void Compress() {
             Document.Compress = true;
