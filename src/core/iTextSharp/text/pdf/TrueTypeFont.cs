@@ -1639,5 +1639,9 @@ namespace iTextSharp.text.pdf {
                 return null;
             return bboxes[metric[0]];
         }
+
+        public int MaxGlyphId {
+            get { return maxGlyphId; }
+        }
     }
 }
