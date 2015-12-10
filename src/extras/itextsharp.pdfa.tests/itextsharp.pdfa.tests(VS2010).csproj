@@ -83,6 +83,7 @@
     <Reference Include="System.Drawing" />
   </ItemGroup>
   <ItemGroup>
+    <Compile Include="iTextSharp\text\pdfa\ConcurrentWriterTest.cs" />
     <Compile Include="iTextSharp\text\pdfa\PdfAFontEmbeddingTest.cs" />
     <Compile Include="iTextSharp\text\pdfa\PdfA1CheckerTest.cs" />
     <Compile Include="iTextSharp\text\pdfa\PdfA2CheckerTest.cs" />

@@ -99,7 +99,10 @@ namespace iTextSharp.text.pdf{
                 byte[] b;
                 if (font.Subset || font.DirectoryOffset != 0)
                 {
-                    b = font.GetSubSet(new HashSet2<int>(longTag.Keys), true);
+                    lock (font.Rf) {
+                        TrueTypeFontSubSet sb = new TrueTypeFontSubSet(font.FileName, new RandomAccessFileOrArray(font.Rf), new HashSet2<int>(longTag.Keys), font.DirectoryOffset, true, false);
+                        b = sb.Process();
+                    }
                 }
                 else
                 {
