@@ -75,7 +75,6 @@ namespace iTextSharp.text.pdfa
         {
             Directory.CreateDirectory(TARGET + "pdf");
             Directory.CreateDirectory(TARGET + "xml");
-            Document.Compress = false;
 
             initialByteBufferHightPrecisionState = ByteBuffer.HIGH_PRECISION;
         }

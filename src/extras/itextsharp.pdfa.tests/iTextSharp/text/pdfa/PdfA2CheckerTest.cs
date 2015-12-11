@@ -63,7 +63,6 @@ namespace iTextSharp.text.pdfa {
         virtual public void Initialize() {
             Directory.CreateDirectory(TARGET + "pdf");
             Directory.CreateDirectory(TARGET + "xml");
-            Document.Compress = false;
         }
 
         [Test]
@@ -1673,7 +1672,7 @@ namespace iTextSharp.text.pdfa {
             writer.SetOutputIntents("Custom", "", "http://www.color.org", "sRGB IEC61966-2.1", icc);
             document.Close();
 
-            Assert.Null(new CompareTool().Compare(outPdf, resourceDir + "cidset/cmp_cidFontCheckTest3.pdf", TARGET, "diff_"));
+            Assert.Null(new CompareTool().CompareByContent(outPdf, resourceDir + "cidset/cmp_cidFontCheckTest3.pdf", TARGET, "diff_"));
         }
 
         [Test]
