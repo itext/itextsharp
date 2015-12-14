@@ -1455,6 +1455,221 @@ namespace iTextSharp.text.pdfa
         }
 
         [Test]
+        virtual public void AnnotationCheckTest10()
+        {
+            string filename = OUT + "AnnotationCheckTest10.pdf";
+            FileStream fos = new FileStream(filename, FileMode.Create);
+
+            Document document = new Document();
+
+            PdfAWriter writer = PdfAWriter.GetInstance(document, fos, PdfAConformanceLevel.PDF_A_1B);
+            writer.CreateXmpMetadata();
+
+            document.Open();
+
+            Font font = FontFactory.GetFont(RESOURCES + "FreeMonoBold.ttf", BaseFont.WINANSI, BaseFont.EMBEDDED, 12);
+            document.Add(new Paragraph("Hello World", font));
+
+            FileStream iccProfileFileStream = File.Open(RESOURCES + "sRGB Color Space Profile.icm", FileMode.Open, FileAccess.Read, FileShare.Read);
+            ICC_Profile icc = ICC_Profile.GetInstance(iccProfileFileStream);
+            iccProfileFileStream.Close();
+
+            writer.SetOutputIntents("Custom", "", "http://www.color.org", "sRGB IEC61966-2.1", icc);
+
+            PdfAnnotation annot = new PdfAnnotation(writer, new Rectangle(100, 100, 200, 200));
+            annot.Put(PdfName.SUBTYPE, PdfName.POLYGON);
+            annot.Put(PdfName.F, new PdfNumber(PdfAnnotation.FLAGS_PRINT));
+            PdfContentByte canvas = writer.DirectContent;
+            canvas.AddAnnotation(annot);
+            bool exceptionThrown = false;
+            try
+            {
+                document.Close();
+            }
+            catch (PdfAConformanceException e)
+            {
+                if (e.GetObject().Equals(annot) && e.Message.Equals("Annotation type /Polygon not allowed."))
+                {
+                    exceptionThrown = true;
+                }
+            }
+            if (!exceptionThrown)
+                Assert.Fail("PdfAConformanceException with correct message should be thrown.");
+        }
+
+        [Test]
+        virtual public void AnnotationCheckTest11()
+        {
+            string filename = OUT + "AnnotationCheckTest11.pdf";
+            FileStream fos = new FileStream(filename, FileMode.Create);
+
+            Document document = new Document();
+
+            PdfAWriter writer = PdfAWriter.GetInstance(document, fos, PdfAConformanceLevel.PDF_A_1B);
+            writer.CreateXmpMetadata();
+
+            document.Open();
+
+            Font font = FontFactory.GetFont(RESOURCES + "FreeMonoBold.ttf", BaseFont.WINANSI, BaseFont.EMBEDDED, 12);
+            document.Add(new Paragraph("Hello World", font));
+
+            FileStream iccProfileFileStream = File.Open(RESOURCES + "sRGB Color Space Profile.icm", FileMode.Open, FileAccess.Read, FileShare.Read);
+            ICC_Profile icc = ICC_Profile.GetInstance(iccProfileFileStream);
+            iccProfileFileStream.Close();
+
+            writer.SetOutputIntents("Custom", "", "http://www.color.org", "sRGB IEC61966-2.1", icc);
+
+            PdfAnnotation annot = new PdfAnnotation(writer, new Rectangle(100, 100, 200, 200));
+            annot.Put(PdfName.SUBTYPE, PdfName.POLYLINE);
+            annot.Put(PdfName.F, new PdfNumber(PdfAnnotation.FLAGS_PRINT));
+            PdfContentByte canvas = writer.DirectContent;
+            canvas.AddAnnotation(annot);
+            bool exceptionThrown = false;
+            try
+            {
+                document.Close();
+            }
+            catch (PdfAConformanceException e)
+            {
+                if (e.GetObject().Equals(annot) && e.Message.Equals("Annotation type /PolyLine not allowed."))
+                {
+                    exceptionThrown = true;
+                }
+            }
+            if (!exceptionThrown)
+                Assert.Fail("PdfAConformanceException with correct message should be thrown.");
+        }
+
+        [Test]
+        virtual public void AnnotationCheckTest12()
+        {
+            string filename = OUT + "AnnotationCheckTest12.pdf";
+            FileStream fos = new FileStream(filename, FileMode.Create);
+
+            Document document = new Document();
+
+            PdfAWriter writer = PdfAWriter.GetInstance(document, fos, PdfAConformanceLevel.PDF_A_1B);
+            writer.CreateXmpMetadata();
+
+            document.Open();
+
+            Font font = FontFactory.GetFont(RESOURCES + "FreeMonoBold.ttf", BaseFont.WINANSI, BaseFont.EMBEDDED, 12);
+            document.Add(new Paragraph("Hello World", font));
+
+            FileStream iccProfileFileStream = File.Open(RESOURCES + "sRGB Color Space Profile.icm", FileMode.Open, FileAccess.Read, FileShare.Read);
+            ICC_Profile icc = ICC_Profile.GetInstance(iccProfileFileStream);
+            iccProfileFileStream.Close();
+
+            writer.SetOutputIntents("Custom", "", "http://www.color.org", "sRGB IEC61966-2.1", icc);
+
+            PdfAnnotation annot = new PdfAnnotation(writer, new Rectangle(100, 100, 200, 200));
+            annot.Put(PdfName.SUBTYPE, PdfName.CARET);
+            annot.Put(PdfName.F, new PdfNumber(PdfAnnotation.FLAGS_PRINT));
+            PdfContentByte canvas = writer.DirectContent;
+            canvas.AddAnnotation(annot);
+            bool exceptionThrown = false;
+            try
+            {
+                document.Close();
+            }
+            catch (PdfAConformanceException e)
+            {
+                if (e.GetObject().Equals(annot) && e.Message.Equals("Annotation type /Caret not allowed."))
+                {
+                    exceptionThrown = true;
+                }
+            }
+            if (!exceptionThrown)
+                Assert.Fail("PdfAConformanceException with correct message should be thrown.");
+        }
+
+        [Test]
+        virtual public void AnnotationCheckTest13()
+        {
+            string filename = OUT + "AnnotationCheckTest13.pdf";
+            FileStream fos = new FileStream(filename, FileMode.Create);
+
+            Document document = new Document();
+
+            PdfAWriter writer = PdfAWriter.GetInstance(document, fos, PdfAConformanceLevel.PDF_A_1A);
+            writer.CreateXmpMetadata();
+
+            document.Open();
+
+            Font font = FontFactory.GetFont(RESOURCES + "FreeMonoBold.ttf", BaseFont.WINANSI, BaseFont.EMBEDDED, 12);
+            document.Add(new Paragraph("Hello World", font));
+
+            FileStream iccProfileFileStream = File.Open(RESOURCES + "sRGB Color Space Profile.icm", FileMode.Open, FileAccess.Read, FileShare.Read);
+            ICC_Profile icc = ICC_Profile.GetInstance(iccProfileFileStream);
+            iccProfileFileStream.Close();
+
+            writer.SetOutputIntents("Custom", "", "http://www.color.org", "sRGB IEC61966-2.1", icc);
+
+            PdfAnnotation annot = new PdfAnnotation(writer, new Rectangle(100, 100, 200, 200));
+            annot.Put(PdfName.SUBTYPE, PdfName.WATERMARK);
+            annot.Put(PdfName.F, new PdfNumber(PdfAnnotation.FLAGS_PRINT));
+            PdfContentByte canvas = writer.DirectContent;
+            canvas.AddAnnotation(annot);
+            bool exceptionThrown = false;
+            try
+            {
+                document.Close();
+            }
+            catch (PdfAConformanceException e)
+            {
+                if (e.GetObject().Equals(annot) && e.Message.Equals("Annotation type /Watermark not allowed."))
+                {
+                    exceptionThrown = true;
+                }
+            }
+            if (!exceptionThrown)
+                Assert.Fail("PdfAConformanceException with correct message should be thrown.");
+        }
+
+        [Test]
+        virtual public void AnnotationCheckTest14()
+        {
+            string filename = OUT + "AnnotationCheckTest14.pdf";
+            FileStream fos = new FileStream(filename, FileMode.Create);
+
+            Document document = new Document();
+
+            PdfAWriter writer = PdfAWriter.GetInstance(document, fos, PdfAConformanceLevel.PDF_A_1A);
+            writer.CreateXmpMetadata();
+
+            document.Open();
+
+            Font font = FontFactory.GetFont(RESOURCES + "FreeMonoBold.ttf", BaseFont.WINANSI, BaseFont.EMBEDDED, 12);
+            document.Add(new Paragraph("Hello World", font));
+
+            FileStream iccProfileFileStream = File.Open(RESOURCES + "sRGB Color Space Profile.icm", FileMode.Open, FileAccess.Read, FileShare.Read);
+            ICC_Profile icc = ICC_Profile.GetInstance(iccProfileFileStream);
+            iccProfileFileStream.Close();
+
+            writer.SetOutputIntents("Custom", "", "http://www.color.org", "sRGB IEC61966-2.1", icc);
+
+            PdfAnnotation annot = new PdfAnnotation(writer, new Rectangle(100, 100, 200, 200));
+            annot.Put(PdfName.SUBTYPE, PdfName.FILEATTACHMENT);
+            annot.Put(PdfName.F, new PdfNumber(PdfAnnotation.FLAGS_PRINT));
+            PdfContentByte canvas = writer.DirectContent;
+            canvas.AddAnnotation(annot);
+            bool exceptionThrown = false;
+            try
+            {
+                document.Close();
+            }
+            catch (PdfAConformanceException e)
+            {
+                if (e.GetObject().Equals(annot) && e.Message.Equals("Annotation type /FileAttachment not allowed."))
+                {
+                    exceptionThrown = true;
+                }
+            }
+            if (!exceptionThrown)
+                Assert.Fail("PdfAConformanceException with correct message should be thrown.");
+        }
+
+        [Test]
         virtual public void FieldCheckTest1()
         {
             String[] LANGUAGES = { "Russian", "English", "Dutch", "French", "Spanish", "German" };

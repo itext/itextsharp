@@ -54,10 +54,8 @@ namespace iTextSharp.text.pdf.intern
         public static readonly PdfName noOp = new PdfName("NoOp");
 
         private static HashSet2<PdfName> allowedAnnotTypes = new HashSet2<PdfName>(new PdfName[] {PdfName.TEXT, PdfName.LINK,
-            PdfName.FREETEXT, PdfName.LINE, PdfName.SQUARE, PdfName.CIRCLE, PdfName.POLYGON, PdfName.POLYLINE,
-            PdfName.HIGHLIGHT, PdfName.UNDERLINE, PdfName.SQUIGGLY, PdfName.STRIKEOUT, PdfName.STAMP, PdfName.CARET,
-            PdfName.INK, PdfName.POPUP, PdfName.FILEATTACHMENT, PdfName.WIDGET, PdfName.PRINTERMARK, PdfName.TRAPNET,
-            PdfName.WATERMARK});
+            PdfName.FREETEXT, PdfName.LINE, PdfName.SQUARE, PdfName.CIRCLE, PdfName.HIGHLIGHT, PdfName.UNDERLINE, PdfName.SQUIGGLY, PdfName.STRIKEOUT, PdfName.STAMP, 
+            PdfName.INK, PdfName.POPUP, PdfName.WIDGET, PdfName.PRINTERMARK, PdfName.TRAPNET});
 
         public static readonly HashSet2<PdfName> allowedNamedActions = new HashSet2<PdfName>(new PdfName[] {
             PdfName.NEXTPAGE, PdfName.PREVPAGE, PdfName.FIRSTPAGE, PdfName.LASTPAGE});

@@ -1222,6 +1222,56 @@ namespace iTextSharp.text.pdfa {
         }
 
         [Test]
+        virtual public void AnnotationCheckTest12()
+        {
+            Document document = new Document();
+            PdfAWriter writer = PdfAWriter.GetInstance(document, new FileStream(OUT + "annotationCheckTest12.pdf", FileMode.Create), PdfAConformanceLevel.PDF_A_2A);
+            writer.CreateXmpMetadata();
+            writer.SetTagged();
+            document.Open();
+            document.AddLanguage("en-US");
+
+            Font font = FontFactory.GetFont(RESOURCES + "FreeMonoBold.ttf", BaseFont.WINANSI, BaseFont.EMBEDDED, 12);
+            document.Add(new Paragraph("Hello World", font));
+
+            FileStream iccProfileFileStream = File.Open(RESOURCES + "sRGB Color Space Profile.icm", FileMode.Open, FileAccess.Read, FileShare.Read);
+            ICC_Profile icc = ICC_Profile.GetInstance(iccProfileFileStream);
+            iccProfileFileStream.Close();
+
+            writer.SetOutputIntents("Custom", "", "http://www.color.org", "sRGB IEC61966-2.1", icc);
+            PdfDictionary ap = new PdfDictionary();
+            PdfStream s = new PdfStream(Encoding.Default.GetBytes("Hello World"));
+            ap.Put(PdfName.N, writer.AddToBody(s).IndirectReference);
+            PdfContentByte canvas = writer.DirectContent;
+
+            PdfAnnotation annot = new PdfAnnotation(writer, new Rectangle(220, 220, 240, 240));
+            annot.Put(PdfName.SUBTYPE, PdfName.POLYGON);
+            annot.Put(PdfName.F, new PdfNumber(PdfAnnotation.FLAGS_PRINT));
+            annot.Put(PdfName.AP, ap);
+            canvas.AddAnnotation(annot);
+            annot = new PdfAnnotation(writer, new Rectangle(100, 100, 120, 120));
+            annot.Put(PdfName.SUBTYPE, PdfName.POLYLINE);
+            annot.Put(PdfName.F, new PdfNumber(PdfAnnotation.FLAGS_PRINT));
+            annot.Put(PdfName.AP, ap);
+            canvas.AddAnnotation(annot);
+            annot = new PdfAnnotation(writer, new Rectangle(130, 130, 150, 150));
+            annot.Put(PdfName.SUBTYPE, PdfName.CARET);
+            annot.Put(PdfName.F, new PdfNumber(PdfAnnotation.FLAGS_PRINT));
+            annot.Put(PdfName.AP, ap);
+            canvas.AddAnnotation(annot);
+            annot = new PdfAnnotation(writer, new Rectangle(160, 160, 180, 180));
+            annot.Put(PdfName.SUBTYPE, PdfName.WATERMARK);
+            annot.Put(PdfName.F, new PdfNumber(PdfAnnotation.FLAGS_PRINT));
+            annot.Put(PdfName.AP, ap);
+            canvas.AddAnnotation(annot);
+            annot = new PdfAnnotation(writer, new Rectangle(190, 190, 210, 210));
+            annot.Put(PdfName.SUBTYPE, PdfName.FILEATTACHMENT);
+            annot.Put(PdfName.F, new PdfNumber(PdfAnnotation.FLAGS_PRINT));
+            annot.Put(PdfName.AP, ap);
+            document.Close();
+        }
+
+        [Test]
         virtual public void ColorCheckTest1() {
             Document document = new Document();
             PdfAWriter writer = PdfAWriter.GetInstance(document, new FileStream(OUT + "pdfa2ColorCheckTest1.pdf", FileMode.Create), PdfAConformanceLevel.PDF_A_2B);
