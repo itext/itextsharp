@@ -1096,6 +1096,30 @@ public class CompareTool {
             return false;
         }
     }
+
+    public String CompareXmp(byte[] xmp1, byte[] xmp2)
+    {
+        throw new NotImplementedException("Comparing xmls hasn't implemented");
+    }
+
+    public String CompareXmp(byte[] xmp1, byte[] xmp2, bool ignoreDateAndProducerProperties)
+    {
+        throw new NotImplementedException("Comparing xmls hasn't implemented");
+    }
+
+    public String CompareXmp(String outPdf, String cmpPdf)
+    {
+        throw new NotImplementedException("Comparing xmls hasn't implemented");
+    }
+
+    public String CompareXmp(String outPdf, String cmpPdf, bool ignoreDateAndProducerProperties)
+    {
+        throw new NotImplementedException("Comparing xmls hasn't implemented");
+    }
+
+    public bool CompareXmls(byte[] xml1, byte[] xml2) {
+        throw new NotImplementedException("Comparing xmls in c# hasn't implemented yet. We don't want to make references to external libraries.");
+    }
     
     private void Init(String outPdf, String cmpPdf) {
         this.outPdf = outPdf;
