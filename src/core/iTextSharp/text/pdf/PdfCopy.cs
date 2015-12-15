@@ -61,6 +61,9 @@ namespace iTextSharp.text.pdf {
     */
 
     public class PdfCopy : PdfWriter {
+
+        private static readonly ILogger LOGGER = LoggerFactory.GetLogger(typeof(PdfCopy));
+
         /**
         * This class holds information about indirect references, since they are
         * renumbered by iText.
@@ -423,8 +426,14 @@ namespace iTextSharp.text.pdf {
             }
             if (obj != null && obj.IsDictionary()) {
                 PdfObject type = PdfReader.GetPdfObjectRelease(((PdfDictionary)obj).Get(PdfName.TYPE));
-                if (type != null && PdfName.PAGE.Equals(type)) {
-                    return theRef;
+                if (type != null) {
+                    if ((PdfName.PAGE.Equals(type))) {
+                        return theRef;
+                    }
+                    if ((PdfName.CATALOG.Equals(type))) {
+                        LOGGER.Warn(MessageLocalization.GetComposedMessage("make.copy.of.catalog.dictionary.is.forbidden"));
+                        return null;
+                    }
                 }
             }
             iref.SetCopied();

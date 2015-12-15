@@ -47,6 +47,7 @@ using System;
 using System.Diagnostics;
 using System.IO;
 using System.Security;
+using System.Security.Cryptography;
 using itextsharp.tests.iTextSharp.testutils;
 using itextsharp.tests.iTextSharp.text.error_messages;
 using iTextSharp.testutils;
@@ -531,6 +532,36 @@ namespace itextsharp.tests.iTextSharp.text.pdf
             }
         }
 
+        [Test]
+        public void CopySignedDocuments()
+        {
+            string file = RESOURCES + "hello_signed1.pdf";
+            Directory.CreateDirectory("PdfCopyTest/");
+            Document pdfDocument = new Document();
+            PdfCopy copier = new PdfCopy(pdfDocument, new FileStream("PdfCopyTest/copySignatures.pdf", FileMode.Create));
+            pdfDocument.Open();
+
+            PdfReader reader1 = new PdfReader(file);
+            copier.AddPage(copier.GetImportedPage(reader1, 1));
+            copier.FreeReader(reader1);
+
+            reader1 = new PdfReader(file);
+            copier.AddPage(copier.GetImportedPage(reader1, 1));
+            copier.FreeReader(reader1);
+
+            pdfDocument.Close();
+
+            PdfReader reader = new PdfReader("PdfCopyTest/copySignatures.pdf");
+            PdfDictionary sig = (PdfDictionary)reader.GetPdfObject(9);
+            PdfDictionary sigRef = sig.GetAsArray(PdfName.REFERENCE).GetAsDict(0);
+            Assert.True(PdfName.SIGREF.Equals(sigRef.GetAsName(PdfName.TYPE)));
+            Assert.False(sigRef.Contains(PdfName.DATA));
+            sig = (PdfDictionary)reader.GetPdfObject(21);
+            sigRef = sig.GetAsArray(PdfName.REFERENCE).GetAsDict(0);
+            Assert.True(PdfName.SIGREF.Equals(sigRef.GetAsName(PdfName.TYPE)));
+            Assert.False(sigRef.Contains(PdfName.DATA));
+
+        }
 
         public static byte[] Merge(string[] documentPaths) {
             byte[] mergedDocument;
