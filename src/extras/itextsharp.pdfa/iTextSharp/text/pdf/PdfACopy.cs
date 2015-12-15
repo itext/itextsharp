@@ -121,6 +121,40 @@ namespace itextsharp.pdfa.iTextSharp.text.pdf {
             }
         }
 
+        /**
+        * Copies the output intent dictionary from other document to this one.
+        * @param reader the other document
+        * @param checkExistence <CODE>true</CODE> to just check for the existence of a valid output intent
+        * dictionary, <CODE>false</CODE> to insert the dictionary if it exists
+        * @throws IOException on error
+        * @return <CODE>true</CODE> if the output intent dictionary exists, <CODE>false</CODE>
+        * otherwise
+        */
+        public override bool SetOutputIntents(PdfReader reader, bool checkExistence)
+        {
+            PdfDictionary catalog = reader.Catalog;
+            PdfArray outs = catalog.GetAsArray(PdfName.OUTPUTINTENTS);
+            if (outs == null)
+                return false;
+            if (outs.Size == 0)
+                return false;
+            PdfDictionary outa = outs.GetAsDict(0);
+            PdfObject obj = PdfReader.GetPdfObject(outa.Get(PdfName.S));
+            if (obj == null || !PdfName.GTS_PDFA1.Equals(obj))
+                return false;
+            if (checkExistence)
+                return true;
+            PRStream stream = (PRStream)PdfReader.GetPdfObject(outa.Get(PdfName.DESTOUTPUTPROFILE));
+            byte[] destProfile = null;
+            if (stream != null)
+            {
+                destProfile = PdfReader.GetStreamBytes(stream);
+            }
+            SetOutputIntents(GetNameString(outa, PdfName.OUTPUTCONDITIONIDENTIFIER), GetNameString(outa, PdfName.OUTPUTCONDITION),
+                GetNameString(outa, PdfName.REGISTRYNAME), GetNameString(outa, PdfName.INFO), destProfile);
+            return true;
+        }
+
         protected internal override XmpWriter CreateXmpWriter(MemoryStream baos, PdfDictionary info) {
             return new PdfAXmpWriter(baos, info, ((IPdfAConformance) pdfIsoConformance).ConformanceLevel, this);
         }
