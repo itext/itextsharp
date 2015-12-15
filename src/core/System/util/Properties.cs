@@ -119,6 +119,7 @@ namespace System.util
         }
 
         virtual public void Load(Stream inStream) {
+            if (inStream == null) return;
             StreamReader inp = new StreamReader(inStream, Encoding.GetEncoding(1252));
             while (true) {
                 // Get next line
