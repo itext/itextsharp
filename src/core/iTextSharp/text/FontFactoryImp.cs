@@ -592,7 +592,7 @@ namespace iTextSharp.text {
             try {
                 
                 if (SystemPath == null) {
-                    SystemPath = Environment.GetFolderPath(Environment.SpecialFolder.System);
+                    SystemPath = Directory.GetParent(Environment.GetFolderPath(Environment.SpecialFolder.System)).FullName;
                 }
                 string dir = Path.Combine(SystemPath,"Fonts");
 
