@@ -1711,7 +1711,7 @@ namespace iTextSharp.text.pdf {
                     }
                     float w = template.Width;
                     float h = template.Height;
-                    AddTemplate(template, a/w, b/w, c/h, d/h, e, f, isMCBlockOpened);
+                    AddTemplate(template, a/w, b/w, c/h, d/h, e, f, false, false);
                 }
                 else
                 {
@@ -2932,14 +2932,33 @@ namespace iTextSharp.text.pdf {
          * @param tagContent <code>true</code> - template content will be tagged(all that will be added after), <code>false</code> - only a Do operator will be tagged.
          *                   taken into account only if <code>isTagged()</code> - <code>true</code>.
          */
-        virtual public void AddTemplate(PdfTemplate template, double a, double b, double c, double d, double e, double f, bool tagContent) {
+
+        virtual public void AddTemplate(PdfTemplate template, double a, double b, double c, double d, double e, double f,
+            bool tagContent) {
+            AddTemplate(template, a, b, c, d, e, f, true, tagContent);
+        }
+
+        /**
+         * Adds a template to this content.
+         *
+         * @param template the template
+         * @param a an element of the transformation matrix
+         * @param b an element of the transformation matrix
+         * @param c an element of the transformation matrix
+         * @param d an element of the transformation matrix
+         * @param e an element of the transformation matrix
+         * @param f an element of the transformation matrix
+         * @param tagContent <code>true</code> - template content will be tagged(all that will be added after), <code>false</code> - only a Do operator will be tagged.
+         *                   taken into account only if <code>isTagged()</code> - <code>true</code>.
+         */
+        virtual public void AddTemplate(PdfTemplate template, double a, double b, double c, double d, double e, double f, bool tagTemplate, bool tagContent) {
             CheckWriter();
             CheckNoPattern(template);
             PdfWriter.CheckPdfIsoConformance(writer, PdfIsoKeys.PDFISOKEY_FORM_XOBJ, template);
             PdfName name = writer.AddDirectTemplateSimple(template, null);
             PageResources prs = PageResources;
             name = prs.AddXObject(name, template.IndirectReference);
-            if (IsTagged()) {
+            if (IsTagged() && tagTemplate) {
                 if (inText)
                     EndText();
                 if (template.ContentTagged || (template.PageReference != null && tagContent)) {
@@ -2968,7 +2987,7 @@ namespace iTextSharp.text.pdf {
             content.Append(f).Append(" cm ");
             content.Append(name.GetBytes()).Append(" Do Q").Append_i(separator);
 
-            if (IsTagged() && !tagContent) {
+            if (IsTagged() && tagTemplate && !tagContent) {
                 CloseMCBlock(template);
                 template.ID = null;
             }
