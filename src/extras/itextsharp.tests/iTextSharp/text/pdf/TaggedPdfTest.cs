@@ -56,6 +56,7 @@ using iTextSharp.text.xml;
 using List = iTextSharp.text.List;
 
 namespace itextsharp.tests.text.pdf {
+
     public class TaggedPdfTest {
 
         private const String text = "Lorem ipsum dolor sit amet," +
@@ -1203,6 +1204,37 @@ namespace itextsharp.tests.text.pdf {
 
             File.WriteAllBytes("TaggedPdfTest/pdf/out26.pdf", baos.ToArray());
             CompareResults("26");
+        }
+
+        [Test]
+        public void CreateTaggedPdf27() {
+            Document doc = new Document();
+            MemoryStream baos = new MemoryStream();
+            PdfWriter writer = PdfWriter.GetInstance(doc, baos);
+            writer.SetTagged();
+
+            doc.Open();
+
+            String imagePath = RESOURCES + "img\\Desert.jpg";
+            Image img = Image.GetInstance(imagePath);
+            img.SetAbsolutePosition(0, 0);
+            img.SetAccessibleAttribute(PdfName.E, new PdfString("expansion"));
+            img.SetAccessibleAttribute(PdfName.ALT, new PdfString("alt"));
+
+            PdfTemplate template = writer.DirectContent.CreateTemplate(img.Width, img.Height);
+            writer.DirectContent.AddTemplate(template, 100, 300, true);
+
+            ColumnText ct = new ColumnText(template);
+            ct.SetSimpleColumn(0, 0, 250, 300);
+            ct.AddElement(img);
+            ct.Go();
+
+            doc.Close();
+
+
+
+            File.WriteAllBytes("TaggedPdfTest/pdf/out27.pdf", baos.ToArray());
+            CompareResults("27");
         }
 
         [TearDown]

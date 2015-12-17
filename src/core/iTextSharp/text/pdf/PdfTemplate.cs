@@ -268,6 +268,8 @@ namespace iTextSharp.text.pdf {
                 }
                 tpl.separator = separator;
                 tpl.additional = additional;
+                tpl.contentTagged = contentTagged;
+                tpl.duplicatedFrom = this;
                 return tpl;
             }
         }

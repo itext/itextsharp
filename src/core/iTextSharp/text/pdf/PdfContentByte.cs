@@ -2950,6 +2950,7 @@ namespace iTextSharp.text.pdf {
 
                 if (tagContent) {
                     template.ContentTagged = true;
+                    EnsureDocumentTagIsOpen();
                     IList<IAccessibleElement> allMcElements = GetMcElements();
                     if (allMcElements != null && allMcElements.Count > 0)
                         template.GetMcElements().Add(allMcElements[allMcElements.Count - 1]);
@@ -4272,13 +4273,8 @@ namespace iTextSharp.text.pdf {
 
         virtual public void OpenMCBlock(IAccessibleElement element)
         {
-            if (IsTagged())
-            {
-                if (pdf.openMCDocument)
-                {
-                    pdf.openMCDocument = false;
-                    writer.DirectContentUnder.OpenMCBlock(pdf);
-                }
+            if (IsTagged()) {
+                EnsureDocumentTagIsOpen();
                 if (element != null/* && element.getRole() != null*/)
                 {
                     if (!GetMcElements().Contains(element))
@@ -4317,9 +4313,7 @@ namespace iTextSharp.text.pdf {
                     if (PdfName.ARTIFACT.Equals(element.Role)) {
                         Dictionary<PdfName, PdfObject> properties = element.GetAccessibleAttributes();
                         PdfDictionary propertiesDict = null;
-                        if (properties == null || properties.Count == 0) {
-                        }
-                        else {
+                        if (properties != null && properties.Count != 0) {
                             propertiesDict = new PdfDictionary();
                             foreach (KeyValuePair<PdfName, PdfObject> entry in properties) {
                                 propertiesDict.Put(entry.Key, entry.Value);
@@ -4382,6 +4376,13 @@ namespace iTextSharp.text.pdf {
                     if (inTextLocal)
                         BeginText(true);
                 }
+            }
+        }
+
+        private void EnsureDocumentTagIsOpen() {
+            if (pdf.openMCDocument) {
+                pdf.openMCDocument = false;
+                writer.DirectContentUnder.OpenMCBlock(pdf);
             }
         }
 
