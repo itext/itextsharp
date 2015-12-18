@@ -538,7 +538,7 @@ namespace itextsharp.tests.iTextSharp.text.pdf
             string file = RESOURCES + "hello_signed1.pdf";
             Directory.CreateDirectory("PdfCopyTest/");
             Document pdfDocument = new Document();
-            PdfCopy copier = new PdfCopy(pdfDocument, new FileStream("PdfCopyTest/copySignatures.pdf", FileMode.Create));
+            PdfCopy copier = new PdfCopy(pdfDocument, new FileStream("PdfCopyTest/CopySignedDocuments.pdf", FileMode.Create));
             pdfDocument.Open();
 
             PdfReader reader1 = new PdfReader(file);
@@ -551,7 +551,7 @@ namespace itextsharp.tests.iTextSharp.text.pdf
 
             pdfDocument.Close();
 
-            PdfReader reader = new PdfReader("PdfCopyTest/copySignatures.pdf");
+            PdfReader reader = new PdfReader("PdfCopyTest/CopySignedDocuments.pdf");
             PdfDictionary sig = (PdfDictionary)reader.GetPdfObject(9);
             PdfDictionary sigRef = sig.GetAsArray(PdfName.REFERENCE).GetAsDict(0);
             Assert.True(PdfName.SIGREF.Equals(sigRef.GetAsName(PdfName.TYPE)));
@@ -561,6 +561,32 @@ namespace itextsharp.tests.iTextSharp.text.pdf
             Assert.True(PdfName.SIGREF.Equals(sigRef.GetAsName(PdfName.TYPE)));
             Assert.False(sigRef.Contains(PdfName.DATA));
 
+        }
+
+        [Test]
+        public void SmartCopySignedDocuments()
+        {
+            string file = RESOURCES + "hello_signed1.pdf";
+            Directory.CreateDirectory("PdfCopyTest/");
+            Document pdfDocument = new Document();
+            PdfSmartCopy copier = new PdfSmartCopy(pdfDocument, new FileStream("PdfCopyTest/SmartCopySignedDocuments.pdf", FileMode.Create));
+            pdfDocument.Open();
+
+            PdfReader reader1 = new PdfReader(file);
+            copier.AddPage(copier.GetImportedPage(reader1, 1));
+            copier.FreeReader(reader1);
+
+            reader1 = new PdfReader(file);
+            copier.AddPage(copier.GetImportedPage(reader1, 1));
+            copier.FreeReader(reader1);
+
+            pdfDocument.Close();
+
+            PdfReader reader = new PdfReader("PdfCopyTest/SmartCopySignedDocuments.pdf");
+            PdfDictionary sig = (PdfDictionary)reader.GetPdfObject(8);
+            PdfDictionary sigRef = sig.GetAsArray(PdfName.REFERENCE).GetAsDict(0);
+            Assert.True(PdfName.SIGREF.Equals(sigRef.GetAsName(PdfName.TYPE)));
+            Assert.False(sigRef.Contains(PdfName.DATA));
         }
 
         public static byte[] Merge(string[] documentPaths) {

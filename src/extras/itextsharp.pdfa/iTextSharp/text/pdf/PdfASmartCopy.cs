@@ -3,6 +3,8 @@ using System.Collections.Generic;
 using System.IO;
 using System.Text;
 using iTextSharp.text;
+using iTextSharp.text.error_messages;
+using iTextSharp.text.log;
 using iTextSharp.text.pdf;
 
 namespace itextsharp.pdfa.iTextSharp.text.pdf {
@@ -17,6 +19,8 @@ namespace itextsharp.pdfa.iTextSharp.text.pdf {
      */
 
     public class PdfASmartCopy : PdfACopy {
+
+        private static readonly ILogger LOGGER = LoggerFactory.GetLogger(typeof(PdfSmartCopy));
 
         /** the cache with the streams and references. */
         private Dictionary<PdfSmartCopy.ByteStore, PdfIndirectReference> streamMap = null;
@@ -67,11 +71,18 @@ namespace itextsharp.pdfa.iTextSharp.text.pdf {
                 indirects[key] = iRef;
             }
             if (srcObj.IsDictionary()) {
-                PdfObject type = PdfReader.GetPdfObjectRelease(((PdfDictionary) srcObj).Get(PdfName.TYPE));
-                if (type != null && PdfName.PAGE.Equals(type)) {
-                    return theRef;
+                PdfObject type = PdfReader.GetPdfObjectRelease(((PdfDictionary)srcObj).Get(PdfName.TYPE));
+                if (type != null) {
+                    if ((PdfName.PAGE.Equals(type))) {
+                        return theRef;
+                    }
+                    if ((PdfName.CATALOG.Equals(type))) {
+                        LOGGER.Warn(MessageLocalization.GetComposedMessage("make.copy.of.catalog.dictionary.is.forbidden"));
+                        return null;
+                    }
                 }
             }
+
             iRef.SetCopied();
 
             if (validStream) {
