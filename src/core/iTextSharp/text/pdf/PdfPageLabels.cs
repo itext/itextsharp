@@ -287,6 +287,10 @@ namespace iTextSharp.text.pdf {
                 this.prefix = prefix;
                 this.logicalPage = logicalPage;
             }
+
+            public override string ToString() {
+                return String.Format("Physical page {0}: style: {1}; prefix '{2}'; logical page: {3}", physicalPage, numberStyle, prefix, logicalPage);
+            }
         }
     }
 }
