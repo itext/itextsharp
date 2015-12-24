@@ -188,6 +188,7 @@ namespace iTextSharp.text.pdf {
         }
 
         public PdfDestination(PdfDestination d):base(d) {
+            status = d.status;
         }
 
     
