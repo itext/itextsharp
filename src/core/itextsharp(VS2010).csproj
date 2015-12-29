@@ -340,6 +340,7 @@
     <Compile Include="iTextSharp\text\log\CounterFactory.cs">
       <SubType>Code</SubType>
     </Compile>
+    <Compile Include="iTextSharp\text\log\DefaultCounter.cs" />
     <Compile Include="iTextSharp\text\log\ICounter.cs">
       <SubType>Code</SubType>
     </Compile>

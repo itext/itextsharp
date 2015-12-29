@@ -107,7 +107,7 @@ namespace iTextSharp.text.log
 	    }
 	
 	    /** The current counter implementation. */
-	    private ICounter counter = new NoOpCounter();
+        private ICounter counter = new DefaultCounter();
 
 	    /** The empty constructor. */
 	    private CounterFactory() {}

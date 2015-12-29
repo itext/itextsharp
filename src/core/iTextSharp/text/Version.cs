@@ -58,6 +58,9 @@ namespace iTextSharp.text {
 
 	    // membervariables
 
+        /** String that will indicate if the AGPL version is used. */
+        public static String AGPL = " (AGPL-version)";
+
         /** The iText version instance. */
         private static Version version = null;
 
@@ -133,7 +136,7 @@ namespace iTextSharp.text {
                             throw new Exception();
                         }
                     } catch (Exception) {
-                        version.iTextVersion += " (AGPL-version)";
+                        version.iTextVersion += AGPL;
                     }
                 }
             }
@@ -185,6 +188,14 @@ namespace iTextSharp.text {
             get {
                 return key;
             }
+        }
+
+        /**
+         * Checks if the AGPL version is used.
+         * @return returns true if the AGPL version is used.
+         */
+        public static bool IsAGPLVersion {
+            get { return GetInstance().GetVersion.IndexOf(AGPL) > 0; }
         }
 
     }
