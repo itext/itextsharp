@@ -1424,13 +1424,11 @@ namespace iTextSharp.text.pdf {
                 float fontSize = chunk.Font.Size;
                 float ascender;
                 float descender;
-                if (chunk.IsImage())
-                {
+                if (chunk.IsImage()) {
                     ascender = chunk.Height();
+                    fontSize = chunk.Height();
                     descender = 0;
-                }
-                else
-                {
+                } else {
                     ascender = chunk.Font.Font.GetFontDescriptor(BaseFont.ASCENT, fontSize);
                     descender = chunk.Font.Font.GetFontDescriptor(BaseFont.DESCENT, fontSize);
                 }
