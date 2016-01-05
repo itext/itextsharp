@@ -109,7 +109,7 @@ namespace iTextSharp.text.pdf {
                 dic.Put(PdfName.S, numberingStyle[numberStyle]);
             if (text != null)
                 dic.Put(PdfName.P, new PdfString(text, PdfObject.TEXT_UNICODE));
-            if (firstPage != 1)
+            //Putting page labels on every page since LiveCycle fails to read the page without it
                 dic.Put(PdfName.ST, new PdfNumber(firstPage));
             map[page - 1] = dic;
         }
