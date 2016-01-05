@@ -1086,8 +1086,10 @@ namespace iTextSharp.text.pdf {
                 throw new InvalidPdfException(MessageLocalization.GetComposedMessage("the.document.has.no.catalog.object"));
             rootPages = catalog.GetAsDict(PdfName.PAGES);
             if (rootPages == null || !PdfName.PAGES.Equals(rootPages.Get(PdfName.TYPE))) {
-                if (debugmode && LOGGER.IsLogging(Level.ERROR)) {
-                    LOGGER.Error(MessageLocalization.GetComposedMessage("the.document.has.no.page.root"));
+                if (debugmode ) {
+                    if (LOGGER.IsLogging(Level.ERROR)) {
+                        LOGGER.Error(MessageLocalization.GetComposedMessage("the.document.has.no.page.root"));
+                    }
                 } else {
                     throw new InvalidPdfException(MessageLocalization.GetComposedMessage("the.document.has.no.page.root"));
                 }
