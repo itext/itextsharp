@@ -87,8 +87,7 @@ namespace iTextSharp.text.pdf.intern
         protected bool transparencyWithoutPageGroupDetected = false;
         protected bool transparencyDetectedOnThePage = false;
 
-        protected String pdfaOutputIntentColorSpace = null;
-        protected PdfObject pdfaDestOutputIntent = null;
+        
         static public readonly int maxStringLength = 32767;
 
 
@@ -560,6 +559,7 @@ namespace iTextSharp.text.pdf.intern
                     }
                     transparencyDetectedOnThePage = false;
                 } else if (PdfName.OUTPUTINTENT.Equals(type)) {
+                    isCheckOutputIntent = true;
                     PdfObject destOutputIntent = dictionary.Get(PdfName.DESTOUTPUTPROFILE);
                     if (destOutputIntent != null && pdfaDestOutputIntent != null) {
                         if (pdfaDestOutputIntent.IndRef != destOutputIntent.IndRef)
@@ -829,6 +829,7 @@ namespace iTextSharp.text.pdf.intern
         }
 
         public override void Close(PdfWriter writer) {
+            CheckOutputIntentsInStamperMode(writer);
             if (pdfaOutputIntentColorSpace != null) {
                 if ("RGB ".Equals(pdfaOutputIntentColorSpace)) {
                     if (cmykUsed && writer.DefaultColorspace.Get(PdfName.DEFAULTCMYK) == null)

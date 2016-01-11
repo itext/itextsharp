@@ -79,9 +79,7 @@ namespace iTextSharp.text.pdf.intern
         protected bool rgbUsed = false;
         protected bool cmykUsed = false;
         protected bool grayUsed = false;
-
-        protected String pdfaOutputIntentColorSpace = null;
-        protected PdfObject pdfaDestOutputIntent = null;
+       
 
         internal PdfA1Checker(PdfAConformanceLevel conformanceLevel)
             :base(conformanceLevel) {
@@ -297,6 +295,7 @@ namespace iTextSharp.text.pdf.intern
                         throw new PdfAConformanceException(obj1, MessageLocalization.GetComposedMessage("page.dictionary.shall.not.include.aa.entry"));
                     }
                 } else if (PdfName.OUTPUTINTENT.Equals(type)) {
+                    isCheckOutputIntent = true;
                     PdfObject destOutputIntent = dictionary.Get(PdfName.DESTOUTPUTPROFILE);
                     if (destOutputIntent != null && pdfaDestOutputIntent != null) {
                         if (pdfaDestOutputIntent.IndRef != destOutputIntent.IndRef)
@@ -497,6 +496,7 @@ namespace iTextSharp.text.pdf.intern
         }
 
         public override void Close(PdfWriter writer) {
+            CheckOutputIntentsInStamperMode(writer);
                     if ((rgbUsed || cmykUsed || grayUsed) && pdfaOutputIntentColorSpace == null) {
             throw new PdfAConformanceException(null, MessageLocalization.GetComposedMessage("if.device.rgb.cmyk.gray.used.in.file.that.file.shall.contain.pdfa.outputintent"));
         }

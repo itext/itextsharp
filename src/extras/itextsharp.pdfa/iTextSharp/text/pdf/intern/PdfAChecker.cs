@@ -45,6 +45,7 @@
 using System;
 using System.Collections.Generic;
 using System.util.collections;
+using iTextSharp.text.error_messages;
 
 namespace iTextSharp.text.pdf.intern
 {
@@ -54,7 +55,9 @@ namespace iTextSharp.text.pdf.intern
         protected Dictionary<RefKey, PdfObject> cachedObjects = new Dictionary<RefKey, PdfObject>();
         private HashSet2<PdfName> keysForCheck;
         private static byte[] emptyByteArray = new byte[] { };
-
+        protected String pdfaOutputIntentColorSpace = null;
+ 	    protected PdfObject pdfaDestOutputIntent = null;
+ 	    protected bool isCheckOutputIntent = false;
         internal PdfAChecker(PdfAConformanceLevel conformanceLevel) {
             keysForCheck = InitKeysForCheck();
             this.conformanceLevel = conformanceLevel;
@@ -254,5 +257,22 @@ namespace iTextSharp.text.pdf.intern
         protected static bool CheckFlag(int flags, int flag) {
             return (flags & flag) != 0;
         }
+
+        protected void CheckOutputIntentsInStamperMode(PdfWriter writer) {
+ 	       if (writer is PdfAStamperImp && !isCheckOutputIntent) {
+ 	            PdfReader pdfReader = ((PdfAStamperImp) writer).GetPdfReader();
+ 	            PdfArray outPutIntentsDic = pdfReader.Catalog.GetAsArray(PdfName.OUTPUTINTENTS);
+ 	            if (outPutIntentsDic != null) {
+ 	                if (outPutIntentsDic.Size > 1) {
+ 	                    throw new PdfAConformanceException(outPutIntentsDic, MessageLocalization.GetComposedMessage("a.pdfa.file.may.have.only.one.pdfa.outputintent"));
+ 		                } else {
+ 	                        PdfDictionary outPutIntentDic = outPutIntentsDic.GetAsDict(0);
+                            if (outPutIntentDic != null) {
+ 	                            CheckPdfObject(writer, PdfIsoKeys.PDFISOKEY_OBJECT, outPutIntentDic);
+ 	                        }
+ 		                }
+ 	            }
+ 	        }
+ 	    }
     }
 }
