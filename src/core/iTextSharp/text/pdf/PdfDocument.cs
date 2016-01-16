@@ -555,9 +555,13 @@ namespace iTextSharp.text.pdf {
                             indentation.indentRight += paragraph.IndentationRight;
                         } else {
                             line.SetExtraIndent(paragraph.FirstLineIndent);
+                            float oldHeight = currentHeight;
                             element.Process(this);
                             CarriageReturn();
-                            AddSpacing(paragraph.SpacingAfter, paragraph.TotalLeading, paragraph.Font, true);
+                            if (oldHeight != currentHeight || lines.Count > 0)
+                            {
+                                AddSpacing(paragraph.SpacingAfter, paragraph.TotalLeading, paragraph.Font, true);
+                            }
                         }
 
                         if (pageEvent != null && !isSectionTitle)
@@ -1876,12 +1880,7 @@ namespace iTextSharp.text.pdf {
 
             if (pageEmpty) 
                 return;
-
-            if (spacingAfter && !pageEmpty) {
-                if (lines.Count == 0 && line.Size == 0) {
-                    return;
-                }
-            }
+           
 
             float height = spacingAfter ? extraspace : CalculateLineHeight();
 

@@ -3,6 +3,7 @@ using System.Collections.Generic;
 using iTextSharp.text;
 using iTextSharp.text.pdf.draw;
 using iTextSharp.tool.xml;
+using iTextSharp.tool.xml.css;
 using iTextSharp.tool.xml.exceptions;
 using iTextSharp.tool.xml.pipeline.html;
 /*
@@ -60,12 +61,34 @@ namespace iTextSharp.tool.xml.html {
         /* (non-Javadoc)
          * @see com.itextpdf.tool.xml.ITagProcessor#endElement(com.itextpdf.tool.xml.Tag, java.util.List, com.itextpdf.text.Document)
          */
-        public override IList<IElement> End(IWorkerContext ctx, Tag tag, IList<IElement> currentContent) {
+        public override IList<IElement> Start(IWorkerContext ctx, Tag tag) {
             try {
                 IList<IElement> list = new List<IElement>();
 			    HtmlPipelineContext htmlPipelineContext = GetHtmlPipelineContext(ctx);
 			    LineSeparator lineSeparator = (LineSeparator) GetCssAppliers().Apply(new LineSeparator(), tag, htmlPipelineContext);
-                list.Add(lineSeparator);
+                Paragraph p = new Paragraph();
+                IDictionary<String, String> css = tag.CSS;
+                float fontSize = 12;
+               
+              
+                if (css.ContainsKey(CSS.Property.FONT_SIZE)) {
+                    fontSize = CssUtils.GetInstance().ParsePxInCmMmPcToPt(css[CSS.Property.FONT_SIZE]);
+                }
+                String marginTop;
+                css.TryGetValue(CSS.Property.MARGIN_TOP, out marginTop);
+                if (marginTop == null) {
+                    marginTop = "0.5em";
+                }
+                String marginBottom; 
+                css.TryGetValue(CSS.Property.MARGIN_BOTTOM,out marginBottom);
+                if (marginBottom == null) {
+                    marginBottom = "0.5em";
+                }
+                p.SpacingBefore = p.SpacingBefore + CssUtils.GetInstance().ParseValueToPt(marginTop, fontSize);
+                p.SpacingAfter = p.SpacingAfter + CssUtils.GetInstance().ParseValueToPt(marginBottom, fontSize);
+                p.Leading = 0;
+                p.Add(lineSeparator);
+                list.Add(p);
                 return list;
             } catch (NoCustomContextException e) {
                 throw new RuntimeWorkerException(LocaleMessages.GetInstance().GetMessage(LocaleMessages.NO_CUSTOM_CONTEXT), e);

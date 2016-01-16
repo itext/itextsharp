@@ -52,6 +52,7 @@ using iTextSharp.text.pdf.draw;
 using iTextSharp.text.html;
 using iTextSharp.tool.xml;
 using iTextSharp.tool.xml.css;
+using iTextSharp.tool.xml.html;
 using iTextSharp.tool.xml.pipeline.html;
 /**
  *
@@ -70,12 +71,17 @@ namespace iTextSharp.tool.xml.css.apply {
         virtual public LineSeparator Apply(LineSeparator ls, Tag t, IPageSizeContainable psc) {
             float lineWidth = 1;
             IDictionary<String, String> css = t.CSS;
-            if (css.ContainsKey(CSS.Property.HEIGHT)) {
+            if (t.Attributes.ContainsKey(HTML.Attribute.SIZE)){
+                lineWidth = CssUtils.GetInstance().ParsePxInCmMmPcToPt(t.Attributes[HTML.Attribute.SIZE]);
+            } else if (css.ContainsKey(CSS.Property.HEIGHT)) {
                 lineWidth = CssUtils.GetInstance().ParsePxInCmMmPcToPt(css[CSS.Property.HEIGHT]);
             }
             ls.LineWidth = lineWidth;
             BaseColor lineColor = BaseColor.BLACK;
-            if (css.ContainsKey(CSS.Property.COLOR)) {
+            if (t.Attributes.ContainsKey(CSS.Property.COLOR)) {
+                lineColor = HtmlUtilities.DecodeColor(t.Attributes[CSS.Property.COLOR]);
+            }
+            else if (css.ContainsKey(CSS.Property.COLOR)) {
                 lineColor  = HtmlUtilities.DecodeColor(css[CSS.Property.COLOR]);
             } else if (css.ContainsKey(CSS.Property.BACKGROUND_COLOR)) {
                 lineColor = HtmlUtilities.DecodeColor(css[CSS.Property.BACKGROUND_COLOR]);
@@ -84,6 +90,9 @@ namespace iTextSharp.tool.xml.css.apply {
             float percentage = 100;
             String widthStr;
             css.TryGetValue(CSS.Property.WIDTH, out widthStr);
+            if (widthStr == null) {
+                 t.Attributes.TryGetValue(CSS.Property.WIDTH,out widthStr);
+            }
             if (widthStr != null) {
                 if (widthStr.Contains("%")) {
                     percentage = float.Parse(widthStr.Replace("%", ""), CultureInfo.InvariantCulture);
@@ -92,7 +101,17 @@ namespace iTextSharp.tool.xml.css.apply {
                 }
             }
             ls.Percentage = percentage;
-            ls.Offset = 9;
+            String align;
+            t.Attributes.TryGetValue(HTML.Attribute.ALIGN,out align);
+            if (CSS.Value.RIGHT.Equals(align)) {
+                ls.Alignment = Element.ALIGN_RIGHT;
+            }
+            else if (CSS.Value.LEFT.Equals(align)) {
+                ls.Alignment = Element.ALIGN_LEFT;
+            }
+            else if (CSS.Value.CENTER.Equals(align)) {
+                ls.Alignment = Element.ALIGN_CENTER;
+            }
             return ls;
         }
     }
