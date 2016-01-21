@@ -109,9 +109,32 @@ namespace iTextSharp.text.pdf {
                 dic.Put(PdfName.S, numberingStyle[numberStyle]);
             if (text != null)
                 dic.Put(PdfName.P, new PdfString(text, PdfObject.TEXT_UNICODE));
-            //Putting page labels on every page since LiveCycle fails to read the page without it
+            //Not adding the first page by default since 1 is the default value
+            if (firstPage != 1)
                 dic.Put(PdfName.ST, new PdfNumber(firstPage));
             map[page - 1] = dic;
+        }
+
+        /** Adds or replaces a page label.
+    * @param page the real page to start the numbering. First page is 1
+    * @param numberStyle the numbering style such as LOWERCASE_ROMAN_NUMERALS
+    * @param text the text to prefix the number. Can be <CODE>null</CODE> or empty
+    * @param firstPage the first logical page number
+    * @param includeFirstPage If true, the page label will be added to the first page if it is page 1.  
+    * 	 If the first page is not page 1 or this value is false, the value will not be added to the dictionary.  
+    */
+        public void AddPageLabel(int page, int numberStyle, String text, int firstPage, Boolean includeFirstPage)
+        {
+            if (page < 1 || firstPage < 1)
+                throw new ArgumentException(MessageLocalization.GetComposedMessage("in.a.page.label.the.page.numbers.must.be.greater.or.equal.to.1"));
+            PdfDictionary dic = new PdfDictionary();
+            if (numberStyle >= 0 && numberStyle < numberingStyle.Length)
+                dic.Put(PdfName.S, numberingStyle[numberStyle]);
+            if (text != null)
+                dic.Put(PdfName.P, new PdfString(text, PdfObject.TEXT_UNICODE));
+            if (firstPage != 1 || includeFirstPage)
+                dic.Put(PdfName.ST, new PdfNumber(firstPage));
+            map[page - 1] =  dic;
         }
 
         /** Adds or replaces a page label. The first logical page has the default
