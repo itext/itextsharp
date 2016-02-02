@@ -148,10 +148,10 @@ namespace iTextSharp.tool.xml.css.apply {
                 String[] splitValues = new Regex(@"\s+").Split(value);
                 foreach (String curValue in splitValues) {
                     if (Util.EqualsIgnoreCase(CSS.Value.UNDERLINE, curValue)) {
-                        c.SetUnderline(0.75f, -size/8f);
+                        c.SetUnderline(null, 0.75f, 0, 0, -0.125f, PdfContentByte.LINE_CAP_BUTT);
                     }
                     if (Util.EqualsIgnoreCase(CSS.Value.LINE_THROUGH, curValue)) {
-                        c.SetUnderline(0.75f, size/4f);
+                        c.SetUnderline(null, 0.75f, 0, 0, 0.25f, PdfContentByte.LINE_CAP_BUTT);
                     }
                 }
             }

@@ -1534,8 +1534,8 @@ namespace iTextSharp.text.pdf {
                                     scolor = color;
                                 if (scolor != null)
                                     graphics.SetColorStroke(scolor);
-                                graphics.SetLineWidth(ps[0] + fontSize * ps[1]);
-                                float shift = ps[2] + fontSize * ps[3];
+                                graphics.SetLineWidth(ps[0] + chunk.Font.Size * ps[1]);
+                                float shift = ps[2] + chunk.Font.Size * ps[3];
                                 int cap2 = (int)ps[4];
                                 if (cap2 != 0)
                                     graphics.SetLineCap(cap2);
