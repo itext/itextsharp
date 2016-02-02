@@ -1194,26 +1194,26 @@ namespace iTextSharp.text.pdf {
             writer.SigFlags = 3;
             PdfDictionary fieldLock = null;
             if (fieldExists) {
-                PdfDictionary merged = af.GetFieldItem(name).GetMerged(0);
-                writer.MarkUsed(merged);
-                fieldLock = merged.GetAsDict(PdfName.LOCK);
+                PdfDictionary widget = af.GetFieldItem(name).GetWidget(0);
+                writer.MarkUsed(widget);
+                fieldLock = widget.GetAsDict(PdfName.LOCK);
 
                 if (fieldLock == null && FieldLockDict != null) {
-                    merged.Put(PdfName.LOCK, writer.AddToBody(FieldLockDict).IndirectReference);
+                    widget.Put(PdfName.LOCK, writer.AddToBody(FieldLockDict).IndirectReference);
                     fieldLock = FieldLockDict;
                 }
 
-                merged.Put(PdfName.P, writer.GetPageReference(Page));
-                merged.Put(PdfName.V, refSig);
-                PdfObject obj = PdfReader.GetPdfObjectRelease(merged.Get(PdfName.F));
+                widget.Put(PdfName.P, writer.GetPageReference(Page));
+                widget.Put(PdfName.V, refSig);
+                PdfObject obj = PdfReader.GetPdfObjectRelease(widget.Get(PdfName.F));
                 int flags = 0;
                 if (obj != null && obj.IsNumber())
                     flags = ((PdfNumber)obj).IntValue;
                 flags |= PdfAnnotation.FLAGS_LOCKED;
-                merged.Put(PdfName.F, new PdfNumber(flags));
+                widget.Put(PdfName.F, new PdfNumber(flags));
                 PdfDictionary ap = new PdfDictionary();
                 ap.Put(PdfName.N, GetAppearance().IndirectReference);
-                merged.Put(PdfName.AP, ap);
+                widget.Put(PdfName.AP, ap);
             }
             else {
                 PdfFormField sigField = PdfFormField.CreateSignature(writer);
