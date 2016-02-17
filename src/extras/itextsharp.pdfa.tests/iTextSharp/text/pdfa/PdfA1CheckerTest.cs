@@ -2095,7 +2095,7 @@ namespace iTextSharp.text.pdfa
                     exceptionThrown = true;
                 }
             }
-            if (!exceptionThrown)
+            if (exceptionThrown)
             {
                 Assert.Fail("PdfAConformanceException should be thrown");
             }

@@ -46,10 +46,13 @@ using System;
 using System.Collections.Generic;
 using System.util.collections;
 using iTextSharp.text.error_messages;
+using iTextSharp.text.log;
 
 namespace iTextSharp.text.pdf.intern
 {
     public abstract class PdfAChecker {
+
+        protected static ILogger LOGGER = LoggerFactory.GetLogger(typeof(PdfAChecker));
 
         protected PdfAConformanceLevel conformanceLevel;
         protected Dictionary<RefKey, PdfObject> cachedObjects = new Dictionary<RefKey, PdfObject>();

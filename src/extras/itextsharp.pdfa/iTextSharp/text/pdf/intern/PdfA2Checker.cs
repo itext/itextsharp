@@ -3,6 +3,8 @@ using System.Collections.Generic;
 using System.Text;
 using System.util.collections;
 using iTextSharp.text.error_messages;
+using iTextSharp.text.log;
+
 /*
  * $Id: PdfA2Checker.java 5827 2013-05-31 08:56:23Z blowagie $
  *
@@ -519,7 +521,9 @@ namespace iTextSharp.text.pdf.intern
                             throw new PdfAConformanceException(obj1, MessageLocalization.GetComposedMessage("document.catalog.dictionary.shall.include.a.markinfo.dictionary.whose.entry.marked.shall.have.a.value.of.true"));
                         }
                         if (!dictionary.Contains(PdfName.LANG)) {
-                            throw new PdfAConformanceException(obj1, MessageLocalization.GetComposedMessage("document.catalog.dictionary.should.contain.lang.entry"));
+                            if (LOGGER.IsLogging(Level.WARN)) {
+                                LOGGER.Warn(MessageLocalization.GetComposedMessage("document.catalog.dictionary.should.contain.lang.entry"));
+                            }
                         }
                     }
                 } else if (PdfName.PAGE.Equals(type)) {
