@@ -6,7 +6,7 @@ using System.Text;
 using System.util;
 /*
  * $Id: CompareTool.cs 318 2012-02-27 22:46:07Z eugenemark $
- * 
+ *
  *
  * This file is part of the iText project.
  * Copyright (c) 1998-2015 iText Group NV
@@ -443,7 +443,7 @@ public class CompareTool {
             Process p = new Process();
             p.StartInfo.FileName = @gsExec;
             p.StartInfo.Arguments = @gsParams;
-            p.StartInfo.UseShellExecute = false;   
+            p.StartInfo.UseShellExecute = false;
             p.StartInfo.RedirectStandardError = true;
             p.StartInfo.RedirectStandardOutput = true;
             p.StartInfo.CreateNoWindow = true;
@@ -525,7 +525,7 @@ public class CompareTool {
                                                               ".png for more details.";
                                     } else {
                                         differentPagesFail =
-                                            "File " + outPdf + " differs.\nPlease, examine difference images for more details.";    
+                                            "File " + outPdf + " differs.\nPlease, examine difference images for more details.";
                                     }
                                 }
                                 else
@@ -841,11 +841,11 @@ public class CompareTool {
         return dictsAreSame;
     }
 
-    public bool ÑompareContentStreamsByParsing(PdfObject outObj, PdfObject cmpObj) {
+    public bool CompareContentStreamsByParsing(PdfObject outObj, PdfObject cmpObj) {
         return CompareContentStreamsByParsingExtended(outObj, cmpObj, null, null, null, null);
     }
 
-    public bool ÑompareContentStreamsByParsing(PdfObject outObj, PdfObject cmpObj, PdfDictionary outResources, PdfDictionary cmpResources) {
+    public bool CompareContentStreamsByParsing(PdfObject outObj, PdfObject cmpObj, PdfDictionary outResources, PdfDictionary cmpResources) {
         return CompareContentStreamsByParsingExtended(outObj, cmpObj, outResources, cmpResources, null, null);
     }
 
@@ -895,7 +895,7 @@ public class CompareTool {
                     outResources = (PdfDictionary) outStr.GetDirectObject(PdfName.RESOURCES);
                     cmpResources = (PdfDictionary) cmpStr.GetDirectObject(PdfName.RESOURCES);
                 }
-                if (!ÑompareInlineImagesExtended(outPs, cmpPs, outResources, cmpResources, currentPath, compareResult)) {
+                if (!CompareInlineImagesExtended(outPs, cmpPs, outResources, cmpResources, currentPath, compareResult)) {
                     return false;
                 }
                 continue;
@@ -909,7 +909,7 @@ public class CompareTool {
         return true;
     }
 
-    private bool ÑompareInlineImagesExtended(PdfContentParser outPs, PdfContentParser cmpPs, PdfDictionary outDict, PdfDictionary cmpDict, ObjectPath currentPath, CompareResult compareResult) {
+    private bool CompareInlineImagesExtended(PdfContentParser outPs, PdfContentParser cmpPs, PdfDictionary outDict, PdfDictionary cmpDict, ObjectPath currentPath, CompareResult compareResult) {
         InlineImageInfo cmpInfo = InlineImageUtils.ParseInlineImage(cmpPs, cmpDict);
         InlineImageInfo outInfo = InlineImageUtils.ParseInlineImage(outPs, outDict);
         return CompareObjects(outInfo.ImageDictionary, cmpInfo.ImageDictionary, currentPath, compareResult) &&
@@ -1120,7 +1120,7 @@ public class CompareTool {
     public bool CompareXmls(byte[] xml1, byte[] xml2) {
         throw new NotImplementedException("Comparing xmls in c# hasn't implemented yet. We don't want to make references to external libraries.");
     }
-    
+
     private void Init(String outPdf, String cmpPdf) {
         this.outPdf = outPdf;
         this.cmpPdf = cmpPdf;
@@ -1182,7 +1182,7 @@ public class CompareTool {
         return message;
     }
 
-   
+
 
     private bool LinksAreSame(PdfAnnotation.PdfImportedLink cmpLink, PdfAnnotation.PdfImportedLink outLink) {
         // Compare link boxes, page numbers the links refer to, and simple parameters (non-indirect, non-arrays, non-dictionaries)
