@@ -393,9 +393,22 @@ namespace iTextSharp.xtra.iTextSharp.text.pdf.pdfcleanup {
                 WriteStroke(canvas, cleanUpStrategy.CurrentStrokePath, strokeColorSpace);
             }
 
-            if (cleanUpStrategy.Clipped && !cleanUpStrategy.NewClipPath.IsEmpty()) {
-                byte[] clippingOperator = (cleanUpStrategy.ClippingRule == PathPaintingRenderInfo.NONZERO_WINDING_RULE) ? W : eoW;
-                WritePath(cleanUpStrategy.NewClipPath, clippingOperator, canvas);
+            if (cleanUpStrategy.Clipped) {
+                if (!cleanUpStrategy.NewClipPath.IsEmpty()) {
+                    byte[] clippingOperator = (cleanUpStrategy.ClippingRule == PathPaintingRenderInfo.NONZERO_WINDING_RULE) ? W : eoW;
+                    WritePath(cleanUpStrategy.NewClipPath, clippingOperator, canvas);
+                } else {
+                    // If the clipping path from the source document is cleaned (it happens when reduction
+                    // area covers the path completely), then you should treat it as an empty set (no points
+                    // are included in the path). Then the current clipping path (which is the intersection
+                    // between previous clipping path and the new one) is also empty set, which means that
+                    // there is no visible content at all. But at the same time as we removed the clipping
+                    // path, the invisible content would become visible. So, to emulate the correct result,
+                    // we would simply put a degenerate clipping path which consists of a single point at (0, 0).
+                    Path degeneratePath = new Path();
+                    degeneratePath.MoveTo(0, 0);
+                    WritePath(degeneratePath, W, canvas);
+                }
                 canvas.InternalBuffer.Append(n);
                 cleanUpStrategy.Clipped = false;
             }
