@@ -85,7 +85,8 @@ namespace itextsharp.tests.iTextSharp.text.pdf.pdfcleanup {
             IList<PdfCleanUpLocation> cleanUpLocations3 = new List<PdfCleanUpLocation>();
             cleanUpLocations3.Add(new PdfCleanUpLocation(1, new Rectangle(97f, 605f, 480f, 645f), BaseColor.GRAY));
 
-            List<PdfCleanUpLocation> cleanUpLocations4 = new List<PdfCleanUpLocation>{ new PdfCleanUpLocation(1, new Rectangle(212, 394, 212 + 186, 394 + 170), null)};
+            List<PdfCleanUpLocation> cleanUpLocations4 = new List<PdfCleanUpLocation>();
+            cleanUpLocations4.Add(new PdfCleanUpLocation(1, new Rectangle(212, 394, 212 + 186, 394 + 170), null));
 
             return new object[] {
                 new object[] {"page229.pdf", "page229_01.pdf", "cmp_page229_01.pdf", cleanUpLocations1},
