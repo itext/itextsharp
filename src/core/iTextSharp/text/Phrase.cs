@@ -369,7 +369,7 @@ namespace iTextSharp.text {
             if (Count > 0 && !chunk.HasAttributes()) {
                 try {
                     Chunk previous = (Chunk) this[Count - 1];
-                    if (!previous.HasAttributes() && !chunk.HasAccessibleAttributes() && !previous.HasAccessibleAttributes()
+                    if (previous.Role.Equals(chunk.Role) && !previous.HasAttributes() && !chunk.HasAccessibleAttributes() && !previous.HasAccessibleAttributes()
                             && (f == null
                             || f.CompareTo(previous.Font) == 0)
                             && previous.Font.CompareTo(f) == 0
