@@ -352,8 +352,6 @@ namespace iTextSharp.text.pdf {
                 field = PdfFormField.CreateCheckBox(writer);
             field.SetWidget(box, PdfAnnotation.HIGHLIGHT_INVERT);
             if (!isRadio) {
-                if(!"Yes".Equals(onValue))
-                    throw new DocumentException(MessageLocalization.GetComposedMessage("1.is.not.a.valid.name.for.checkbox.appearance", onValue));
                 field.FieldName = fieldName;
                 if ((options & READ_ONLY) != 0)
                     field.SetFieldFlags(PdfFormField.FF_READ_ONLY);
