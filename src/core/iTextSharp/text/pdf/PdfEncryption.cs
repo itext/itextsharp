@@ -104,6 +104,9 @@ public class PdfEncryption {
     private ARCFOUREncryption rc4 = new ARCFOUREncryption();
     /** The generic key length. It may be 40 or 128. */
     private int keyLength;
+
+
+
     private bool encryptMetadata;
     /**
      * Indicates if the encryption is only necessary for embedded files.
@@ -133,6 +136,18 @@ public class PdfEncryption {
         encryptMetadata = enc.encryptMetadata;
         embeddedFilesOnly = enc.embeddedFilesOnly;
         publicKeyHandler = enc.publicKeyHandler;
+        if (enc.ueKey != null)
+        {
+            ueKey = (byte[]) enc.ueKey.Clone();
+        }
+        if (enc.oeKey != null)
+        {
+            oeKey = (byte[]) enc.oeKey.Clone();
+        }
+        if (enc.perms != null)
+        {
+            perms = (byte[]) enc.perms.Clone();
+        }
     }
 
     virtual public void SetCryptoMode(int mode, int kl) {
@@ -391,6 +406,18 @@ public class PdfEncryption {
         byte[] oeValue = DocWriter.GetISOBytes(enc.Get(PdfName.OE).ToString());
         byte[] ueValue = DocWriter.GetISOBytes(enc.Get(PdfName.UE).ToString());
         byte[] perms = DocWriter.GetISOBytes(enc.Get(PdfName.PERMS).ToString());
+
+        PdfNumber pValue = (PdfNumber)enc.Get(PdfName.P);
+
+        this.oeKey = oeValue;
+        this.ueKey = ueValue;
+        this.perms = perms;
+
+        this.ownerKey = oValue;
+        this.userKey = uValue;
+
+        this.permissions = pValue.LongValue;
+
         bool isUserPass = false;
         IDigest md = DigestUtilities.GetDigest("SHA-256");
         md.BlockUpdate(password, 0, Math.Min(password.Length, 127));

@@ -91,6 +91,7 @@
     <Compile Include="iTextSharp\text\pdf\AcroFieldsTest.cs" />
     <Compile Include="iTextSharp\text\pdf\BarcodeUnicodeTest.cs" />
     <Compile Include="iTextSharp\text\pdf\BookmarksTest.cs" />
+    <Compile Include="iTextSharp\text\pdf\PdfEncryptionTest.cs" />
     <Compile Include="iTextSharp\text\pdf\CMapAwareDocumentFontTest.cs" />
     <Compile Include="iTextSharp\text\pdf\cs\DeviceNColorSpaceTest.cs" />
     <Compile Include="iTextSharp\text\pdf\cs\LabColorSpaceTest.cs" />

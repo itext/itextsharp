@@ -876,6 +876,7 @@ namespace iTextSharp.text.pdf {
             if (filter.Equals(PdfName.STANDARD)) {
                 if (rValue == 5) {
                     ownerPasswordUsed = decrypt.ReadKey(enc, password);
+                    decrypt.documentID = documentID;
                     pValue = decrypt.GetPermissions();
                 }
                 else {
