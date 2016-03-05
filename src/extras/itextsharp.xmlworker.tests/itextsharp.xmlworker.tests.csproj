@@ -135,6 +135,8 @@
     <Compile Include="iTextSharp\tool\xml\examples\css\div\ComplexDiv01Test.cs" />
     <Compile Include="iTextSharp\tool\xml\examples\css\div\ComplexDiv02Test.cs" />
     <Compile Include="iTextSharp\tool\xml\examples\css\div\ComplexDivPagination01Test.cs" />
+    <Compile Include="iTextSharp\tool\xml\examples\css\div\DivInTableTest01.cs" />
+    <Compile Include="iTextSharp\tool\xml\examples\css\div\DivInTableTest02.cs" />
     <Compile Include="iTextSharp\tool\xml\examples\css\div\DivSampleTest.cs" />
     <Compile Include="iTextSharp\tool\xml\examples\css\div\Linebreak001Test.cs" />
     <Compile Include="iTextSharp\tool\xml\examples\css\div\Match004Test.cs" />

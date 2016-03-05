@@ -1,4 +1,5 @@
 using System;
+using System.Collections;
 using System.Collections.Generic;
 using System.util;
 using iTextSharp.text;
@@ -752,7 +753,15 @@ namespace iTextSharp.tool.xml.html.table {
                         rulesWidth.Add(cellWidth);
 				    }
                     else if (baseLevel is PdfDiv) {
-                        cellWidth = startWidth + widthDeviation + ((PdfDiv) baseLevel).getActualWidth();
+                        PdfDiv div = (PdfDiv) baseLevel;
+
+                        float? divActualWidth = div.Width;
+
+                        if (divActualWidth == null) {
+                            divActualWidth = CalculateDivWidestElementWidth(div.Content);
+                        }
+
+                        cellWidth = startWidth + widthDeviation + (float)divActualWidth;
                         rulesWidth.Add(cellWidth);
                     }
                 }
@@ -763,7 +772,60 @@ namespace iTextSharp.tool.xml.html.table {
                     cellWidth = width;
                 }
             }
-        return new float[]{cellWidth, widestWordOfCell};
+            return new float[]{cellWidth, widestWordOfCell};
+        }
+
+        /**
+         * An attempt to calculate a valid div width in case it is not fixed. It is used as alternative to
+         * div.getActualWidth, which doesn't work here in case of not fixed div's width (it returns 0).
+         *
+         * This method is probably has to be improved in future.
+         *
+         * The main idea of this method is to return the widest element's width, so the created cell will be able to contain it.
+         */
+
+        private float CalculateDivWidestElementWidth(List<IElement> divContent) {
+            float maxWidth = 0;
+            foreach (IElement element in divContent) {
+                float width = 0;
+                // judging by the com.itextpdf.tool.xml.html.Div end() method, the div in XmlWorker can
+ 	            // contain only paragraph, table and another div
+                if (element is PdfDiv) {
+                    width = CalculateDivWidestElementWidth(((PdfDiv) element).Content);
+                } else if (element is PdfPTable) {
+                    width = ((PdfPTable)element).TotalWidth;
+                } else if (element is Paragraph) {
+                    Paragraph p = (Paragraph) element;
+                    float widestWordOfParagraph = 0;
+
+                    foreach (IElement inner in p) {
+                        float widestWord = 0;
+                        if (inner is Chunk) {
+                            IDictionary<string, Object> chunkAttributes = ((Chunk)inner).Attributes;
+                            if (chunkAttributes != null && chunkAttributes.ContainsKey(Chunk.IMAGE)) {
+                                Object o;
+                                chunkAttributes.TryGetValue(Chunk.IMAGE, out o);
+                                if (o is Object[] && ((Object[]) o)[0] is text.Image) {
+                                    widestWord = ((text.Image) ((Object[]) o)[0]).Width;
+                                }
+                            }
+                            else {
+                                widestWord = GetCssAppliers().ChunkCssAplier.GetWidestWord((Chunk)inner);
+                            }
+                        }
+
+                        if (widestWord > widestWordOfParagraph) {
+                            widestWordOfParagraph = widestWord;
+                        }
+                    }
+                    width = widestWordOfParagraph;
+                }
+
+                if (width > maxWidth) {
+                    maxWidth = width;
+                }
+            }
+            return maxWidth;
         }
 
         /**

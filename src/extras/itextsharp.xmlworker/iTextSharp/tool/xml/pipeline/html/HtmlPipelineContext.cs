@@ -286,6 +286,9 @@ namespace iTextSharp.tool.xml.pipeline.html {
             {
                 newCtx.SetImageProvider(imageProvider);
             }
+            if (resourcePath != null) {
+                newCtx.ResourcePath = resourcePath;
+            }
             if (null != this.charset)
             {
                 newCtx.CharSet(Encoding.GetEncoding(this.charset.CodePage));

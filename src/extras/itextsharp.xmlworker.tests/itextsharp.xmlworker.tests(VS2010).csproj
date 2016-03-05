@@ -147,6 +147,8 @@
     <Compile Include="iTextSharp\tool\xml\examples\css\div\ComplexDiv01Test.cs" />
     <Compile Include="iTextSharp\tool\xml\examples\css\div\ComplexDiv02Test.cs" />
     <Compile Include="iTextSharp\tool\xml\examples\css\div\ComplexDivPagination01Test.cs" />
+    <Compile Include="iTextSharp\tool\xml\examples\css\div\DivInTableTest02.cs" />
+    <Compile Include="iTextSharp\tool\xml\examples\css\div\DivInTableTest01.cs" />
     <Compile Include="iTextSharp\tool\xml\examples\css\div\DivSampleTest.cs" />
     <Compile Include="iTextSharp\tool\xml\examples\css\div\Linebreak001Test.cs" />
     <Compile Include="iTextSharp\tool\xml\examples\css\div\Match004Test.cs" />
@@ -510,7 +512,7 @@
     <Compile Include="iTextSharp\tool\xml\examples\html\Tt01Test.cs" />
     <Compile Include="iTextSharp\tool\xml\examples\html\U01Test.cs" />
     <Compile Include="iTextSharp\tool\xml\examples\html\Var01Test.cs" />
-	<Compile Include="iTextSharp\tool\xml\examples\html\LetteredListLowerCaseTest.cs" />
+    <Compile Include="iTextSharp\tool\xml\examples\html\LetteredListLowerCaseTest.cs" />
     <Compile Include="iTextSharp\tool\xml\examples\html\LetteredListTest.cs" />
     <Compile Include="iTextSharp\tool\xml\examples\SampleTest.cs" />
     <Compile Include="iTextSharp\tool\xml\examples\table\ColRowSpanTest.cs" />

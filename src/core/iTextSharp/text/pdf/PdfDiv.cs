@@ -223,11 +223,23 @@ namespace iTextSharp.text.pdf {
             set { contentHeight = value; }
         }
 
+        /**
+         * IMPROTANT NOTE: be careful with this method because it would return correct result
+         * only in case if {@link PdfDiv#layout(PdfContentByte, boolean, boolean, float, float, float, float)}
+         * was already called.
+         * @return the actual height the div would require to layout it's content
+         */
         virtual public float getActualHeight()
         {
             return height != null && height >= contentHeight ? (float) height : contentHeight;
         }
 
+        /**
+         * IMPROTANT NOTE: be careful with this method because it would return correct result
+         * only in case if {@link PdfDiv#layout(PdfContentByte, boolean, boolean, float, float, float, float)}
+         * was already called.
+         * @return the actual width the div would require to layout it's content
+         */
         virtual public float getActualWidth()
         {
             return width != null && width >= contentWidth ? (float) width : contentWidth;
