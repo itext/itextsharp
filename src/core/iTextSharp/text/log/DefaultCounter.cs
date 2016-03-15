@@ -8,7 +8,8 @@ namespace iTextSharp.text.log {
     public class DefaultCounter : ICounter {
         private int count = 0;
         private int level = 0;
-        private readonly int[] repeat = {10000, 5000, 5000, 5000, 5000, 1000};
+		private readonly int[] repeat = {10000, 5000, 1000};
+		private int repeat_level = 10000;
 
         /**
          * @param klass
@@ -35,15 +36,17 @@ namespace iTextSharp.text.log {
         }
 
         private void PlusOne() {
-            if (count++ > repeat[level]) {
-                if (Version.IsAGPLVersion) {
-                    if (level < repeat.Length - 1) {
-                        level++;
-                    }
-                    Console.WriteLine(Encoding.UTF8.GetString(message));
-                }
-                count = 0;
-            }
+			if (count++ > repeat_level) {
+				if (Version.IsAGPLVersion) {
+					level++;
+					if (level == 1) {
+						repeat_level = repeat[1];
+					} else {
+						repeat_level = repeat[2];
+					}
+					Console.WriteLine (Encoding.UTF8.GetString (message));
+				}
+			}
         }
 
         private static byte[] message = Convert.FromBase64String(
