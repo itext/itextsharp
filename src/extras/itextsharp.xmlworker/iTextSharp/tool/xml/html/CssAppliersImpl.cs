@@ -147,7 +147,7 @@ namespace iTextSharp.tool.xml.html {
 
         virtual public CssAppliers Clone()
         {
-            CssAppliersImpl clone = new CssAppliersImpl();
+			CssAppliersImpl clone = GetClonedObject();
             clone.chunk = chunk;
 
             clone.paragraph = paragraph;
@@ -160,5 +160,9 @@ namespace iTextSharp.tool.xml.html {
 
             return clone;
         }
+
+		virtual protected CssAppliersImpl GetClonedObject() {
+			return new CssAppliersImpl();
+		}
     }
 }
