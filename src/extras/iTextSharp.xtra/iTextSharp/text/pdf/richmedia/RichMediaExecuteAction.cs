@@ -4,7 +4,7 @@ using iTextSharp.text.pdf;
  * $Id: RichMediaExecuteAction.java 3915 2009-04-26 10:07:57Z blowagie $
  *
  * This file is part of the iText project.
- * Copyright (c) 1998-2015 iText Group NV
+ * Copyright (c) 1998-2016 iText Group NV
  * Authors: Bruno Lowagie, Paulo Soares, et al.
  *
  * This program is free software; you can redistribute it and/or modify

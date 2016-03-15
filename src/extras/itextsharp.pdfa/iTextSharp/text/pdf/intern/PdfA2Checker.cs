@@ -9,7 +9,7 @@ using iTextSharp.text.log;
  * $Id: PdfA2Checker.java 5827 2013-05-31 08:56:23Z blowagie $
  *
  * This file is part of the iText (R) project.
- * Copyright (c) 1998-2015 iText Group NV
+ * Copyright (c) 1998-2016 iText Group NV
  * Authors: Alexander Chingarev, Bruno Lowagie, et al.
  *
  * This program is free software; you can redistribute it and/or modify

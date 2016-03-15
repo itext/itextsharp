@@ -4,7 +4,7 @@ using System.Collections.Generic;
  * $Id: GroupedRandomAccessSource.java 5551 2012-11-21 18:47:14Z trumpetinc $
  *
  * This file is part of the iText (R) project.
- * Copyright (c) 1998-2015 iText Group NV
+ * Copyright (c) 1998-2016 iText Group NV
  * BVBA Authors: Kevin Day, Bruno Lowagie, et al.
  *
  * This program is free software; you can redistribute it and/or modify it under

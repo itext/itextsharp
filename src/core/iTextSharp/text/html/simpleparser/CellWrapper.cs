@@ -9,7 +9,7 @@ using iTextSharp.text.html;
  * $Id: IncCell.java 4635 2010-11-28 17:38:03Z psoares33 $
  *
  * This file is part of the iText project.
- * Copyright (c) 1998-2015 iText Group NV
+ * Copyright (c) 1998-2016 iText Group NV
  * Authors: Bruno Lowagie, Paulo Soares, et al.
  *
  * This program is free software; you can redistribute it and/or modify

@@ -3,7 +3,7 @@ using System;
  * $Id: PdfAConformanceException.java 322 2012-07-23 09:58:41Z bruno $
  *
  * This file is part of the iText (R) project.
- * Copyright (c) 1998-2015 iText Group NV
+ * Copyright (c) 1998-2016 iText Group NV
  * Authors: Alexander Chingarev, Bruno Lowagie, et al.
  *
  * This program is free software; you can redistribute it and/or modify

@@ -7,7 +7,7 @@ using System.util;
  * $Id: Markup.java 4672 2011-01-30 10:38:33Z blowagie $
  *
  * This file is part of the iText project.
- * Copyright (c) 1998-2015 iText Group NV
+ * Copyright (c) 1998-2016 iText Group NV
  * Authors: Bruno Lowagie, Paulo Soares, et al.
  *
  * This program is free software; you can redistribute it and/or modify

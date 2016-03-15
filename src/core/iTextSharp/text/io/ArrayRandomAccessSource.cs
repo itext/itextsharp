@@ -3,7 +3,7 @@ using System;
  * $Id: ArrayRandomAccessSource.java 5550 2012-11-21 13:26:06Z blowagie $
  *
  * This file is part of the iText (R) project.
- * Copyright (c) 1998-2015 iText Group NV
+ * Copyright (c) 1998-2016 iText Group NV
  * BVBA Authors: Kevin Day, Bruno Lowagie, et al.
  *
  * This program is free software; you can redistribute it and/or modify it under

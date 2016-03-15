@@ -2,7 +2,7 @@
  * $Id: StructureItems.java 5945 2013-08-08 10:27:41Z blowagie $
  *
  * This file is part of the iText (R) project.
- * Copyright (c) 1998-2015 iText Group NV
+ * Copyright (c) 1998-2016 iText Group NV
  * Authors: Bruno Lowagie, et al.
  *
  * This program is free software; you can redistribute it and/or modify

@@ -12,7 +12,7 @@ using iTextSharp.text.pdf;
 /*
  * $Id: Body.java 118 2011-05-27 11:10:19Z redlab_b $
  *
- * This file is part of the iText (R) project. Copyright (c) 1998-2015 iText Group NV Authors: Balder Van Camp, Emiel
+ * This file is part of the iText (R) project. Copyright (c) 1998-2016 iText Group NV Authors: Balder Van Camp, Emiel
  * Ackermann, et al.
  *
  * This program is free software; you can redistribute it and/or modify it under the terms of the GNU Affero General

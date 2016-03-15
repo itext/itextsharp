@@ -18,7 +18,7 @@ using iTextSharp.text.error_messages;
  * $Id: TSAClientBouncyCastle.cs 106 2009-12-07 12:23:50Z psoares33 $
  *
  * This file is part of the iText project.
- * Copyright (c) 1998-2015 iText Group NV
+ * Copyright (c) 1998-2016 iText Group NV
  * Authors: Bruno Lowagie, Paulo Soares, et al.
  *
  * This program is free software; you can redistribute it and/or modify

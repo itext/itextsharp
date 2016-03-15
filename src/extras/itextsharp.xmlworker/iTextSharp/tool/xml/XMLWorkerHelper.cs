@@ -15,7 +15,7 @@ using iTextSharp.tool.xml.pipeline.html;
 /*
  * $Id: XMLWorkerHelper.java 144 2011-06-03 22:52:42Z redlab_b $
  *
- * This file is part of the iText (R) project. Copyright (c) 1998-2015 iText Group NV
+ * This file is part of the iText (R) project. Copyright (c) 1998-2016 iText Group NV
  * BVBA Authors: Balder Van Camp, Emiel Ackermann, et al.
  *
  * This program is free software; you can redistribute it and/or modify it under
