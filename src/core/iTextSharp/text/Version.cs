@@ -75,7 +75,7 @@ namespace iTextSharp.text {
 	     * This String contains the version number of this iText release.
 	     * For debugging purposes, we request you NOT to change this constant.
 	     */
-        static private String release = "5.5.9-SNAPSHOT";
+        static private String release = "5.5.10-SNAPSHOT";
 
 	    /**
 	     * This String contains the iText version as shown in the producer line.
