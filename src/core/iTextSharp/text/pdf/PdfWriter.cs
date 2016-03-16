@@ -19,7 +19,7 @@ using iTextSharp.xmp;
  * 
  *
  * This file is part of the iText project.
- * Copyright (c) 1998-2015 iText Group NV
+ * Copyright (c) 1998-2016 iText Group NV
  * Authors: Bruno Lowagie, Paulo Soares, et al.
  *
  * This program is free software; you can redistribute it and/or modify
@@ -1995,6 +1995,7 @@ namespace iTextSharp.text.pdf {
             ICC_Profile colorProfile = (destOutputProfile == null) ? null : ICC_Profile.GetInstance(destOutputProfile);
             SetOutputIntents(outputConditionIdentifier, outputCondition, registryName, info, colorProfile);
         }
+
         /**
         * Copies the output intent dictionary from other document to this one.
         * @param reader the other document
@@ -2027,7 +2028,7 @@ namespace iTextSharp.text.pdf {
             return true;
         }
 
-        private static String GetNameString(PdfDictionary dic, PdfName key) {
+        protected static String GetNameString(PdfDictionary dic, PdfName key) {
             PdfObject obj = PdfReader.GetPdfObject(dic.Get(key));
             if (obj == null || !obj.IsString())
                 return null;

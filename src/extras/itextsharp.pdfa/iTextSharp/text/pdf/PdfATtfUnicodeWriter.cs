@@ -5,7 +5,7 @@ using System.util.collections;
  * $Id: PdfATtfUnicodeWriter.java 322 2012-07-23 09:58:41Z bruno $
  *
  * This file is part of the iText (R) project.
- * Copyright (c) 1998-2015 iText Group NV
+ * Copyright (c) 1998-2016 iText Group NV
  * Authors: Alexander Chingarev, Bruno Lowagie, et al.
  *
  * This program is free software; you can redistribute it and/or modify
@@ -73,31 +73,6 @@ namespace iTextSharp.text.pdf
             PdfIndirectReference ind_font = null;
             PdfObject pobj = null;
             PdfIndirectObject obj = null;
-            PdfIndirectReference cidset = null;
-            if (pdfAConformanceLevel == PdfAConformanceLevel.PDF_A_1A ||
-                pdfAConformanceLevel == PdfAConformanceLevel.PDF_A_1B)
-            {
-                PdfStream stream;
-                if (metrics.Length == 0)
-                {
-                    stream = new PdfStream(new byte[] {(byte) 0x80});
-                }
-                else
-                {
-                    int top = metrics[metrics.Length - 1][0];
-                    byte[] bt = new byte[top/8 + 1];
-                    // CID0 have to be added
-                    bt[0] |= rotbits[0];
-                    for (int k = 0; k < metrics.Length; ++k)
-                    {
-                        int v = metrics[k][0];
-                        bt[v/8] |= rotbits[v%8];
-                    }
-                    stream = new PdfStream(bt);
-                    stream.FlateCompress(font.CompressionLevel);
-                }
-                cidset = writer.AddToBody(stream).IndirectReference;
-            }
             if (font.Cff) {
                 byte[] b = font.ReadCffFont();
                 if (font.Subset || font.SubsetRanges != null) {
@@ -135,6 +110,19 @@ namespace iTextSharp.text.pdf
                 obj = writer.AddToBody(pobj);
                 ind_font = obj.IndirectReference;
             }
+            // CIDSet shall be based on font.maxGlyphId property of the font, it is maxp.numGlyphs for ttf,
+            // because technically we convert all unused glyphs to space, e.g. just remove outlines.
+            byte[] cidSetBytes = new byte[font.MaxGlyphId / 8 + 1];
+            for (int i = 0; i < font.MaxGlyphId/8; i++) {
+                cidSetBytes[i] |= 0xff;
+            }
+            for (int i = 0; i < font.MaxGlyphId%8; i++) {
+                cidSetBytes[cidSetBytes.Length - 1] |= rotbits[i];
+            }
+            PdfStream stream = new PdfStream(cidSetBytes);
+            stream.FlateCompress(font.CompressionLevel);
+            PdfIndirectReference cidset = writer.AddToBody(stream).IndirectReference;
+
             String subsetPrefix = "";
             if (font.Subset)
                 subsetPrefix = BaseFont.CreateSubsetPrefix();

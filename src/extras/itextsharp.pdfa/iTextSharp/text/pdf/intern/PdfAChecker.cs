@@ -2,7 +2,7 @@
  * $Id: PdfAChecker.java 5827 2013-05-31 08:56:23Z blowagie $
  *
  * This file is part of the iText (R) project.
- * Copyright (c) 1998-2015 iText Group NV
+ * Copyright (c) 1998-2016 iText Group NV
  * Authors: Alexander Chingarev, Bruno Lowagie, et al.
  *
  * This program is free software; you can redistribute it and/or modify
@@ -45,16 +45,22 @@
 using System;
 using System.Collections.Generic;
 using System.util.collections;
+using iTextSharp.text.error_messages;
+using iTextSharp.text.log;
 
 namespace iTextSharp.text.pdf.intern
 {
     public abstract class PdfAChecker {
 
+        protected static ILogger LOGGER = LoggerFactory.GetLogger(typeof(PdfAChecker));
+
         protected PdfAConformanceLevel conformanceLevel;
         protected Dictionary<RefKey, PdfObject> cachedObjects = new Dictionary<RefKey, PdfObject>();
         private HashSet2<PdfName> keysForCheck;
         private static byte[] emptyByteArray = new byte[] { };
-
+        protected String pdfaOutputIntentColorSpace = null;
+ 	    protected PdfObject pdfaDestOutputIntent = null;
+ 	    protected bool isCheckOutputIntent = false;
         internal PdfAChecker(PdfAConformanceLevel conformanceLevel) {
             keysForCheck = InitKeysForCheck();
             this.conformanceLevel = conformanceLevel;
@@ -254,5 +260,22 @@ namespace iTextSharp.text.pdf.intern
         protected static bool CheckFlag(int flags, int flag) {
             return (flags & flag) != 0;
         }
+
+        protected void CheckOutputIntentsInStamperMode(PdfWriter writer) {
+ 	       if (writer is PdfAStamperImp && !isCheckOutputIntent) {
+ 	            PdfReader pdfReader = ((PdfAStamperImp) writer).GetPdfReader();
+ 	            PdfArray outPutIntentsDic = pdfReader.Catalog.GetAsArray(PdfName.OUTPUTINTENTS);
+ 	            if (outPutIntentsDic != null) {
+ 	                if (outPutIntentsDic.Size > 1) {
+ 	                    throw new PdfAConformanceException(outPutIntentsDic, MessageLocalization.GetComposedMessage("a.pdfa.file.may.have.only.one.pdfa.outputintent"));
+ 		                } else {
+ 	                        PdfDictionary outPutIntentDic = outPutIntentsDic.GetAsDict(0);
+                            if (outPutIntentDic != null) {
+ 	                            CheckPdfObject(writer, PdfIsoKeys.PDFISOKEY_OBJECT, outPutIntentDic);
+ 	                        }
+ 		                }
+ 	            }
+ 	        }
+ 	    }
     }
 }

@@ -5,7 +5,7 @@ using System.Text;
  * $Id: XMLParserMemory.java 112 2011-05-26 13:44:09Z emielackermann $
  *
  * This file is part of the iText (R) project.
- * Copyright (c) 1998-2015 iText Group NV
+ * Copyright (c) 1998-2016 iText Group NV
  * Authors: Balder Van Camp, Emiel Ackermann, et al.
  *
  * This program is free software; you can redistribute it and/or modify

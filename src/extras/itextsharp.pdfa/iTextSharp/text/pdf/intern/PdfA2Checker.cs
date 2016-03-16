@@ -3,11 +3,13 @@ using System.Collections.Generic;
 using System.Text;
 using System.util.collections;
 using iTextSharp.text.error_messages;
+using iTextSharp.text.log;
+
 /*
  * $Id: PdfA2Checker.java 5827 2013-05-31 08:56:23Z blowagie $
  *
  * This file is part of the iText (R) project.
- * Copyright (c) 1998-2015 iText Group NV
+ * Copyright (c) 1998-2016 iText Group NV
  * Authors: Alexander Chingarev, Bruno Lowagie, et al.
  *
  * This program is free software; you can redistribute it and/or modify
@@ -61,9 +63,9 @@ namespace iTextSharp.text.pdf.intern
             PdfName.RENDITION, PdfName.TRANS, PdfName.GOTO3DVIEW, PdfName.JAVASCRIPT});
 
         private static HashSet2<PdfName> allowedAnnotTypes = new HashSet2<PdfName>(new PdfName[] {PdfName.TEXT, PdfName.LINK,
-            PdfName.FREETEXT, PdfName.LINE, PdfName.SQUARE, PdfName.CIRCLE, PdfName.HIGHLIGHT, PdfName.UNDERLINE,
-            PdfName.SQUIGGLY, PdfName.STRIKEOUT, PdfName.STAMP, PdfName.INK, PdfName.POPUP, PdfName.WIDGET,
-            PdfName.PRINTERMARK, PdfName.TRAPNET});
+            PdfName.FREETEXT, PdfName.LINE, PdfName.SQUARE, PdfName.CIRCLE, PdfName.POLYGON, PdfName.POLYLINE, PdfName.HIGHLIGHT, PdfName.UNDERLINE,
+            PdfName.SQUIGGLY, PdfName.STRIKEOUT, PdfName.STAMP, PdfName.CARET, PdfName.INK, PdfName.POPUP, PdfName.FILEATTACHMENT, PdfName.WIDGET,
+            PdfName.PRINTERMARK, PdfName.TRAPNET, PdfName.WATERMARK, PdfName.REDACT});
 
         public static readonly HashSet2<PdfName> contentAnnotations = new HashSet2<PdfName>(new PdfName[] {PdfName.TEXT,
             PdfName.FREETEXT, PdfName.LINE, PdfName.SQUARE, PdfName.CIRCLE, PdfName.STAMP, PdfName.INK, PdfName.POPUP});
@@ -87,8 +89,7 @@ namespace iTextSharp.text.pdf.intern
         protected bool transparencyWithoutPageGroupDetected = false;
         protected bool transparencyDetectedOnThePage = false;
 
-        protected String pdfaOutputIntentColorSpace = null;
-        protected PdfObject pdfaDestOutputIntent = null;
+        
         static public readonly int maxStringLength = 32767;
 
 
@@ -520,7 +521,9 @@ namespace iTextSharp.text.pdf.intern
                             throw new PdfAConformanceException(obj1, MessageLocalization.GetComposedMessage("document.catalog.dictionary.shall.include.a.markinfo.dictionary.whose.entry.marked.shall.have.a.value.of.true"));
                         }
                         if (!dictionary.Contains(PdfName.LANG)) {
-                            throw new PdfAConformanceException(obj1, MessageLocalization.GetComposedMessage("document.catalog.dictionary.should.contain.lang.entry"));
+                            if (LOGGER.IsLogging(Level.WARN)) {
+                                LOGGER.Warn(MessageLocalization.GetComposedMessage("document.catalog.dictionary.should.contain.lang.entry"));
+                            }
                         }
                     }
                 } else if (PdfName.PAGE.Equals(type)) {
@@ -560,6 +563,7 @@ namespace iTextSharp.text.pdf.intern
                     }
                     transparencyDetectedOnThePage = false;
                 } else if (PdfName.OUTPUTINTENT.Equals(type)) {
+                    isCheckOutputIntent = true;
                     PdfObject destOutputIntent = dictionary.Get(PdfName.DESTOUTPUTPROFILE);
                     if (destOutputIntent != null && pdfaDestOutputIntent != null) {
                         if (pdfaDestOutputIntent.IndRef != destOutputIntent.IndRef)
@@ -829,6 +833,7 @@ namespace iTextSharp.text.pdf.intern
         }
 
         public override void Close(PdfWriter writer) {
+            CheckOutputIntentsInStamperMode(writer);
             if (pdfaOutputIntentColorSpace != null) {
                 if ("RGB ".Equals(pdfaOutputIntentColorSpace)) {
                     if (cmykUsed && writer.DefaultColorspace.Get(PdfName.DEFAULTCMYK) == null)

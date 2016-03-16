@@ -10,7 +10,7 @@ using iTextSharp.text.error_messages;
  * 
  *
  * This file is part of the iText project.
- * Copyright (c) 1998-2015 iText Group NV
+ * Copyright (c) 1998-2016 iText Group NV
  * Authors: Bruno Lowagie, Paulo Soares, et al.
  *
  * This program is free software; you can redistribute it and/or modify
@@ -109,9 +109,32 @@ namespace iTextSharp.text.pdf {
                 dic.Put(PdfName.S, numberingStyle[numberStyle]);
             if (text != null)
                 dic.Put(PdfName.P, new PdfString(text, PdfObject.TEXT_UNICODE));
+            //Not adding the first page by default since 1 is the default value
             if (firstPage != 1)
                 dic.Put(PdfName.ST, new PdfNumber(firstPage));
             map[page - 1] = dic;
+        }
+
+        /** Adds or replaces a page label.
+    * @param page the real page to start the numbering. First page is 1
+    * @param numberStyle the numbering style such as LOWERCASE_ROMAN_NUMERALS
+    * @param text the text to prefix the number. Can be <CODE>null</CODE> or empty
+    * @param firstPage the first logical page number
+    * @param includeFirstPage If true, the page label will be added to the first page if it is page 1.  
+    * 	 If the first page is not page 1 or this value is false, the value will not be added to the dictionary.  
+    */
+        public void AddPageLabel(int page, int numberStyle, String text, int firstPage, Boolean includeFirstPage)
+        {
+            if (page < 1 || firstPage < 1)
+                throw new ArgumentException(MessageLocalization.GetComposedMessage("in.a.page.label.the.page.numbers.must.be.greater.or.equal.to.1"));
+            PdfDictionary dic = new PdfDictionary();
+            if (numberStyle >= 0 && numberStyle < numberingStyle.Length)
+                dic.Put(PdfName.S, numberingStyle[numberStyle]);
+            if (text != null)
+                dic.Put(PdfName.P, new PdfString(text, PdfObject.TEXT_UNICODE));
+            if (firstPage != 1 || includeFirstPage)
+                dic.Put(PdfName.ST, new PdfNumber(firstPage));
+            map[page - 1] =  dic;
         }
 
         /** Adds or replaces a page label. The first logical page has the default
@@ -286,6 +309,10 @@ namespace iTextSharp.text.pdf {
                 this.numberStyle = numberStyle;
                 this.prefix = prefix;
                 this.logicalPage = logicalPage;
+            }
+
+            public override string ToString() {
+                return String.Format("Physical page {0}: style: {1}; prefix '{2}'; logical page: {3}", physicalPage, numberStyle, prefix, logicalPage);
             }
         }
     }

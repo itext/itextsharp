@@ -15,7 +15,7 @@ using iTextSharp.tool.xml.pipeline.html;
 /*
  * $Id: XMLWorkerHelper.java 144 2011-06-03 22:52:42Z redlab_b $
  *
- * This file is part of the iText (R) project. Copyright (c) 1998-2015 iText Group NV
+ * This file is part of the iText (R) project. Copyright (c) 1998-2016 iText Group NV
  * BVBA Authors: Balder Van Camp, Emiel Ackermann, et al.
  *
  * This program is free software; you can redistribute it and/or modify it under
@@ -165,7 +165,12 @@ namespace iTextSharp.tool.xml {
             p.Parse(inp);
         }
 
-        virtual public void ParseXHtml(PdfWriter writer, Document doc, Stream inp, Stream inCssFile, Encoding charset, IFontProvider fontProvider) {
+        virtual public void ParseXHtml(PdfWriter writer, Document doc, Stream inp, Stream inCssFile, Encoding charset,
+            IFontProvider fontProvider) {
+            ParseXHtml(writer, doc, inp, inCssFile, charset, fontProvider, null);
+        }
+
+        virtual public void ParseXHtml(PdfWriter writer, Document doc, Stream inp, Stream inCssFile, Encoding charset, IFontProvider fontProvider, string resourcesRootPath) {
             CssFilesImpl cssFiles = new CssFilesImpl();
             if (inCssFile != null)
                 cssFiles.Add(GetCSS(inCssFile));
@@ -173,7 +178,7 @@ namespace iTextSharp.tool.xml {
                 cssFiles.Add(GetDefaultCSS());
             StyleAttrCSSResolver cssResolver = new StyleAttrCSSResolver(cssFiles);
             HtmlPipelineContext hpc = new HtmlPipelineContext(new CssAppliersImpl(fontProvider));
-            hpc.SetAcceptUnknown(true).AutoBookmark(true).SetTagFactory(GetDefaultTagProcessorFactory());
+            hpc.SetAcceptUnknown(true).AutoBookmark(true).SetTagFactory(GetDefaultTagProcessorFactory()).ResourcePath = resourcesRootPath;
             HtmlPipeline htmlPipeline = new HtmlPipeline(hpc, new PdfWriterPipeline(doc, writer));
             IPipeline pipeline = new CssResolverPipeline(cssResolver, htmlPipeline);
             XMLWorker worker = new XMLWorker(pipeline, true);

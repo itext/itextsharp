@@ -8,7 +8,7 @@ using iTextSharp.text.pdf;
  * $Id: OCGParser.java 5765 2013-04-23 06:59:21Z blowagie $
  *
  * This file is part of the iText (R) project.
- * Copyright (c) 1998-2015 iText Group NV
+ * Copyright (c) 1998-2016 iText Group NV
  * Authors: Bruno Lowagie, Paulo Soares, et al.
  *
  * This program is free software; you can redistribute it and/or modify

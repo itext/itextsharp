@@ -2,7 +2,7 @@
  * $Id: ChunkCssApplier.java 287 2012-02-27 16:56:22Z blowagie $
  *
  * This file is part of the iText (R) project.
- * Copyright (c) 1998-2015 iText Group NV
+ * Copyright (c) 1998-2016 iText Group NV
  * Authors: Balder Van Camp, Emiel Ackermann, et al.
  *
  * This program is free software; you can redistribute it and/or modify
@@ -148,10 +148,10 @@ namespace iTextSharp.tool.xml.css.apply {
                 String[] splitValues = new Regex(@"\s+").Split(value);
                 foreach (String curValue in splitValues) {
                     if (Util.EqualsIgnoreCase(CSS.Value.UNDERLINE, curValue)) {
-                        c.SetUnderline(0.75f, -size/8f);
+                        c.SetUnderline(null, 0.75f, 0, 0, -0.125f, PdfContentByte.LINE_CAP_BUTT);
                     }
                     if (Util.EqualsIgnoreCase(CSS.Value.LINE_THROUGH, curValue)) {
-                        c.SetUnderline(0.75f, size/4f);
+                        c.SetUnderline(null, 0.75f, 0, 0, 0.25f, PdfContentByte.LINE_CAP_BUTT);
                     }
                 }
             }

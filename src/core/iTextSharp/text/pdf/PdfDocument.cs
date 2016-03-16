@@ -12,7 +12,7 @@ using iTextSharp.text.error_messages;
  * $Id$
  *
  * This file is part of the iText project.
- * Copyright (c) 1998-2015 iText Group NV
+ * Copyright (c) 1998-2016 iText Group NV
  * Authors: Bruno Lowagie, Paulo Soares, et al.
  *
  * This program is free software; you can redistribute it and/or modify
@@ -555,9 +555,13 @@ namespace iTextSharp.text.pdf {
                             indentation.indentRight += paragraph.IndentationRight;
                         } else {
                             line.SetExtraIndent(paragraph.FirstLineIndent);
+                            float oldHeight = currentHeight;
                             element.Process(this);
                             CarriageReturn();
-                            AddSpacing(paragraph.SpacingAfter, paragraph.TotalLeading, paragraph.Font, true);
+                            if (oldHeight != currentHeight || lines.Count > 0)
+                            {
+                                AddSpacing(paragraph.SpacingAfter, paragraph.TotalLeading, paragraph.Font, true);
+                            }
                         }
 
                         if (pageEvent != null && !isSectionTitle)
@@ -1424,13 +1428,11 @@ namespace iTextSharp.text.pdf {
                 float fontSize = chunk.Font.Size;
                 float ascender;
                 float descender;
-                if (chunk.IsImage())
-                {
+                if (chunk.IsImage()) {
                     ascender = chunk.Height();
+                    fontSize = chunk.Height();
                     descender = 0;
-                }
-                else
-                {
+                } else {
                     ascender = chunk.Font.Font.GetFontDescriptor(BaseFont.ASCENT, fontSize);
                     descender = chunk.Font.Font.GetFontDescriptor(BaseFont.DESCENT, fontSize);
                 }
@@ -1532,8 +1534,8 @@ namespace iTextSharp.text.pdf {
                                     scolor = color;
                                 if (scolor != null)
                                     graphics.SetColorStroke(scolor);
-                                graphics.SetLineWidth(ps[0] + fontSize * ps[1]);
-                                float shift = ps[2] + fontSize * ps[3];
+                                graphics.SetLineWidth(ps[0] + chunk.Font.Size * ps[1]);
+                                float shift = ps[2] + chunk.Font.Size * ps[3];
                                 int cap2 = (int)ps[4];
                                 if (cap2 != 0)
                                     graphics.SetLineCap(cap2);
@@ -1878,12 +1880,7 @@ namespace iTextSharp.text.pdf {
 
             if (pageEmpty) 
                 return;
-
-            if (spacingAfter && !pageEmpty) {
-                if (lines.Count == 0 && line.Size == 0) {
-                    return;
-                }
-            }
+           
 
             float height = spacingAfter ? extraspace : CalculateLineHeight();
 

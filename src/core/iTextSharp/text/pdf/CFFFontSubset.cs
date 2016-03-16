@@ -5,7 +5,7 @@ using System.Collections.Generic;
  * $Id$
  *
  * This file is part of the iText project.
- * Copyright (c) 1998-2015 iText Group NV
+ * Copyright (c) 1998-2016 iText Group NV
  * Authors: Bruno Lowagie, Paulo Soares, et al.
  *
  * This program is free software; you can redistribute it and/or modify
@@ -689,6 +689,9 @@ namespace iTextSharp.text.pdf {
                 // A call to "mask"
                 else if (key == "hintmask" || key == "cntrmask")
                 {
+                    // if stack is not empty the reason is vstem implicit definition
+                    // See Adobe Technical Note #5177, page 25, hintmask usage example.
+                    NumOfHints += NumOfArgs / 2;
                     // Compute the size of the mask
                     int SizeOfMask = NumOfHints/8;
                     if (NumOfHints%8 != 0 || SizeOfMask == 0)

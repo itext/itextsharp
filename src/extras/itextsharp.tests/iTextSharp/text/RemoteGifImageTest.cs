@@ -2,7 +2,7 @@
  * $Id$
  *
  * This file is part of the iText (R) project.
- * Copyright (c) 1998-2015 iText Group NV
+ * Copyright (c) 1998-2016 iText Group NV
  * Authors: Bruno Lowagie, Paulo Soares, et al.
  *
  * This program is free software; you can redistribute it and/or modify
@@ -54,7 +54,7 @@ namespace itextsharp.tests.iTextSharp.text
     class RemoteGifImageTest
     {
         private String[] GIF_LOCATION = {
-            "http://itextpdf.com/img/logo.gif",
+            //"http://itextpdf.com/img/logo.gif",
             "http://itextsupport.com/files/testresources/img/remote_gif_test.gif",
             @"..\..\resources\text\ChunkTest\logo.gif" // non-remote gif
         };

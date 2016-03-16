@@ -3,7 +3,7 @@ using System;
  * $Id: Appender.java 28 2011-05-05 20:33:36Z redlab_b $
  *
  * This file is part of the iText (R) project.
- * Copyright (c) 1998-2015 iText Group NV
+ * Copyright (c) 1998-2016 iText Group NV
  * Authors: Balder Van Camp, Emiel Ackermann, et al.
  *
  * This program is free software; you can redistribute it and/or modify

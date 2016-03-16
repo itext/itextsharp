@@ -2,7 +2,7 @@
  * $Id$
  *
  * This file is part of the iText (R) project.
- * Copyright (c) 1998-2015 iText Group NV
+ * Copyright (c) 1998-2016 iText Group NV
  * Authors: Bruno Lowagie, Paulo Soares, et al.
  *
  * This program is free software; you can redistribute it and/or modify
@@ -47,6 +47,7 @@ using System;
 using System.Collections.Generic;
 using System.IO;
 using System.Text;
+using iTextSharp.testutils;
 using NUnit.Framework;
 using iTextSharp.text.pdf;
 
@@ -62,7 +63,6 @@ namespace iTextSharp.text.pdfa {
         virtual public void Initialize() {
             Directory.CreateDirectory(TARGET + "pdf");
             Directory.CreateDirectory(TARGET + "xml");
-            Document.Compress = false;
         }
 
         [Test]
@@ -1222,6 +1222,56 @@ namespace iTextSharp.text.pdfa {
         }
 
         [Test]
+        virtual public void AnnotationCheckTest12()
+        {
+            Document document = new Document();
+            PdfAWriter writer = PdfAWriter.GetInstance(document, new FileStream(OUT + "annotationCheckTest12.pdf", FileMode.Create), PdfAConformanceLevel.PDF_A_2A);
+            writer.CreateXmpMetadata();
+            writer.SetTagged();
+            document.Open();
+            document.AddLanguage("en-US");
+
+            Font font = FontFactory.GetFont(RESOURCES + "FreeMonoBold.ttf", BaseFont.WINANSI, BaseFont.EMBEDDED, 12);
+            document.Add(new Paragraph("Hello World", font));
+
+            FileStream iccProfileFileStream = File.Open(RESOURCES + "sRGB Color Space Profile.icm", FileMode.Open, FileAccess.Read, FileShare.Read);
+            ICC_Profile icc = ICC_Profile.GetInstance(iccProfileFileStream);
+            iccProfileFileStream.Close();
+
+            writer.SetOutputIntents("Custom", "", "http://www.color.org", "sRGB IEC61966-2.1", icc);
+            PdfDictionary ap = new PdfDictionary();
+            PdfStream s = new PdfStream(Encoding.Default.GetBytes("Hello World"));
+            ap.Put(PdfName.N, writer.AddToBody(s).IndirectReference);
+            PdfContentByte canvas = writer.DirectContent;
+
+            PdfAnnotation annot = new PdfAnnotation(writer, new Rectangle(220, 220, 240, 240));
+            annot.Put(PdfName.SUBTYPE, PdfName.POLYGON);
+            annot.Put(PdfName.F, new PdfNumber(PdfAnnotation.FLAGS_PRINT));
+            annot.Put(PdfName.AP, ap);
+            canvas.AddAnnotation(annot);
+            annot = new PdfAnnotation(writer, new Rectangle(100, 100, 120, 120));
+            annot.Put(PdfName.SUBTYPE, PdfName.POLYLINE);
+            annot.Put(PdfName.F, new PdfNumber(PdfAnnotation.FLAGS_PRINT));
+            annot.Put(PdfName.AP, ap);
+            canvas.AddAnnotation(annot);
+            annot = new PdfAnnotation(writer, new Rectangle(130, 130, 150, 150));
+            annot.Put(PdfName.SUBTYPE, PdfName.CARET);
+            annot.Put(PdfName.F, new PdfNumber(PdfAnnotation.FLAGS_PRINT));
+            annot.Put(PdfName.AP, ap);
+            canvas.AddAnnotation(annot);
+            annot = new PdfAnnotation(writer, new Rectangle(160, 160, 180, 180));
+            annot.Put(PdfName.SUBTYPE, PdfName.WATERMARK);
+            annot.Put(PdfName.F, new PdfNumber(PdfAnnotation.FLAGS_PRINT));
+            annot.Put(PdfName.AP, ap);
+            canvas.AddAnnotation(annot);
+            annot = new PdfAnnotation(writer, new Rectangle(190, 190, 210, 210));
+            annot.Put(PdfName.SUBTYPE, PdfName.FILEATTACHMENT);
+            annot.Put(PdfName.F, new PdfNumber(PdfAnnotation.FLAGS_PRINT));
+            annot.Put(PdfName.AP, ap);
+            document.Close();
+        }
+
+        [Test]
         virtual public void ColorCheckTest1() {
             Document document = new Document();
             PdfAWriter writer = PdfAWriter.GetInstance(document, new FileStream(OUT + "pdfa2ColorCheckTest1.pdf", FileMode.Create), PdfAConformanceLevel.PDF_A_2B);
@@ -1618,6 +1668,61 @@ namespace iTextSharp.text.pdfa {
                 AFRelationshipValue.Data);
 
             document.Close();
+        }
+
+        [Test]
+        public virtual void CidFontCheckTest1() {
+            String outPdf = TARGET + "cidFontCheckTest1.pdf";
+            String resourceDir = @"..\..\resources\text\pdfa\";
+            Document document = new Document();
+            PdfAWriter writer = PdfAWriter.GetInstance(document, new FileStream(outPdf, FileMode.Create), PdfAConformanceLevel.PDF_A_2B);
+            writer.CreateXmpMetadata();
+            document.Open();
+
+            Font font = FontFactory.GetFont(resourceDir + "FreeMonoBold.ttf", BaseFont.IDENTITY_H, BaseFont.EMBEDDED, 12);
+            document.Add(new Paragraph("Hello World", font));
+            ICC_Profile icc = ICC_Profile.GetInstance(new FileStream(resourceDir + "sRGB Color Space Profile.icm", FileMode.Open, FileAccess.Read, FileShare.Read));
+            writer.SetOutputIntents("Custom", "", "http://www.color.org", "sRGB IEC61966-2.1", icc);
+            document.Close();
+
+            Assert.Null(new CompareTool().CompareByContent(outPdf, resourceDir + "cidset/cmp_cidFontCheckTest1.pdf", TARGET, "diff_"));
+        }
+
+        [Test]
+        public virtual void CidFontCheckTest2() {
+            String outPdf = TARGET + "cidFontCheckTest2.pdf";
+            String resourceDir = @"..\..\resources\text\pdfa\";
+            Document document = new Document();
+            PdfAWriter writer = PdfAWriter.GetInstance(document, new FileStream(outPdf, FileMode.Create), PdfAConformanceLevel.PDF_A_2B);
+            writer.CreateXmpMetadata();
+            document.Open();
+
+            Font font = FontFactory.GetFont(resourceDir + "Puritan2.otf", BaseFont.IDENTITY_H, BaseFont.EMBEDDED, 12);
+            document.Add(new Paragraph("Hello World", font));
+            ICC_Profile icc = ICC_Profile.GetInstance(new FileStream(resourceDir + "sRGB Color Space Profile.icm", FileMode.Open, FileAccess.Read, FileShare.Read));
+            writer.SetOutputIntents("Custom", "", "http://www.color.org", "sRGB IEC61966-2.1", icc);
+            document.Close();
+
+            Assert.Null(new CompareTool().CompareByContent(outPdf, resourceDir + "cidset/cmp_cidFontCheckTest2.pdf", TARGET, "diff_"));
+        }
+
+        [Test]
+        public virtual void CidFontCheckTest3()
+        {
+            String outPdf = TARGET + "cidFontCheckTest3.pdf";
+            String resourceDir = @"..\..\resources\text\pdfa\";
+            Document document = new Document();
+            PdfAWriter writer = PdfAWriter.GetInstance(document, new FileStream(outPdf, FileMode.Create), PdfAConformanceLevel.PDF_A_2B);
+            writer.CreateXmpMetadata();
+            document.Open();
+
+            Font font = FontFactory.GetFont(resourceDir + "NotoSansCJKjp-Bold.otf", BaseFont.IDENTITY_H, BaseFont.EMBEDDED, 12);
+            document.Add(new Paragraph("Hello World", font));
+            ICC_Profile icc = ICC_Profile.GetInstance(new FileStream(resourceDir + "sRGB Color Space Profile.icm", FileMode.Open, FileAccess.Read, FileShare.Read));
+            writer.SetOutputIntents("Custom", "", "http://www.color.org", "sRGB IEC61966-2.1", icc);
+            document.Close();
+
+            Assert.Null(new CompareTool().CompareByContent(outPdf, resourceDir + "cidset/cmp_cidFontCheckTest3.pdf", TARGET, "diff_"));
         }
 
         [Test]

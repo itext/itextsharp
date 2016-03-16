@@ -53,7 +53,9 @@
     <Reference Include="System.Drawing" />
     <Reference Include="System.Security" />
     <Reference Include="System.Xml" />
-    <Reference Include="XmlDiffPatch, Version=1.0.8.28, Culture=neutral, PublicKeyToken=b03f5f7f11d50a3a" />
+    <Reference Include="XmlDiffPatch, Version=1.0.8.28, Culture=neutral, PublicKeyToken=b03f5f7f11d50a3a" >
+        <HintPath>lib\XmlDiffPatch.dll</HintPath>
+    </Reference>
   </ItemGroup>
   <ItemGroup Condition=" '$(Configuration)|$(Platform)' == 'Debug|AnyCPU' Or '$(Configuration)|$(Platform)' == 'Release|AnyCPU' ">
     <Reference Include="System.Drawing" />
@@ -74,6 +76,7 @@
     <Compile Include="iTextSharp\text\pdf\AcroFieldsTest.cs" />
     <Compile Include="iTextSharp\text\pdf\BarcodeUnicodeTest.cs" />
     <Compile Include="iTextSharp\text\pdf\BookmarksTest.cs" />
+    <Compile Include="iTextSharp\text\pdf\PdfEncryptionTest.cs" />
     <Compile Include="iTextSharp\text\pdf\CMapAwareDocumentFontTest.cs" />
     <Compile Include="iTextSharp\text\pdf\cs\DeviceNColorSpaceTest.cs" />
     <Compile Include="iTextSharp\text\pdf\cs\LabColorSpaceTest.cs" />
@@ -420,7 +423,7 @@
     </ProjectReference>
   </ItemGroup>
   <Import Project="$(MSBuildBinPath)\Microsoft.CSharp.targets" />
-  <!-- To modify your build process, add your task inside one of the targets below and uncomment it. 
+  <!-- To modify your build process, add your task inside one of the targets below and uncomment it.
        Other similar extension points exist, see Microsoft.Common.targets.
   <Target Name="BeforeBuild">
   </Target>

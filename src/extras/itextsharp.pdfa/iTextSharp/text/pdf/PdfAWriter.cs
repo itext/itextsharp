@@ -10,7 +10,7 @@ using iTextSharp.text.pdf.intern;
  * $Id: PdfAWriter.java 5853 2013-06-13 13:21:03Z eugenemark $
  *
  * This file is part of the iText (R) project.
- * Copyright (c) 1998-2015 iText Group NV
+ * Copyright (c) 1998-2016 iText Group NV
  * Authors: Alexander Chingarev, Bruno Lowagie, et al.
  *
  * This program is free software; you can redistribute it and/or modify
@@ -136,6 +136,40 @@ namespace iTextSharp.text.pdf {
                 if (d != null)
                     d.Put(PdfName.S, PdfName.GTS_PDFA1);
             }
+        }
+
+        /**
+        * Copies the output intent dictionary from other document to this one.
+        * @param reader the other document
+        * @param checkExistence <CODE>true</CODE> to just check for the existence of a valid output intent
+        * dictionary, <CODE>false</CODE> to insert the dictionary if it exists
+        * @throws IOException on error
+        * @return <CODE>true</CODE> if the output intent dictionary exists, <CODE>false</CODE>
+        * otherwise
+        */
+        public override bool SetOutputIntents(PdfReader reader, bool checkExistence)
+        {
+            PdfDictionary catalog = reader.Catalog;
+            PdfArray outs = catalog.GetAsArray(PdfName.OUTPUTINTENTS);
+            if (outs == null)
+                return false;
+            if (outs.Size == 0)
+                return false;
+            PdfDictionary outa = outs.GetAsDict(0);
+            PdfObject obj = PdfReader.GetPdfObject(outa.Get(PdfName.S));
+            if (obj == null || !PdfName.GTS_PDFA1.Equals(obj))
+                return false;
+            if (checkExistence)
+                return true;
+            PRStream stream = (PRStream)PdfReader.GetPdfObject(outa.Get(PdfName.DESTOUTPUTPROFILE));
+            byte[] destProfile = null;
+            if (stream != null)
+            {
+                destProfile = PdfReader.GetStreamBytes(stream);
+            }
+            SetOutputIntents(GetNameString(outa, PdfName.OUTPUTCONDITIONIDENTIFIER), GetNameString(outa, PdfName.OUTPUTCONDITION),
+                GetNameString(outa, PdfName.REGISTRYNAME), GetNameString(outa, PdfName.INFO), destProfile);
+            return true;
         }
 
         /**

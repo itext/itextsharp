@@ -8,7 +8,7 @@ using iTextSharp.text.api;
  * 
  *
  * This file is part of the iText project.
- * Copyright (c) 1998-2015 iText Group NV
+ * Copyright (c) 1998-2016 iText Group NV
  * Authors: Bruno Lowagie, Paulo Soares, et al.
  *
  * This program is free software; you can redistribute it and/or modify
@@ -57,8 +57,11 @@ namespace iTextSharp.text {
     * By setting attributes, you could add markup to the corresponding XML and/or HTML tag.
     * This functionality was hardly used by anyone, so it was removed, and replaced by
     * the MarkedObject functionality.
+    *
+    * @deprecated since 5.5.9. This class is no longer used.
     */
 
+    [Obsolete]
     public class MarkedSection : MarkedObject, IIndentable {
 
         /** This is the title of this section. */

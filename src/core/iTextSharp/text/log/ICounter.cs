@@ -3,7 +3,7 @@ using System;
  * $Id: Counter.java 5829 2013-05-31 09:01:34Z blowagie $
  *
  * This file is part of the iText (R) project.
- * Copyright (c) 1998-2015 iText Group NV
+ * Copyright (c) 1998-2016 iText Group NV
  * BVBA Authors: Bruno Lowagie, Paulo Soares, et al.
  *
  * This program is free software; you can redistribute it and/or modify it under

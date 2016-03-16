@@ -20,7 +20,7 @@ using System.util.collections;
  * $Id$
  *
  * This file is part of the iText project.
- * Copyright (c) 1998-2015 iText Group NV
+ * Copyright (c) 1998-2016 iText Group NV
  * Authors: Bruno Lowagie, Paulo Soares, et al.
  *
  * This program is free software; you can redistribute it and/or modify
@@ -876,6 +876,7 @@ namespace iTextSharp.text.pdf {
             if (filter.Equals(PdfName.STANDARD)) {
                 if (rValue == 5) {
                     ownerPasswordUsed = decrypt.ReadKey(enc, password);
+                    decrypt.documentID = documentID;
                     pValue = decrypt.GetPermissions();
                 }
                 else {
@@ -1086,8 +1087,10 @@ namespace iTextSharp.text.pdf {
                 throw new InvalidPdfException(MessageLocalization.GetComposedMessage("the.document.has.no.catalog.object"));
             rootPages = catalog.GetAsDict(PdfName.PAGES);
             if (rootPages == null || !PdfName.PAGES.Equals(rootPages.Get(PdfName.TYPE))) {
-                if (debugmode && LOGGER.IsLogging(Level.ERROR)) {
-                    LOGGER.Error(MessageLocalization.GetComposedMessage("the.document.has.no.page.root"));
+                if (debugmode ) {
+                    if (LOGGER.IsLogging(Level.ERROR)) {
+                        LOGGER.Error(MessageLocalization.GetComposedMessage("the.document.has.no.page.root"));
+                    }
                 } else {
                     throw new InvalidPdfException(MessageLocalization.GetComposedMessage("the.document.has.no.page.root"));
                 }

@@ -3,7 +3,7 @@ using iTextSharp.text.error_messages;
 
 /*
  * This file is part of the iText project.
- * Copyright (c) 1998-2015 iText Group NV
+ * Copyright (c) 1998-2016 iText Group NV
  * Authors: Bruno Lowagie, Paulo Soares, et al.
  *
  * This program is free software; you can redistribute it and/or modify
@@ -352,8 +352,6 @@ namespace iTextSharp.text.pdf {
                 field = PdfFormField.CreateCheckBox(writer);
             field.SetWidget(box, PdfAnnotation.HIGHLIGHT_INVERT);
             if (!isRadio) {
-                if(!"Yes".Equals(onValue))
-                    throw new DocumentException(MessageLocalization.GetComposedMessage("1.is.not.a.valid.name.for.checkbox.appearance", onValue));
                 field.FieldName = fieldName;
                 if ((options & READ_ONLY) != 0)
                     field.SetFieldFlags(PdfFormField.FF_READ_ONLY);

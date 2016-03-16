@@ -4093,6 +4093,7 @@
     <Compile Include="iTextSharp\text\ListBody.cs" />
     <Compile Include="iTextSharp\text\ListLabel.cs" />
     <Compile Include="iTextSharp\text\log\CounterFactory.cs" />
+    <Compile Include="iTextSharp\text\log\DefaultCounter.cs" />
     <Compile Include="iTextSharp\text\log\ICounter.cs" />
     <Compile Include="iTextSharp\text\log\ILogger.cs" />
     <Compile Include="iTextSharp\text\log\Level.cs" />

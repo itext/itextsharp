@@ -2,7 +2,7 @@
  * $Id: CssAppliersImpl.java 265 2012-01-17 12:38:18Z eugenemark $
  *
  * This file is part of the iText (R) project.
- * Copyright (c) 1998-2015 iText Group NV
+ * Copyright (c) 1998-2016 iText Group NV
  * Authors: Balder Van Camp, Emiel Ackermann, et al.
  *
  * This program is free software; you can redistribute it and/or modify it under the terms of the GNU Affero General
@@ -147,7 +147,7 @@ namespace iTextSharp.tool.xml.html {
 
         virtual public CssAppliers Clone()
         {
-            CssAppliersImpl clone = new CssAppliersImpl();
+			CssAppliersImpl clone = GetClonedObject();
             clone.chunk = chunk;
 
             clone.paragraph = paragraph;
@@ -160,5 +160,9 @@ namespace iTextSharp.tool.xml.html {
 
             return clone;
         }
+
+		virtual protected CssAppliersImpl GetClonedObject() {
+			return new CssAppliersImpl();
+		}
     }
 }

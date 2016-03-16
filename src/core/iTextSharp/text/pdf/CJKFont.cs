@@ -12,7 +12,7 @@ using iTextSharp.text.pdf.fonts.cmaps;
  * 
  *
  * This file is part of the iText project.
- * Copyright (c) 1998-2015 iText Group NV
+ * Copyright (c) 1998-2016 iText Group NV
  * Authors: Bruno Lowagie, Paulo Soares, et al.
  *
  * This program is free software; you can redistribute it and/or modify
@@ -104,8 +104,11 @@ namespace iTextSharp.text.pdf {
                     return;
                 try {
                     LoadRegistry();
-                    foreach (String font in registryNames["fonts"].Keys) {
-                        allFonts[font] = ReadFontProperties(font);          
+                    if (registryNames.ContainsKey("fonts"))
+                    {
+                        foreach (String font in registryNames["fonts"].Keys) {
+                            allFonts[font] = ReadFontProperties(font);
+                        }
                     }
                 }
                 catch {
@@ -116,10 +119,10 @@ namespace iTextSharp.text.pdf {
 
         private static readonly char[] cspace = {' '};
         private static void LoadRegistry() {
-            Stream isp = StreamUtil.GetResourceStream(RESOURCE_PATH_CMAP + "cjk_registry.properties");
             Properties p = new Properties();
-            p.Load(isp);
-            isp.Close();
+            using (Stream isp = StreamUtil.GetResourceStream(RESOURCE_PATH_CMAP + "cjk_registry.properties")) {
+                p.Load(isp);
+            }
             foreach (string key in p.Keys) {
                 String value = p[key];
                 String[] sp = value.Split(cspace, StringSplitOptions.RemoveEmptyEntries);

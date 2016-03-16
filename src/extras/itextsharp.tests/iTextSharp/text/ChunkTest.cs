@@ -2,7 +2,7 @@
  * $Id$
  *
  * This file is part of the iText (R) project.
- * Copyright (c) 1998-2015 iText Group NV
+ * Copyright (c) 1998-2016 iText Group NV
  * Authors: Bruno Lowagie, Paulo Soares, et al.
  *
  * This program is free software; you can redistribute it and/or modify
@@ -52,6 +52,7 @@ using System.Collections.Generic;
 using System.Globalization;
 using System.IO;
 using System.Text;
+using iTextSharp.testutils;
 using iTextSharp.text.pdf.parser;
 using NUnit.Framework;
 using iTextSharp.text.io;
@@ -542,6 +543,48 @@ namespace iTextSharp.text {
             finally {
                 reader1.Close();
                 reader2.Close();
+            }
+        }
+
+        [Test]
+        public void TestImageChunkOnGenericTag() {
+            String fileName = "testImageChunkOnGenericTag.pdf";
+            FileStream fos = new FileStream(TARGET + fileName, FileMode.Create);
+            Document doc = new Document(PageSize.LETTER);
+            PdfWriter writer = PdfWriter.GetInstance(doc, fos);
+            writer.PageEvent = new EventHandler();
+            doc.Open();
+
+            Image img = Image.GetInstance(writer.DirectContent.CreateTemplate(100f, 25f));
+            Console.WriteLine(img.Height.ToString("F1", CultureInfo.InvariantCulture));
+            Chunk c = new Chunk(img, 0, 0);
+            c.SetGenericTag("foobar");
+
+            doc.Add(c);
+            doc.Close();
+
+            CompareTool compareTool = new CompareTool();
+            String error = compareTool.CompareByContent(TARGET + fileName, RESOURCES + "cmp_" + fileName, TARGET, "diff_");
+            if (error != null) {
+                Assert.Fail(error);
+            }
+        }
+
+        private class EventHandler : PdfPageEventHelper {
+            public override void OnGenericTag(PdfWriter writer, Document document, Rectangle rect, String text) {
+                PdfContentByte cb = writer.DirectContent;
+                cb.SaveState();
+                cb.SetColorStroke(BaseColor.BLACK);
+                cb.Rectangle(rect.Left, rect.Bottom, rect.Width, rect.Height);
+                cb.Stroke();
+                cb.RestoreState();
+
+                writer.DirectContent.BeginText();
+                Font f = FontFactory.GetFont(BaseFont.COURIER, 8f);
+                writer.DirectContent.SetFontAndSize(f.BaseFont, 8f);
+                writer.DirectContent.ShowTextAligned(Element.ALIGN_LEFT,
+                    rect.Height.ToString("F1", CultureInfo.InvariantCulture), rect.Left, rect.Bottom, 0);
+                writer.DirectContent.EndText();
             }
         }
     }

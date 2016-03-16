@@ -2,7 +2,7 @@
  * $Id$
  *
  * This file is part of the iText (R) project.
- * Copyright (c) 1998-2015 iText Group NV
+ * Copyright (c) 1998-2016 iText Group NV
  * Authors: Bruno Lowagie, Paulo Soares, et al.
  *
  * This program is free software; you can redistribute it and/or modify
@@ -99,7 +99,10 @@ namespace iTextSharp.text.pdf{
                 byte[] b;
                 if (font.Subset || font.DirectoryOffset != 0)
                 {
-                    b = font.GetSubSet(new HashSet2<int>(longTag.Keys), true);
+                    lock (font.Rf) {
+                        TrueTypeFontSubSet sb = new TrueTypeFontSubSet(font.FileName, new RandomAccessFileOrArray(font.Rf), new HashSet2<int>(longTag.Keys), font.DirectoryOffset, true, false);
+                        b = sb.Process();
+                    }
                 }
                 else
                 {

@@ -7,7 +7,7 @@ using iTextSharp.text.error_messages;
 
 /*
  * This file is part of the iText project.
- * Copyright (c) 1998-2015 iText Group NV
+ * Copyright (c) 1998-2016 iText Group NV
  * Authors: Bruno Lowagie, Paulo Soares, et al.
  *
  * This program is free software; you can redistribute it and/or modify
@@ -1301,7 +1301,6 @@ namespace iTextSharp.text.pdf {
             descender = 0;
             bool firstPass = true;
             bool isRTL = runDirection == PdfWriter.RUN_DIRECTION_RTL;
-            main_loop:
             while (true) {
                 if (compositeElements.Count == 0)
                     return NO_MORE_TEXT;
@@ -1413,6 +1412,7 @@ namespace iTextSharp.text.pdf {
                         }
                     }
                     int status = 0;
+                    bool keepTogetherAndDontFit = false;
                     for (int keep = 0; keep < 2; ++keep) {
                         float lastY = yLine;
                         bool createHere = false;
@@ -1420,7 +1420,7 @@ namespace iTextSharp.text.pdf {
                             if (item == null) {
                                 listIdx = 0;
                                 compositeElements.RemoveAt(0);
-                                goto main_loop;
+                                break;
                             }
                             compositeColumn = new ColumnText(canvas);
 
@@ -1457,28 +1457,39 @@ namespace iTextSharp.text.pdf {
                                 canvas.OpenMCBlock(list);
                             canvas.OpenMCBlock(item);
                         }
-                        status = compositeColumn.Go(simulate || keepCandidate && keep == 0, item);
+                        status = compositeColumn.Go(s, item);
                         if (IsTagged(canvas) && !s)
                         {
                             canvas.CloseMCBlock(item.ListBody);
                             canvas.CloseMCBlock(item);
-                            if ((list.GetLastItem() == item && (status & NO_MORE_TEXT) != 0) || (status & NO_MORE_COLUMN) != 0)
-                                canvas.CloseMCBlock(list);
                         }
                         lastX = compositeColumn.LastX;
                         UpdateFilledWidth(compositeColumn.filledWidth);
                         if ((status & NO_MORE_TEXT) == 0 && keepCandidate) {
+                            keepTogetherAndDontFit = true;
                             compositeColumn = null;
                             yLine = lastY;
-                            return NO_MORE_COLUMN;
                         }
-                        if (simulate || !keepCandidate)
+                        if (simulate || !keepCandidate || keepTogetherAndDontFit)
                             break;
                         if (keep == 0) {
                             compositeColumn = null;
                             yLine = lastY;
                         }
                     }
+
+                    if (IsTagged(canvas) && !simulate) {
+                        if (item == null || (list.GetLastItem() == item && (status & NO_MORE_TEXT) != 0) || (status & NO_MORE_COLUMN) != 0) {
+                            canvas.CloseMCBlock(list);
+                        }
+                    }
+                    if (keepTogetherAndDontFit) {
+                        return NO_MORE_COLUMN;
+                    }
+                    if (item == null) {
+                        continue;
+                    }
+
                     firstPass = false;
                     yLine = compositeColumn.yLine;
                     linesWritten += compositeColumn.linesWritten;

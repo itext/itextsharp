@@ -11,7 +11,7 @@ using iTextSharp.text.pdf.draw;
  * $Id: FactoryProperties.java 4610 2010-11-02 17:28:50Z blowagie $
  *
  * This file is part of the iText project.
- * Copyright (c) 1998-2015 iText Group NV
+ * Copyright (c) 1998-2016 iText Group NV
  * Authors: Bruno Lowagie, Paulo Soares, et al.
  *
  * This program is free software; you can redistribute it and/or modify

@@ -14,7 +14,7 @@ using iTextSharp.text.error_messages;
  * $Id$
  *
  * This file is part of the iText project.
- * Copyright (c) 1998-2015 iText Group NV
+ * Copyright (c) 1998-2016 iText Group NV
  * Authors: Bruno Lowagie, Paulo Soares, et al.
  *
  * This program is free software; you can redistribute it and/or modify
@@ -104,6 +104,9 @@ public class PdfEncryption {
     private ARCFOUREncryption rc4 = new ARCFOUREncryption();
     /** The generic key length. It may be 40 or 128. */
     private int keyLength;
+
+
+
     private bool encryptMetadata;
     /**
      * Indicates if the encryption is only necessary for embedded files.
@@ -133,6 +136,18 @@ public class PdfEncryption {
         encryptMetadata = enc.encryptMetadata;
         embeddedFilesOnly = enc.embeddedFilesOnly;
         publicKeyHandler = enc.publicKeyHandler;
+        if (enc.ueKey != null)
+        {
+            ueKey = (byte[]) enc.ueKey.Clone();
+        }
+        if (enc.oeKey != null)
+        {
+            oeKey = (byte[]) enc.oeKey.Clone();
+        }
+        if (enc.perms != null)
+        {
+            perms = (byte[]) enc.perms.Clone();
+        }
     }
 
     virtual public void SetCryptoMode(int mode, int kl) {
@@ -391,6 +406,18 @@ public class PdfEncryption {
         byte[] oeValue = DocWriter.GetISOBytes(enc.Get(PdfName.OE).ToString());
         byte[] ueValue = DocWriter.GetISOBytes(enc.Get(PdfName.UE).ToString());
         byte[] perms = DocWriter.GetISOBytes(enc.Get(PdfName.PERMS).ToString());
+
+        PdfNumber pValue = (PdfNumber)enc.Get(PdfName.P);
+
+        this.oeKey = oeValue;
+        this.ueKey = ueValue;
+        this.perms = perms;
+
+        this.ownerKey = oValue;
+        this.userKey = uValue;
+
+        this.permissions = pValue.LongValue;
+
         bool isUserPass = false;
         IDigest md = DigestUtilities.GetDigest("SHA-256");
         md.BlockUpdate(password, 0, Math.Min(password.Length, 127));
@@ -502,15 +529,15 @@ public class PdfEncryption {
 
     public static PdfObject CreateInfoId(byte[] id, bool modified) {
         ByteBuffer buf = new ByteBuffer(90);
-        buf.Append('[').Append('<');
-        if(id.Length != 16)
+        if(id.Length == 0)
             id = CreateDocumentId();
-        for (int k = 0; k < 16; ++k)
+        buf.Append('[').Append('<');
+        for (int k = 0; k < id.Length; ++k)
             buf.AppendHex(id[k]);
         buf.Append('>').Append('<');
         if (modified)
             id = CreateDocumentId();
-        for (int k = 0; k < 16; ++k)
+        for (int k = 0; k < id.Length; ++k)
             buf.AppendHex(id[k]);
         buf.Append('>').Append(']');
         buf.Close();
