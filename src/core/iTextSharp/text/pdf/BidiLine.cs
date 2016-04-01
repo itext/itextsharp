@@ -348,6 +348,7 @@ namespace iTextSharp.text.pdf {
             float charWidth = 0;
             PdfChunk lastValidChunk = null;
             TabStop tabStop = null;
+            IList<TabStop> rtlTabsToBeAligned  = new List<TabStop>();
             float tabStopAnchorPosition = float.NaN;
             float tabPosition = float.NaN;
             bool surrogate = false;
@@ -394,14 +395,7 @@ namespace iTextSharp.text.pdf {
                     if (ck.IsAttribute(Chunk.TABSETTINGS)) {
                         lastSplit = currentChar;
                         if (tabStop != null) {
-                            float tabStopPosition = tabStop.GetPosition(tabPosition, originalWidth - width,
-                                tabStopAnchorPosition);
-                            width = originalWidth - (tabStopPosition + (originalWidth - width - tabPosition));
-                            if (width < 0) {
-                                tabStopPosition += width;
-                                width = 0;
-                            }
-                            tabStop.Position = tabStopPosition;
+                            width = ProcessTabStop(tabStop, tabPosition, originalWidth, width, tabStopAnchorPosition, isRTL, rtlTabsToBeAligned);
                         }
 
                         tabStop = PdfChunk.GetTabStop(ck, originalWidth - width);
@@ -468,16 +462,12 @@ namespace iTextSharp.text.pdf {
             }
 
             if (tabStop != null) {
-                float tabStopPosition = tabStop.GetPosition(tabPosition, originalWidth - width, tabStopAnchorPosition);
-                width -= tabStopPosition - tabPosition;
-                if (width < 0) {
-                    tabStopPosition += width;
-                    width = 0;
+                width = ProcessTabStop(tabStop, tabPosition, originalWidth, width, tabStopAnchorPosition, isRTL, rtlTabsToBeAligned);
+            }
+            if (rtlTabsToBeAligned != null) {
+                foreach (TabStop rtlTabStop in rtlTabsToBeAligned) {
+                    rtlTabStop.Position = originalWidth - width - rtlTabStop.Position;
                 }
-                if (!isRTL)
-                    tabStop.Position = tabStopPosition;
-                else 
-                    tabStop.Position = originalWidth - width - tabPosition;
             }
 
             if (currentChar >= totalTextLength) {
@@ -519,6 +509,27 @@ namespace iTextSharp.text.pdf {
                 newCurrentChar = currentChar - 1;
             }
             return new PdfLine(0, originalWidth, originalWidth - GetWidth(oldCurrentChar, newCurrentChar, originalWidth), alignment, false, CreateArrayOfPdfChunks(oldCurrentChar, newCurrentChar), isRTL);
+        }
+
+        private float ProcessTabStop(TabStop tabStop, float tabPosition, float originalWidth, float width, float tabStopAnchorPosition, bool isRTL, IList<TabStop> rtlTabsToBeAligned)
+        {
+            float tabStopPosition = tabStop.GetPosition(tabPosition, originalWidth - width, tabStopAnchorPosition);
+            width -= tabStopPosition - tabPosition;
+            if (width < 0)
+            {
+                tabStopPosition += width;
+                width = 0;
+            }
+            if (!isRTL)
+            {
+                tabStop.Position = tabStopPosition;
+            }
+            else
+            {
+                tabStop.Position = tabPosition; // This will be mirrored when we know exact line width
+                rtlTabsToBeAligned.Add(tabStop);
+            }
+            return width;
         }
 
         /**
