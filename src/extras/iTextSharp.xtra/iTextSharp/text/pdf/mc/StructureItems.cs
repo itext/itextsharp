@@ -184,14 +184,14 @@ namespace iTextSharp.text.pdf.mc
             PdfObject objecta;
             parentTree.TryGetValue(structParents.IntValue, out objecta);
             PdfArray array = (PdfArray) PdfReader.GetPdfObject(objecta);
-            for (int i = 0; i < array.Length; i++) {
+            for (int i = 0; i < array.Size; i++) {
                 if (array.GetAsIndirectObject(i) == null) {
                     array[i] = refa;
                     return i;
                 }
             }
             array.Add(refa);
-            return array.Length - 1;
+            return array.Size - 1;
         }
 
         /**
