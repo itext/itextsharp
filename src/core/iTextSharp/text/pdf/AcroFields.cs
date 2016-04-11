@@ -2161,8 +2161,8 @@ namespace iTextSharp.text.pdf {
                 PdfString contents = v.GetAsString(PdfName.CONTENTS);
                 if (contents == null)
                     continue;
-                var origBytes = contents.GetOriginalBytes();
-                if (origBytes == null || origBytes[0] == 0)
+                byte[] origBytes = contents.GetOriginalBytes();
+                if (origBytes == null || origBytes.Length == 0 || origBytes[0] == 0)
                     continue;
                 PdfArray ro = v.GetAsArray(PdfName.BYTERANGE);
                 if (ro == null)
