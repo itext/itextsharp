@@ -139,7 +139,7 @@ namespace iTextSharp.text.pdf.security {
             certs = new List<X509Certificate>();
 
             foreach (X509Certificate cc in cf.ReadCertificates(certsKey)) {
-                if (signCert != null)
+                if (signCert == null)
                     signCert = cc;
                 certs.Add(cc);
             }
