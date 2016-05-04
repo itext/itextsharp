@@ -100,7 +100,7 @@ namespace iTextSharp.text.xml.xmp {
         private const String zugferdExtension =
             "    <x:xmpmeta xmlns:x=\"adobe:ns:meta/\">\n" +
             "      <rdf:RDF xmlns:rdf=\"http://www.w3.org/1999/02/22-rdf-syntax-ns#\">\n" +
-            "        <rdf:Description rdf:about=\"\" xmlns:zf=\"urn:ferd:pdfa:invoice:1p0#\">\n" +
+            "        <rdf:Description rdf:about=\"\" xmlns:zf=\"urn:ferd:pdfa:CrossIndustryDocument:invoice:1p0#\">\n" +
             "          <zf:ConformanceLevel>%s</zf:ConformanceLevel>\n" +
             "          <zf:DocumentFileName>ZUGFeRD-invoice.xml</zf:DocumentFileName>\n" +
             "          <zf:DocumentType>INVOICE</zf:DocumentType>\n" +
@@ -111,7 +111,7 @@ namespace iTextSharp.text.xml.xmp {
             "            <rdf:Bag>\n" +
             "              <rdf:li rdf:parseType=\"Resource\">\n" +
             "                <pdfaSchema:schema>ZUGFeRD PDFA Extension Schema</pdfaSchema:schema>\n" +
-            "                <pdfaSchema:namespaceURI>urn:ferd:pdfa:invoice:1p0#</pdfaSchema:namespaceURI>\n" +
+            "                <pdfaSchema:namespaceURI>urn:ferd:pdfa:CrossIndustryDocument:invoice:1p0#</pdfaSchema:namespaceURI>\n" +
             "                <pdfaSchema:prefix>zf</pdfaSchema:prefix>\n" +
             "                <pdfaSchema:property>\n" +
             "                  <rdf:Seq>\n" +
@@ -151,7 +151,7 @@ namespace iTextSharp.text.xml.xmp {
 
         private PdfWriter writer;
 
-        public const String zugferdSchemaNS = "urn:ferd:pdfa:invoice:1p0#";
+        public const String zugferdSchemaNS = "urn:ferd:pdfa:CrossIndustryDocument:invoice:1p0#";
         public const String zugferdConformanceLevel = "ConformanceLevel";
         public const String zugferdDocumentFileName = "DocumentFileName";
         public const String zugferdDocumentType = "DocumentType";
