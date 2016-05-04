@@ -98,8 +98,16 @@ namespace iTextSharp.tool.xml.pipeline.css {
 	     *
 	     * @param resolver the CSSResolver to use.
 	     */
-	    virtual public void SetResolver(ICSSResolver resolver) {
+	    public virtual void SetResolver(ICSSResolver resolver) {
 		    this.resolver = resolver;
 	    }
+
+        /**
+         * Defaults to the fully qualified class name of the object.
+         */
+        public override String GetContextKey()
+        {
+            return typeof(CssResolverPipeline).FullName;
+        }
     }
 }

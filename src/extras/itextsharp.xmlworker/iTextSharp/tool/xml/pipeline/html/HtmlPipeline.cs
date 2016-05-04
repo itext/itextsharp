@@ -170,6 +170,14 @@ namespace iTextSharp.tool.xml.pipeline.html {
             return GetNext();
         }
 
+        /**
+         * Defaults to the fully qualified class name of the object.
+         */
+        public override String GetContextKey()
+        {
+            return typeof(HtmlPipeline).FullName;
+        }
+
         /*
          * (non-Javadoc)
          *
