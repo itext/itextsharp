@@ -5,6 +5,7 @@ using System.util;
 using iTextSharp.text;
 using iTextSharp.tool.xml;
 using iTextSharp.tool.xml.css;
+using iTextSharp.tool.xml.html;
 using iTextSharp.tool.xml.html.pdfelement;
 using iTextSharp.tool.xml.pipeline.html;
 /*
@@ -58,13 +59,18 @@ namespace iTextSharp.tool.xml.css.apply {
      * @author itextpdf.com
      *
      */
-    public class NoNewLineParagraphCssApplier {
+    public class NoNewLineParagraphCssApplier : CssApplier<NoNewLineParagraph> {
         private CssUtils utils = CssUtils.GetInstance();
 
         /* (non-Javadoc)
          * @see com.itextpdf.tool.xml.css.CssApplier#apply(com.itextpdf.text.Element, com.itextpdf.tool.xml.Tag)
          */
-        virtual public NoNewLineParagraph Apply(NoNewLineParagraph p, Tag t, IMarginMemory configuration) {
+
+        public virtual NoNewLineParagraph Apply(NoNewLineParagraph p, Tag t, IMarginMemory configuration) {
+            return (NoNewLineParagraph) Apply(p, t, configuration, null, null);
+        }
+
+        public override NoNewLineParagraph Apply(NoNewLineParagraph p, Tag t, IMarginMemory configuration, IPageSizeContainable psc, HtmlPipelineContext ctx) {
             /*if (this.configuration.GetRootTags().Contains(t.Name)) {
                 m.SetLeading(t);
             } else {

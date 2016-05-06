@@ -64,7 +64,7 @@ namespace iTextSharp.tool.xml.css.apply {
      * @author itextpdf.com
      *
      */
-    public class ListStyleTypeCssApplier {
+    public class ListStyleTypeCssApplier : CssApplier<List> {
 
         private CssUtils utils = CssUtils.GetInstance();
         private static ILogger LOG = LoggerFactory.GetLogger(typeof(ListStyleTypeCssApplier));
@@ -80,9 +80,12 @@ namespace iTextSharp.tool.xml.css.apply {
          * This means: <strong>Always replace your list with the returned one and add content to the list after applying!</strong>
          */
         // not implemented: list-style-type:armenian, georgian, decimal-leading-zero.
-        virtual public List Apply(List list, Tag t, HtmlPipelineContext context) {
+        public virtual List Apply(List list, Tag t, HtmlPipelineContext context) {
+            return (List) Apply(list, t, null, null, context);
+        }
+
+        public override List Apply(List lst, Tag t, IMarginMemory configuration, IPageSizeContainable psc, HtmlPipelineContext context) {
             float fontSize = FontSizeTranslator.GetInstance().GetFontSize(t);
-            List lst = list;
             IDictionary<String, String> css = t.CSS;
             String styleType;
             css.TryGetValue(CSS.Property.LIST_STYLE_TYPE, out styleType);

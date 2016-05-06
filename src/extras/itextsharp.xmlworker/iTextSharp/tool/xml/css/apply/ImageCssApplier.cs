@@ -1,5 +1,6 @@
 using System;
 using System.Collections.Generic;
+using iTextSharp.text;
 using iTextSharp.text.html;
 /*
  * $Id: ImageCssApplier.java 28 2011-05-05 20:33:36Z redlab_b $
@@ -46,6 +47,7 @@ using iTextSharp.text.html;
  * address: sales@itextpdf.com
  */
 using iTextSharp.tool.xml.html;
+using iTextSharp.tool.xml.pipeline.html;
 using Image = iTextSharp.text.Image;
 
 namespace iTextSharp.tool.xml.css.apply {
@@ -55,7 +57,7 @@ namespace iTextSharp.tool.xml.css.apply {
      *
      * @author redlab_b
      */
-    public class ImageCssApplier {
+    public class ImageCssApplier : CssApplier<Image> {
 
         /**
          * Applies CSS to an Image. Currently supported:
@@ -68,7 +70,12 @@ namespace iTextSharp.tool.xml.css.apply {
          * @param tag the tag with the css
          * @return a styled Image
          */
-        virtual public Image Apply(Image img, Tag tag) {
+
+        public virtual Image Apply(Image img, Tag tag) {
+            return (Image) Apply(img, tag, null, null, null);
+        }
+
+        public override Image Apply(Image img, Tag tag, IMarginMemory mm, IPageSizeContainable psc, HtmlPipelineContext ctx) {
             IDictionary<String, String> cssMap = tag.CSS;
 
             String widthValue = null;

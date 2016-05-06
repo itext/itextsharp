@@ -60,11 +60,11 @@ using Image = iTextSharp.text.Image;
 
 namespace iTextSharp.tool.xml.css.apply {
 
-    public class DivCssApplier {
+    public class DivCssApplier : CssApplier<PdfDiv> {
         private CssUtils utils = CssUtils.GetInstance();
         private static ILogger LOG = LoggerFactory.GetLogger(typeof(DivCssApplier));
 
-        virtual public PdfDiv Apply(PdfDiv div, Tag t, IMarginMemory memory, IPageSizeContainable psc, HtmlPipelineContext context) {
+        public override PdfDiv Apply(PdfDiv div, Tag t, IMarginMemory memory, IPageSizeContainable psc, HtmlPipelineContext context) {
             IDictionary<String, String> css = t.CSS;
             float fontSize = FontSizeTranslator.GetInstance().TranslateFontSize(t);
             if (fontSize == Font.UNDEFINED) {

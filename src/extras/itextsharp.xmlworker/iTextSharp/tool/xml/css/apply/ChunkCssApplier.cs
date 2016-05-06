@@ -50,6 +50,8 @@ using System.util;
 using iTextSharp.text;
 using iTextSharp.text.html;
 using iTextSharp.text.pdf;
+using iTextSharp.tool.xml.html;
+using iTextSharp.tool.xml.pipeline.html;
 
 namespace iTextSharp.tool.xml.css.apply {
 
@@ -57,8 +59,7 @@ namespace iTextSharp.tool.xml.css.apply {
  * Applies CSS Rules to Chunks
  */
 
-    public class ChunkCssApplier
-    {
+    public class ChunkCssApplier : CssApplier<Chunk> {
         /**
          * FF4 and IE8 provide normal text and bold text. All other values are translated to one of these 2 styles <br />
          * 100 - 500 and "lighter" = normal.<br />
@@ -84,6 +85,11 @@ namespace iTextSharp.tool.xml.css.apply {
             }
         }
 
+        public virtual Chunk Apply(Chunk c, Tag t)
+        {
+            return (Chunk) Apply(c, t, null, null, null);
+        }
+
         /**
          *
          * @param c the Chunk to apply CSS to.
@@ -91,8 +97,7 @@ namespace iTextSharp.tool.xml.css.apply {
          * @return the styled chunk
          */
 
-        virtual public Chunk Apply(Chunk c, Tag t)
-        {
+        public override Chunk Apply(Chunk c, Tag t, IMarginMemory mm, IPageSizeContainable psc, HtmlPipelineContext ctx) {
             Font f = ApplyFontStyles(t);
             float size = f.Size;
             String value = null;
