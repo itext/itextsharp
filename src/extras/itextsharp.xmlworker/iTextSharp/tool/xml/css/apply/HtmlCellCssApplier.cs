@@ -73,7 +73,7 @@ namespace iTextSharp.tool.xml.css.apply {
          */
 
         public virtual HtmlCell Apply(HtmlCell cell, Tag t, IMarginMemory memory, IPageSizeContainable psc) {
-            return Apply(cell, t, memory, psc);
+            return Apply(cell, t, memory, psc, null);
         }
 
         public override HtmlCell Apply(HtmlCell cell, Tag t, IMarginMemory memory, IPageSizeContainable psc, HtmlPipelineContext ctx) {
