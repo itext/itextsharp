@@ -69,7 +69,7 @@ namespace iTextSharp.tool.xml.html {
             map[typeof (HtmlCell)] = new HtmlCellCssApplier();
             map[typeof (List)] = new ListStyleTypeCssApplier();
             map[typeof (LineSeparator)] = new LineSeparatorCssApplier();
-            map[typeof (Image)] = new ImageCssApplier();
+            map[typeof (text.Image)] = new ImageCssApplier();
             map[typeof (PdfDiv)] = new DivCssApplier();
         }
         public CssAppliersImpl(IFontProvider fontProvider)
