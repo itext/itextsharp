@@ -48,16 +48,14 @@ using System.Collections.Generic;
 using iTextSharp.text.error_messages;
 using iTextSharp.text.log;
 
-namespace iTextSharp.text.pdf.mc
-{
+namespace iTextSharp.text.pdf.mc {
 
     /**
      * Creates a list of StructureItem objects extracted from the
      * Structure Tree of a PDF document.
      */
 
-    public class StructureItems : List<StructureItem>
-    {
+    public class StructureItems : List<StructureItem> {
 
         /** The Logger instance */
         protected static readonly ILogger LOGGER = LoggerFactory.GetLogger(typeof (StructureItems));
@@ -72,6 +70,7 @@ namespace iTextSharp.text.pdf.mc
 	     * Creates a list of StructuredItem objects.
 	     * @param reader the reader holding the PDF to examine
 	     */
+
         public StructureItems(PdfReader reader) {
             PdfDictionary catalog = reader.Catalog;
             structTreeRoot = catalog.GetAsDict(PdfName.STRUCTTREEROOT);
@@ -84,8 +83,7 @@ namespace iTextSharp.text.pdf.mc
             PdfObject objecta = structTreeRoot.GetDirectObject(PdfName.K);
             if (objecta == null)
                 return;
-            switch (objecta.Type)
-            {
+            switch (objecta.Type) {
                 case PdfObject.DICTIONARY:
                     LOGGER.Info("StructTreeRoot refers to dictionary");
                     ProcessStructElems((PdfDictionary) objecta, structTreeRoot.GetAsIndirectObject(PdfName.K));
@@ -93,8 +91,7 @@ namespace iTextSharp.text.pdf.mc
                 case PdfObject.ARRAY:
                     LOGGER.Info("StructTreeRoot refers to array");
                     PdfArray array = (PdfArray) objecta;
-                    for (int i = 0; i < array.Size; i++)
-                    {
+                    for (int i = 0; i < array.Size; i++) {
                         ProcessStructElems(array.GetAsDict(i), array.GetAsIndirectObject(i));
                     }
                     break;
@@ -108,7 +105,8 @@ namespace iTextSharp.text.pdf.mc
          * @param ref	the reference to the StructElem dictionary
          * @throws DocumentException
          */
-        virtual protected void ProcessStructElems(PdfDictionary structElem, PdfIndirectReference refa) {
+
+        protected virtual void ProcessStructElems(PdfDictionary structElem, PdfIndirectReference refa) {
             LOGGER.Info(String.Format("addStructureItems({0}, {1})", structElem, refa));
             if (structElem == null)
                 return;
@@ -123,13 +121,13 @@ namespace iTextSharp.text.pdf.mc
          * @param ref			the reference to the StructElem dictionary
          * @param object		the kids object
          */
-        virtual protected void ProcessStructElemKids(PdfDictionary structElem, PdfIndirectReference refa, PdfObject objecta) {
+
+        protected virtual void ProcessStructElemKids(PdfDictionary structElem, PdfIndirectReference refa, PdfObject objecta) {
             LOGGER.Info(String.Format("addStructureItem({0}, {1}, {2})", structElem, refa, objecta));
             if (objecta == null)
                 return;
             StructureItem item;
-            switch (objecta.Type)
-            {
+            switch (objecta.Type) {
                 case PdfObject.NUMBER:
                     item = new StructureMCID(structElem.GetAsIndirectObject(PdfName.PG), (PdfNumber) objecta);
                     Add(item);
@@ -147,13 +145,11 @@ namespace iTextSharp.text.pdf.mc
                         item = new StructureMCID(dict);
                         Add(item);
                         LOGGER.Info("Added " + item);
-                    }
-                    else if (dict.CheckType(PdfName.OBJR)) {
+                    } else if (dict.CheckType(PdfName.OBJR)) {
                         item = new StructureObject(structElem, refa, dict);
                         Add(item);
                         LOGGER.Info("Added " + item);
-                    }
-                    else {
+                    } else {
                         ProcessStructElems(dict, refa);
                     }
                     break;
@@ -165,7 +161,7 @@ namespace iTextSharp.text.pdf.mc
          * @param	PdfNumber	the number to remove
          */
 
-        virtual public void RemoveFromParentTree(PdfNumber structParent) {
+        public virtual void RemoveFromParentTree(PdfNumber structParent) {
             parentTree.Remove(structParent.IntValue);
         }
 
@@ -178,20 +174,38 @@ namespace iTextSharp.text.pdf.mc
          * @return	a new MCID
          * @throws DocumentException
          */
-        virtual public int ProcessMCID(PdfNumber structParents, PdfIndirectReference refa) {
+
+        public virtual int ProcessMCID(PdfNumber structParents, PdfIndirectReference refa) {
             if (refa == null)
                 throw new DocumentException(MessageLocalization.GetComposedMessage("can.t.read.document.structure"));
             PdfObject objecta;
             parentTree.TryGetValue(structParents.IntValue, out objecta);
             PdfArray array = (PdfArray) PdfReader.GetPdfObject(objecta);
-            for (int i = 0; i < array.Size; i++) {
-                if (array.GetAsIndirectObject(i) == null) {
-                    array[i] = refa;
-                    return i;
-                }
+            int i = GetNextMCID(structParents);
+            if (i < array.Size) {
+                array[i] = refa;
+                return i;
             }
             array.Add(refa);
             return array.Size - 1;
+        }
+
+        /**
+         * Finds the next available MCID, which is either the lowest empty ID in
+         * the existing range, or the first available higher number.
+         * @param structParents	the StructParents entry in the page dictionary
+         * @return	the first available MCID
+         */
+        public virtual int GetNextMCID(PdfNumber structParents) {
+            PdfObject objecta;
+            parentTree.TryGetValue(structParents.IntValue, out objecta);
+            PdfArray array = (PdfArray)PdfReader.GetPdfObject(objecta);
+            for (int i = 0; i < array.Size; i++) {
+                if (array.GetAsIndirectObject(i) == null) {
+                    return i;
+                }
+            }
+            return array.Size;
         }
 
         /**
@@ -199,7 +213,8 @@ namespace iTextSharp.text.pdf.mc
          * @param writer	The writer to which the StructParents have to be written
          * @throws IOException 
          */
-        virtual public void WriteParentTree(PdfWriter writer) {
+
+        public virtual void WriteParentTree(PdfWriter writer) {
             if (structTreeRoot == null)
                 return;
             int[] numbers = new int[parentTree.Count];
