@@ -4,6 +4,7 @@ using System.Threading;
 using System.Globalization;
 using iTextSharp.text;
 using iTextSharp.text.pdf.draw;
+using iTextSharp.text.api;
 using iTextSharp.tool.xml;
 using iTextSharp.tool.xml.css;
 using iTextSharp.tool.xml.exceptions;
@@ -297,16 +298,13 @@ namespace iTextSharp.tool.xml.html {
          */
 
         public virtual IList<IElement> CurrentContentToParagraph(IList<IElement> currentContent,
-                                                                 bool addNewLines, bool applyCSS, Tag tag,
-                                                                 IWorkerContext ctx)
-        {
-            try
-            {
+            bool addNewLines, bool applyCSS, Tag tag,
+            IWorkerContext ctx) {
+            try {
+                int direction = GetRunDirection(tag);
                 IList<IElement> list = new List<IElement>();
-                if (currentContent.Count > 0)
-                {
-                    if (addNewLines)
-                    {
+                if (currentContent.Count > 0) {
+                    if (addNewLines) {
                         Paragraph p = CreateParagraph();
                         p.MultipliedLeading = 1.2f;
                         foreach (IElement e in currentContent) {
@@ -315,31 +313,40 @@ namespace iTextSharp.tool.xml.html {
                                     HtmlPipelineContext htmlPipelineContext = GetHtmlPipelineContext(ctx);
                                     Chunk newLine = (Chunk)GetCssAppliers().Apply(new Chunk(Chunk.NEWLINE), tag, htmlPipelineContext);
                                     p.Add(newLine);
-                                } catch (NoCustomContextException exc) {
-                                    throw new RuntimeWorkerException(LocaleMessages.GetInstance().GetMessage(LocaleMessages.NO_CUSTOM_CONTEXT), exc);
+                                }
+                                catch (NoCustomContextException exc) {
+                                    throw new RuntimeWorkerException(
+                                        LocaleMessages.GetInstance().GetMessage(LocaleMessages.NO_CUSTOM_CONTEXT), exc);
                                 }
                             }
                             p.Add(e);
                         }
                         if (p.Trim()) {
-                            if (applyCSS)
-                            {
+                            if (applyCSS) {
                                 p = (Paragraph) GetCssAppliers().Apply(p, tag, GetHtmlPipelineContext(ctx));
+                            }
+                            if (direction.Equals(PdfWriter.RUN_DIRECTION_RTL)) {
+                                DoRtlIndentCorrections(p);
                             }
                             list.Add(p);
                         }
-                    } else {
+                    }
+                    else {
                         NoNewLineParagraph p = new NoNewLineParagraph(float.NaN);
                         p.MultipliedLeading = 1.2f;
                         foreach (IElement e in currentContent) {
                             p.Add(e);
                         }
                         p = (NoNewLineParagraph) GetCssAppliers().Apply(p, tag, GetHtmlPipelineContext(ctx));
+                        if (direction.Equals(PdfWriter.RUN_DIRECTION_RTL)) {
+                            DoRtlIndentCorrections(p);
+                        }
                         list.Add(p);
                     }
                 }
                 return list;
-            } catch (NoCustomContextException e) {
+            }
+            catch (NoCustomContextException e) {
                 throw new RuntimeWorkerException(
                     LocaleMessages.GetInstance().GetMessage(LocaleMessages.NO_CUSTOM_CONTEXT), e);
             }
@@ -375,5 +382,10 @@ namespace iTextSharp.tool.xml.html {
             return new Paragraph(float.NaN);
         }
 
+        protected void DoRtlIndentCorrections(IIndentable p) {
+            float right = p.IndentationRight;
+            p.IndentationRight = p.IndentationLeft;
+            p.IndentationLeft = right;
+        }
     }
 }
