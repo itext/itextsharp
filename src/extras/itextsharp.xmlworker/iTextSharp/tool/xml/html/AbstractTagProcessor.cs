@@ -13,6 +13,7 @@ using iTextSharp.tool.xml.pipeline.css;
 using iTextSharp.tool.xml.pipeline.ctx;
 using iTextSharp.tool.xml.pipeline.html;
 using System.util;
+using System.util.collections;
 using iTextSharp.text.pdf;
 using iTextSharp.tool.xml.util;
 
@@ -147,37 +148,57 @@ namespace iTextSharp.tool.xml.html {
             return new List<IElement>(0);
         }
 
+        /**
+         * For some tags, if they have their own not inherited DIR attribute, this attribute will definitely not be applied
+         * for itext layout. For the most common such tags we use this set to ignore DIR attribute, in order to avoid
+         * unnecessary adjustments in XmlWorker.
+         *
+         * However if parent of these tags have DIR attribute, it may be applied to these tags.
+         */
+
+        private HashSet2<String> ignoreDirAttribute = new HashSet2<String>() {
+            HTML.Tag.P,
+            HTML.Tag.SPAN
+        };
+
+
+        private IList<Tag> tree;
         private String GetParentDirection() {
             String result = null;
             foreach (Tag tag in tree) {
-                tag.Attributes.TryGetValue(HTML.Attribute.DIR, out result);
+                if (!ignoreDirAttribute.Contains(tag.Name.ToLower())) {
+                    tag.Attributes.TryGetValue(HTML.Attribute.DIR, out result);
 
-                if (result != null) break;
-                // Nested tables need this check
-                tag.CSS.TryGetValue(CSS.Property.DIRECTION, out result);
-                if (result != null) break;
+                    if (result != null) break;
+                    // Nested tables need this check
+                    tag.CSS.TryGetValue(CSS.Property.DIRECTION, out result);
+                    if (result != null) break;
+                }
             }
             return result;
         }
-
-        private IList<Tag> tree;
 
         protected virtual int GetRunDirection(Tag tag) {
             /* CSS should get precedence, but a dir attribute defined on the tag
                itself should take precedence over an inherited style tag
             */
-            String dirValue;
-            tag.Attributes.TryGetValue(HTML.Attribute.DIR, out dirValue);
+            String dirValue = null;
+            bool toFetchRunDirFromThisTag = tag.Name != null &&
+                                            !ignoreDirAttribute.Contains(tag.Name.ToLower());
+            if (toFetchRunDirFromThisTag) {
+                tag.Attributes.TryGetValue(HTML.Attribute.DIR, out dirValue);
+            }
 
             if (dirValue == null) {
-                // using CSS is actually discouraged, but still supported
-                tag.CSS.TryGetValue(CSS.Property.DIRECTION, out dirValue);
-
+                if (toFetchRunDirFromThisTag) {
+                    // using CSS is actually discouraged, but still supported
+                    tag.CSS.TryGetValue(CSS.Property.DIRECTION, out dirValue);
+                }
                 if (dirValue == null) {
                     // dir attribute is inheritable in HTML but gets trumped by CSS
                     tree = new ParentTreeUtil().GetParentTagTree(tag, tree);
                     dirValue = GetParentDirection();
-                }// */
+                }
             }
 
             if (Util.EqualsIgnoreCase(CSS.Value.RTL, dirValue)) {
@@ -327,6 +348,7 @@ namespace iTextSharp.tool.xml.html {
                             }
                             if (direction.Equals(PdfWriter.RUN_DIRECTION_RTL)) {
                                 DoRtlIndentCorrections(p);
+                                InvertTextAlignForParagraph(p);
                             }
                             list.Add(p);
                         }
@@ -340,6 +362,7 @@ namespace iTextSharp.tool.xml.html {
                         p = (NoNewLineParagraph) GetCssAppliers().Apply(p, tag, GetHtmlPipelineContext(ctx));
                         if (direction.Equals(PdfWriter.RUN_DIRECTION_RTL)) {
                             DoRtlIndentCorrections(p);
+                            InvertTextAlignForParagraph(p);
                         }
                         list.Add(p);
                     }
@@ -387,5 +410,40 @@ namespace iTextSharp.tool.xml.html {
             p.IndentationRight = p.IndentationLeft;
             p.IndentationLeft = right;
         }
+
+        protected void InvertTextAlignForParagraph(Paragraph p) {
+            switch (p.Alignment) {
+                case Element.ALIGN_UNDEFINED:
+                case Element.ALIGN_CENTER:
+                case Element.ALIGN_JUSTIFIED:
+                case Element.ALIGN_JUSTIFIED_ALL:
+                    break;
+                case Element.ALIGN_RIGHT:
+                    p.Alignment = Element.ALIGN_LEFT;
+                    break;
+                case Element.ALIGN_LEFT:
+                default:
+                    p.Alignment = Element.ALIGN_RIGHT;
+                    break;
+            }
+        }
+
+        protected void InvertTextAlignForParagraph(NoNewLineParagraph p) {
+            switch (p.Alignment) {
+                case Element.ALIGN_UNDEFINED:
+                case Element.ALIGN_CENTER:
+                case Element.ALIGN_JUSTIFIED:
+                case Element.ALIGN_JUSTIFIED_ALL:
+                    break;
+                case Element.ALIGN_RIGHT:
+                    p.Alignment = Element.ALIGN_LEFT;
+                    break;
+                case Element.ALIGN_LEFT:
+                default:
+                    p.Alignment = Element.ALIGN_RIGHT;
+                    break;
+            }
+        }
     }
+
 }
