@@ -95,7 +95,7 @@ namespace iTextSharp.tool.xml.html {
                 PdfDiv div = (PdfDiv)GetCssAppliers().Apply(new PdfDiv(), tag, GetHtmlPipelineContext(ctx));
                 int direction = GetRunDirection(tag);
 
-                if (direction != PdfWriter.RUN_DIRECTION_DEFAULT) {
+                if (direction != PdfWriter.RUN_DIRECTION_NO_BIDI) {
                     div.RunDirection = direction;
                 }
 

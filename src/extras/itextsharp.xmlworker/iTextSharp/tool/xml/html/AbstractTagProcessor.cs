@@ -209,7 +209,11 @@ namespace iTextSharp.tool.xml.html {
                 return PdfWriter.RUN_DIRECTION_LTR;
             }
 
-            return PdfWriter.RUN_DIRECTION_DEFAULT;
+            if (Util.EqualsIgnoreCase(CSS.Value.AUTO, dirValue)) {
+                return PdfWriter.RUN_DIRECTION_DEFAULT;
+            }
+
+            return PdfWriter.RUN_DIRECTION_NO_BIDI;
         }
 
         protected virtual List<IElement> TextContent(IWorkerContext ctx, Tag tag, String content) {

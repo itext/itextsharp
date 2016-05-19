@@ -77,9 +77,9 @@ namespace iTextSharp.tool.xml.html.table {
 
             int direction = GetRunDirection(tag);
 
-            if (direction != PdfWriter.RUN_DIRECTION_DEFAULT) {
+            if (direction != PdfWriter.RUN_DIRECTION_NO_BIDI) {
                 foreach (HtmlCell cell in row.Content) {
-                    if (cell.RunDirection == PdfWriter.RUN_DIRECTION_DEFAULT) {
+                    if (cell.RunDirection == PdfWriter.RUN_DIRECTION_NO_BIDI) {
                         cell.RunDirection = direction;
                     }
                 }

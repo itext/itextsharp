@@ -127,7 +127,7 @@ namespace iTextSharp.text.pdf {
          */
         public const int DIGIT_TYPE_AN_EXTENDED = ArabicLigaturizer.DIGIT_TYPE_AN_EXTENDED;
     
-        protected int runDirection = PdfWriter.RUN_DIRECTION_DEFAULT;
+        protected int runDirection = PdfWriter.RUN_DIRECTION_NO_BIDI;
         public static float GLOBAL_SPACE_CHAR_RATIO = 0;
     
         /** Signals that there is no more text available. */
@@ -871,9 +871,7 @@ namespace iTextSharp.text.pdf {
             PdfContentByte graphics = null;
             PdfContentByte text = null;
             firstLineY = float.NaN;
-            int localRunDirection = PdfWriter.RUN_DIRECTION_NO_BIDI;
-            if (runDirection != PdfWriter.RUN_DIRECTION_DEFAULT)
-                localRunDirection = runDirection;
+            int localRunDirection = runDirection;
             if (canvas != null) {
                 graphics = canvas;
                 pdf = canvas.PdfDocument;
@@ -934,6 +932,7 @@ namespace iTextSharp.text.pdf {
                     }
                     yLine -= currentLeading;
                     if (!simulate && !dirty) {
+                        // TODO this is not quite right. Currently, reversed chars may appear whenever bidi algorithm was applied, which is run direction is not NO_BIDI
                         if (line.isRTL && canvas.IsTagged()) {
                             canvas.BeginMarkedContentSequence(PdfName.REVERSEDCHARS);
                             rtl = true;
@@ -971,6 +970,7 @@ namespace iTextSharp.text.pdf {
                     }
                     line = bidiLine.ProcessLine(x1, x2 - x1 - firstIndent - rightIndent, alignment, localRunDirection, arabicOptions, minY, yLine, descender);
                     if (!simulate && !dirty) {
+                        // TODO this is not quite right. Currently, reversed chars may appear whenever bidi algorithm was applied, which is run direction is not NO_BIDI
                         if (line.isRTL && canvas.IsTagged()) {
                             canvas.BeginMarkedContentSequence(PdfName.REVERSEDCHARS);
                             rtl = true;
@@ -1520,7 +1520,11 @@ namespace iTextSharp.text.pdf {
                     // INITIALISATIONS
                     // get the PdfPTable element
                     PdfPTable table = (PdfPTable) element;
-                
+
+                    int backedUpRunDir = runDirection; // storing original run direction just in case
+                    runDirection = table.RunDirection; // using table run direction
+                    isRTL = runDirection == PdfWriter.RUN_DIRECTION_RTL;
+
                     // tables without a body are dismissed
                     if (table.Size <= table.HeaderRows) {
                         compositeElements.RemoveAt(0);
@@ -1881,6 +1885,10 @@ namespace iTextSharp.text.pdf {
                         rowIdx = k;
                         return NO_MORE_COLUMN;
                     }
+
+                    // restoring original run direction
+                    runDirection = backedUpRunDir;
+                    isRTL = runDirection == PdfWriter.RUN_DIRECTION_RTL;
                 }
                 else if (element.Type == Element.YMARK) {
                     if (!simulate) {
