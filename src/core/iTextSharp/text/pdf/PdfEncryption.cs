@@ -529,7 +529,7 @@ public class PdfEncryption {
 
     public static PdfObject CreateInfoId(byte[] id, bool modified) {
         ByteBuffer buf = new ByteBuffer(90);
-        if(id.Length == 0)
+        if(id == null || id.Length == 0)
             id = CreateDocumentId();
         buf.Append('[').Append('<');
         for (int k = 0; k < id.Length; ++k)
