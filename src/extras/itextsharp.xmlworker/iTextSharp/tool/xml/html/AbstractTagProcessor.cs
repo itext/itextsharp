@@ -155,12 +155,10 @@ namespace iTextSharp.tool.xml.html {
          *
          * However if parent of these tags have DIR attribute, it may be applied to these tags.
          */
-
-        private HashSet2<String> ignoreDirAttribute = new HashSet2<String>() {
+        private HashSet2<String> ignoreDirAttribute = new HashSet2<String>(new string[]{
             HTML.Tag.P,
             HTML.Tag.SPAN
-        };
-
+        });
 
         private IList<Tag> tree;
         private String GetParentDirection() {
