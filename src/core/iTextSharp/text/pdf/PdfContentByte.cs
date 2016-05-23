@@ -260,12 +260,19 @@ namespace iTextSharp.text.pdf {
         }
 
         /**
+         * [SUP-1395] If set, prevents iText from marking content and creating structure tags for items added to this content stream.
+         * (By default, iText automatically marks content using BDC/EMC operators, and adds a structure tag for the new content
+         * at the end of the page.)
+         */
+        public bool SuppressTagging { get; set; }
+
+        /**
          * Checks if the content needs to be tagged.
          * @return false if no tags need to be added
          */
         public virtual bool IsTagged()
         {
-            return writer != null && writer.IsTagged();
+            return writer != null && writer.IsTagged() && !SuppressTagging;
         }
 
         /**
