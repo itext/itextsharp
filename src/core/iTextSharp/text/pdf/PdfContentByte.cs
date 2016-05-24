@@ -209,7 +209,8 @@ namespace iTextSharp.text.pdf {
         /** The separator between commands.
          */    
         protected int separator = '\n';
-    
+
+		private bool suppressTagging;
         private int mcDepth = 0;
         private bool inText = false;
 
@@ -264,7 +265,10 @@ namespace iTextSharp.text.pdf {
          * (By default, iText automatically marks content using BDC/EMC operators, and adds a structure tag for the new content
          * at the end of the page.)
          */
-        public bool SuppressTagging { get; set; }
+		public bool SuppressTagging {
+			get { return suppressTagging; }
+			set { suppressTagging = value; }
+		}
 
         /**
          * Checks if the content needs to be tagged.
