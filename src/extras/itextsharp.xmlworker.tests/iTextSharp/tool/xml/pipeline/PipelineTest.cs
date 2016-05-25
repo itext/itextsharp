@@ -87,10 +87,9 @@ namespace itextsharp.xmlworker.tests.iTextSharp.tool.xml.pipeline {
 	 */
 
         [Test]
-        [ExpectedException(typeof (PipelineException))]
         virtual public void ValidateNoCustomContextExceptionThrown() {
             AbstractPipeline ap = new CustomAbstractPipeline(null);
-            ap.GetLocalContext(ctx);
+            Assert.Throws(typeof (PipelineException), delegate { ap.GetLocalContext(ctx); });
         }
 
         /**

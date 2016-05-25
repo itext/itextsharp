@@ -154,20 +154,18 @@ namespace itextsharp.tests.iTextSharp.text.pdf
 
          
         [Test]
-        [ExpectedException(typeof(InvalidPdfException))]
         public void CircularReferencesInResources()  {
             string testFile = TestResourceUtils.GetResourceAsTempFile(TEST_RESOURCES_PATH, "circularReferencesInResources.pdf");
             PdfReader rdr = new PdfReader(testFile);
             rdr.Close();
-            BaseFont.GetDocumentFonts(rdr);
+            Assert.Throws(typeof(InvalidPdfException), delegate { BaseFont.GetDocumentFonts(rdr); });
         }
 
         
         [Test]
-        [ExpectedException(typeof(InvalidPdfException))]
         public void CircularReferencesInPageTree()  {
             string testFile = TestResourceUtils.GetResourceAsTempFile(TEST_RESOURCES_PATH, "circularReferencesInPageTree.pdf");
-            PdfReader rdr = new PdfReader(testFile);
+            Assert.Throws(typeof(InvalidPdfException), delegate { new PdfReader(testFile); });
         }
 
     }
