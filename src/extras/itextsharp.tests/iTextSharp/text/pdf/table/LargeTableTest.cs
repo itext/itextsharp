@@ -128,7 +128,8 @@ namespace itextsharp.tests.iTextSharp.text.pdf.table {
             CompareTablePdf(file);
         }
 
-        [Test, Ignore]
+        [Test]
+        [Ignore("ignore")]
         public virtual void TestIncompleteTableAdd02()
         {
             const String file = "incomplete_add02.pdf";
@@ -164,7 +165,8 @@ namespace itextsharp.tests.iTextSharp.text.pdf.table {
             CompareTablePdf(file);
         }
 
-        [Test, Ignore]
+        [Test]
+        [Ignore("ignore")]
         public virtual void TestIncompleteTableAdd03()
         {
             const String file = "incomplete_add03.pdf";

@@ -60,7 +60,8 @@ namespace itextsharp.tests.iTextSharp.text.pdf.fonts.cmaps
             Assert.AreEqual(uni, lookupResult);
         }
 
-        [Test, Ignore]
+        [Test]
+        [Ignore("ignore")]
         virtual public void TestHighOrderBytes()
         {
             CheckInsertAndRetrieval(new byte[] { (byte)0x91 }, "\u2018");
