@@ -49,7 +49,7 @@ using iTextSharp.text;
 using NUnit.Framework;
 
 namespace itextsharp.xmlworker.tests.iTextSharp.tool.xml.html {
-    [Ignore]
+    [Ignore("ignore")]
     internal class SnippetUtil {
         /*
 	 * Convenient method for retrieving the content of an elementList.
