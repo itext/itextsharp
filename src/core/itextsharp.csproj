@@ -960,6 +960,7 @@
     <Compile Include="iTextSharp\text\pdf\RandomAccessFileOrArray.cs">
       <SubType>Code</SubType>
     </Compile>
+    <Compile Include="iTextSharp\text\pdf\security\SignaturePolicyInfo.cs" />
     <Compile Include="iTextSharp\text\pdf\SequenceList.cs">
       <SubType>Code</SubType>
     </Compile>
