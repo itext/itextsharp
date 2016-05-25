@@ -43,7 +43,6 @@
  * address: sales@itextpdf.com
  */
 
-using System;
 using System.Collections.Generic;
 
 namespace iTextSharp.text.pdf.parser {
@@ -67,19 +66,17 @@ namespace iTextSharp.text.pdf.parser {
          * @param <E> the type of the renderListener - this makes it easy to chain calls
          * @param pageNumber the page number to process
          * @param renderListener the listener that will receive render callbacks
-         * @param map an optional dictionary of custom IContentOperators for rendering instructions
+         * @param additionalContentOperators an optional dictionary of custom IContentOperators for rendering instructions
          * @return the provided renderListener
          * @throws IOException if operations on the reader fail
          */
-        public virtual E ProcessContent<E>(int pageNumber, E renderListener, IDictionary<String, IContentOperator> map) where E : IRenderListener {
+        public virtual E ProcessContent<E>(int pageNumber, E renderListener, IDictionary<string, IContentOperator> additionalContentOperators) where E : IRenderListener {
             PdfDictionary pageDic = reader.GetPageN(pageNumber);
             PdfDictionary resourcesDic = pageDic.GetAsDict(PdfName.RESOURCES);
             
             PdfContentStreamProcessor processor = new PdfContentStreamProcessor(renderListener);
-            if (map != null) {
-                foreach (KeyValuePair<string, IContentOperator> entry in map) {
-                    processor.RegisterContentOperator(entry.Key, entry.Value);
-                }
+            foreach (KeyValuePair<string, IContentOperator> entry in additionalContentOperators) {
+                processor.RegisterContentOperator(entry.Key, entry.Value);
             }
             processor.ProcessContent(ContentByteUtils.GetContentBytesForPage(reader, pageNumber), resourcesDic);        
             return renderListener;
@@ -94,7 +91,7 @@ namespace iTextSharp.text.pdf.parser {
          * @throws IOException if operations on the reader fail
          */
         public virtual E ProcessContent<E>(int pageNumber, E renderListener) where E : IRenderListener {
-            return ProcessContent(pageNumber, renderListener, null);
+            return ProcessContent(pageNumber, renderListener, new Dictionary<string, IContentOperator>());
         }
     }
 }

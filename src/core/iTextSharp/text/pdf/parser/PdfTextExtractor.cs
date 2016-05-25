@@ -59,14 +59,13 @@ namespace iTextSharp.text.pdf.parser {
          * @param reader the reader to extract text from
          * @param pageNumber the page to extract text from
          * @param strategy the strategy to use for extracting text
-         * @param map an optional dictionary of custom IContentOperators for rendering instructions
+         * @param additionalContentOperators an optional dictionary of custom IContentOperators for rendering instructions
          * @return the extracted text
          * @throws IOException if any operation fails while reading from the provided PdfReader
-         * @since 5.0.2
          */
-        public static String GetTextFromPage(PdfReader reader, int pageNumber, ITextExtractionStrategy strategy, IDictionary<String, IContentOperator> map) {
+        public static String GetTextFromPage(PdfReader reader, int pageNumber, ITextExtractionStrategy strategy, IDictionary<string, IContentOperator> additionalContentOperators) {
             PdfReaderContentParser parser = new PdfReaderContentParser(reader);
-            return parser.ProcessContent(pageNumber, strategy, map).GetResultantText();
+            return parser.ProcessContent(pageNumber, strategy, additionalContentOperators).GetResultantText();
             
         }
 
@@ -82,7 +81,7 @@ namespace iTextSharp.text.pdf.parser {
         public static String GetTextFromPage(PdfReader reader, int pageNumber, ITextExtractionStrategy strategy)
         {
             PdfReaderContentParser parser = new PdfReaderContentParser(reader);
-            return parser.ProcessContent(pageNumber, strategy, null).GetResultantText();
+            return parser.ProcessContent(pageNumber, strategy, new Dictionary<string, IContentOperator>()).GetResultantText();
 
         }
 
