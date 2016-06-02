@@ -80,7 +80,7 @@ namespace iTextSharp.text.pdf {
         private readonly ILogger LOGGER = LoggerFactory.GetLogger(typeof(PdfPTable));
 
         /** Eliminate the arabic vowels */    
-        public int AR_NOVOWEL = ArabicLigaturizer.ar_novowel;
+        public const int AR_NOVOWEL = ArabicLigaturizer.ar_novowel;
         /** Compose the tashkeel in the ligatures. */    
         public const int AR_COMPOSEDTASHKEEL = ArabicLigaturizer.ar_composedtashkeel;
         /** Do some extra double ligatures. */    
