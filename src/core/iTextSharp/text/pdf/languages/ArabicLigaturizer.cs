@@ -55,8 +55,13 @@ namespace iTextSharp.text.pdf {
     * @author Paulo Soares
     */
     public class ArabicLigaturizer {
-        private static Dictionary<char, char[]> maptable = new Dictionary<char, char[]>();
-        
+        private static readonly Dictionary<char, char[]> maptable = new Dictionary<char, char[]>();
+        /**
+         * Some fonts do not implement ligaturized variations on Arabic characters
+         * e.g. Simplified Arabic has got code point 0xFEED but not 0xFEEE
+         */
+        private static readonly Dictionary<char, char> reverseLigatureMapTable = new Dictionary<char, char>();
+
         static bool IsVowel(char s) {
             return ((s >= '\u064B') && (s <= '\u0655')) || (s == '\u0670');
         }
@@ -565,6 +570,10 @@ namespace iTextSharp.text.pdf {
             }
         }
 
+        public static bool TryGetReverseMapping(char key, out char value) {
+           return reverseLigatureMapTable.TryGetValue(key, out value);
+        }
+
         private const char ALEF = '\u0627';
         private const char ALEFHAMZA = '\u0623';
         private const char ALEFHAMZABELOW = '\u0625';
@@ -747,6 +756,22 @@ namespace iTextSharp.text.pdf {
         static ArabicLigaturizer() {
             foreach (char[] c in chartable) {
                 maptable[c[0]] = c;
+                switch (c.Length)
+                {
+                    // only store the 2->1 and 4->3 mapping, if they are there
+                    case 5:
+                        reverseLigatureMapTable[c[4]] = c[3];
+                        reverseLigatureMapTable[c[2]] = c[1];
+                        break;
+                    case 3:
+                        reverseLigatureMapTable[c[2]] = c[1];
+                        break;
+                }
+                if (c[0] == 0x0637 || c[0] == 0x0638)
+                {
+                    reverseLigatureMapTable[c[4]] = c[1];
+                    reverseLigatureMapTable[c[3]] = c[1];
+                }
             }
         }
 

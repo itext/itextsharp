@@ -391,7 +391,13 @@ namespace iTextSharp.text.pdf {
                     return null;
             }
             else {
-                map.TryGetValue(c, out ret);
+                if (!map.TryGetValue(c, out ret))
+                {
+                    char ch;
+                    if (ArabicLigaturizer.TryGetReverseMapping((char) c, out ch)) {
+                        map.TryGetValue(ch, out ret);
+                    }
+                }
                 return ret;
             }
         }
