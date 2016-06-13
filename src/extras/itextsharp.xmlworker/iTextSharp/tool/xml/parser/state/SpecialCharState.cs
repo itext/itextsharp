@@ -81,12 +81,12 @@ namespace iTextSharp.tool.xml.parser.state {
                         parser.Memory().LastChar = decoded;
                     }
     //          }
-                parser.SelectState().InTag();
+                parser.SelectState().PreviousState();
                 this.parser.Memory().CurrentEntity().Length = 0;
              } else if (character != '#' && (character < '0' || character > '9') && (character < 'a' || character > 'z')
                     && (character < 'A' || character > 'Z') || entity.Length >= 7) {
                  parser.Append('&').Append(entity.ToString());
-                 parser.SelectState().InTag();
+                 parser.SelectState().PreviousState();
                  this.parser.Memory().CurrentEntity().Length = 0;
             } else {
                 entity.Append(character);
