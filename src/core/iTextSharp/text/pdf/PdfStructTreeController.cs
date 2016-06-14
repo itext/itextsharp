@@ -201,10 +201,11 @@ namespace iTextSharp.text.pdf
                     return ReturnType.FOUND;
                 }
                 if (curNumber < arrayNumber) {
-                    begin += cur;
-                    cur /= 2;
                     if (cur == 0)
-                        cur = 1;
+                        return ReturnType.NOTFOUND;
+                    begin += cur;
+                    if (cur != 1)
+                        cur /= 2;
                     if (cur + begin == pages.Size)
                         return ReturnType.NOTFOUND;
                     continue;
