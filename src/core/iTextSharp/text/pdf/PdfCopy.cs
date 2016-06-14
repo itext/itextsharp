@@ -947,6 +947,9 @@ namespace iTextSharp.text.pdf {
             //from end, because some objects can appear on several pages because of MCR (out16.pdf)
             for (int i = numTree.Count - 1; i >= 0; --i) {
                 PdfIndirectReference currNum = numTree[i];
+                if (currNum == null) {
+                    continue;
+                }
                 RefKey numKey = new RefKey(currNum);
                 PdfObject obj = indirectObjects[numKey].objecti;
                 if (obj.IsDictionary()) {
