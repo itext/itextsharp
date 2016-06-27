@@ -440,7 +440,7 @@ namespace iTextSharp.text.pdf
                 roleMap.Put(structType,obj);
             } else if ((currentRole = roleMap.Get(structType)) != null) {
                 if (!currentRole.Equals(obj)) {
-                    throw new BadPdfFormatException(MessageLocalization.GetComposedMessage("conflict.in.rolemap",obj));
+                    throw new BadPdfFormatException(MessageLocalization.GetComposedMessage("conflict.in.rolemap",structType));
                 }
             } else {
                 roleMap.Put(structType,obj);
