@@ -10,7 +10,7 @@ using System.Runtime.InteropServices;
 [assembly: AssemblyConfiguration("")]
 [assembly: AssemblyCompany("iText Group NV")]
 [assembly: AssemblyProduct("iTextSharp.pdfa")]
-[assembly: AssemblyCopyright("Copyright (C) 1999-2014 by Bruno Lowagie and Paulo Soares. All Rights Reserved.")]
+[assembly: AssemblyCopyright("Copyright (C) 1999-2016 by iText Group NV")]
 [assembly: AssemblyTrademark("")]
 [assembly: AssemblyCulture("")]
 

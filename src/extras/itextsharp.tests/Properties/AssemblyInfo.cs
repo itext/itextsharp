@@ -10,7 +10,7 @@ using System.Runtime.InteropServices;
 [assembly: AssemblyConfiguration("")]
 [assembly: AssemblyCompany("")]
 [assembly: AssemblyProduct("itextsharp.tests")]
-[assembly: AssemblyCopyright("Copyright (C) 2013 by Bruno Lowagie, Paulo Soares and others. All Rights Reserved.")]
+[assembly: AssemblyCopyright("Copyright (C) 1999-2016 by iText Group NV")]
 [assembly: AssemblyTrademark("")]
 [assembly: AssemblyCulture("")]
 
