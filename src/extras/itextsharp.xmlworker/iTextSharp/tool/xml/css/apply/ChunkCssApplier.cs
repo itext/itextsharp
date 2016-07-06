@@ -190,7 +190,7 @@ namespace iTextSharp.tool.xml.css.apply {
         {
             String fontName = null;
             String encoding = BaseFont.CP1252;
-            float size = new FontSizeTranslator().GetFontSize(t);
+            float size = FontSizeTranslator.GetInstance().GetFontSize(t);
             if (size == Font.UNDEFINED)
                 size = Font.DEFAULTSIZE;
             int style = Font.UNDEFINED;

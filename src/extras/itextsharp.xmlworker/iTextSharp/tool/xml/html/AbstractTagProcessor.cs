@@ -359,6 +359,7 @@ namespace iTextSharp.tool.xml.html {
                         NoNewLineParagraph p = new NoNewLineParagraph(float.NaN);
                         p.MultipliedLeading = 1.2f;
                         foreach (IElement e in currentContent) {
+                            UpdateParagraphFontIfNeeded(p, e);
                             p.Add(e);
                         }
                         p = (NoNewLineParagraph) GetCssAppliers().Apply(p, tag, GetHtmlPipelineContext(ctx));
@@ -444,6 +445,23 @@ namespace iTextSharp.tool.xml.html {
                 default:
                     p.Alignment = Element.ALIGN_RIGHT;
                     break;
+            }
+        }
+
+        /**
+         * In case child font is of bigger size than paragraph font, text overlapping may occur.
+         * This happens because leading of the lines in paragraph is set based on paragraph font.
+         */
+        protected void UpdateParagraphFontIfNeeded(Phrase p, IElement child) {
+            Font childFont = null;
+            if (child is Chunk) {
+                childFont = ((Chunk)child).Font;
+            } else if (child is Phrase) {
+                childFont = ((Phrase)child).Font;
+            }
+            float pFontSize = p.Font != null ? p.Font.Size : Font.DEFAULTSIZE;
+            if (childFont != null && childFont.Size > pFontSize) {
+                p.Font = childFont;
             }
         }
     }
