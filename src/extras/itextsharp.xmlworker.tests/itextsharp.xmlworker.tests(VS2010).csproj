@@ -404,6 +404,7 @@
     <Compile Include="iTextSharp\tool\xml\examples\css\width\cell\Width_cell01.cs" />
     <Compile Include="iTextSharp\tool\xml\examples\css\width\div\Width_div01.cs" />
     <Compile Include="iTextSharp\tool\xml\examples\css\width\table\Width_table01.cs" />
+    <Compile Include="iTextSharp\tool\xml\examples\custom\StarCommentTest.cs" />
     <Compile Include="iTextSharp\tool\xml\examples\custom\TextSanitizeTest.cs" />
     <Compile Include="iTextSharp\tool\xml\examples\html\A01Test.cs" />
     <Compile Include="iTextSharp\tool\xml\examples\html\Address01Test.cs" />
