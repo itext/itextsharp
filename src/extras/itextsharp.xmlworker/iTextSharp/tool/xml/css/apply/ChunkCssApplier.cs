@@ -45,6 +45,7 @@
 
 using System;
 using System.Collections.Generic;
+using System.Globalization;
 using System.Text.RegularExpressions;
 using System.util;
 using iTextSharp.text;
@@ -122,7 +123,7 @@ namespace iTextSharp.tool.xml.css.apply {
                 } else if (Util.EqualsIgnoreCase(CSS.Property.XFA_FONT_HORIZONTAL_SCALE, key)) {
                     // only % allowed; need a catch block NumberFormatExc?
                     c.SetHorizontalScaling(
-                        float.Parse(value.Replace("%", ""))/100);
+                        float.Parse(value.Replace("%", ""), CultureInfo.InvariantCulture)/100);
                 }
             }
             // following styles are separate from the for each loop, because they are based on font settings like size.
