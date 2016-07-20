@@ -44,6 +44,7 @@
  */
 using System;
 using System.Collections.Generic;
+using System.Globalization;
 using System.util;
 using iTextSharp.text;
 using iTextSharp.tool.xml.html;
@@ -128,7 +129,7 @@ namespace iTextSharp.tool.xml.css.apply {
                     p.FirstLineIndent = utils.ParseValueToPt(value, fontSize);
                 } else if (Util.EqualsIgnoreCase(CSS.Property.LINE_HEIGHT, key)) {
                     if (utils.IsNumericValue(value)) {
-                        p.Leading = float.Parse(value)*fontSize;
+                        p.Leading = float.Parse(value, CultureInfo.InvariantCulture) *fontSize;
                     } else if (utils.IsRelativeValue(value)) {
                         p.Leading = utils.ParseRelativeValue(value, fontSize);
                     } else if (utils.IsMetricValue(value)) {

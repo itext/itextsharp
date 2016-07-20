@@ -1,5 +1,6 @@
 using System;
 using System.Collections.Generic;
+using System.Globalization;
 using iTextSharp.text;
 using iTextSharp.text.html;
 /*
@@ -172,12 +173,12 @@ namespace iTextSharp.tool.xml.css.apply {
             String before = null;
             cssMap.TryGetValue(CSS.Property.BEFORE, out before);
             if (before != null) {
-                img.SpacingBefore = float.Parse(before);
+                img.SpacingBefore = float.Parse(before, CultureInfo.InvariantCulture);
             }
             String after = null;
             cssMap.TryGetValue(CSS.Property.AFTER, out after);
             if (after != null) {
-                img.SpacingAfter = float.Parse(after);
+                img.SpacingAfter = float.Parse(after, CultureInfo.InvariantCulture);
             }
 
             img.WidthPercentage = 0;
