@@ -368,6 +368,7 @@
     <Compile Include="iTextSharp\text\pdf\AcroFields.cs">
       <SubType>Code</SubType>
     </Compile>
+    <Compile Include="iTextSharp\text\pdf\BarcodeIMB.cs" />
     <Compile Include="iTextSharp\text\pdf\codec\wmf\Point.cs" />
     <Compile Include="iTextSharp\text\pdf\DeviceNColor.cs" />
     <Compile Include="iTextSharp\text\pdf\fonts\cmaps\IdentityToUnicode.cs">

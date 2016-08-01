@@ -74,6 +74,8 @@ namespace iTextSharp.text.pdf {
         public const int CODE128_RAW = 11;
         /** A type of barcode */
         public const int CODABAR = 12;
+        /** A type of barcode */
+        public const int IMB = 13;
 
         /** The minimum bar width.
          */
