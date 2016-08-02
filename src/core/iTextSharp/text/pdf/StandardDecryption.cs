@@ -98,7 +98,7 @@ namespace iTextSharp.text.pdf.crypto {
         }
         
         virtual public byte[] Finish() {
-            if (aes) {
+            if (cipher != null && aes) {
                 return cipher.DoFinal();
             }
             else
