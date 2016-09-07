@@ -148,7 +148,8 @@ namespace iTextSharp.text.pdf {
         private int width;
         private int ws;
         private int options;
-        
+        private bool forceSquareSize = false;
+
         /**
         * Creates an instance of this class.
         */
@@ -722,7 +723,7 @@ namespace iTextSharp.text.pdf {
                 }
                 e += extCount;
                 for (k = 0; k < dmSizes.Length; ++k) {
-                    if (dmSizes[k].dataSize >= e)
+                    if (dmSizes[k].dataSize >= e && (!forceSquareSize || dmSizes[k].width == dmSizes[k].height))
                         break;
                 }
                 dm = dmSizes[k];
@@ -985,6 +986,10 @@ namespace iTextSharp.text.pdf {
             set {
                 options = value;
             }
+        }
+
+        public virtual bool ForceSquareSize {
+            set { forceSquareSize = value; }
         }
 
         internal class Placement {
