@@ -3915,7 +3915,14 @@ namespace iTextSharp.text.pdf {
     	    else 
     		    return decrypt.IsMetadataEncrypted();
         }
-        
+
+        /**
+         * Computes user password if standard encryption handler is used with Standard40, Standard128 or AES128 encryption algorithm.
+         *
+         * @return user password, or null if not a standard encryption handler was used,
+         *         if standard encryption handler was used with AES256 encryption algorithm,
+         *         or if ownerPasswordUsed wasn't use to open the document.
+         */
         virtual public byte[] ComputeUserPassword() {
     	    if (!encrypted || !ownerPasswordUsed) return null;
     	    return decrypt.ComputeUserPassword(password);
