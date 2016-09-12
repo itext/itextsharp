@@ -988,7 +988,7 @@ namespace iTextSharp.text.pdf {
         }
     
         public static bool NoPrint(int c) {
-            return ((c >= 0x200b && c <= 0x200f) || (c >= 0x202a && c <= 0x202e));
+            return ((c >= 0x200b && c <= 0x200f) || (c >= 0x202a && c <= 0x202e) || c == '\u00AD');
         }    
     }
 }
