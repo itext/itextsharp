@@ -97,20 +97,18 @@ namespace iTextSharp.text.pdf.security
                 // Modified by J. Arturo
                 // Workaround for SHA-256 and SHA-512
 
-                if (rsa.CspKeyContainerInfo.ProviderName == "Microsoft Strong Cryptographic Provider" ||
-                                rsa.CspKeyContainerInfo.ProviderName == "Microsoft Enhanced Cryptographic Provider v1.0" ||
-                                rsa.CspKeyContainerInfo.ProviderName == "Microsoft Base Cryptographic Provider v1.0")
+                if (rsa.CspKeyContainerInfo.ProviderName == CryptoConst.MS_STRONG_PROV ||
+                     rsa.CspKeyContainerInfo.ProviderName == CryptoConst.MS_ENHANCED_PROV ||
+                     rsa.CspKeyContainerInfo.ProviderName == CryptoConst.MS_DEF_PROV)
                 {
-                    string providerName = "Microsoft Enhanced RSA and AES Cryptographic Provider";
-                    int providerType = 24;
-
                     Type CspKeyContainerInfo_Type = typeof(CspKeyContainerInfo);
 
                     FieldInfo CspKeyContainerInfo_m_parameters = CspKeyContainerInfo_Type.GetField("m_parameters", BindingFlags.NonPublic | BindingFlags.Instance);
                     CspParameters parameters = (CspParameters)CspKeyContainerInfo_m_parameters.GetValue(rsa.CspKeyContainerInfo);
 
-                    var cspparams = new CspParameters(providerType, providerName, rsa.CspKeyContainerInfo.KeyContainerName);
+                    var cspparams = new CspParameters(CryptoConst.PROV_RSA_AES, CryptoConst.MS_ENH_RSA_AES_PROV, rsa.CspKeyContainerInfo.KeyContainerName);
                     cspparams.Flags = parameters.Flags;
+                    cspparams.KeyNumber = parameters.KeyNumber;
 
                     using (var rsaKey = new RSACryptoServiceProvider(cspparams))
                     {
