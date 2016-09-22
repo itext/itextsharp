@@ -82,7 +82,7 @@ namespace iTextSharp.text.pdf.security {
          * @throws Exception 
          */
         public static void SignDetached(PdfSignatureAppearance sap, IExternalSignature externalSignature, ICollection<X509Certificate> chain, ICollection<ICrlClient> crlList, IOcspClient ocspClient,
-                ITSAClient tsaClient, int estimatedSize, CryptoStandard sigtype) {
+                ITSAClient tsaClient, int estimatedSize, CryptoStandard sigtype, SignaturePolicyInfo spi = null) {
             List<X509Certificate> certa = new List<X509Certificate>(chain);
             ICollection<byte[]> crlBytes = null;
             int i = 0;
@@ -116,7 +116,10 @@ namespace iTextSharp.text.pdf.security {
             sap.PreClose(exc);
 
             String hashAlgorithm = externalSignature.GetHashAlgorithm();
+
             PdfPKCS7 sgn = new PdfPKCS7(null, chain, hashAlgorithm, false);
+            sgn.SignaturePolicyInfo = spi;
+
             IDigest messageDigest = DigestUtilities.GetDigest(hashAlgorithm);
             Stream data = sap.GetRangeStream();
             byte[] hash = DigestAlgorithms.Digest(data, hashAlgorithm);
