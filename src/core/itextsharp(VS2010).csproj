@@ -1223,6 +1223,7 @@
     <Compile Include="iTextSharp\text\pdf\security\PdfSignatureAppDictionary.cs" />
     <Compile Include="iTextSharp\text\pdf\security\PdfSignatureBuildProperties.cs" />
     <Compile Include="iTextSharp\text\pdf\security\SecurityConstants.cs" />
+    <Compile Include="iTextSharp\text\pdf\security\SignaturePolicyInfo.cs" />
     <Compile Include="iTextSharp\text\pdf\SequenceList.cs">
       <SubType>Code</SubType>
     </Compile>

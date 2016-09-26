@@ -4198,6 +4198,7 @@
     <Compile Include="iTextSharp\text\pdf\security\PrivateKeySignature.cs" />
     <Compile Include="iTextSharp\text\pdf\security\RootStoreVerifier.cs" />
     <Compile Include="iTextSharp\text\pdf\security\SecurityConstants.cs" />
+    <Compile Include="iTextSharp\text\pdf\security\SignaturePolicyInfo.cs" />
     <Compile Include="iTextSharp\text\pdf\security\SecurityIDs.cs" />
     <Compile Include="iTextSharp\text\pdf\security\SignaturePermissions.cs" />
     <Compile Include="iTextSharp\text\pdf\security\TSAClientBouncyCastle.cs" />
