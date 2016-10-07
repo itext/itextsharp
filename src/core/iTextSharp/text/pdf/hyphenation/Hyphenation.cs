@@ -27,7 +27,7 @@ namespace iTextSharp.text.pdf.hyphenation {
          * rawWord as made of alternating strings and {@link Hyphen Hyphen}
          * instances
          */
-        internal Hyphenation(string word, int[] points) {
+        public Hyphenation(string word, int[] points) {
             this.word = word;
             hyphenPoints = points;
             len = points.Length;

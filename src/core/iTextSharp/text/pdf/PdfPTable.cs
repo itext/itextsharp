@@ -114,7 +114,7 @@ namespace iTextSharp.text.pdf {
 
         protected bool isColspan = false;
 
-        protected int runDirection = PdfWriter.RUN_DIRECTION_DEFAULT;
+        protected int runDirection = PdfWriter.RUN_DIRECTION_NO_BIDI;
 
         /**
         * Holds value of property lockedWidth.
@@ -506,7 +506,7 @@ namespace iTextSharp.text.pdf {
             if (colspan != 1)
                 isColspan = true;
             int rdir = ncell.RunDirection;
-            if (rdir == PdfWriter.RUN_DIRECTION_DEFAULT)
+            if (rdir == PdfWriter.RUN_DIRECTION_NO_BIDI)
                 ncell.RunDirection = runDirection;
 
             SkipColsWithRowspanAbove();

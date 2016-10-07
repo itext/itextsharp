@@ -4,6 +4,7 @@ using System.Threading;
 using System.Globalization;
 using iTextSharp.text;
 using iTextSharp.text.pdf.draw;
+using iTextSharp.text.api;
 using iTextSharp.tool.xml;
 using iTextSharp.tool.xml.css;
 using iTextSharp.tool.xml.exceptions;
@@ -12,6 +13,7 @@ using iTextSharp.tool.xml.pipeline.css;
 using iTextSharp.tool.xml.pipeline.ctx;
 using iTextSharp.tool.xml.pipeline.html;
 using System.util;
+using System.util.collections;
 using iTextSharp.text.pdf;
 using iTextSharp.tool.xml.util;
 
@@ -146,37 +148,55 @@ namespace iTextSharp.tool.xml.html {
             return new List<IElement>(0);
         }
 
+        /**
+         * For some tags, if they have their own not inherited DIR attribute, this attribute will definitely not be applied
+         * for itext layout. For the most common such tags we use this set to ignore DIR attribute, in order to avoid
+         * unnecessary adjustments in XmlWorker.
+         *
+         * However if parent of these tags have DIR attribute, it may be applied to these tags.
+         */
+        private HashSet2<String> ignoreDirAttribute = new HashSet2<String>(new string[]{
+            HTML.Tag.P,
+            HTML.Tag.SPAN
+        });
+
+        private IList<Tag> tree;
         private String GetParentDirection() {
             String result = null;
             foreach (Tag tag in tree) {
-                tag.Attributes.TryGetValue(HTML.Attribute.DIR, out result);
+                if (!ignoreDirAttribute.Contains(tag.Name.ToLower())) {
+                    tag.Attributes.TryGetValue(HTML.Attribute.DIR, out result);
 
-                if (result != null) break;
-                // Nested tables need this check
-                tag.CSS.TryGetValue(CSS.Property.DIRECTION, out result);
-                if (result != null) break;
+                    if (result != null) break;
+                    // Nested tables need this check
+                    tag.CSS.TryGetValue(CSS.Property.DIRECTION, out result);
+                    if (result != null) break;
+                }
             }
             return result;
         }
-
-        private IList<Tag> tree;
 
         protected virtual int GetRunDirection(Tag tag) {
             /* CSS should get precedence, but a dir attribute defined on the tag
                itself should take precedence over an inherited style tag
             */
-            String dirValue;
-            tag.Attributes.TryGetValue(HTML.Attribute.DIR, out dirValue);
+            String dirValue = null;
+            bool toFetchRunDirFromThisTag = tag.Name != null &&
+                                            !ignoreDirAttribute.Contains(tag.Name.ToLower());
+            if (toFetchRunDirFromThisTag) {
+                tag.Attributes.TryGetValue(HTML.Attribute.DIR, out dirValue);
+            }
 
             if (dirValue == null) {
-                // using CSS is actually discouraged, but still supported
-                tag.CSS.TryGetValue(CSS.Property.DIRECTION, out dirValue);
-
+                if (toFetchRunDirFromThisTag) {
+                    // using CSS is actually discouraged, but still supported
+                    tag.CSS.TryGetValue(CSS.Property.DIRECTION, out dirValue);
+                }
                 if (dirValue == null) {
                     // dir attribute is inheritable in HTML but gets trumped by CSS
                     tree = new ParentTreeUtil().GetParentTagTree(tag, tree);
                     dirValue = GetParentDirection();
-                }// */
+                }
             }
 
             if (Util.EqualsIgnoreCase(CSS.Value.RTL, dirValue)) {
@@ -187,7 +207,11 @@ namespace iTextSharp.tool.xml.html {
                 return PdfWriter.RUN_DIRECTION_LTR;
             }
 
-            return PdfWriter.RUN_DIRECTION_DEFAULT;
+            if (Util.EqualsIgnoreCase(CSS.Value.AUTO, dirValue)) {
+                return PdfWriter.RUN_DIRECTION_DEFAULT;
+            }
+
+            return PdfWriter.RUN_DIRECTION_NO_BIDI;
         }
 
         protected virtual List<IElement> TextContent(IWorkerContext ctx, Tag tag, String content) {
@@ -297,16 +321,13 @@ namespace iTextSharp.tool.xml.html {
          */
 
         public virtual IList<IElement> CurrentContentToParagraph(IList<IElement> currentContent,
-                                                                 bool addNewLines, bool applyCSS, Tag tag,
-                                                                 IWorkerContext ctx)
-        {
-            try
-            {
+            bool addNewLines, bool applyCSS, Tag tag,
+            IWorkerContext ctx) {
+            try {
+                int direction = GetRunDirection(tag);
                 IList<IElement> list = new List<IElement>();
-                if (currentContent.Count > 0)
-                {
-                    if (addNewLines)
-                    {
+                if (currentContent.Count > 0) {
+                    if (addNewLines) {
                         Paragraph p = CreateParagraph();
                         p.MultipliedLeading = 1.2f;
                         foreach (IElement e in currentContent) {
@@ -315,31 +336,43 @@ namespace iTextSharp.tool.xml.html {
                                     HtmlPipelineContext htmlPipelineContext = GetHtmlPipelineContext(ctx);
                                     Chunk newLine = (Chunk)GetCssAppliers().Apply(new Chunk(Chunk.NEWLINE), tag, htmlPipelineContext);
                                     p.Add(newLine);
-                                } catch (NoCustomContextException exc) {
-                                    throw new RuntimeWorkerException(LocaleMessages.GetInstance().GetMessage(LocaleMessages.NO_CUSTOM_CONTEXT), exc);
+                                }
+                                catch (NoCustomContextException exc) {
+                                    throw new RuntimeWorkerException(
+                                        LocaleMessages.GetInstance().GetMessage(LocaleMessages.NO_CUSTOM_CONTEXT), exc);
                                 }
                             }
                             p.Add(e);
                         }
                         if (p.Trim()) {
-                            if (applyCSS)
-                            {
+                            if (applyCSS) {
                                 p = (Paragraph) GetCssAppliers().Apply(p, tag, GetHtmlPipelineContext(ctx));
+                            }
+                            if (direction.Equals(PdfWriter.RUN_DIRECTION_RTL)) {
+                                DoRtlIndentCorrections(p);
+                                InvertTextAlignForParagraph(p);
                             }
                             list.Add(p);
                         }
-                    } else {
+                    }
+                    else {
                         NoNewLineParagraph p = new NoNewLineParagraph(float.NaN);
                         p.MultipliedLeading = 1.2f;
                         foreach (IElement e in currentContent) {
+                            UpdateParagraphFontIfNeeded(p, e);
                             p.Add(e);
                         }
                         p = (NoNewLineParagraph) GetCssAppliers().Apply(p, tag, GetHtmlPipelineContext(ctx));
+                        if (direction.Equals(PdfWriter.RUN_DIRECTION_RTL)) {
+                            DoRtlIndentCorrections(p);
+                            InvertTextAlignForParagraph(p);
+                        }
                         list.Add(p);
                     }
                 }
                 return list;
-            } catch (NoCustomContextException e) {
+            }
+            catch (NoCustomContextException e) {
                 throw new RuntimeWorkerException(
                     LocaleMessages.GetInstance().GetMessage(LocaleMessages.NO_CUSTOM_CONTEXT), e);
             }
@@ -375,5 +408,62 @@ namespace iTextSharp.tool.xml.html {
             return new Paragraph(float.NaN);
         }
 
+        protected void DoRtlIndentCorrections(IIndentable p) {
+            float right = p.IndentationRight;
+            p.IndentationRight = p.IndentationLeft;
+            p.IndentationLeft = right;
+        }
+
+        protected void InvertTextAlignForParagraph(Paragraph p) {
+            switch (p.Alignment) {
+                case Element.ALIGN_UNDEFINED:
+                case Element.ALIGN_CENTER:
+                case Element.ALIGN_JUSTIFIED:
+                case Element.ALIGN_JUSTIFIED_ALL:
+                    break;
+                case Element.ALIGN_RIGHT:
+                    p.Alignment = Element.ALIGN_LEFT;
+                    break;
+                case Element.ALIGN_LEFT:
+                default:
+                    p.Alignment = Element.ALIGN_RIGHT;
+                    break;
+            }
+        }
+
+        protected void InvertTextAlignForParagraph(NoNewLineParagraph p) {
+            switch (p.Alignment) {
+                case Element.ALIGN_UNDEFINED:
+                case Element.ALIGN_CENTER:
+                case Element.ALIGN_JUSTIFIED:
+                case Element.ALIGN_JUSTIFIED_ALL:
+                    break;
+                case Element.ALIGN_RIGHT:
+                    p.Alignment = Element.ALIGN_LEFT;
+                    break;
+                case Element.ALIGN_LEFT:
+                default:
+                    p.Alignment = Element.ALIGN_RIGHT;
+                    break;
+            }
+        }
+
+        /**
+         * In case child font is of bigger size than paragraph font, text overlapping may occur.
+         * This happens because leading of the lines in paragraph is set based on paragraph font.
+         */
+        protected void UpdateParagraphFontIfNeeded(Phrase p, IElement child) {
+            Font childFont = null;
+            if (child is Chunk) {
+                childFont = ((Chunk)child).Font;
+            } else if (child is Phrase) {
+                childFont = ((Phrase)child).Font;
+            }
+            float pFontSize = p.Font != null ? p.Font.Size : Font.DEFAULTSIZE;
+            if (childFont != null && childFont.Size > pFontSize) {
+                p.Font = childFont;
+            }
+        }
     }
+
 }

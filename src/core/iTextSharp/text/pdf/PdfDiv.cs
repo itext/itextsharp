@@ -149,7 +149,7 @@ namespace iTextSharp.text.pdf {
 
         private float yLine;
 
-        protected int runDirection = PdfWriter.RUN_DIRECTION_DEFAULT;
+        protected int runDirection = PdfWriter.RUN_DIRECTION_NO_BIDI;
 
         protected PdfName role = PdfName.DIV;
 

@@ -47,6 +47,7 @@ using System;
 using System.Collections.Generic;
 using System.IO;
 using System.Text;
+using iTextSharp.testutils;
 using Microsoft.XmlDiffPatch;
 using iTextSharp.text;
 using iTextSharp.text.pdf;
@@ -80,6 +81,9 @@ namespace itextsharp.tests.text.pdf
         public const String SOURCE18 = RESOURCES + "pdf\\source18.pdf";
         public const String SOURCE19 = RESOURCES + "pdf\\source19.pdf";
         public const String SOURCE22 = RESOURCES + "pdf\\source22.pdf";
+        public const String SOURCE24 = RESOURCES + "pdf\\source24.pdf";
+        public const String SOURCE25 = RESOURCES + "pdf\\source25.pdf";
+        public const String SOURCE25_1 = RESOURCES + "pdf\\source25_1.pdf";
         public const String SOURCE32 = RESOURCES + "pdf\\source32.pdf";
         public const String SOURCE42 = RESOURCES + "pdf\\source42.pdf";
         public const String SOURCE51 = RESOURCES + "pdf\\source51.pdf";
@@ -100,6 +104,7 @@ namespace itextsharp.tests.text.pdf
         public const String SOURCE_CF_15 = RESOURCES + "pdf/sourceCf15.pdf";
         public const String SOURCE_CF_16 = RESOURCES + "pdf/sourceCf16.pdf";
 
+        public const String CMP25 = RESOURCES + "pdf/cmp_out25.pdf";
 
         public const String OUT = TARGET + "pdf\\out";
         public const String TARGET = "TaggedPdfCopyTest\\";
@@ -775,7 +780,7 @@ namespace itextsharp.tests.text.pdf
         }
 
         [Test]
-        [Ignore]
+        [Ignore("ignore")]
         virtual public void CopyTaggedPdf16() {
             InitializeDocument("16");
             copy.SetMergeFields();
@@ -912,6 +917,43 @@ namespace itextsharp.tests.text.pdf
             PdfDictionary structTreeRoot = VerifyIsDictionary(reader.Catalog.GetDirectObject(PdfName.STRUCTTREEROOT), NO_STRUCT_TREE_ROOT);
             PdfDictionary idTree = VerifyIsDictionary(PdfStructTreeController.GetDirectObject(structTreeRoot.Get(PdfName.IDTREE)), NO_ID_TREE);
             Assert.IsTrue(idTree.hashMap.Count > 0, EMPTY_ID_TREE);
+        }
+
+        [Test]
+        [ExpectedException(typeof (BadPdfFormatException))]
+        public void CopyTaggedPdf24() {
+            InitializeDocument("24");
+            PdfReader reader1 = new PdfReader(SOURCE24);
+            copy.AddPage(copy.GetImportedPage(reader1, 17, true));
+            document.Close();
+            reader1.Close();
+        }
+
+        [Test]
+        [Timeout(60000)]
+        public void CopyTaggedPdf25() {
+            InitializeDocument("25");
+            PdfReader reader = new PdfReader(SOURCE25);
+            PdfReader reader1 = new PdfReader(SOURCE25_1);
+
+            copy.AddDocument(reader);
+            copy.FreeReader(reader);
+
+            copy.AddDocument(reader1);
+            copy.FreeReader(reader1);
+
+            PdfStructureTreeRoot structTreeRoot = copy.StructureTreeRoot;
+            copy.Close();
+
+            document.Close();
+            reader.Close();
+            reader1.Close();
+
+            CompareTool compareTool = new CompareTool();
+            String errorMessage = compareTool.CompareByContent(output, CMP25, OUT, "diff_");
+            if (errorMessage != null) {
+                Assert.Fail(errorMessage);
+            }
         }
 
         [Test]

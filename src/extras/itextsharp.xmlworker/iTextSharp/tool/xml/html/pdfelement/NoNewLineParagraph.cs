@@ -1,5 +1,6 @@
 using System;
 using iTextSharp.text;
+using iTextSharp.text.api;
 
 /*
  * $Id: NoNewLineParagraph.java 124 2011-05-27 12:37:59Z redlab_b $
@@ -68,7 +69,7 @@ namespace iTextSharp.tool.xml.html.pdfelement {
      * @see     ListItem
      */
 
-    public class NoNewLineParagraph : Phrase {
+    public class NoNewLineParagraph : Phrase, IIndentable {
 
         // membervariables
 

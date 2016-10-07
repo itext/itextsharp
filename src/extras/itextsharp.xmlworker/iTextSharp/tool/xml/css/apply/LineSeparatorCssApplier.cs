@@ -63,12 +63,17 @@ namespace iTextSharp.tool.xml.css.apply {
      * @author Emiel Ackermann
      *
      */
-    public class LineSeparatorCssApplier {
+    public class LineSeparatorCssApplier : CssApplier<LineSeparator> {
 
         /* (non-Javadoc)
          * @see com.itextpdf.tool.xml.css.CssApplier#apply(com.itextpdf.text.Element, com.itextpdf.tool.xml.Tag)
          */
-        virtual public LineSeparator Apply(LineSeparator ls, Tag t, IPageSizeContainable psc) {
+
+        public virtual LineSeparator Apply(LineSeparator ls, Tag t, IPageSizeContainable psc) {
+            return (LineSeparator) Apply(ls, t, null, psc, null);
+        }
+
+        public override LineSeparator Apply(LineSeparator ls, Tag t, IMarginMemory mm, IPageSizeContainable psc, HtmlPipelineContext ctx) {
             float lineWidth = 1;
             IDictionary<String, String> css = t.CSS;
             if (t.Attributes.ContainsKey(HTML.Attribute.SIZE)){

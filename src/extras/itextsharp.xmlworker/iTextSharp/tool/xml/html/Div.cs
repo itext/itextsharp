@@ -95,7 +95,7 @@ namespace iTextSharp.tool.xml.html {
                 PdfDiv div = (PdfDiv)GetCssAppliers().Apply(new PdfDiv(), tag, GetHtmlPipelineContext(ctx));
                 int direction = GetRunDirection(tag);
 
-                if (direction != PdfWriter.RUN_DIRECTION_DEFAULT) {
+                if (direction != PdfWriter.RUN_DIRECTION_NO_BIDI) {
                     div.RunDirection = direction;
                 }
 
@@ -114,19 +114,7 @@ namespace iTextSharp.tool.xml.html {
                             p.Alignment = div.TextAlignment;
 
                             if (direction == PdfWriter.RUN_DIRECTION_RTL) {
-                                switch (p.Alignment) {
-                                    case Element.ALIGN_UNDEFINED:
-                                    case Element.ALIGN_CENTER:
-                                    case Element.ALIGN_JUSTIFIED:
-                                    case Element.ALIGN_JUSTIFIED_ALL:
-                                        break;
-                                    case Element.ALIGN_RIGHT:
-                                        p.Alignment = Element.ALIGN_LEFT;
-                                        break;
-                                    default:
-                                        p.Alignment = Element.ALIGN_RIGHT;
-                                        break;
-                                }
+                                InvertTextAlignForParagraph(p);
                             }
 
                             p.MultipliedLeading = 1.2f;
@@ -140,6 +128,10 @@ namespace iTextSharp.tool.xml.html {
                     div.AddElement(p);
 			    }
 
+                if (direction == PdfWriter.RUN_DIRECTION_RTL) {
+                    invertTextAlignForDiv(div);
+                }
+
 			    List<IElement> l = new List<IElement>(1);
                 l.Add(div);
                 return l;
@@ -148,9 +140,28 @@ namespace iTextSharp.tool.xml.html {
             }
         }
 
-         /* (non-Javadoc)
-         * @see com.itextpdf.tool.xml.ITagProcessor#isStackOwner()
-         */
+        private void invertTextAlignForDiv(PdfDiv div)
+        {
+            switch (div.TextAlignment)
+            {
+                case Element.ALIGN_UNDEFINED:
+                case Element.ALIGN_CENTER:
+                case Element.ALIGN_JUSTIFIED:
+                case Element.ALIGN_JUSTIFIED_ALL:
+                    break;
+                case Element.ALIGN_RIGHT:
+                    div.TextAlignment = Element.ALIGN_LEFT;
+                    break;
+                case Element.ALIGN_LEFT:
+                default:
+                    div.TextAlignment = Element.ALIGN_RIGHT;
+                    break;
+            }
+        }
+
+        /* (non-Javadoc)
+        * @see com.itextpdf.tool.xml.ITagProcessor#isStackOwner()
+        */
         public override bool IsStackOwner() {
             return true;
         }

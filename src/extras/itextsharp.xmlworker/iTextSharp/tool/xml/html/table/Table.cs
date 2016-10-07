@@ -135,15 +135,16 @@ namespace iTextSharp.tool.xml.html.table {
 
                 if (tag.Attributes.ContainsKey(HTML.Attribute.ALIGN)) {
                     String value = tag.Attributes[HTML.Attribute.ALIGN];
+                    // TODO this property is inverted when RTL. so we should counter-invert here, probably.
                     table.HorizontalAlignment = CSS.GetElementAlignment(value);
                 }
 
 
                 int direction = GetRunDirection(tag);
 
-                if (direction != PdfWriter.RUN_DIRECTION_DEFAULT) {
+//                if (direction != PdfWriter.RUN_DIRECTION_DEFAULT) {
                     table.RunDirection = direction;
-                }
+//                }
                 foreach (KeyValuePair<String, String> entry in tag.CSS) {
 				    if (Util.EqualsIgnoreCase(entry.Key,CSS.Property.PAGE_BREAK_INSIDE)) {
 					    if (Util.EqualsIgnoreCase(entry.Value,CSS.Value.AVOID.ToLower())) {

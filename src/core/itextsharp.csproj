@@ -4168,6 +4168,7 @@
     <Compile Include="iTextSharp\text\pdf\PdfSigLockDictionary.cs" />
     <Compile Include="iTextSharp\text\pdf\PdfStructTreeController.cs" />
     <Compile Include="iTextSharp\text\pdf\RefKey.cs" />
+    <Compile Include="iTextSharp\text\pdf\security\AsymmetricAlgorithmSignature.cs" />
     <Compile Include="iTextSharp\text\pdf\security\CertificateInfo.cs" />
     <Compile Include="iTextSharp\text\pdf\security\CertificateUtil.cs" />
     <Compile Include="iTextSharp\text\pdf\security\CertificateVerification.cs" />
@@ -4198,6 +4199,7 @@
     <Compile Include="iTextSharp\text\pdf\security\PrivateKeySignature.cs" />
     <Compile Include="iTextSharp\text\pdf\security\RootStoreVerifier.cs" />
     <Compile Include="iTextSharp\text\pdf\security\SecurityConstants.cs" />
+    <Compile Include="iTextSharp\text\pdf\security\SignaturePolicyInfo.cs" />
     <Compile Include="iTextSharp\text\pdf\security\SecurityIDs.cs" />
     <Compile Include="iTextSharp\text\pdf\security\SignaturePermissions.cs" />
     <Compile Include="iTextSharp\text\pdf\security\TSAClientBouncyCastle.cs" />

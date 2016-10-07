@@ -44,9 +44,11 @@
  */
 using System;
 using System.Collections.Generic;
+using System.Globalization;
 using System.util;
 using iTextSharp.text;
 using iTextSharp.tool.xml.html;
+using iTextSharp.tool.xml.pipeline.html;
 
 namespace iTextSharp.tool.xml.css.apply {
 
@@ -57,7 +59,7 @@ namespace iTextSharp.tool.xml.css.apply {
      * @author itextpdf.com
      */
 
-    public class ParagraphCssApplier {
+    public class ParagraphCssApplier : CssApplier<Paragraph> {
 
         private CssAppliers appliers;
 
@@ -79,7 +81,11 @@ namespace iTextSharp.tool.xml.css.apply {
          * @return a styled {@link Paragraph}
          */
 
-        virtual public Paragraph Apply(Paragraph p, Tag t, IMarginMemory configuration) {
+        public virtual Paragraph Apply(Paragraph p, Tag t, IMarginMemory configuration) {
+            return (Paragraph) Apply(p, t, configuration, null, null);
+        }
+
+        public override Paragraph Apply(Paragraph p, Tag t, IMarginMemory configuration, IPageSizeContainable psc, HtmlPipelineContext ctx) {
             /*MaxLeadingAndSize m = new MaxLeadingAndSize();
             if (configuration.GetRootTags().Contains(t.GetName())) {
                 m.SetLeading(t);
@@ -123,7 +129,7 @@ namespace iTextSharp.tool.xml.css.apply {
                     p.FirstLineIndent = utils.ParseValueToPt(value, fontSize);
                 } else if (Util.EqualsIgnoreCase(CSS.Property.LINE_HEIGHT, key)) {
                     if (utils.IsNumericValue(value)) {
-                        p.Leading = float.Parse(value)*fontSize;
+                        p.Leading = float.Parse(value, CultureInfo.InvariantCulture) *fontSize;
                     } else if (utils.IsRelativeValue(value)) {
                         p.Leading = utils.ParseRelativeValue(value, fontSize);
                     } else if (utils.IsMetricValue(value)) {

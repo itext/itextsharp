@@ -119,11 +119,14 @@ namespace iTextSharp.tool.xml.parser {
         }
 
         /**
-         * Returns to the previous state.
+         * Changes the state to the previous one.
          * @return Parser
          */
         virtual public XMLParser PreviousState() {
             parser.SetState(previousState);
+            IState temp = currentState;
+            currentState = previousState;
+            previousState = temp;
             return parser;
         }
 

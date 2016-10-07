@@ -55,36 +55,38 @@ namespace itextsharp.tests.iTextSharp.text.pdf {
     /**
      * @author Michael Demey
      */
-    public class FlatteningTest
-    {
+
+    public class FlatteningTest {
         private const string RESOURCES_FOLDER = @"..\..\resources\text\pdf\FlatteningTest\";
         private const string OUTPUT_FOLDER = "FlatteningTest/";
 
+        [SetUp]
+        public void SetUp() {
+            Directory.CreateDirectory(OUTPUT_FOLDER);
+        }
+
         [Test]
-        public virtual void TestFlattening()
-        {
+        public virtual void TestFlattening() {
             const string INPUT_FOLDER = RESOURCES_FOLDER + "input/";
             const string CMP_FOLDER = RESOURCES_FOLDER + "cmp/";
             if (File.Exists(INPUT_FOLDER))
                 Assert.Fail("Input folder can't be found (" + INPUT_FOLDER + ")");
 
-            Directory.CreateDirectory(OUTPUT_FOLDER);
-
             String[] files = Directory.GetFiles(INPUT_FOLDER, "*.pdf");
 
-            foreach (String file in files)
-            {
+            foreach (String file in files) {
                 // flatten fields
                 PdfReader reader = new PdfReader(file);
-                PdfStamper stamper = new PdfStamper(reader, new FileStream(OUTPUT_FOLDER + Path.GetFileName(file), FileMode.Create));
+                PdfStamper stamper = new PdfStamper(reader,
+                    new FileStream(OUTPUT_FOLDER + Path.GetFileName(file), FileMode.Create));
                 stamper.FormFlattening = true;
                 stamper.Close();
 
                 // compare
                 CompareTool compareTool = new CompareTool();
-                String errorMessage = compareTool.Compare(OUTPUT_FOLDER + Path.GetFileName(file), CMP_FOLDER + Path.GetFileName(file), OUTPUT_FOLDER, "diff");
-                if (errorMessage != null)
-                {
+                String errorMessage = compareTool.Compare(OUTPUT_FOLDER + Path.GetFileName(file),
+                    CMP_FOLDER + Path.GetFileName(file), OUTPUT_FOLDER, "diff");
+                if (errorMessage != null) {
                     Assert.Fail(errorMessage);
                 }
             }
@@ -92,109 +94,90 @@ namespace itextsharp.tests.iTextSharp.text.pdf {
 
 
         [Test]
-        public virtual void TestFlatteningGenerateAppearances1()
-        {
-
-            Directory.CreateDirectory(OUTPUT_FOLDER);
-
+        public virtual void TestFlatteningGenerateAppearances1() {
             const string OUT = "noappearances-needapp-false_override-false.pdf";
-            TestFlatteningGenerateAppearance(RESOURCES_FOLDER + "noappearances-needapp-false.pdf", OUTPUT_FOLDER + OUT, false);
+            TestFlatteningGenerateAppearance(RESOURCES_FOLDER + "noappearances-needapp-false.pdf", OUTPUT_FOLDER + OUT,
+                false);
 
             CompareTool compareTool = new CompareTool();
-            String errorMessage = compareTool.Compare(OUTPUT_FOLDER + OUT, RESOURCES_FOLDER + "cmp_" + OUT, OUTPUT_FOLDER, "diff");
-            if (errorMessage != null)
-            {
+            String errorMessage = compareTool.Compare(OUTPUT_FOLDER + OUT, RESOURCES_FOLDER + "cmp_" + OUT,
+                OUTPUT_FOLDER, "diff");
+            if (errorMessage != null) {
                 Assert.Fail(errorMessage);
             }
         }
 
         [Test]
-        public virtual void TestFlatteningGenerateAppearances2()
-        {
-
-            Directory.CreateDirectory(OUTPUT_FOLDER);
-
+        public virtual void TestFlatteningGenerateAppearances2() {
             const string OUT = "noappearances-needapp-false_override-true.pdf";
-            TestFlatteningGenerateAppearance(RESOURCES_FOLDER + "noappearances-needapp-false.pdf", OUTPUT_FOLDER + OUT, true);
+            TestFlatteningGenerateAppearance(RESOURCES_FOLDER + "noappearances-needapp-false.pdf", OUTPUT_FOLDER + OUT,
+                true);
 
             CompareTool compareTool = new CompareTool();
-            String errorMessage = compareTool.Compare(OUTPUT_FOLDER + OUT, RESOURCES_FOLDER + "cmp_" + OUT, OUTPUT_FOLDER, "diff");
-            if (errorMessage != null)
-            {
+            String errorMessage = compareTool.Compare(OUTPUT_FOLDER + OUT, RESOURCES_FOLDER + "cmp_" + OUT,
+                OUTPUT_FOLDER, "diff");
+            if (errorMessage != null) {
                 Assert.Fail(errorMessage);
             }
         }
 
         [Test]
-        public virtual void TestFlatteningGenerateAppearances3()
-        {
-
-            Directory.CreateDirectory(OUTPUT_FOLDER);
-
+        public virtual void TestFlatteningGenerateAppearances3() {
             const string OUT = "noappearances-needapp-false_override-none.pdf";
-            TestFlatteningGenerateAppearance(RESOURCES_FOLDER + "noappearances-needapp-false.pdf", OUTPUT_FOLDER + OUT, null);
+            TestFlatteningGenerateAppearance(RESOURCES_FOLDER + "noappearances-needapp-false.pdf", OUTPUT_FOLDER + OUT,
+                null);
 
             CompareTool compareTool = new CompareTool();
-            String errorMessage = compareTool.Compare(OUTPUT_FOLDER + OUT, RESOURCES_FOLDER + "cmp_" + OUT, OUTPUT_FOLDER, "diff");
-            if (errorMessage != null)
-            {
+            String errorMessage = compareTool.Compare(OUTPUT_FOLDER + OUT, RESOURCES_FOLDER + "cmp_" + OUT,
+                OUTPUT_FOLDER, "diff");
+            if (errorMessage != null) {
                 Assert.Fail(errorMessage);
             }
         }
 
         [Test]
-        public virtual void TestFlatteningGenerateAppearances4()
-        {
-
-            Directory.CreateDirectory(OUTPUT_FOLDER);
-
+        public virtual void TestFlatteningGenerateAppearances4() {
             const string OUT = "noappearances-needapp-true_override-false.pdf";
-            TestFlatteningGenerateAppearance(RESOURCES_FOLDER + "noappearances-needapp-true.pdf", OUTPUT_FOLDER + OUT, false);
+            TestFlatteningGenerateAppearance(RESOURCES_FOLDER + "noappearances-needapp-true.pdf", OUTPUT_FOLDER + OUT,
+                false);
 
             CompareTool compareTool = new CompareTool();
-            String errorMessage = compareTool.Compare(OUTPUT_FOLDER + OUT, RESOURCES_FOLDER + "cmp_" + OUT, OUTPUT_FOLDER, "diff");
-            if (errorMessage != null)
-            {
+            String errorMessage = compareTool.Compare(OUTPUT_FOLDER + OUT, RESOURCES_FOLDER + "cmp_" + OUT,
+                OUTPUT_FOLDER, "diff");
+            if (errorMessage != null) {
                 Assert.Fail(errorMessage);
             }
         }
 
         [Test]
-        public virtual void TestFlatteningGenerateAppearances5()
-        {
-
-            Directory.CreateDirectory(OUTPUT_FOLDER);
-
+        public virtual void TestFlatteningGenerateAppearances5() {
             const string OUT = "noappearances-needapp-true_override-true.pdf";
-            TestFlatteningGenerateAppearance(RESOURCES_FOLDER + "noappearances-needapp-true.pdf", OUTPUT_FOLDER + OUT, true);
+            TestFlatteningGenerateAppearance(RESOURCES_FOLDER + "noappearances-needapp-true.pdf", OUTPUT_FOLDER + OUT,
+                true);
 
             CompareTool compareTool = new CompareTool();
-            String errorMessage = compareTool.Compare(OUTPUT_FOLDER + OUT, RESOURCES_FOLDER + "cmp_" + OUT, OUTPUT_FOLDER, "diff");
-            if (errorMessage != null)
-            {
+            String errorMessage = compareTool.Compare(OUTPUT_FOLDER + OUT, RESOURCES_FOLDER + "cmp_" + OUT,
+                OUTPUT_FOLDER, "diff");
+            if (errorMessage != null) {
                 Assert.Fail(errorMessage);
             }
         }
 
         [Test]
-        public virtual void TestFlatteningGenerateAppearances6()
-        {
-
-            Directory.CreateDirectory(OUTPUT_FOLDER);
-
+        public virtual void TestFlatteningGenerateAppearances6() {
             const string OUT = "noappearances-needapp-true_override-none.pdf";
-            TestFlatteningGenerateAppearance(RESOURCES_FOLDER + "noappearances-needapp-true.pdf", OUTPUT_FOLDER + OUT, null);
+            TestFlatteningGenerateAppearance(RESOURCES_FOLDER + "noappearances-needapp-true.pdf", OUTPUT_FOLDER + OUT,
+                null);
 
             CompareTool compareTool = new CompareTool();
-            String errorMessage = compareTool.Compare(OUTPUT_FOLDER + OUT, RESOURCES_FOLDER + "cmp_" + OUT, OUTPUT_FOLDER, "diff");
-            if (errorMessage != null)
-            {
+            String errorMessage = compareTool.Compare(OUTPUT_FOLDER + OUT, RESOURCES_FOLDER + "cmp_" + OUT,
+                OUTPUT_FOLDER, "diff");
+            if (errorMessage != null) {
                 Assert.Fail(errorMessage);
             }
         }
 
-        public virtual void TestFlatteningGenerateAppearance(string input, string output, bool? gen)
-        {
+        public virtual void TestFlatteningGenerateAppearance(string input, string output, bool? gen) {
             PdfReader reader = new PdfReader(input);
             PdfStamper stamper = new PdfStamper(reader, new FileStream(output, FileMode.Create));
             if (gen != null)
@@ -204,10 +187,7 @@ namespace itextsharp.tests.iTextSharp.text.pdf {
         }
 
         [Test]
-        public void TestRegeneratingFieldsTrue()
-        {
-            Directory.CreateDirectory(OUTPUT_FOLDER);
-
+        public void TestRegeneratingFieldsTrue() {
             String file = "regenerateFieldTrue.pdf";
 
             Document doc = new Document(PageSize.A4);
@@ -250,18 +230,15 @@ namespace itextsharp.tests.iTextSharp.text.pdf {
 
             // compare
             CompareTool compareTool = new CompareTool();
-            String errorMessage = compareTool.CompareByContent(OUTPUT_FOLDER + file, RESOURCES_FOLDER + file, OUTPUT_FOLDER, "diff");
-            if (errorMessage != null)
-            {
+            String errorMessage = compareTool.CompareByContent(OUTPUT_FOLDER + file, RESOURCES_FOLDER + file,
+                OUTPUT_FOLDER, "diff");
+            if (errorMessage != null) {
                 Assert.Fail(errorMessage);
             }
         }
 
         [Test]
-        public void TestRegeneratingFieldsFalse()
-        {
-            Directory.CreateDirectory(OUTPUT_FOLDER);
-            
+        public void TestRegeneratingFieldsFalse() {
             String file = "regenerateFieldFalse.pdf";
 
             Document doc = new Document(PageSize.A4);
@@ -304,9 +281,9 @@ namespace itextsharp.tests.iTextSharp.text.pdf {
 
             // compare
             CompareTool compareTool = new CompareTool();
-            String errorMessage = compareTool.CompareByContent(OUTPUT_FOLDER + file, RESOURCES_FOLDER + file, OUTPUT_FOLDER, "diff");
-            if (errorMessage != null)
-            {
+            String errorMessage = compareTool.CompareByContent(OUTPUT_FOLDER + file, RESOURCES_FOLDER + file,
+                OUTPUT_FOLDER, "diff");
+            if (errorMessage != null) {
                 Assert.Fail(errorMessage);
             }
         }
@@ -321,9 +298,9 @@ namespace itextsharp.tests.iTextSharp.text.pdf {
             stamper.Close();
             // compare
             CompareTool compareTool = new CompareTool();
-            String errorMessage = compareTool.CompareByContent(OUTPUT_FOLDER + file, RESOURCES_FOLDER + "cmp_" + file, OUTPUT_FOLDER, "diff");
-            if (errorMessage != null)
-            {
+            String errorMessage = compareTool.CompareByContent(OUTPUT_FOLDER + file, RESOURCES_FOLDER + "cmp_" + file,
+                OUTPUT_FOLDER, "diff");
+            if (errorMessage != null) {
                 Assert.Fail(errorMessage);
             }
         }

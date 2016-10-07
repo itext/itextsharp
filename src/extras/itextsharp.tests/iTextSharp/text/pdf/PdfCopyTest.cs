@@ -75,7 +75,7 @@ namespace itextsharp.tests.iTextSharp.text.pdf
          */
         [Test]
 #if DRAWING
-        [Ignore]
+        [Ignore("ignore")]
 #endif// !NO_DRAWING
         virtual public void TestExtraXObjects()
         {

@@ -45,11 +45,14 @@
 
 using System;
 using System.Collections.Generic;
+using System.Globalization;
 using System.Text.RegularExpressions;
 using System.util;
 using iTextSharp.text;
 using iTextSharp.text.html;
 using iTextSharp.text.pdf;
+using iTextSharp.tool.xml.html;
+using iTextSharp.tool.xml.pipeline.html;
 
 namespace iTextSharp.tool.xml.css.apply {
 
@@ -57,8 +60,7 @@ namespace iTextSharp.tool.xml.css.apply {
  * Applies CSS Rules to Chunks
  */
 
-    public class ChunkCssApplier
-    {
+    public class ChunkCssApplier : CssApplier<Chunk> {
         /**
          * FF4 and IE8 provide normal text and bold text. All other values are translated to one of these 2 styles <br />
          * 100 - 500 and "lighter" = normal.<br />
@@ -84,6 +86,11 @@ namespace iTextSharp.tool.xml.css.apply {
             }
         }
 
+        public virtual Chunk Apply(Chunk c, Tag t)
+        {
+            return (Chunk) Apply(c, t, null, null, null);
+        }
+
         /**
          *
          * @param c the Chunk to apply CSS to.
@@ -91,8 +98,7 @@ namespace iTextSharp.tool.xml.css.apply {
          * @return the styled chunk
          */
 
-        virtual public Chunk Apply(Chunk c, Tag t)
-        {
+        public override Chunk Apply(Chunk c, Tag t, IMarginMemory mm, IPageSizeContainable psc, HtmlPipelineContext ctx) {
             Font f = ApplyFontStyles(t);
             float size = f.Size;
             String value = null;
@@ -117,7 +123,7 @@ namespace iTextSharp.tool.xml.css.apply {
                 } else if (Util.EqualsIgnoreCase(CSS.Property.XFA_FONT_HORIZONTAL_SCALE, key)) {
                     // only % allowed; need a catch block NumberFormatExc?
                     c.SetHorizontalScaling(
-                        float.Parse(value.Replace("%", ""))/100);
+                        float.Parse(value.Replace("%", ""), CultureInfo.InvariantCulture) /100);
                 }
             }
             // following styles are separate from the for each loop, because they are based on font settings like size.
@@ -140,8 +146,8 @@ namespace iTextSharp.tool.xml.css.apply {
             {
                 if (xfaVertScale.Contains("%"))
                 {
-                    size *= float.Parse(xfaVertScale.Replace("%", ""))/100;
-                    c.SetHorizontalScaling(100/float.Parse(xfaVertScale.Replace("%", "")));
+                    size *= float.Parse(xfaVertScale.Replace("%", ""), CultureInfo.InvariantCulture) /100;
+                    c.SetHorizontalScaling(100/float.Parse(xfaVertScale.Replace("%", ""), CultureInfo.InvariantCulture));
                 }
             }
             if (rules.TryGetValue(CSS.Property.TEXT_DECORATION, out value)) {
@@ -167,7 +173,7 @@ namespace iTextSharp.tool.xml.css.apply {
             value = null;
             if (rules.TryGetValue(CSS.Property.LINE_HEIGHT, out value)) {
                 if (utils.IsNumericValue(value)) {
-                    leading = float.Parse(value) * c.Font.Size;
+                    leading = float.Parse(value, CultureInfo.InvariantCulture) * c.Font.Size;
                 } else if (utils.IsRelativeValue(value)) {
                     leading = utils.ParseRelativeValue(value, c.Font.Size);
                 } else if (utils.IsMetricValue(value)) {
@@ -185,7 +191,7 @@ namespace iTextSharp.tool.xml.css.apply {
         {
             String fontName = null;
             String encoding = BaseFont.CP1252;
-            float size = new FontSizeTranslator().GetFontSize(t);
+            float size = FontSizeTranslator.GetInstance().GetFontSize(t);
             if (size == Font.UNDEFINED)
                 size = Font.DEFAULTSIZE;
             int style = Font.UNDEFINED;

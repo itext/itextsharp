@@ -61,18 +61,15 @@ namespace itextsharp.xmlworker.tests.iTextSharp.tool.xml.css {
             ICssFile css = new CssFileImpl();
             w = new CSSFileWrapper(css, true);
         }
-
-
+        
         [Test]
-        [ExpectedException(typeof (NotSupportedException))]
         virtual public void Testadd() {
-            w.Add("", null);
+            Assert.Throws(typeof (NotSupportedException), delegate { w.Add("", null); });
         }
 
         [Test]
-        [ExpectedException(typeof (NotSupportedException))]
         virtual public void TestisPersistent() {
-            w.IsPersistent(false);
+            Assert.Throws(typeof (NotSupportedException), delegate { w.IsPersistent(false); });
         }
     }
 }

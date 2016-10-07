@@ -80,9 +80,8 @@ namespace itextsharp.xmlworker.tests.iTextSharp.tool.xml.html.tps {
         }
 
         [Test]
-        [ExpectedException(typeof (NoTagProcessorException))]
         virtual public void LoadFail() {
-            tp.GetProcessor("unknown", "");
+            Assert.Throws(typeof (NoTagProcessorException), delegate { tp.GetProcessor("unknown", ""); });
         }
 
         [Test]
@@ -93,11 +92,10 @@ namespace itextsharp.xmlworker.tests.iTextSharp.tool.xml.html.tps {
         }
 
         [Test]
-        [ExpectedException(typeof (NoTagProcessorException))]
         virtual public void RemoveTagProcessor() {
             tp.AddProcessor(tpi, new string[] {"addatag"});
             tp.RemoveProcessor("addatag");
-            tp.GetProcessor("addatag", "");
+            Assert.Throws(typeof (NoTagProcessorException), delegate { tp.GetProcessor("addatag", ""); });
         }
     }
 }

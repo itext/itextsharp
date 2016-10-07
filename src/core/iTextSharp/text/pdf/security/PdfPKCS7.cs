@@ -8,6 +8,7 @@ using Org.BouncyCastle.Asn1;
 using System.IO;
 using System.Collections;
 using System.Collections.Generic;
+using Org.BouncyCastle.Asn1.Esf;
 using Org.BouncyCastle.Math;
 using Org.BouncyCastle.Tsp;
 using Org.BouncyCastle.Asn1.Ocsp;
@@ -139,7 +140,7 @@ namespace iTextSharp.text.pdf.security {
             certs = new List<X509Certificate>();
 
             foreach (X509Certificate cc in cf.ReadCertificates(certsKey)) {
-                if (signCert != null)
+                if (signCert == null)
                     signCert = cc;
                 certs.Add(cc);
             }
@@ -351,9 +352,11 @@ namespace iTextSharp.text.pdf.security {
                 sig = InitSignature(signCert.GetPublicKey());
             }
         }
-        
-        
+
+
         // Signature info
+
+        private SignaturePolicyIdentifier signaturePolicyIdentifier;
 
         /** Holds value of property signName. */
         private String signName;
@@ -366,6 +369,14 @@ namespace iTextSharp.text.pdf.security {
 
         /** Holds value of property signDate. */
         private DateTime signDate;
+
+        public virtual void SetSignaturePolicy(SignaturePolicyInfo signaturePolicy) {
+            this.signaturePolicyIdentifier = signaturePolicy.ToSignaturePolicyIdentifier();
+        }
+
+        public virtual void SetSignaturePolicy(SignaturePolicyIdentifier signaturePolicy) {
+            this.signaturePolicyIdentifier = signaturePolicy;
+        }
 
         /**
          * Getter/setter for property sigName.
@@ -892,6 +903,10 @@ namespace iTextSharp.text.pdf.security {
                 
                 v.Add(new DerSet(new DerSequence(new DerSequence(new DerSequence(aaV2)))));
                 attribute.Add(new DerSequence(v));
+            }
+
+            if (signaturePolicyIdentifier != null) {
+                attribute.Add(new Org.BouncyCastle.Asn1.Cms.Attribute(PkcsObjectIdentifiers.IdAAEtsSigPolicyID, new DerSet(signaturePolicyIdentifier)));
             }
 
             return new DerSet(attribute);

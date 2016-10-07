@@ -443,6 +443,15 @@ namespace iTextSharp.text.pdf.parser {
             renderListener.RenderImage(renderInfo);
         }
 
+        /**
+         * Property for the RenderListener object maintained in this class.
+         * Necessary for implementing custom ContentOperator implementations.
+         * @return the renderListener
+         */
+        virtual public IRenderListener RenderListener {
+            get { return renderListener; }
+        }
+
 
         /**
          * A resource dictionary that allows stack-like behavior to support resource dictionary inheritance

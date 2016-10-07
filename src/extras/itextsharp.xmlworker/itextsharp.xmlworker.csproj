@@ -99,6 +99,8 @@
     <Compile Include="iTextSharp\tool\xml\html\Anchor.cs" />
     <Compile Include="iTextSharp\tool\xml\html\Body.cs" />
     <Compile Include="iTextSharp\tool\xml\html\Break.cs" />
+    <Compile Include="iTextSharp\tool\xml\html\CssApplier.cs" />
+    <Compile Include="iTextSharp\tool\xml\html\ICssApplier.cs" />
     <Compile Include="iTextSharp\tool\xml\html\CssAppliers.cs" />
     <Compile Include="iTextSharp\tool\xml\html\CssAppliersAware.cs" />
     <Compile Include="iTextSharp\tool\xml\html\CssAppliersImpl.cs" />

@@ -142,10 +142,23 @@ namespace iTextSharp.text.pdf {
             if (xfaNodes.ContainsKey("datasets")) {
                 datasetsNode = xfaNodes["datasets"];
                 datasetsSom = new Xml2SomDatasets(datasetsNode.FirstChild);
+                XmlNode dataNode = FindDataNode(datasetsNode);
+                datasetsSom = new Xml2SomDatasets(dataNode != null ? dataNode : datasetsNode.FirstChild);
             }
 
             if (datasetsNode == null)
         	    CreateDatasetsNode(domDocument.FirstChild);
+        }
+
+        private XmlNode FindDataNode(XmlNode datasetsNode) {
+            XmlNodeList childNodes = datasetsNode.ChildNodes;
+            for (int i = 0; i < childNodes.Count; i++) {
+                if (childNodes.Item(i).Name.Equals("xfa:data")) {
+                    return childNodes.Item(i);
+                }
+            }
+
+            return null;
         }
 
         public static Dictionary<String, XmlNode> ExtractXFANodes(XmlDocument domDocument) {
@@ -831,19 +844,13 @@ namespace iTextSharp.text.pdf {
                             else
                                 i = ss[s] + 1;
                             ss[s] = i;
-                            if (HasChildren(n2)) {
-                                stack.Push(s + "[" + i.ToString() + "]");
-                                ProcessDatasetsInternal(n2);
-                                stack.Pop();
-                            }
-                            else {
-                                stack.Push(s + "[" + i.ToString() + "]");
-                                String unstack = PrintStack();
-                                order.Add(unstack);
-                                InverseSearchAdd(unstack);
-                                name2Node[unstack] = n2;
-                                stack.Pop();
-                            }
+                            stack.Push(s + "[" + i.ToString() + "]");
+                            ProcessDatasetsInternal(n2);
+                            String unstack = PrintStack();
+                            order.Add(unstack);
+                            InverseSearchAdd(unstack);
+                            name2Node[unstack] = n2;
+                            stack.Pop();
                         }
                         n2 = n2.NextSibling;
                     }

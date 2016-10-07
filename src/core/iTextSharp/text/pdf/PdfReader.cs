@@ -689,6 +689,26 @@ namespace iTextSharp.text.pdf {
        	
             encrypted = true;
             PdfDictionary enc = (PdfDictionary)GetPdfObject(encDic);
+            //This string of condidions is to determine whether or not the authevent for this PDF is EFOPEN
+            //If it is, we return since the attachments of the PDF are what are encrypted, not the PDF itself.  
+            //Without this check we run into a bad password exception when trying to open documents that have an
+            //auth event type of EFOPEN. 
+            PdfDictionary cfDict = enc.GetAsDict(PdfName.CF);
+            if (cfDict != null)
+            {
+                PdfDictionary stdCFDict = cfDict.GetAsDict(PdfName.STDCF);
+                if (stdCFDict != null)
+                {
+                    PdfName authEvent = stdCFDict.GetAsName(PdfName.AUTHEVENT);
+                    if (authEvent != null)
+                    {
+                        //Return only if the event is EFOPEN and there is no password so that 
+        			    //attachments that are encrypted can still be opened.
+                        if (authEvent.CompareTo(PdfName.EFOPEN) == 0 && !this.ownerPasswordUsed)
+                            return;
+                    }
+                }
+            }
             
             String s;
             PdfObject o;
@@ -1086,7 +1106,7 @@ namespace iTextSharp.text.pdf {
             if(catalog == null)
                 throw new InvalidPdfException(MessageLocalization.GetComposedMessage("the.document.has.no.catalog.object"));
             rootPages = catalog.GetAsDict(PdfName.PAGES);
-            if (rootPages == null || !PdfName.PAGES.Equals(rootPages.Get(PdfName.TYPE))) {
+            if (rootPages == null || (!PdfName.PAGES.Equals(rootPages.Get(PdfName.TYPE)) && (!PdfName.PAGES.Equals(rootPages.Get(new PdfName("Types") ))))) {
                 if (debugmode ) {
                     if (LOGGER.IsLogging(Level.ERROR)) {
                         LOGGER.Error(MessageLocalization.GetComposedMessage("the.document.has.no.page.root"));
@@ -3895,7 +3915,14 @@ namespace iTextSharp.text.pdf {
     	    else 
     		    return decrypt.IsMetadataEncrypted();
         }
-        
+
+        /**
+         * Computes user password if standard encryption handler is used with Standard40, Standard128 or AES128 encryption algorithm.
+         *
+         * @return user password, or null if not a standard encryption handler was used,
+         *         if standard encryption handler was used with AES256 encryption algorithm,
+         *         or if ownerPasswordUsed wasn't use to open the document.
+         */
         virtual public byte[] ComputeUserPassword() {
     	    if (!encrypted || !ownerPasswordUsed) return null;
     	    return decrypt.ComputeUserPassword(password);

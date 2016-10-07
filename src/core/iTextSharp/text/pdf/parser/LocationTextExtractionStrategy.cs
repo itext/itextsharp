@@ -1,6 +1,9 @@
 using System;
 using System.Collections.Generic;
+using System.Runtime.InteropServices;
 using System.Text;
+using iTextSharp.text.io;
+
 /*
  * $Id$
  *
@@ -75,10 +78,22 @@ namespace iTextSharp.text.pdf.parser {
         /** a summary of all found text */
         private List<TextChunk> locationalResult = new List<TextChunk>();
 
+        private readonly ITextChunkLocationStrategy tclStrat;
+
         /**
          * Creates a new text extraction renderer.
          */
-        public LocationTextExtractionStrategy() {
+        public LocationTextExtractionStrategy() : this(new TextChunkLocationStrategyDefaultImp()) {
+        }
+
+        /**
+         * Creates a new text extraction renderer, with a custom strategy for
+         * creating new TextChunkLocation objects based on the input of the
+         * TextRenderInfo.
+         * @param strat the custom strategy
+         */
+        public LocationTextExtractionStrategy(ITextChunkLocationStrategy strat) {
+            tclStrat = strat;
         }
 
         /**
@@ -112,35 +127,6 @@ namespace iTextSharp.text.pdf.parser {
         }
 
         /**
-         * Determines if a space character should be inserted between a previous chunk and the current chunk.
-         * This method is exposed as a callback so subclasses can fine time the algorithm for determining whether a space should be inserted or not.
-         * By default, this method will insert a space if the there is a gap of more than half the font space character width between the end of the
-         * previous chunk and the beginning of the current chunk.  It will also indicate that a space is needed if the starting point of the new chunk 
-         * appears *before* the end of the previous chunk (i.e. overlapping text).
-         * @param chunk the new chunk being evaluated
-         * @param previousChunk the chunk that appeared immediately before the current chunk
-         * @return true if the two chunks represent different words (i.e. should have a space between them).  False otherwise.
-         */
-        virtual protected bool IsChunkAtWordBoundary(TextChunk chunk, TextChunk previousChunk) {
-            /**
-             * Here we handle a very specific case which in PDF may look like:
-             * -.232 Tc [( P)-226.2(r)-231.8(e)-230.8(f)-238(a)-238.9(c)-228.9(e)]TJ
-             * The font's charSpace width is 0.232 and it's compensated with charSpacing of 0.232.
-             * And a resultant TextChunk.charSpaceWidth comes to TextChunk constructor as 0.
-             * In this case every chunk is considered as a word boundary and space is added.
-             * We should consider charSpaceWidth equal (or close) to zero as a no-space.
-             */
-            if (chunk.CharSpaceWidth < 0.1f)
-                return false;
-
-            float dist = chunk.DistanceFromEndOf(previousChunk);
-            if(dist < -chunk.CharSpaceWidth || dist > chunk.CharSpaceWidth / 2.0f)
-                return true;
-
-            return false;
-        }
-
-        /**
          * Filters the provided list with the provided filter
          * @param textChunks a list of all TextChunks that this strategy found during processing
          * @param filter the filter to apply.  If null, filtering will be skipped.
@@ -161,6 +147,21 @@ namespace iTextSharp.text.pdf.parser {
             }
 
     	    return filtered;
+        }
+
+        /**
+         * Determines if a space character should be inserted between a previous chunk and the current chunk.
+         * This method is exposed as a callback so subclasses can fine time the algorithm for determining whether a space should be inserted or not.
+         * By default, this method will insert a space if the there is a gap of more than half the font space character width between the end of the
+         * previous chunk and the beginning of the current chunk.  It will also indicate that a space is needed if the starting point of the new chunk 
+         * appears *before* the end of the previous chunk (i.e. overlapping text).
+         * @param chunk the new chunk being evaluated
+         * @param previousChunk the chunk that appeared immediately before the current chunk
+         * @return true if the two chunks represent different words (i.e. should have a space between them).  False otherwise.
+         */
+        protected virtual bool IsChunkAtWordBoundary(TextChunk chunk, TextChunk previousChunk)
+        {
+            return chunk.Location.IsAtWordBoundary(previousChunk.Location);
         }
 
         /**
@@ -233,38 +234,69 @@ namespace iTextSharp.text.pdf.parser {
                 Matrix riseOffsetTransform = new Matrix(0, -renderInfo.GetRise());
                 segment = segment.TransformBy(riseOffsetTransform);
             }
-            TextChunk location = new TextChunk(renderInfo.GetText(), segment.GetStartPoint(), segment.GetEndPoint(), renderInfo.GetSingleSpaceWidth());
-            locationalResult.Add(location);        
+            TextChunk tc = new TextChunk(renderInfo.GetText(), tclStrat.CreateLocation(renderInfo, segment));
+            locationalResult.Add(tc);        
         }
-        
 
+        public interface ITextChunkLocationStrategy
+        {
+            ITextChunkLocation CreateLocation(TextRenderInfo renderInfo, LineSegment baseline);
+        }
 
-        /**
-         * Represents a chunk of text, it's orientation, and location relative to the orientation vector
-         */
-        public class TextChunk : IComparable<TextChunk>{
-            /** the text of the chunk */
-            private readonly String text;
+        public interface ITextChunkLocation : IComparable<ITextChunkLocation> {
+
             /** the starting location of the chunk */
-            private readonly Vector startLocation;
+            Vector StartLocation { get; }
             /** the ending location of the chunk */
-            private readonly Vector endLocation;
-            /** unit vector in the orientation of the chunk */
-            private readonly Vector orientationVector;
+            Vector EndLocation { get; }
             /** the orientation as a scalar for quick sorting */
-            private readonly int orientationMagnitude;
+            int OrientationMagnitude { get; }
             /** perpendicular distance to the orientation unit vector (i.e. the Y position in an unrotated coordinate system)
              * we round to the nearest integer to handle the fuzziness of comparing floats */
-            private readonly int distPerpendicular;
+            int DistPerpendicular { get; }
             /** distance of the start of the chunk parallel to the orientation unit vector (i.e. the X position in an unrotated coordinate system) */
-            private readonly float distParallelStart;
+            float DistParallelStart { get; }
             /** distance of the end of the chunk parallel to the orientation unit vector (i.e. the X position in an unrotated coordinate system) */
-            private readonly float distParallelEnd;
+            float DistParallelEnd { get; }
             /** the width of a single space character in the font of the chunk */
+            float CharSpaceWidth { get; }
+            /**
+             * @param comparedLine the location to compare to
+             * @return true is this location is on the the same line as the other
+             */
+            bool SameLine(ITextChunkLocation other);
+            /**
+             * Computes the distance between the end of 'other' and the beginning of this chunk
+             * in the direction of this chunk's orientation vector.  Note that it's a bad idea
+             * to call this for chunks that aren't on the same line and orientation, but we don't
+             * explicitly check for that condition for performance reasons.
+             * @param other
+             * @return the number of spaces between the end of 'other' and the beginning of this chunk
+             */
+            float DistanceFromEndOf(ITextChunkLocation other);
+
+            bool IsAtWordBoundary(ITextChunkLocation previous);
+        }
+
+        public class TextChunkLocationStrategyDefaultImp : ITextChunkLocationStrategy {
+            public ITextChunkLocation CreateLocation(TextRenderInfo renderInfo, LineSegment baseline) {
+                return new TextChunkLocationDefaultImp(baseline.GetStartPoint(), baseline.GetEndPoint(), renderInfo.GetSingleSpaceWidth());
+            }
+        }
+
+        public class TextChunkLocationDefaultImp : ITextChunkLocation{
+            /** unit vector in the orientation of the chunk */
+            private readonly Vector orientationVector;
+
+            private readonly Vector startLocation;
+            private readonly Vector endLocation;
+            private readonly int orientationMagnitude;
+            private readonly int distPerpendicular;
+            private readonly float distParallelStart;
+            private readonly float distParallelEnd;
             private readonly float charSpaceWidth;
-            
-            public TextChunk(String str, Vector startLocation, Vector endLocation, float charSpaceWidth) {
-                this.text = str;
+
+            public TextChunkLocationDefaultImp(Vector startLocation, Vector endLocation, float charSpaceWidth) {
                 this.startLocation = startLocation;
                 this.endLocation = endLocation;
                 this.charSpaceWidth = charSpaceWidth;
@@ -286,51 +318,137 @@ namespace iTextSharp.text.pdf.parser {
                 distParallelEnd = orientationVector.Dot(endLocation);
             }
 
-
-            /**
-             * @return the text captured by this chunk
-             */
-            virtual public String Text {
-                get { return text; }
+            public virtual Vector StartLocation {
+                get { return startLocation; }
             }
 
-            /**
-             * @return the width of a single space character as rendered by this chunk
-             */
-            virtual public float CharSpaceWidth {
+            public virtual Vector EndLocation {
+                get { return endLocation; }
+            }
+
+            public virtual int OrientationMagnitude {
+                get { return orientationMagnitude; }
+            }
+
+            public virtual int DistPerpendicular {
+                get { return distPerpendicular; }
+            }
+
+            public virtual float DistParallelStart {
+                get { return distParallelStart; }
+            }
+
+            public virtual float DistParallelEnd {
+                get { return distParallelEnd; }
+            }
+
+            public virtual float CharSpaceWidth {
                 get { return charSpaceWidth; }
             }
 
+            public virtual bool SameLine(ITextChunkLocation other) {
+                return OrientationMagnitude == other.OrientationMagnitude &&
+                       DistPerpendicular == other.DistPerpendicular;
+            }
+
+            public virtual float DistanceFromEndOf(ITextChunkLocation other){
+                float distance = DistParallelStart - other.DistParallelEnd;
+                return distance;
+            }
+
+            public virtual bool IsAtWordBoundary(ITextChunkLocation previous) {
+                /**
+                 * Here we handle a very specific case which in PDF may look like:
+                 * -.232 Tc [( P)-226.2(r)-231.8(e)-230.8(f)-238(a)-238.9(c)-228.9(e)]TJ
+                 * The font's charSpace width is 0.232 and it's compensated with charSpacing of 0.232.
+                 * And a resultant TextChunk.charSpaceWidth comes to TextChunk constructor as 0.
+                 * In this case every chunk is considered as a word boundary and space is added.
+                 * We should consider charSpaceWidth equal (or close) to zero as a no-space.
+                 */
+                if (CharSpaceWidth < 0.1f)
+                    return false;
+
+                float dist = DistanceFromEndOf(previous);
+
+                return dist < -CharSpaceWidth || dist > CharSpaceWidth / 2.0f;
+            }
+
             /**
-             * @return the start location of the text
+             * Compares based on orientation, perpendicular distance, then parallel distance
+             * @see java.lang.Comparable#compareTo(java.lang.Object)
              */
-            virtual public Vector StartLocation {
-                get { return startLocation; }
+            public virtual int CompareTo(ITextChunkLocation other) {
+                if (this == other) return 0; // not really needed, but just in case
+                
+                int rslt;
+                rslt = CompareInts(OrientationMagnitude, other.OrientationMagnitude);
+                if (rslt != 0) return rslt;
+
+                rslt = CompareInts(DistPerpendicular, other.DistPerpendicular);
+                if (rslt != 0) return rslt;
+
+                // note: it's never safe to check floating point numbers for equality, and if two chunks
+                // are truly right on top of each other, which one comes first or second just doesn't matter
+                // so we arbitrarily choose this way.
+                rslt = DistParallelStart < other.DistParallelStart ? -1 : 1;
+
+                return rslt;
+            }  
+        }
+
+        /**
+         * Represents a chunk of text, it's orientation, and location relative to the orientation vector
+         */
+        public class TextChunk : IComparable<TextChunk>
+        {
+            /** the text of the chunk */
+            private readonly String text;
+            private readonly ITextChunkLocation location;
+
+            public TextChunk(String str, Vector startLocation, Vector endLocation, float charSpaceWidth) :
+                this(str, new TextChunkLocationDefaultImp(startLocation, endLocation, charSpaceWidth)) {
+            }
+
+            public TextChunk(String str, ITextChunkLocation location) {
+                this.text = str;
+                this.location = location;
+            }
+
+            /**
+                 * @return the start location of the text
+                 */
+            public virtual Vector StartLocation {
+                get { return Location.StartLocation; }
             }
 
             /**
              * @return the end location of the text
              */
-            virtual public Vector EndLocation {
-                get { return endLocation; }
+            public virtual Vector EndLocation {
+                get { return Location.EndLocation; }
             }
 
-
-            virtual public void PrintDiagnostics(){
-                Console.Out.WriteLine("Text (@" + startLocation + " -> " + endLocation + "): " + text);
-                Console.Out.WriteLine("orientationMagnitude: " + orientationMagnitude);
-                Console.Out.WriteLine("distPerpendicular: " + distPerpendicular);
-                Console.Out.WriteLine("distParallel: " + distParallelStart);
-            }
-            
             /**
-             * @param as the location to compare to
-             * @return true is this location is on the the same line as the other
+             * @return the width of a single space character as rendered by this chunk
              */
-            virtual public bool SameLine(TextChunk a){
-                if (orientationMagnitude != a.orientationMagnitude) return false;
-                if (distPerpendicular != a.distPerpendicular) return false;
-                return true;
+            public virtual float CharSpaceWidth {
+                get { return Location.CharSpaceWidth; }
+            }
+
+            public virtual String Text {
+                get { return text; }
+            }
+
+            public virtual ITextChunkLocation Location {
+                get { return location; }
+            }
+
+            public virtual void PrintDiagnostics()
+            {
+                Console.Out.WriteLine("Text (@" + StartLocation + " -> " + EndLocation + "): " + Text);
+                Console.Out.WriteLine("orientationMagnitude: " + Location.OrientationMagnitude);
+                Console.Out.WriteLine("distPerpendicular: " + Location.DistPerpendicular);
+                Console.Out.WriteLine("distParallel: " + Location.DistParallelStart);
             }
 
             /**
@@ -341,44 +459,37 @@ namespace iTextSharp.text.pdf.parser {
              * @param other
              * @return the number of spaces between the end of 'other' and the beginning of this chunk
              */
-            virtual public float DistanceFromEndOf(TextChunk other){
-                float distance = distParallelStart - other.distParallelEnd;
-                return distance;
+            public virtual float DistanceFromEndOf(TextChunk other) {
+                return Location.DistanceFromEndOf(other.Location);
             }
-            
+
             /**
              * Compares based on orientation, perpendicular distance, then parallel distance
              * @see java.lang.Comparable#compareTo(java.lang.Object)
              */
-            virtual public int CompareTo(TextChunk rhs) {
-                if (this == rhs) return 0; // not really needed, but just in case
-                
-                int rslt;
-                rslt = CompareInts(orientationMagnitude, rhs.orientationMagnitude);
-                if (rslt != 0) return rslt;
-
-                rslt = CompareInts(distPerpendicular, rhs.distPerpendicular);
-                if (rslt != 0) return rslt;
-
-                // note: it's never safe to check floating point numbers for equality, and if two chunks
-                // are truly right on top of each other, which one comes first or second just doesn't matter
-                // so we arbitrarily choose this way.
-                rslt = distParallelStart < rhs.distParallelStart ? -1 : 1;
-
-                return rslt;
+            public virtual int CompareTo(TextChunk other) {
+                return Location.CompareTo(other.Location);
             }
 
             /**
-             *
-             * @param int1
-             * @param int2
-             * @return comparison of the two integers
+             * @param as the location to compare to
+             * @return true is this location is on the the same line as the other
              */
-            private static int CompareInts(int int1, int int2){
-                return int1 == int2 ? 0 : int1 < int2 ? -1 : 1;
+            public virtual bool SameLine(TextChunk lastChunk)
+            {
+                return Location.SameLine(lastChunk.Location);
             }
+        }
 
-            
+        /**
+         *
+         * @param int1
+         * @param int2
+         * @return comparison of the two integers
+         */
+        private static int CompareInts(int int1, int int2)
+        {
+            return int1 == int2 ? 0 : int1 < int2 ? -1 : 1;
         }
 
         /**

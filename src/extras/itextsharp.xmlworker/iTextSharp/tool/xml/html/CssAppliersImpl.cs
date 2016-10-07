@@ -29,12 +29,15 @@
  *
  * For more information, please contact iText Software Corp. at this address: sales@itextpdf.com
  */
+
+using System;
 using iTextSharp.text;
 using iTextSharp.text.pdf;
 using iTextSharp.text.pdf.draw;
 using iTextSharp.tool.xml.css.apply;
 using iTextSharp.tool.xml.pipeline.html;
 using iTextSharp.tool.xml.html.pdfelement;
+using System.Collections.Generic;
 
 namespace iTextSharp.tool.xml.html {
 
@@ -46,123 +49,90 @@ namespace iTextSharp.tool.xml.html {
  *
  */
 
-    public class CssAppliersImpl : CssAppliers
-    {
+    public class CssAppliersImpl : CssAppliers {
 
         /*
          * private static CssAppliersImpl myself = new CssAppliersImpl();
          *
          * public static CssAppliersImpl GetInstance() { return myself; }
          */
-        protected ChunkCssApplier chunk;
-        protected ParagraphCssApplier paragraph;
-        private NoNewLineParagraphCssApplier nonewlineparagraph;
-        private HtmlCellCssApplier htmlcell;
-        private ListStyleTypeCssApplier list;
-        private LineSeparatorCssApplier lineseparator;
-        private ImageCssApplier image;
-        private DivCssApplier div;
+        private IDictionary<Type, ICssApplier> map;
         /**
          *
          */
 
-        public CssAppliersImpl()
-        {
-            chunk = new ChunkCssApplier(null);
-            paragraph = new ParagraphCssApplier(this);
-            nonewlineparagraph = new NoNewLineParagraphCssApplier();
-            htmlcell = new HtmlCellCssApplier();
-            list = new ListStyleTypeCssApplier();
-            lineseparator = new LineSeparatorCssApplier();
-            image = new ImageCssApplier();
-            div = new DivCssApplier();
+        public CssAppliersImpl() {
+            map = new Dictionary<Type, ICssApplier>();
+            map[typeof (Chunk)] = new ChunkCssApplier(null);
+            map[typeof(Paragraph)] = new ParagraphCssApplier(this);
+            map[typeof (NoNewLineParagraph)] = new NoNewLineParagraphCssApplier();
+            map[typeof (HtmlCell)] = new HtmlCellCssApplier();
+            map[typeof (List)] = new ListStyleTypeCssApplier();
+            map[typeof (LineSeparator)] = new LineSeparatorCssApplier();
+            map[typeof (text.Image)] = new ImageCssApplier();
+            map[typeof (PdfDiv)] = new DivCssApplier();
+        }
+        public CssAppliersImpl(IFontProvider fontProvider)
+            : this() {
+            ((ChunkCssApplier)map[typeof(Chunk)]).FontProvider = fontProvider;
         }
 
-        public CssAppliersImpl(IFontProvider fontProvider)
-            : this()
-        {
-            chunk.FontProvider = fontProvider;
+        public void PutCssApplier(Type t, ICssApplier c) {
+            map[t] = c;
         }
+
+        public ICssApplier GetCssApplier(Type t) {
+            ICssApplier c;
+            map.TryGetValue(t, out c);
+            return c;
+        }
+
+        
 
         /* (non-Javadoc)
          * @see com.itextpdf.tool.xml.html.CssAppliers#apply(com.itextpdf.text.Element, com.itextpdf.tool.xml.Tag, com.itextpdf.tool.xml.css.apply.MarginMemory, com.itextpdf.tool.xml.css.apply.PageSizeContainable, com.itextpdf.tool.xml.pipeline.html.ImageProvider)
          */
 
-        virtual public IElement Apply(IElement e, Tag t, IMarginMemory mm, IPageSizeContainable psc, HtmlPipelineContext ctx)
-        {
-            // warning, mapping is done by instance of, make sure to add things in the right order when adding more.
-            if (e is Chunk)
-            {
-                // covers TabbedChunk & Chunk
-                e = chunk.Apply((Chunk) e, t);
+        public virtual IElement Apply(IElement e, Tag t, IMarginMemory mm, IPageSizeContainable psc, HtmlPipelineContext ctx) {
+            ICssApplier c = null;
+            foreach (KeyValuePair<Type, ICssApplier> entry in map) {
+                if (entry.Key.IsInstanceOfType(e)) {
+                    c = entry.Value;
+                    break;
+                }
             }
-            else if (e is Paragraph)
-            {
-                e = paragraph.Apply((Paragraph) e, t, mm);
+            if (c == null) {
+                throw new Exception();
             }
-            else if (e is NoNewLineParagraph)
-            {
-                e = nonewlineparagraph.Apply((NoNewLineParagraph) e, t, mm);
-            }
-            else if (e is HtmlCell)
-            {
-                e = htmlcell.Apply((HtmlCell) e, t, mm, psc);
-            }
-            else if (e is List)
-            {
-                e = list.Apply((List) e, t, ctx);
-            }
-            else if (e is LineSeparator)
-            {
-                e = lineseparator.Apply((LineSeparator) e, t, psc);
-            }
-            else if (e is text.Image)
-            {
-                e = image.Apply((text.Image) e, t);
-            } else if (e is PdfDiv) {
-                e = div.Apply((PdfDiv)e, t, mm, psc, ctx);
-            }
+            e = c.Apply(e, t, mm, psc, ctx);
             return e;
-
         }
 
         /* (non-Javadoc)
          * @see com.itextpdf.tool.xml.html.CssAppliers#apply(com.itextpdf.text.Element, com.itextpdf.tool.xml.Tag, com.itextpdf.tool.xml.pipeline.html.HtmlPipelineContext)
          */
 
-        virtual public IElement Apply(IElement e, Tag t, HtmlPipelineContext ctx)
-        {
+        public virtual IElement Apply(IElement e, Tag t, HtmlPipelineContext ctx) {
             return this.Apply(e, t, ctx, ctx, ctx);
         }
 
-        virtual public ChunkCssApplier GetChunkCssAplier()
-        {
-            return chunk;
+        public virtual ChunkCssApplier GetChunkCssAplier() {
+            return (ChunkCssApplier) map[typeof (Chunk)];
         }
 
-        virtual public ChunkCssApplier ChunkCssAplier {
-            get { return this.chunk; }
-            set { this.chunk = value; }
+        public virtual ChunkCssApplier ChunkCssAplier {
+            get { return (ChunkCssApplier) map[typeof (Chunk)]; }
+            set { map[typeof (Chunk)] = value; }
         }
 
-        virtual public CssAppliers Clone()
-        {
-			CssAppliersImpl clone = GetClonedObject();
-            clone.chunk = chunk;
-
-            clone.paragraph = paragraph;
-            clone.nonewlineparagraph = nonewlineparagraph;
-            clone.htmlcell = htmlcell;
-            clone.list = list;
-            clone.lineseparator = lineseparator;
-            clone.image = image;
-            clone.div = div;
-
+        public virtual CssAppliers Clone() {
+            CssAppliersImpl clone = GetClonedObject();
+            clone.map = new Dictionary<Type, ICssApplier>(map);
             return clone;
         }
 
-		virtual protected CssAppliersImpl GetClonedObject() {
-			return new CssAppliersImpl();
-		}
+        protected virtual CssAppliersImpl GetClonedObject() {
+            return new CssAppliersImpl();
+        }
     }
 }

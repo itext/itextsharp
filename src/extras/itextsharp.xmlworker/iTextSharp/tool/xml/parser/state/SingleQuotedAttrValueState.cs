@@ -69,6 +69,8 @@ namespace iTextSharp.tool.xml.parser.state {
                 this.parser.Memory().PutCurrentAttrValue(this.parser.BufferToString());
                 this.parser.Flush();
                 this.parser.SelectState().TagAttributes();
+            } else if (character == '&') {
+                this.parser.SelectState().SpecialChar();
             } else {
                 this.parser.Append(character);
             }

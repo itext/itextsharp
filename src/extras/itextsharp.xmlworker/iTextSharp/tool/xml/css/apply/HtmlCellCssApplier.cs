@@ -60,7 +60,7 @@ namespace iTextSharp.tool.xml.css.apply {
      * @author Emiel Ackermann
      *
      */
-    public class HtmlCellCssApplier {
+    public class HtmlCellCssApplier : CssApplier<HtmlCell> {
 
         private CssUtils utils = CssUtils.GetInstance();
 
@@ -71,131 +71,136 @@ namespace iTextSharp.tool.xml.css.apply {
          * com.itextpdf.tool.xml.css.CssApplier#apply(com.itextpdf.text.Element,
          * com.itextpdf.tool.xml.Tag)
          */
-    virtual public HtmlCell Apply(HtmlCell cell, Tag t, IMarginMemory memory, IPageSizeContainable psc) {
-        Tag row = t.Parent;
-        while(row != null && !row.Name.Equals(HTML.Tag.TR)){
-           row = row.Parent;
-	    }
-        Tag table = t.Parent;
-        while(table != null && !table.Name.Equals(HTML.Tag.TABLE)){
-		    table = table.Parent;
+
+        public virtual HtmlCell Apply(HtmlCell cell, Tag t, IMarginMemory memory, IPageSizeContainable psc) {
+            return Apply(cell, t, memory, psc, null);
         }
-        TableStyleValues values = Table.SetBorderAttributeForCell(table);
 
-        IDictionary<String, String> css = t.CSS;
-        String emptyCells;
-        css.TryGetValue(CSS.Property.EMPTY_CELLS, out emptyCells);
-        if (null != emptyCells && Util.EqualsIgnoreCase(CSS.Value.HIDE, emptyCells) && cell.CompositeElements == null) {
-            cell.Border = Rectangle.NO_BORDER;
-        } else {
-	    	cell.VerticalAlignment = Element.ALIGN_MIDDLE; // Default css behavior. Implementation of "vertical-align" style further along.
-            String vAlign = null;
-            if (t.Attributes.ContainsKey(HTML.Attribute.VALIGN)) {
-                vAlign = t.Attributes[HTML.Attribute.VALIGN];
-            } else if (css.ContainsKey(HTML.Attribute.VALIGN)) {
-                vAlign = css[HTML.Attribute.VALIGN];
-            } else if (row != null) {
-                if (row.Attributes.ContainsKey(HTML.Attribute.VALIGN)) {
-                    vAlign = row.Attributes[HTML.Attribute.VALIGN];
-                } else if (row.CSS.ContainsKey(HTML.Attribute.VALIGN)) {
-                    vAlign = row.CSS[HTML.Attribute.VALIGN];
+        public override HtmlCell Apply(HtmlCell cell, Tag t, IMarginMemory memory, IPageSizeContainable psc, HtmlPipelineContext ctx) {
+            Tag row = t.Parent;
+            while(row != null && !row.Name.Equals(HTML.Tag.TR)){
+               row = row.Parent;
+	        }
+            Tag table = t.Parent;
+            while(table != null && !table.Name.Equals(HTML.Tag.TABLE)){
+		        table = table.Parent;
+            }
+            TableStyleValues values = Table.SetBorderAttributeForCell(table);
+
+            IDictionary<String, String> css = t.CSS;
+            String emptyCells;
+            css.TryGetValue(CSS.Property.EMPTY_CELLS, out emptyCells);
+            if (null != emptyCells && Util.EqualsIgnoreCase(CSS.Value.HIDE, emptyCells) && cell.CompositeElements == null) {
+                cell.Border = Rectangle.NO_BORDER;
+            } else {
+	    	    cell.VerticalAlignment = Element.ALIGN_MIDDLE; // Default css behavior. Implementation of "vertical-align" style further along.
+                String vAlign = null;
+                if (t.Attributes.ContainsKey(HTML.Attribute.VALIGN)) {
+                    vAlign = t.Attributes[HTML.Attribute.VALIGN];
+                } else if (css.ContainsKey(HTML.Attribute.VALIGN)) {
+                    vAlign = css[HTML.Attribute.VALIGN];
+                } else if (row != null) {
+                    if (row.Attributes.ContainsKey(HTML.Attribute.VALIGN)) {
+                        vAlign = row.Attributes[HTML.Attribute.VALIGN];
+                    } else if (row.CSS.ContainsKey(HTML.Attribute.VALIGN)) {
+                        vAlign = row.CSS[HTML.Attribute.VALIGN];
+                    }
                 }
-            }
-            if (vAlign != null) {
-                if (Util.EqualsIgnoreCase(CSS.Value.TOP, vAlign)) {
-                    cell.VerticalAlignment = Element.ALIGN_TOP;
-                } else if (Util.EqualsIgnoreCase(CSS.Value.BOTTOM, vAlign)) {
-                    cell.VerticalAlignment = Element.ALIGN_BOTTOM;
-                }
-            }
-
-            String align = null;
-            if (t.Attributes.ContainsKey(HTML.Attribute.ALIGN)) {
-                align = t.Attributes[HTML.Attribute.ALIGN];
-            } else if (css.ContainsKey(CSS.Property.TEXT_ALIGN)) {
-                align = css[CSS.Property.TEXT_ALIGN];
-            }
-
-            if (align != null) {
-                if (Util.EqualsIgnoreCase(CSS.Value.CENTER, align)) {
-                    cell.HorizontalAlignment = Element.ALIGN_CENTER;
-                } else if (Util.EqualsIgnoreCase(CSS.Value.RIGHT, align)) {
-                    cell.HorizontalAlignment = Element.ALIGN_RIGHT;
-                } else if (Util.EqualsIgnoreCase(CSS.Value.JUSTIFY, align)) {
-                    cell.HorizontalAlignment = Element.ALIGN_JUSTIFIED;
-                }
-            }
-
-            if (t.Attributes.ContainsKey(HTML.Attribute.WIDTH) || css.ContainsKey(HTML.Attribute.WIDTH)) {
-                cell.FixedWidth = new WidthCalculator().GetWidth(t, memory.GetRootTags(), psc.PageSize.Width);
-			}
-
-            HeightCalculator heightCalc = new HeightCalculator();
-            float? height = heightCalc.GetHeight(t, psc.PageSize.Height);
-            if (height == null && row != null) {
-                height = heightCalc.GetHeight(row, psc.PageSize.Height);
-            }
-            if (height != null) {
-                cell.MinimumHeight = height.Value;
-            }
-
-            String colspan;
-            if (t.Attributes.TryGetValue(HTML.Attribute.COLSPAN, out colspan)) {
-                cell.Colspan = int.Parse(colspan);
-            }
-            String rowspan;
-            t.Attributes.TryGetValue(HTML.Attribute.ROWSPAN, out rowspan);
-            if (null != rowspan) {
-                cell.Rowspan = int.Parse(rowspan);
-            }
-            foreach (KeyValuePair<String, String> entry in css) {
-                String key = entry.Key;
-                String value = entry.Value;
-                cell.UseBorderPadding = true;
-                if (Util.EqualsIgnoreCase(key, CSS.Property.BACKGROUND_COLOR)) {
-                    values.Background = HtmlUtilities.DecodeColor(value);
-                } else if (Util.EqualsIgnoreCase(key, CSS.Property.VERTICAL_ALIGN)) {
-                    if (Util.EqualsIgnoreCase(value, CSS.Value.TOP)) {
+                if (vAlign != null) {
+                    if (Util.EqualsIgnoreCase(CSS.Value.TOP, vAlign)) {
                         cell.VerticalAlignment = Element.ALIGN_TOP;
-                        cell.PaddingTop = cell.PaddingTop+6;
-                    } else if (Util.EqualsIgnoreCase(value, CSS.Value.BOTTOM)) {
+                    } else if (Util.EqualsIgnoreCase(CSS.Value.BOTTOM, vAlign)) {
                         cell.VerticalAlignment = Element.ALIGN_BOTTOM;
-                        cell.PaddingBottom = cell.PaddingBottom+6;
                     }
-                } else if (key.Contains(CSS.Property.BORDER)) {
-                    if (key.Contains(CSS.Value.TOP)) {
-                        SetTopOfBorder(cell, key, value, values);
-                    } else if (key.Contains(CSS.Value.BOTTOM)) {
-                        SetBottomOfBorder(cell, key, value, values);
-                    } else if (key.Contains(CSS.Value.LEFT)) {
-                        SetLeftOfBorder(cell, key, value, values);
-                    } else if (key.Contains(CSS.Value.RIGHT)) {
-                        SetRightOfBorder(cell, key, value, values);
-                    }
-                } else if (key.Contains(CSS.Property.CELLPADDING) || key.Contains(CSS.Property.PADDING)) {
-                    if (key.Contains(CSS.Value.TOP)) {
-                        cell.PaddingTop = cell.PaddingTop+utils.ParsePxInCmMmPcToPt(value);
-                    } else if (key.Contains(CSS.Value.BOTTOM)) {
-                        cell.PaddingBottom = cell.PaddingBottom+utils.ParsePxInCmMmPcToPt(value);
-                    } else if (key.Contains(CSS.Value.LEFT)) {
-                        cell.PaddingLeft = cell.PaddingLeft+utils.ParsePxInCmMmPcToPt(value);
-                    } else if (key.Contains(CSS.Value.RIGHT)) {
-                        cell.PaddingRight = cell.PaddingRight+utils.ParsePxInCmMmPcToPt(value);
-                    }
-                } else if (key.Contains(CSS.Property.TEXT_ALIGN)) {
-                    cell.HorizontalAlignment = CSS.GetElementAlignment(value);
                 }
+
+                String align = null;
+                if (t.Attributes.ContainsKey(HTML.Attribute.ALIGN)) {
+                    align = t.Attributes[HTML.Attribute.ALIGN];
+                } else if (css.ContainsKey(CSS.Property.TEXT_ALIGN)) {
+                    align = css[CSS.Property.TEXT_ALIGN];
+                }
+
+                if (align != null) {
+                    if (Util.EqualsIgnoreCase(CSS.Value.CENTER, align)) {
+                        cell.HorizontalAlignment = Element.ALIGN_CENTER;
+                    } else if (Util.EqualsIgnoreCase(CSS.Value.RIGHT, align)) {
+                        cell.HorizontalAlignment = Element.ALIGN_RIGHT;
+                    } else if (Util.EqualsIgnoreCase(CSS.Value.JUSTIFY, align)) {
+                        cell.HorizontalAlignment = Element.ALIGN_JUSTIFIED;
+                    }
+                }
+
+                if (t.Attributes.ContainsKey(HTML.Attribute.WIDTH) || css.ContainsKey(HTML.Attribute.WIDTH)) {
+                    cell.FixedWidth = new WidthCalculator().GetWidth(t, memory.GetRootTags(), psc.PageSize.Width);
+			    }
+
+                HeightCalculator heightCalc = new HeightCalculator();
+                float? height = heightCalc.GetHeight(t, psc.PageSize.Height);
+                if (height == null && row != null) {
+                    height = heightCalc.GetHeight(row, psc.PageSize.Height);
+                }
+                if (height != null) {
+                    cell.MinimumHeight = height.Value;
+                }
+
+                String colspan;
+                if (t.Attributes.TryGetValue(HTML.Attribute.COLSPAN, out colspan)) {
+                    cell.Colspan = int.Parse(colspan);
+                }
+                String rowspan;
+                t.Attributes.TryGetValue(HTML.Attribute.ROWSPAN, out rowspan);
+                if (null != rowspan) {
+                    cell.Rowspan = int.Parse(rowspan);
+                }
+                foreach (KeyValuePair<String, String> entry in css) {
+                    String key = entry.Key;
+                    String value = entry.Value;
+                    cell.UseBorderPadding = true;
+                    if (Util.EqualsIgnoreCase(key, CSS.Property.BACKGROUND_COLOR)) {
+                        values.Background = HtmlUtilities.DecodeColor(value);
+                    } else if (Util.EqualsIgnoreCase(key, CSS.Property.VERTICAL_ALIGN)) {
+                        if (Util.EqualsIgnoreCase(value, CSS.Value.TOP)) {
+                            cell.VerticalAlignment = Element.ALIGN_TOP;
+                            cell.PaddingTop = cell.PaddingTop+6;
+                        } else if (Util.EqualsIgnoreCase(value, CSS.Value.BOTTOM)) {
+                            cell.VerticalAlignment = Element.ALIGN_BOTTOM;
+                            cell.PaddingBottom = cell.PaddingBottom+6;
+                        }
+                    } else if (key.Contains(CSS.Property.BORDER)) {
+                        if (key.Contains(CSS.Value.TOP)) {
+                            SetTopOfBorder(cell, key, value, values);
+                        } else if (key.Contains(CSS.Value.BOTTOM)) {
+                            SetBottomOfBorder(cell, key, value, values);
+                        } else if (key.Contains(CSS.Value.LEFT)) {
+                            SetLeftOfBorder(cell, key, value, values);
+                        } else if (key.Contains(CSS.Value.RIGHT)) {
+                            SetRightOfBorder(cell, key, value, values);
+                        }
+                    } else if (key.Contains(CSS.Property.CELLPADDING) || key.Contains(CSS.Property.PADDING)) {
+                        if (key.Contains(CSS.Value.TOP)) {
+                            cell.PaddingTop = cell.PaddingTop+utils.ParsePxInCmMmPcToPt(value);
+                        } else if (key.Contains(CSS.Value.BOTTOM)) {
+                            cell.PaddingBottom = cell.PaddingBottom+utils.ParsePxInCmMmPcToPt(value);
+                        } else if (key.Contains(CSS.Value.LEFT)) {
+                            cell.PaddingLeft = cell.PaddingLeft+utils.ParsePxInCmMmPcToPt(value);
+                        } else if (key.Contains(CSS.Value.RIGHT)) {
+                            cell.PaddingRight = cell.PaddingRight+utils.ParsePxInCmMmPcToPt(value);
+                        }
+                    } else if (key.Contains(CSS.Property.TEXT_ALIGN)) {
+                        cell.HorizontalAlignment = CSS.GetElementAlignment(value);
+                    }
+                }
+                cell.PaddingLeft = cell.PaddingLeft + values.HorBorderSpacing + values.BorderWidthLeft;
+                cell.PaddingRight = cell.PaddingRight + values.BorderWidthRight;
+                cell.PaddingTop = cell.PaddingTop + values.VerBorderSpacing + values.BorderWidthTop;
+                cell.PaddingBottom = cell.PaddingBottom + values.BorderWidthBottom;
             }
-            cell.PaddingLeft = cell.PaddingLeft + values.HorBorderSpacing + values.BorderWidthLeft;
-            cell.PaddingRight = cell.PaddingRight + values.BorderWidthRight;
-            cell.PaddingTop = cell.PaddingTop + values.VerBorderSpacing + values.BorderWidthTop;
-            cell.PaddingBottom = cell.PaddingBottom + values.BorderWidthBottom;
+            cell.Border = Rectangle.NO_BORDER;
+            cell.CellEvent = new CellSpacingEvent(values);
+            cell.CellValues = values;
+            return cell;
         }
-        cell.Border = Rectangle.NO_BORDER;
-        cell.CellEvent = new CellSpacingEvent(values);
-        cell.CellValues = values;
-        return cell;
-    }
 
         private void SetTopOfBorder(HtmlCell cell, String key, String value, TableStyleValues values) {
             if (key.Contains(CSS.Property.WIDTH)) {

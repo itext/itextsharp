@@ -176,14 +176,28 @@ namespace iTextSharp.text.pdf {
             if (totalTextLength == 0)
                 return true;
         
-            if (runDirection == PdfWriter.RUN_DIRECTION_LTR || runDirection == PdfWriter.RUN_DIRECTION_RTL) {
+            if (runDirection != PdfWriter.RUN_DIRECTION_NO_BIDI) {
                 if (orderLevels.Length < totalTextLength) {
                     orderLevels = new byte[pieceSize];
                     indexChars = new int[pieceSize];
                 }
 
                 ArabicLigaturizer.ProcessNumbers(text, 0, totalTextLength, arabicOptions);
-                BidiOrder order = new BidiOrder(text, 0, totalTextLength, (sbyte)(runDirection == PdfWriter.RUN_DIRECTION_RTL ? 1 : 0));
+                sbyte paragraphEmbeddingLevel;
+                switch (runDirection)
+                {
+                    case PdfWriter.RUN_DIRECTION_LTR:
+                        paragraphEmbeddingLevel = 0;
+                        break;
+                    case PdfWriter.RUN_DIRECTION_RTL:
+                        paragraphEmbeddingLevel = 1;
+                        break;
+                    case PdfWriter.RUN_DIRECTION_DEFAULT:
+                    default:
+                        paragraphEmbeddingLevel = -1;
+                        break;
+                }
+                BidiOrder order = new BidiOrder(text, 0, totalTextLength, paragraphEmbeddingLevel);
                 byte[] od = order.GetLevels();
                 for (int k = 0; k < totalTextLength; ++k) {
                     orderLevels[k] = od[k];
@@ -243,7 +257,7 @@ namespace iTextSharp.text.pdf {
                 Array.Copy(text, 0, storedText, 0, totalTextLength);
                 Array.Copy(detailChunks, 0, storedDetailChunks, 0, totalTextLength);
             }
-            if (runDirection == PdfWriter.RUN_DIRECTION_LTR || runDirection == PdfWriter.RUN_DIRECTION_RTL) {
+            if (runDirection != PdfWriter.RUN_DIRECTION_NO_BIDI) {
                 if (storedOrderLevels.Length < totalTextLength) {
                     storedOrderLevels = new byte[totalTextLength];
                     storedIndexChars = new int[totalTextLength];
@@ -264,7 +278,7 @@ namespace iTextSharp.text.pdf {
                 Array.Copy(storedText, 0, text, 0, totalTextLength);
                 Array.Copy(storedDetailChunks, 0, detailChunks, 0, totalTextLength);
             }
-            if (runDirection == PdfWriter.RUN_DIRECTION_LTR || runDirection == PdfWriter.RUN_DIRECTION_RTL) {
+            if (runDirection != PdfWriter.RUN_DIRECTION_NO_BIDI) {
                 Array.Copy(storedOrderLevels, currentChar, orderLevels, currentChar, totalTextLength - currentChar);
                 Array.Copy(storedIndexChars, currentChar, indexChars, currentChar, totalTextLength - currentChar);
             }
@@ -348,6 +362,7 @@ namespace iTextSharp.text.pdf {
             float charWidth = 0;
             PdfChunk lastValidChunk = null;
             TabStop tabStop = null;
+            IList<TabStop> rtlTabsToBeAligned  = new List<TabStop>();
             float tabStopAnchorPosition = float.NaN;
             float tabPosition = float.NaN;
             bool surrogate = false;
@@ -394,14 +409,7 @@ namespace iTextSharp.text.pdf {
                     if (ck.IsAttribute(Chunk.TABSETTINGS)) {
                         lastSplit = currentChar;
                         if (tabStop != null) {
-                            float tabStopPosition = tabStop.GetPosition(tabPosition, originalWidth - width,
-                                tabStopAnchorPosition);
-                            width = originalWidth - (tabStopPosition + (originalWidth - width - tabPosition));
-                            if (width < 0) {
-                                tabStopPosition += width;
-                                width = 0;
-                            }
-                            tabStop.Position = tabStopPosition;
+                            width = ProcessTabStop(tabStop, tabPosition, originalWidth, width, tabStopAnchorPosition, isRTL, rtlTabsToBeAligned);
                         }
 
                         tabStop = PdfChunk.GetTabStop(ck, originalWidth - width);
@@ -468,16 +476,12 @@ namespace iTextSharp.text.pdf {
             }
 
             if (tabStop != null) {
-                float tabStopPosition = tabStop.GetPosition(tabPosition, originalWidth - width, tabStopAnchorPosition);
-                width -= tabStopPosition - tabPosition;
-                if (width < 0) {
-                    tabStopPosition += width;
-                    width = 0;
+                width = ProcessTabStop(tabStop, tabPosition, originalWidth, width, tabStopAnchorPosition, isRTL, rtlTabsToBeAligned);
+            }
+            if (rtlTabsToBeAligned != null) {
+                foreach (TabStop rtlTabStop in rtlTabsToBeAligned) {
+                    rtlTabStop.Position = originalWidth - width - rtlTabStop.Position;
                 }
-                if (!isRTL)
-                    tabStop.Position = tabStopPosition;
-                else 
-                    tabStop.Position = originalWidth - width - tabPosition;
             }
 
             if (currentChar >= totalTextLength) {
@@ -519,6 +523,27 @@ namespace iTextSharp.text.pdf {
                 newCurrentChar = currentChar - 1;
             }
             return new PdfLine(0, originalWidth, originalWidth - GetWidth(oldCurrentChar, newCurrentChar, originalWidth), alignment, false, CreateArrayOfPdfChunks(oldCurrentChar, newCurrentChar), isRTL);
+        }
+
+        private float ProcessTabStop(TabStop tabStop, float tabPosition, float originalWidth, float width, float tabStopAnchorPosition, bool isRTL, IList<TabStop> rtlTabsToBeAligned)
+        {
+            float tabStopPosition = tabStop.GetPosition(tabPosition, originalWidth - width, tabStopAnchorPosition);
+            width -= tabStopPosition - tabPosition;
+            if (width < 0)
+            {
+                tabStopPosition += width;
+                width = 0;
+            }
+            if (!isRTL)
+            {
+                tabStop.Position = tabStopPosition;
+            }
+            else
+            {
+                tabStop.Position = tabPosition; // This will be mirrored when we know exact line width
+                rtlTabsToBeAligned.Add(tabStop);
+            }
+            return width;
         }
 
         /**
@@ -608,7 +633,7 @@ namespace iTextSharp.text.pdf {
         }
         
         virtual public List<PdfChunk> CreateArrayOfPdfChunks(int startIdx, int endIdx, PdfChunk extraPdfChunk) {
-            bool bidi = (runDirection == PdfWriter.RUN_DIRECTION_LTR || runDirection == PdfWriter.RUN_DIRECTION_RTL);
+            bool bidi = (runDirection != PdfWriter.RUN_DIRECTION_NO_BIDI);
             if (bidi)
                 Reorder(startIdx, endIdx);
             List<PdfChunk> ar = new List<PdfChunk>();
@@ -656,14 +681,14 @@ namespace iTextSharp.text.pdf {
             int first = idx;
             // forward
             for (; last < totalTextLength; ++last) {
-                if (!char.IsLetter(text[last]) && !char.IsDigit(text[last]))
+                if (!char.IsLetter(text[last]) && !char.IsDigit(text[last]) && text[last] != '\u00AD')
                     break;            
             }
             if (last == idx)
                 return null;
             // backward
             for (; first >= startIdx; --first) {
-                if (!char.IsLetter(text[first]) && !char.IsDigit(text[first]))
+                if (!char.IsLetter(text[first]) && !char.IsDigit(text[first]) && text[first] != '\u00AD')
                     break;            
             }
             ++first;

@@ -87,35 +87,29 @@ namespace itextsharp.tests.iTextSharp.text.pdf
         }
 
         [Test]
-        [ExpectedException(typeof(IllegalPdfSyntaxException))]
         virtual public void TestUnbalancedRestoreState()
         {
             InitializeDocument();
             document.Add(new Paragraph("Hello World"));
-            writer.DirectContent.RestoreState();
-            document.Close();
+            Assert.Throws(typeof(IllegalPdfSyntaxException), delegate { writer.DirectContent.RestoreState(); });
         }
 
         [Test]
-        [ExpectedException(typeof(IllegalPdfSyntaxException))]
         virtual public void TestUnbalancedSaveStateOnClose()
         {
             InitializeDocument();
             writer.DirectContent.SaveState();
             document.Add(new Paragraph("Hello World"));
-            document.Close();
+            Assert.Throws(typeof (IllegalPdfSyntaxException), delegate { document.Close(); });
         }
 
         [Test]
-        [ExpectedException(typeof(IllegalPdfSyntaxException))]
         virtual public void TestUnbalancedSaveStateOnNewPage()
         {
             InitializeDocument();
             writer.DirectContent.SaveState();
             document.Add(new Paragraph("Hello World"));
-            document.NewPage();
-            document.Add(new Paragraph("Hello World"));
-            document.Close();
+            Assert.Throws(typeof(IllegalPdfSyntaxException), delegate { document.NewPage(); });
         }
     }
 }

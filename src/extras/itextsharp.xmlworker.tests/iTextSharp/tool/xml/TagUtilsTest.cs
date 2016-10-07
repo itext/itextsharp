@@ -106,11 +106,11 @@ namespace itextsharp.xmlworker.tests.iTextSharp.tool.xml {
 	 * @
 	 */
 
-        [Test, ExpectedException(typeof (NoSiblingException))]
+        [Test]
         virtual public void TestNoSiblingAvailable() {
             parent.AddChild(sibling2);
             parent.AddChild(sibling3);
-            TagUtils.GetInstance().GetSibling(sibling2, -1);
+            Assert.Throws(typeof (NoSiblingException), delegate { TagUtils.GetInstance().GetSibling(sibling2, -1); });
         }
     }
 }
