@@ -918,6 +918,28 @@ namespace iTextSharp.text.pdf {
                                 float bboxWidth = bbox.GetAsNumber(2).FloatValue - bbox.GetAsNumber(0).FloatValue;
                                 float rectHeight = rect.GetAsNumber(3).FloatValue - rect.GetAsNumber(1).FloatValue;
                                 float bboxHeight = bbox.GetAsNumber(3).FloatValue - bbox.GetAsNumber(1).FloatValue;
+                                //Take form field rotation into account
+                                //Take field rotation into account
+                                double fieldRotation = 0;
+                                if (merged.GetAsDict(PdfName.MK) != null)
+                                {
+                                    if (merged.GetAsDict(PdfName.MK).Get(PdfName.R) != null)
+                                    {
+                                        fieldRotation = merged.GetAsDict(PdfName.MK).GetAsNumber(PdfName.R).FloatValue;
+                                    }
+                                }
+                                //Cast to radians
+                                fieldRotation = fieldRotation * Math.PI / 180;
+                                //Clamp to [-2*Pi, 2*Pi]
+                                fieldRotation = fieldRotation % (2 * Math.PI);
+
+                                if (fieldRotation % Math.PI != 0)
+                                {
+                                    float temp = rectWidth;
+                                    rectWidth = rectHeight;
+                                    rectHeight = temp;
+                                }
+
                                 float widthCoef = Math.Abs(bboxWidth != 0 ? rectWidth / bboxWidth : float.MaxValue);
                                 float heightCoef = Math.Abs(bboxHeight != 0 ? rectHeight / bboxHeight : float.MaxValue);
 
@@ -980,7 +1002,25 @@ namespace iTextSharp.text.pdf {
                         if (app != null) {
                             Rectangle box = PdfReader.GetNormalizedRectangle(merged.GetAsArray(PdfName.RECT));
                             PdfContentByte cb = GetOverContent(page);
+
                             cb.SetLiteral("Q ");
+                            /*
+                             * Apply field rotation
+                             */
+                            AffineTransform tf = new AffineTransform();
+                            double fieldRotation = 0;
+                            if (merged.GetAsDict(PdfName.MK) != null)
+                            {
+                                if (merged.GetAsDict(PdfName.MK).Get(PdfName.R) != null)
+                                {
+                                    fieldRotation = merged.GetAsDict(PdfName.MK).GetAsNumber(PdfName.R).FloatValue;
+                                }
+                            }
+                            //Cast to radians
+                            fieldRotation = fieldRotation * Math.PI / 180;
+                            //Clamp to [-2*Pi, 2*Pi]
+                            fieldRotation = fieldRotation % (2 * Math.PI);
+                            //Calculate transformation matrix
                             cb.AddTemplate(app, box.Left, box.Bottom);
                             cb.SetLiteral("q ");
                         }
@@ -1080,6 +1120,26 @@ namespace iTextSharp.text.pdf {
             acrodic.Remove(PdfName.DR);
     //        PdfReader.KillIndirect(acro);
     //        reader.GetCatalog().Remove(PdfName.ACROFORM);
+        }
+
+        internal AffineTransform CalculateTemplateTransformationMatrix(AffineTransform currentMatrix, double fieldRotation, Rectangle box)
+        {
+            AffineTransform templateTransform = new AffineTransform(currentMatrix);
+            //Move to new origin
+            double x = box.Left;
+            double y = box.Bottom;
+            if (fieldRotation % (Math.PI / 2) == 0 && fieldRotation % (3 * Math.PI / 2) != 0 && fieldRotation != 0)
+            {
+                x += box.Width;
+            }
+            if ((fieldRotation % (3 * Math.PI / 2) == 0 || fieldRotation % (Math.PI) == 0) && fieldRotation != 0)
+            {
+                y += box.Height;
+            }
+            templateTransform.Translate(x, y);
+            //Apply fieldrotation
+            templateTransform.Rotate(fieldRotation);
+            return templateTransform;
         }
 
         internal void SweepKids(PdfObject obj) {
