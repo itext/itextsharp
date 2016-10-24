@@ -918,14 +918,13 @@ namespace iTextSharp.text.pdf {
                                 float bboxWidth = bbox.GetAsNumber(2).FloatValue - bbox.GetAsNumber(0).FloatValue;
                                 float rectHeight = rect.GetAsNumber(3).FloatValue - rect.GetAsNumber(1).FloatValue;
                                 float bboxHeight = bbox.GetAsNumber(3).FloatValue - bbox.GetAsNumber(1).FloatValue;
-                                //Take form field rotation into account
                                 //Take field rotation into account
                                 double fieldRotation = 0;
                                 if (merged.GetAsDict(PdfName.MK) != null)
                                 {
                                     if (merged.GetAsDict(PdfName.MK).Get(PdfName.R) != null)
                                     {
-                                        fieldRotation = merged.GetAsDict(PdfName.MK).GetAsNumber(PdfName.R).FloatValue;
+                                        fieldRotation = merged.GetAsDict(PdfName.MK).GetAsNumber(PdfName.R).DoubleValue;
                                     }
                                 }
                                 //Cast to radians
@@ -1013,7 +1012,7 @@ namespace iTextSharp.text.pdf {
                             {
                                 if (merged.GetAsDict(PdfName.MK).Get(PdfName.R) != null)
                                 {
-                                    fieldRotation = merged.GetAsDict(PdfName.MK).GetAsNumber(PdfName.R).FloatValue;
+                                    fieldRotation = merged.GetAsDict(PdfName.MK).GetAsNumber(PdfName.R).DoubleValue;
                                 }
                             }
                             //Cast to radians
@@ -1021,7 +1020,8 @@ namespace iTextSharp.text.pdf {
                             //Clamp to [-2*Pi, 2*Pi]
                             fieldRotation = fieldRotation % (2 * Math.PI);
                             //Calculate transformation matrix
-                            cb.AddTemplate(app, box.Left, box.Bottom);
+                            tf = CalculateTemplateTransformationMatrix(tf, fieldRotation, box);
+                            cb.AddTemplate(app, tf);
                             cb.SetLiteral("q ");
                         }
                     }
