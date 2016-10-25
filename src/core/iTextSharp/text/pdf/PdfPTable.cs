@@ -824,13 +824,13 @@ namespace iTextSharp.text.pdf {
             {
                 float[] heights = new float[rowEnd - rowStart + 1];
                 heights[0] = yPosStart;
-                for (k = rowStart; k < rowEnd; ++k)
+                for (k = 0; k < rowEnd-rowStart; ++k)
                 {
                     PdfPRow row = __rows[k];
                     float hr = 0;
                     if (row != null)
                         hr = row.MaxHeights;
-                    heights[k - rowStart + 1] = heights[k - rowStart] - hr;
+                    heights[k + 1] = heights[k] - hr;
                 }
                 tableEvent.TableLayout(this, GetEventWidths(xPos, rowStart, rowEnd, headersInEvent), heights,
                                        headersInEvent ? headerRows : 0, rowStart, canvases);
