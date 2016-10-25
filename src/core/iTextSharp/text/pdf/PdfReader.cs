@@ -3704,11 +3704,12 @@ namespace iTextSharp.text.pdf {
 
             private void IteratePages(PRIndirectReference rpage) {
 
-                PdfDictionary page = (PdfDictionary)GetPdfObject(rpage);                
+                PdfDictionary page = (PdfDictionary)GetPdfObject(rpage);
+                if (page == null)
+                    return;              
                 if (!pagesNodes.AddAndCheck(page))
                     throw new InvalidPdfException(MessageLocalization.GetComposedMessage("illegal.pages.tree"));
-                if (page == null)
-                    return;
+                
                 PdfArray kidsPR = page.GetAsArray(PdfName.KIDS);
                 if (kidsPR == null) {
                     page.Put(PdfName.TYPE, PdfName.PAGE);
