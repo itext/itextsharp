@@ -1818,6 +1818,11 @@ namespace iTextSharp.text.pdf {
                 return;
             }
             PdfArray ocgs = dict.GetAsArray(PdfName.OCGS);
+            if (ocgs == null)
+            {
+                ocgs = new PdfArray();
+                dict.Put(PdfName.OCGS, ocgs);
+            }
             PdfIndirectReference refi;
             PdfLayer layer;
             Dictionary<string,PdfLayer> ocgmap = new Dictionary<string,PdfLayer>();
