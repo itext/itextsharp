@@ -941,17 +941,15 @@ namespace iTextSharp.text.pdf {
 
                                 float widthCoef = Math.Abs(bboxWidth != 0 ? rectWidth / bboxWidth : float.MaxValue);
                                 float heightCoef = Math.Abs(bboxHeight != 0 ? rectHeight / bboxHeight : float.MaxValue);
-
-                                if (widthCoef != 1 || heightCoef != 1)
-                                {
-                                    NumberArray array = new NumberArray(widthCoef, 0, 0, heightCoef, 0, 0);
-                                    stream.Put(PdfName.MATRIX, array);
-                                    MarkUsed(stream);
-                                }
+                                //Update matrix entry. Any field rotations present here will be overwritten and handled when adding the template to the canvas.
+                                NumberArray array = new NumberArray(widthCoef, 0, 0, heightCoef, 0, 0);
+                                stream.Put(PdfName.MATRIX, array);
+                                MarkUsed(stream);
                             }
                         }
-                    } else if (appDic != null && as_n != null) {
-                        PdfArray bbox = ((PdfDictionary) as_n).GetAsArray(PdfName.BBOX);
+                    }
+                    else if (appDic != null && as_n != null) {
+                        PdfArray bbox = ((PdfDictionary)as_n).GetAsArray(PdfName.BBOX);
                         PdfArray rect = merged.GetAsArray(PdfName.RECT);
                         if (bbox != null && rect != null) {
                             float widthDiff = (bbox.GetAsNumber(2).FloatValue - bbox.GetAsNumber(0).FloatValue) -
