@@ -1747,8 +1747,8 @@ namespace iTextSharp.text.pdf {
                     continue;
                 PdfIndirectReference refi = item.GetWidgetRef(k);
                 PdfDictionary wd = item.GetWidget( k );
-                PdfDictionary pageDic = reader.GetPageN(pageV);
-                PdfArray annots = pageDic.GetAsArray(PdfName.ANNOTS);
+                PdfDictionary pageDic = reader.GetPageN(pageV); //Returns null in case of floating, orphaned fields
+                PdfArray annots = pageDic != null ?  pageDic.GetAsArray(PdfName.ANNOTS): null;//Account for floating, orphaned fields 
                 if (annots != null) {
                     if (RemoveRefFromArray(annots, refi) == 0) {
                         pageDic.Remove(PdfName.ANNOTS);

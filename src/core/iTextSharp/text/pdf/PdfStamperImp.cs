@@ -918,19 +918,38 @@ namespace iTextSharp.text.pdf {
                                 float bboxWidth = bbox.GetAsNumber(2).FloatValue - bbox.GetAsNumber(0).FloatValue;
                                 float rectHeight = rect.GetAsNumber(3).FloatValue - rect.GetAsNumber(1).FloatValue;
                                 float bboxHeight = bbox.GetAsNumber(3).FloatValue - bbox.GetAsNumber(1).FloatValue;
+                                //Take field rotation into account
+                                double fieldRotation = 0;
+                                if (merged.GetAsDict(PdfName.MK) != null)
+                                {
+                                    if (merged.GetAsDict(PdfName.MK).Get(PdfName.R) != null)
+                                    {
+                                        fieldRotation = merged.GetAsDict(PdfName.MK).GetAsNumber(PdfName.R).DoubleValue;
+                                    }
+                                }
+                                //Cast to radians
+                                fieldRotation = fieldRotation * Math.PI / 180;
+                                //Clamp to [-2*Pi, 2*Pi]
+                                fieldRotation = fieldRotation % (2 * Math.PI);
+
+                                if (fieldRotation % Math.PI != 0)
+                                {
+                                    float temp = rectWidth;
+                                    rectWidth = rectHeight;
+                                    rectHeight = temp;
+                                }
+
                                 float widthCoef = Math.Abs(bboxWidth != 0 ? rectWidth / bboxWidth : float.MaxValue);
                                 float heightCoef = Math.Abs(bboxHeight != 0 ? rectHeight / bboxHeight : float.MaxValue);
-
-                                if (widthCoef != 1 || heightCoef != 1)
-                                {
-                                    NumberArray array = new NumberArray(widthCoef, 0, 0, heightCoef, 0, 0);
-                                    stream.Put(PdfName.MATRIX, array);
-                                    MarkUsed(stream);
-                                }
+                                //Update matrix entry. Any field rotations present here will be overwritten and handled when adding the template to the canvas.
+                                NumberArray array = new NumberArray(widthCoef, 0, 0, heightCoef, 0, 0);
+                                stream.Put(PdfName.MATRIX, array);
+                                MarkUsed(stream);
                             }
                         }
-                    } else if (appDic != null && as_n != null) {
-                        PdfArray bbox = ((PdfDictionary) as_n).GetAsArray(PdfName.BBOX);
+                    }
+                    else if (appDic != null && as_n != null) {
+                        PdfArray bbox = ((PdfDictionary)as_n).GetAsArray(PdfName.BBOX);
                         PdfArray rect = merged.GetAsArray(PdfName.RECT);
                         if (bbox != null && rect != null) {
                             float widthDiff = (bbox.GetAsNumber(2).FloatValue - bbox.GetAsNumber(0).FloatValue) -
@@ -980,8 +999,27 @@ namespace iTextSharp.text.pdf {
                         if (app != null) {
                             Rectangle box = PdfReader.GetNormalizedRectangle(merged.GetAsArray(PdfName.RECT));
                             PdfContentByte cb = GetOverContent(page);
+
                             cb.SetLiteral("Q ");
-                            cb.AddTemplate(app, box.Left, box.Bottom);
+                            /*
+                             * Apply field rotation
+                             */
+                            AffineTransform tf = new AffineTransform();
+                            double fieldRotation = 0;
+                            if (merged.GetAsDict(PdfName.MK) != null)
+                            {
+                                if (merged.GetAsDict(PdfName.MK).Get(PdfName.R) != null)
+                                {
+                                    fieldRotation = merged.GetAsDict(PdfName.MK).GetAsNumber(PdfName.R).DoubleValue;
+                                }
+                            }
+                            //Cast to radians
+                            fieldRotation = fieldRotation * Math.PI / 180;
+                            //Clamp to [-2*Pi, 2*Pi]
+                            fieldRotation = fieldRotation % (2 * Math.PI);
+                            //Calculate transformation matrix
+                            tf = CalculateTemplateTransformationMatrix(tf, fieldRotation, box);
+                            cb.AddTemplate(app, tf);
                             cb.SetLiteral("q ");
                         }
                     }
@@ -1080,6 +1118,26 @@ namespace iTextSharp.text.pdf {
             acrodic.Remove(PdfName.DR);
     //        PdfReader.KillIndirect(acro);
     //        reader.GetCatalog().Remove(PdfName.ACROFORM);
+        }
+
+        internal AffineTransform CalculateTemplateTransformationMatrix(AffineTransform currentMatrix, double fieldRotation, Rectangle box)
+        {
+            AffineTransform templateTransform = new AffineTransform(currentMatrix);
+            //Move to new origin
+            double x = box.Left;
+            double y = box.Bottom;
+            if (fieldRotation % (Math.PI / 2) == 0 && fieldRotation % (3 * Math.PI / 2) != 0 && fieldRotation != 0)
+            {
+                x += box.Width;
+            }
+            if ((fieldRotation % (3 * Math.PI / 2) == 0 || fieldRotation % (Math.PI) == 0) && fieldRotation != 0)
+            {
+                y += box.Height;
+            }
+            templateTransform.Translate(x, y);
+            //Apply fieldrotation
+            templateTransform.Rotate(fieldRotation);
+            return templateTransform;
         }
 
         internal void SweepKids(PdfObject obj) {
@@ -1758,6 +1816,11 @@ namespace iTextSharp.text.pdf {
                 return;
             }
             PdfArray ocgs = dict.GetAsArray(PdfName.OCGS);
+            if (ocgs == null)
+            {
+                ocgs = new PdfArray();
+                dict.Put(PdfName.OCGS, ocgs);
+            }
             PdfIndirectReference refi;
             PdfLayer layer;
             Dictionary<string,PdfLayer> ocgmap = new Dictionary<string,PdfLayer>();

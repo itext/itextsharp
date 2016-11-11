@@ -60,11 +60,11 @@ namespace iTextSharp.text.pdf.ocg {
 
         /// <summary>
         /// A map with all supported operators operators (PDF syntax). </summary>
-        protected internal static IDictionary<string, PdfOperator> operators;
+        protected internal static readonly IDictionary<string, PdfOperator> operators;
 
         /// <summary>
         /// The OutputStream of this worker object. </summary>
-        protected internal static MemoryStream baos;
+        protected internal MemoryStream baos;
 
         /// <summary>
         /// Keeps track of BMC/EMC balance. </summary>
@@ -82,11 +82,15 @@ namespace iTextSharp.text.pdf.ocg {
         /// The names of XObjects that shouldn't be shown. </summary>
         protected internal ICollection<PdfName> xobj;
 
+        static OCGParser() {
+            operators = new Dictionary<string, PdfOperator>();
+            PopulateOperators();
+        }
+
         /// <summary>
         /// Creates an instance of the OCGParser. </summary>
         /// <param name="ocgs">	a set of String values with the names of the OCGs that need to be removed. </param>
         public OCGParser(ICollection<string> ocgs) {
-            PopulateOperators();
             this.ocgs = ocgs;
         }
 
@@ -136,6 +140,47 @@ namespace iTextSharp.text.pdf.ocg {
             while (ps.Parse(operands).Count > 0) {
                 PdfLiteral @operator = (PdfLiteral) operands[operands.Count - 1];
                 ProcessOperator(this, @operator, operands);
+                if ("BI".Equals(@operator.ToString()))
+                {
+                    int found = 0;
+                    int ch;
+                    bool immediateAfterBI = true;
+                    while ((ch = tokeniser.Read()) != -1)
+                    {
+                        if (!immediateAfterBI || !PRTokeniser.IsWhitespace(ch))
+                        {
+                            baos.WriteByte((byte) ch);
+                        }
+                        immediateAfterBI = false;
+                        if (found == 0 && PRTokeniser.IsWhitespace(ch))
+                        {
+                            found++;
+                        }
+                        else if (found == 1 && ch == 'E')
+                        {
+                            found++;
+                        }
+                        else if (found == 1 && PRTokeniser.IsWhitespace(ch))
+                        {
+                            // this clause is needed if we have a white space character that is part of the image data
+                            // followed by a whitespace character that precedes the EI operator.  In this case, we need
+                            // to flush the first whitespace, then treat the current whitespace as the first potential
+                            // character for the end of stream check. Note that we don't increment 'found' here.
+                        }
+                        else if (found == 2 && ch == 'I')
+                        {
+                            found++;
+                        }
+                        else if (found == 3 && PRTokeniser.IsWhitespace(ch))
+                        {
+                            break;
+                        }
+                        else
+                        {
+                            found = 0;
+                        }
+                    }
+                }
             }
             baos.Flush();
             baos.Close();
@@ -159,11 +204,7 @@ namespace iTextSharp.text.pdf.ocg {
         /// <summary>
         /// Populates the operators variable.
         /// </summary>
-        protected internal virtual void PopulateOperators() {
-            if (operators != null) {
-                return;
-            }
-            operators = new Dictionary<string, PdfOperator>();
+        protected internal static void PopulateOperators() {
             operators[DEFAULTOPERATOR] = new CopyContentOperator();
             PathConstructionOrPaintingOperator opConstructionPainting = new PathConstructionOrPaintingOperator();
             operators["m"] = opConstructionPainting;

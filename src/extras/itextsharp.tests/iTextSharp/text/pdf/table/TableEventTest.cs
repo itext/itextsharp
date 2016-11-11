@@ -1,9 +1,8 @@
-using System;
-using iTextSharp.text.pdf.crypto;
+﻿
 /*
  * $Id$
  *
- * This file is part of the iText project.
+ * This file is part of the iText (R) project.
  * Copyright (c) 1998-2016 iText Group NV
  * Authors: Bruno Lowagie, Paulo Soares, et al.
  *
@@ -44,65 +43,65 @@ using iTextSharp.text.pdf.crypto;
  * For more information, please contact iText Software Corp. at this
  * address: sales@itextpdf.com
  */
+using System;
+using System.IO;
+using NUnit.Framework;
+using iTextSharp.testutils;
+using iTextSharp.text.pdf;
+using iTextSharp.text;
 
-namespace iTextSharp.text.pdf.crypto {
+namespace itextsharp.tests.iTextSharp.text.pdf.table
+{
+   [TestFixture]
+   public class TableEventTest
+    {
+        private static readonly String CMP_FOLDER = @"..\..\resources\text\pdf\table\TableEventTest\";
+        private static readonly String OUTPUT_FOLDER = @"table\TableEventTest\";
 
-    public class StandardDecryption {
-        protected ARCFOUREncryption arcfour;
-        protected AESCipher cipher;
-        private byte[] key;
-        private const int AES_128 = 4;
-        private const int AES_256 = 5;
-        private bool aes;
-        private bool initiated;
-        private byte[] iv = new byte[16];
-        private int ivptr;
+        [TestFixtureSetUp]
+        public static void Init()
+        {
+            Directory.CreateDirectory(OUTPUT_FOLDER);
+        }
 
-        /** Creates a new instance of StandardDecryption */
-        public StandardDecryption(byte[] key, int off, int len, int revision) {
-            aes = (revision == AES_128 || revision == AES_256);
-            if (aes) {
-                this.key = new byte[len];
-                System.Array.Copy(key, off, this.key, 0, len);
+        [Test]
+        public virtual void TestTableEvent()
+        {
+            String file = "tableEventTest.pdf";
+
+            FileInfo fileE = new FileInfo(CMP_FOLDER + file);
+          
+            Document document = new Document();
+            PdfWriter writer = PdfWriter.GetInstance(document, new FileStream(OUTPUT_FOLDER + file,FileMode.Create));
+            document.Open();
+            PdfPTable table = new PdfPTable(1);
+
+            table.TableEvent = new DummyEvent();
+            table.TotalWidth=400f;
+            for (int i = 0; i < 10; i++)
+            {
+                table.AddCell("Cell " + i);
             }
-            else {
-                arcfour = new ARCFOUREncryption();
-                arcfour.PrepareARCFOURKey(key, off, len);
+            table.WriteSelectedRows(4, 8, 100, 800, writer.DirectContent);
+            document.Close();
+
+            // compare
+            CompareTool compareTool = new CompareTool();
+            String errorMessage = compareTool.CompareByContent(OUTPUT_FOLDER + file, CMP_FOLDER + file, OUTPUT_FOLDER, "diff");
+            if (errorMessage != null)
+            {
+                Assert.Fail(errorMessage);
             }
         }
-        
-        virtual public byte[] Update(byte[] b, int off, int len) {
-            if (aes) {
-                if (initiated)
-                    return cipher.Update(b, off, len);
-                else {
-                    int left = Math.Min(iv.Length - ivptr, len);
-                    System.Array.Copy(b, off, iv, ivptr, left);
-                    off += left;
-                    len -= left;
-                    ivptr += left;
-                    if (ivptr == iv.Length) {
-                        cipher = new AESCipher(false, key, iv);
-                        initiated = true;
-                        if (len > 0)
-                            return cipher.Update(b, off, len);
-                    }
-                    return null;
-                }
+
+
+        private class DummyEvent : IPdfPTableEvent
+        {
+            public void TableLayout(PdfPTable table, float[][] widths, float[] heights, int headerRows, int rowStart, PdfContentByte[] canvases)
+            {
+                
             }
-            else {
-                byte[] b2 = new byte[len];
-                arcfour.EncryptARCFOUR(b, off, len, b2, 0);
-                return b2;
-            }
-        }
-        
-        virtual public byte[] Finish() {
-            if (cipher != null && aes) {
-                return cipher.DoFinal();
-            }
-            else
-                return null;
         }
     }
 }
+

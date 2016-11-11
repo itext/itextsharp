@@ -978,8 +978,6 @@ namespace iTextSharp.text.pdf {
                         text.BeginText();
                         dirty = true;
                     }
-                    line = bidiLine.ProcessLine(x1, x2 - x1 - firstIndent - rightIndent, alignment, localRunDirection,
-                                                arabicOptions, minY, yLine, descender);
                     if (line == null)
                     {
                         status = NO_MORE_TEXT;

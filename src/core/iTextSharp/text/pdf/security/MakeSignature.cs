@@ -6,6 +6,8 @@ using Org.BouncyCastle.Security;
 using Org.BouncyCastle.Crypto;
 using iTextSharp.text.log;
 using iTextSharp.text.io;
+using Org.BouncyCastle.Asn1.Esf;
+
 /*
  * $Id: MakeSignature.java 5199 2012-06-18 20:14:38Z psoares33 $
  *
@@ -63,8 +65,8 @@ namespace iTextSharp.text.pdf.security {
     public static class MakeSignature {
         /** The Logger instance. */
         private static readonly ILogger LOGGER = LoggerFactory.GetLogger(typeof(MakeSignature));
-        
-        /**
+
+         /**
          * Signs the document using the detached mode, CMS or CAdES equivalent.
          * @param sap the PdfSignatureAppearance
          * @param externalSignature the interface providing the actual signing
@@ -81,8 +83,56 @@ namespace iTextSharp.text.pdf.security {
          * @throws NoSuchAlgorithmException 
          * @throws Exception 
          */
+        public static void SignDetached(PdfSignatureAppearance sap, IExternalSignature externalSignature,
+            ICollection<X509Certificate> chain, ICollection<ICrlClient> crlList, IOcspClient ocspClient,
+            ITSAClient tsaClient, int estimatedSize, CryptoStandard sigtype) {
+            SignDetached(sap, externalSignature, chain, crlList, ocspClient, tsaClient, estimatedSize, sigtype, (SignaturePolicyIdentifier)null);
+        }
+
+        /**
+         * Signs the document using the detached mode, CMS or CAdES equivalent.
+         * @param sap the PdfSignatureAppearance
+         * @param externalSignature the interface providing the actual signing
+         * @param chain the certificate chain
+         * @param crlList the CRL list
+         * @param ocspClient the OCSP client
+         * @param tsaClient the Timestamp client
+         * @param provider the provider or null
+         * @param estimatedSize the reserved size for the signature. It will be estimated if 0
+         * @param cades true to sign CAdES equivalent PAdES-BES, false to sign CMS
+         * @param signaturePolicy the signature policy (for EPES signatures)
+         * @throws DocumentException 
+         * @throws IOException 
+         * @throws GeneralSecurityException 
+         * @throws NoSuchAlgorithmException 
+         * @throws Exception 
+         */
+        public static void SignDetached(PdfSignatureAppearance sap, IExternalSignature externalSignature,
+            ICollection<X509Certificate> chain, ICollection<ICrlClient> crlList, IOcspClient ocspClient,
+            ITSAClient tsaClient, int estimatedSize, CryptoStandard sigtype, SignaturePolicyInfo signaturePolicy) {
+            SignDetached(sap, externalSignature, chain, crlList, ocspClient, tsaClient, estimatedSize, sigtype, signaturePolicy != null ? signaturePolicy.ToSignaturePolicyIdentifier() : null);
+        }
+
+        /**
+         * Signs the document using the detached mode, CMS or CAdES equivalent.
+         * @param sap the PdfSignatureAppearance
+         * @param externalSignature the interface providing the actual signing
+         * @param chain the certificate chain
+         * @param crlList the CRL list
+         * @param ocspClient the OCSP client
+         * @param tsaClient the Timestamp client
+         * @param provider the provider or null
+         * @param estimatedSize the reserved size for the signature. It will be estimated if 0
+         * @param cades true to sign CAdES equivalent PAdES-BES, false to sign CMS
+         * @param signaturePolicy the signature policy (for EPES signatures)
+         * @throws DocumentException 
+         * @throws IOException 
+         * @throws GeneralSecurityException 
+         * @throws NoSuchAlgorithmException 
+         * @throws Exception 
+         */
         public static void SignDetached(PdfSignatureAppearance sap, IExternalSignature externalSignature, ICollection<X509Certificate> chain, ICollection<ICrlClient> crlList, IOcspClient ocspClient,
-                ITSAClient tsaClient, int estimatedSize, CryptoStandard sigtype) {
+                ITSAClient tsaClient, int estimatedSize, CryptoStandard sigtype, SignaturePolicyIdentifier signaturePolicy) {
             List<X509Certificate> certa = new List<X509Certificate>(chain);
             ICollection<byte[]> crlBytes = null;
             int i = 0;
@@ -117,6 +167,9 @@ namespace iTextSharp.text.pdf.security {
 
             String hashAlgorithm = externalSignature.GetHashAlgorithm();
             PdfPKCS7 sgn = new PdfPKCS7(null, chain, hashAlgorithm, false);
+            if (signaturePolicy != null) {
+                sgn.SetSignaturePolicy(signaturePolicy);
+            }
             IDigest messageDigest = DigestUtilities.GetDigest(hashAlgorithm);
             Stream data = sap.GetRangeStream();
             byte[] hash = DigestAlgorithms.Digest(data, hashAlgorithm);

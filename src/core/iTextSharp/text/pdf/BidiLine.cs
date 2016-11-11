@@ -681,14 +681,14 @@ namespace iTextSharp.text.pdf {
             int first = idx;
             // forward
             for (; last < totalTextLength; ++last) {
-                if (!char.IsLetter(text[last]) && !char.IsDigit(text[last]))
+                if (!char.IsLetter(text[last]) && !char.IsDigit(text[last]) && text[last] != '\u00AD')
                     break;            
             }
             if (last == idx)
                 return null;
             // backward
             for (; first >= startIdx; --first) {
-                if (!char.IsLetter(text[first]) && !char.IsDigit(text[first]))
+                if (!char.IsLetter(text[first]) && !char.IsDigit(text[first]) && text[first] != '\u00AD')
                     break;            
             }
             ++first;
