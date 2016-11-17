@@ -47,20 +47,32 @@ using System;
 using iTextSharp.text.pdf;
 using iTextSharp.text.pdf.ocg;
 using NUnit.Framework;
+using System.IO;
+using iTextSharp.testutils;
 
 namespace itextsharp.tests.iTextSharp.text.pdf.ocg {
     public class OcgRemovalTest {
-        private static readonly String INPUT = @"..\..\resources\text\pdf\ocg\peek-a-boo2.pdf";
+        private static readonly String INPUT_DIR = @"..\..\resources\text\pdf\ocg\";
+        private static readonly String INPUT = INPUT_DIR + "Example.pdf";
+        private static readonly String CMP = INPUT_DIR + "cmp_Example.pdf";
+        private static readonly String OUTPUT_DIR = @"..\..\com\itextpdf\text\pdf\ocg\";
+        private static readonly String OUTPUT = OUTPUT_DIR + "Example.pdf";
 
         [Test]
         public virtual void RemoveOcgLayer() {
             PdfReader reader = new PdfReader(INPUT);
             OCGRemover ocgRemover = new OCGRemover();
-            ocgRemover.RemoveLayers(reader, "Do you see me?");
-            PdfDictionary catalog = reader.Catalog;
-            Assert.IsNull(catalog.Get(PdfName.OCPROPERTIES));
-            Assert.AreNotSame(PdfName.USEOC, catalog.Get(PdfName.PAGEMODE));
+            ocgRemover.RemoveLayers(reader, "ecc.pricebutton");
+            Directory.CreateDirectory(OUTPUT_DIR);
+            PdfStamper stamper = new PdfStamper(reader, new FileStream(OUTPUT,FileMode.Open));
+            stamper.Close();
             reader.Close();
+            CompareTool cmpTool = new CompareTool();
+            String errorMessage = cmpTool.CompareByContent(OUTPUT, CMP, OUTPUT_DIR, "diff");
+
+            if (errorMessage != null) {
+                Assert.Fail(errorMessage);
+            }
         }
     }
 }

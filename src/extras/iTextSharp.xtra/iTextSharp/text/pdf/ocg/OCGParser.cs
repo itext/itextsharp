@@ -423,10 +423,13 @@ namespace iTextSharp.text.pdf.ocg {
 
             /// <seealso cref= "PdfOperator.Process(OCGParser, PdfLiteral, List{T})"> </seealso>
             virtual public void Process(OCGParser parser, PdfLiteral @operator, IList<PdfObject> operands) {
-                if ("BDC".Equals(@operator.ToString()) && operands.Count > 1 && PdfName.OC.Equals(operands[0])) {
-                    parser.CheckMarkedContentStart((PdfName) operands[1]);
-                }
-                else if ("BMC".Equals(@operator.ToString())) {
+                if ("BDC".Equals(@operator.ToString())) {
+                    PdfName operand = null;
+                    if (operands.Count > 1 && PdfName.OC.Equals(operands[0])) {
+                        operand = (PdfName)operands[1];
+                    }
+                    parser.CheckMarkedContentStart(operand);
+                }else if ("BMC".Equals(@operator.ToString())) {
                     parser.CheckMarkedContentStart(null);
                 }
                 parser.Process(@operator, operands, true);
