@@ -55,7 +55,7 @@ namespace itextsharp.tests.iTextSharp.text.pdf.ocg {
         private static readonly String INPUT_DIR = @"..\..\resources\text\pdf\ocg\";
         private static readonly String INPUT = INPUT_DIR + "Example.pdf";
         private static readonly String CMP = INPUT_DIR + "cmp_Example.pdf";
-        private static readonly String OUTPUT_DIR = @"..\..\com\itextpdf\text\pdf\ocg\";
+        private static readonly String OUTPUT_DIR = "OCGTest/";
         private static readonly String OUTPUT = OUTPUT_DIR + "Example.pdf";
 
         [Test]
@@ -64,7 +64,7 @@ namespace itextsharp.tests.iTextSharp.text.pdf.ocg {
             OCGRemover ocgRemover = new OCGRemover();
             ocgRemover.RemoveLayers(reader, "ecc.pricebutton");
             Directory.CreateDirectory(OUTPUT_DIR);
-            PdfStamper stamper = new PdfStamper(reader, new FileStream(OUTPUT,FileMode.Open));
+            PdfStamper stamper = new PdfStamper(reader, new FileStream(OUTPUT,FileMode.Create));
             stamper.Close();
             reader.Close();
             CompareTool cmpTool = new CompareTool();
