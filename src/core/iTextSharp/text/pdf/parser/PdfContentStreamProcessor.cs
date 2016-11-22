@@ -81,7 +81,7 @@ namespace iTextSharp.text.pdf.parser {
          * @since 5.0.6
          */
         /**  */
-        private IDictionary<int,CMapAwareDocumentFont> cachedFonts = new Dictionary<int, CMapAwareDocumentFont>();
+        private IDictionary<int,WeakReference> cachedFonts = new Dictionary<int, WeakReference>();
         /**
          * A stack containing marked content info.
          * @since 5.0.2
@@ -133,11 +133,14 @@ namespace iTextSharp.text.pdf.parser {
          * @since 5.0.6
          */
         private CMapAwareDocumentFont GetFont(PRIndirectReference ind) {
+            WeakReference wrFont;
             CMapAwareDocumentFont font;
-            cachedFonts.TryGetValue(ind.Number, out font);
-            if (font == null) {
+            cachedFonts.TryGetValue(ind.Number, out wrFont);
+            if (wrFont == null || wrFont.Target == null) {
                 font = new CMapAwareDocumentFont(ind);
-                cachedFonts[ind.Number] = font;
+                cachedFonts[ind.Number] = new WeakReference(font,true);
+            }else {
+                font = wrFont.Target as CMapAwareDocumentFont;
             }
             return font;
         }
