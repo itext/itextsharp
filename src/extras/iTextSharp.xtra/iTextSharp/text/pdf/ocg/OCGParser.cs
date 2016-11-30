@@ -194,8 +194,9 @@ namespace iTextSharp.text.pdf.ocg {
         /// <param name="operands">	its operands </param>
         /// <exception cref="Exception"> </exception>
         protected internal static void ProcessOperator(OCGParser parser, PdfLiteral @operator, IList<PdfObject> operands) {
-            PdfOperator op = operators[@operator.ToString()];
-            if (op == null) {
+            PdfOperator op;
+            if (!operators.TryGetValue(@operator.ToString(), out op) || op == null)
+            {
                 op = operators[DEFAULTOPERATOR];
             }
             op.Process(parser, @operator, operands);
