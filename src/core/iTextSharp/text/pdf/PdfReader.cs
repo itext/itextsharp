@@ -2013,6 +2013,17 @@ namespace iTextSharp.text.pdf {
                     return null;
                 return outp.ToArray();
             }
+            finally {
+                try {
+                    zip.Close();
+                }catch (IOException e) {
+                }
+                try {
+                    outp.Close();
+                } catch (IOException e) {
+                }
+
+            }
         }
         
         /** Decodes a stream that has the ASCIIHexDecode filter.
