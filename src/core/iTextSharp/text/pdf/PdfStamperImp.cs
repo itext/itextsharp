@@ -702,6 +702,7 @@ namespace iTextSharp.text.pdf {
                 ps = new PageStamp(this, reader, pageN);
                 pagesToContent[pageN] = ps;
             }
+            ps.pageN.IndRef = reader.GetPageOrigRef(pageNum);
             return ps;
         }
         

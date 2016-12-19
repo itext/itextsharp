@@ -78,5 +78,12 @@ namespace iTextSharp.text.pdf {
         internal override void AddAnnotation(PdfAnnotation annot) {
             ((PdfStamperImp)writer).AddAnnotation(annot, ps.pageN);
         }
+
+        protected override PdfIndirectReference CurrentPage {
+            get {
+                return ps.pageN.IndRef;
+            }
+        }
+
     }
 }

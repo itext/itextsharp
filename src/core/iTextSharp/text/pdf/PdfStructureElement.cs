@@ -92,15 +92,15 @@ namespace iTextSharp.text.pdf
 
         /**
         * Creates a new instance of PdfStructureElement.
-        * @param parent the parent of this node
+        * @param root the structure tree root
         * @param structureType the type of structure. It may be a standard type or a user type mapped by the role map
         */
 
-        public PdfStructureElement(PdfStructureTreeRoot parent, PdfName structureType)
+        public PdfStructureElement(PdfStructureTreeRoot root, PdfName structureType)
         {
-            top = parent;
-            Init(parent, structureType);
-            Put(PdfName.P, parent.Reference);
+            top = root;
+            Init(root, structureType);
+            Put(PdfName.P, root.Reference);
             Put(PdfName.TYPE, PdfName.STRUCTELEM);
         }
 
