@@ -88,7 +88,6 @@ namespace iTextSharp.text.pdf {
             */
             
             internal PdfInfo() {
-                AddProducer();
                 AddCreationDate();
             }
             
@@ -427,7 +426,6 @@ namespace iTextSharp.text.pdf {
                         break;
                     case Element.PRODUCER:
                         // you can not change the name of the producer
-                        info.AddProducer();
                         break;
                     case Element.CREATIONDATE:
                         // you can not set the creation date, only reset it

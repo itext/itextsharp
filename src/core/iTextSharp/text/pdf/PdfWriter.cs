@@ -1264,6 +1264,10 @@ namespace iTextSharp.text.pdf {
                     }
                     catalog.Put(PdfName.METADATA, body.Add(xmp).IndirectReference);
                 }
+                if (Info.Contains(PdfName.PRODUCER) && Version.GetInstance().GetVersion.Contains("licensed")) {
+                    LoggerFactory.GetLogger(GetType()).Warn(MessageLocalization.GetMessage("custom.producer.line.was.overridden.with.defaults"));
+                }
+                Info.Put(PdfName.PRODUCER, new PdfString(Version.GetInstance().GetVersion));
                 // [C10] make pdfx conformant
                 if (IsPdfX()) {
                     CompleteInfoDictionary(Info);
