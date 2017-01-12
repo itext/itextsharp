@@ -194,7 +194,13 @@ namespace iTextSharp.text.pdf.ocg {
         /// <param name="operands">	its operands </param>
         /// <exception cref="Exception"> </exception>
         protected internal static void ProcessOperator(OCGParser parser, PdfLiteral @operator, IList<PdfObject> operands) {
-            PdfOperator op = operators[@operator.ToString()];
+            //Add check to see if the operator is contained in the list of operators.  
+            //If the operator is not in the list, a missing key exception is thrown instead of the 
+            //op being set to null.  
+            PdfOperator op = null;
+            if (operators.ContainsKey(@operator.ToString())) { 
+                op = operators[@operator.ToString()];
+            }
             if (op == null) {
                 op = operators[DEFAULTOPERATOR];
             }
