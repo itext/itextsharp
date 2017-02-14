@@ -1226,8 +1226,10 @@ namespace iTextSharp.text.pdf.parser {
          * An XObject subtype handler for FORM
          */
         private class FormXObjectDoHandler : IXObjectDoHandler{
-
             virtual public void HandleXObject(PdfContentStreamProcessor processor, PdfStream stream, PdfIndirectReference refi) {
+                HandleXObject(processor, stream, refi, null);
+            }
+            virtual public void HandleXObject(PdfContentStreamProcessor processor, PdfStream stream, PdfIndirectReference refi, ICollection markedContentInfoStack) {
                 
                 PdfDictionary resources = stream.GetAsDict(PdfName.RESOURCES);
 
@@ -1283,6 +1285,10 @@ namespace iTextSharp.text.pdf.parser {
          */
         private class IgnoreXObjectDoHandler : IXObjectDoHandler{
             virtual public void HandleXObject(PdfContentStreamProcessor processor, PdfStream xobjectStream, PdfIndirectReference refi) {
+                // ignore XObject subtype
+            }
+
+            virtual public void HandleXObject(PdfContentStreamProcessor processor, PdfStream xobjectStream, PdfIndirectReference refi, ICollection markedContentInfoStack) {
                 // ignore XObject subtype
             }
         }    
