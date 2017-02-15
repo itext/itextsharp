@@ -356,7 +356,7 @@ namespace iTextSharp.text.pdf.parser {
                 xobjectDoHandlers.TryGetValue(subType, out handler);
                 if (handler == null)
                     handler = xobjectDoHandlers[PdfName.DEFAULT];
-                handler.HandleXObject(this, xobjectStream, xobjects.GetAsIndirectObject(xobjectName));
+                handler.HandleXObject(this, xobjectStream, xobjects.GetAsIndirectObject(xobjectName), markedContentStack);
             } else {
                 throw new InvalidOperationException(MessageLocalization.GetComposedMessage("XObject.1.is.not.a.stream", xobjectName));
             }
@@ -1269,7 +1269,7 @@ namespace iTextSharp.text.pdf.parser {
 
             virtual public void HandleXObject(PdfContentStreamProcessor processor, PdfStream xobjectStream, PdfIndirectReference refi) {
                 PdfDictionary colorSpaceDic = processor.resources.GetAsDict(PdfName.COLORSPACE);
-                ImageRenderInfo renderInfo = ImageRenderInfo.CreateForXObject(processor.Gs(), refi, colorSpaceDic);
+                ImageRenderInfo renderInfo = ImageRenderInfo.CreateForXObject(processor.Gs(), refi, colorSpaceDic,null);
                 processor.renderListener.RenderImage(renderInfo);
             }
 
