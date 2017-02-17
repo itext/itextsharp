@@ -1,28 +1,19 @@
-iText consists of several jars.
+iTextSharp consists of several dlls.
 
-The main iText release contains:
-- ```itextpdf-x.y.z.jar```: the core library
-- ```itext-xtra-x.y.z.jar```: extra functionality (PDF 2!)
-- ```itext-pdfa-x.y.z.jar```: PDF/A-related functionality
+The main iTextSharp release contains:
+- ```itextsharp.dll```: the core library
+- ```itextsharp.xtra.dll```: extra functionality (PDF 2!)
+- ```itextsharp.pdfa.dll```: PDF/A-related functionality
+- ```itextsharp.xmlworker.dll```: XML (and HTML) functionality
 
 This project is hosted on https://github.com/itext
 
-You can find the latest releases here:
-- https://github.com/itext/itextpdf
-- https://github.com/itext/xtra
-- https://github.com/itext/pdfa
+You can find the latest release here:
+- https://github.com/itext/itextsharp/releases/latest
 
 You can also [build iText from source][building].
 
-In some cases, you'll need [extra jars][extrajars].
-These jars are bundled in a zip file here:
-http://sourceforge.net/projects/itext/files/extrajars/
-
-For XML (and HTML) functionality, you need this jar:
-- ```xmlworker-x.y.z.jar```
-This project is hosted on https://github.com/itext/xmlworker
-
-Finally, we also have a tool that can help you debug PDFs:
+We also have a (Java) tool that can help you debug PDFs:
 - ```itext-rups-x.y.z.jar```
 This project is hosted on https://github.com/itext/rups
 
@@ -48,4 +39,3 @@ Contact sales for more info: http://itextpdf.com/sales
 [agpl]: LICENSE.md
 [building]: BUILDING.md
 [contributing]: CONTRIBUTING.md
-[extrajars]: EXTRAJARS.md
