@@ -400,7 +400,7 @@ namespace iTextSharp.text.pdf {
                     throw new ArgumentException(MessageLocalization.GetComposedMessage("there.are.illegal.characters.for.barcode.128.in.1", text));
             }
             c = text[0];
-            char currentCode = START_B;
+            char currentCode = GetStartSymbol(codeSet);
             int index = 0;
             if ((codeSet == Barcode128CodeSet.AUTO || codeSet == Barcode128CodeSet.C) && IsNextDigits(text, index, 2)) {
                 currentCode = START_C;
