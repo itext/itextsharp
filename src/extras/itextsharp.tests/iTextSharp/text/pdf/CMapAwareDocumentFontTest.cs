@@ -69,6 +69,13 @@ namespace itextsharp.tests.iTextSharp.text.pdf {
                 pdfReader.Close();
             }
         }
+		
+        [Test]
+		virtual public void IllegalDifference() {
+			PdfReader reader = TestResourceUtils.GetResourceAsPdfReader(TEST_RESOURCES_PATH, "illegalDifference.pdf");
+			// this call will throw an exception and make the test fail if we remove the error-catching code
+			PdfTextExtractor.GetTextFromPage(reader, 1);
+		}
 
         [Test]
         virtual public void WeirdHyphensTest() {
