@@ -347,7 +347,7 @@ namespace iTextSharp.text.pdf.parser {
          */
         private void DisplayXObject(PdfName xobjectName) {
             PdfDictionary xobjects = resources.GetAsDict(PdfName.XOBJECT);
-            PdfObject xobject = PdfReader.GetPdfObjectRelease(xobjectName);
+            PdfObject xobject = PdfReader.GetPdfObjectRelease(xobjects.Get(xobjectName));
             PdfStream xobjectStream = (PdfStream)xobject;
             
             PdfName subType = xobjectStream.GetAsName(PdfName.SUBTYPE);
