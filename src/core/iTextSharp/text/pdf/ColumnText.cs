@@ -1632,21 +1632,25 @@ namespace iTextSharp.text.pdf {
                 
                     // IF ROWS MAY NOT BE SPLIT
                     if (!table.SplitRows) {
-                        splittedRow = -1;
-                        if (k == rowIdx) {
-                            // drop the whole table
-                            if (k == table.Size) {
-                                compositeElements.RemoveAt(0);
-                                continue;
-                            }
-                            // or drop the row
-                            else {
-                                // don't drop the row if the table is incomplete and if there's only one row (not counting the header rows)
-                                // if there's only one row and this check wasn't here the row would have been deleted and not added at all
-                                if (!(!table.Complete && k == 1)) {
-                                    table.Rows.RemoveAt(k);
+                        if (splittedRow != -1) {
+                            splittedRow = -1;
+                        }
+                        else {
+                            if (k == rowIdx) {
+                                // drop the whole table
+                                if (k == table.Size) {
+                                    compositeElements.RemoveAt(0);
+                                    continue;
                                 }
-                                return NO_MORE_COLUMN;
+                                // or drop the row
+                                else {
+                                    // don't drop the row if the table is incomplete and if there's only one row (not counting the header rows)
+                                    // if there's only one row and this check wasn't here the row would have been deleted and not added at all
+                                    if (!(!table.Complete && k == 1)) {
+                                        table.Rows.RemoveAt(k);
+                                    }
+                                    return NO_MORE_COLUMN;
+                                }
                             }
                         }
                     }
@@ -1755,7 +1759,7 @@ namespace iTextSharp.text.pdf {
                     	    footerRows = 0;
                         }
 
-                        if (sub.Count > 0)
+                        if (sub.Count - footerRows > 0)
                         {
                             // we need a correction if the last row needs to be extended
                             float rowHeight = 0;

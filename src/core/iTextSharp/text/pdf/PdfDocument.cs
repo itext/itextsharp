@@ -2658,6 +2658,7 @@ namespace iTextSharp.text.pdf {
                 }
                 currentHeight = IndentTop - ct.YLine;
                 NewPage();
+                ptable.SkipFirstHeader = false;
                 if (IsTagged(writer))
                     ct.Canvas = text;
             }
