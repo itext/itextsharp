@@ -8,8 +8,8 @@ using System.Runtime.InteropServices;
 [assembly: AssemblyConfiguration("")]
 [assembly: AssemblyCompany("")]
 [assembly: AssemblyProduct("iTextSharp.xtra")]
-[assembly: AssemblyCopyright("Copyright (C) 1999-2016 by iText Group NV")]
+[assembly: AssemblyCopyright("Copyright (C) 1999-2017 by iText Group NV")]
 [assembly: AssemblyTrademark("")]
 [assembly: AssemblyCulture("")]
 
-[assembly: AssemblyVersion("5.5.11")]
+[assembly: AssemblyVersion("5.5.12")]

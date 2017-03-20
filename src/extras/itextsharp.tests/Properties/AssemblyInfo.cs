@@ -5,9 +5,9 @@ using System.Runtime.InteropServices;
 [assembly: AssemblyTitle("itextsharp.tests")]
 [assembly: AssemblyDescription("")]
 [assembly: AssemblyConfiguration("")]
-[assembly: AssemblyCompany("")]
+[assembly: AssemblyCompany("iText Group NV")]
 [assembly: AssemblyProduct("itextsharp.tests")]
-[assembly: AssemblyCopyright("Copyright (C) 1999-2016 by iText Group NV")]
+[assembly: AssemblyCopyright("Copyright (C) 1999-2017 by iText Group NV")]
 [assembly: AssemblyTrademark("")]
 [assembly: AssemblyCulture("")]
 
@@ -15,4 +15,4 @@ using System.Runtime.InteropServices;
 
 [assembly: Guid("6d44f434-c50b-4232-87eb-853990beef3b")]
 
-[assembly: AssemblyVersion("5.5.11")]
+[assembly: AssemblyVersion("5.5.12")]
