@@ -5,9 +5,9 @@ using System.Runtime.InteropServices;
 [assembly: AssemblyTitle("itextsharp.pdfa.tests")]
 [assembly: AssemblyDescription("")]
 [assembly: AssemblyConfiguration("")]
-[assembly: AssemblyCompany("Microsoft")]
+[assembly: AssemblyCompany("iText Group NV")]
 [assembly: AssemblyProduct("itextsharp.pdfa.tests")]
-[assembly: AssemblyCopyright("Copyright (C) 1999-2016 by iText Group NV")]
+[assembly: AssemblyCopyright("Copyright (C) 1999-2017 by iText Group NV")]
 [assembly: AssemblyTrademark("")]
 [assembly: AssemblyCulture("")]
 
