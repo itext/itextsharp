@@ -1,3 +1,45 @@
+/*
+    This file is part of the iText (R) project.
+    Copyright (c) 1998-2017 iText Group NV
+    Authors: iText Software.
+
+    This program is free software; you can redistribute it and/or modify
+    it under the terms of the GNU Affero General Public License version 3
+    as published by the Free Software Foundation with the addition of the
+    following permission added to Section 15 as permitted in Section 7(a):
+    FOR ANY PART OF THE COVERED WORK IN WHICH THE COPYRIGHT IS OWNED BY
+    ITEXT GROUP. ITEXT GROUP DISCLAIMS THE WARRANTY OF NON INFRINGEMENT
+    OF THIRD PARTY RIGHTS
+    
+    This program is distributed in the hope that it will be useful, but
+    WITHOUT ANY WARRANTY; without even the implied warranty of MERCHANTABILITY
+    or FITNESS FOR A PARTICULAR PURPOSE.
+    See the GNU Affero General Public License for more details.
+    You should have received a copy of the GNU Affero General Public License
+    along with this program; if not, see http://www.gnu.org/licenses or write to
+    the Free Software Foundation, Inc., 51 Franklin Street, Fifth Floor,
+    Boston, MA, 02110-1301 USA, or download the license from the following URL:
+    http://itextpdf.com/terms-of-use/
+    
+    The interactive user interfaces in modified source and object code versions
+    of this program must display Appropriate Legal Notices, as required under
+    Section 5 of the GNU Affero General Public License.
+    
+    In accordance with Section 7(b) of the GNU Affero General Public License,
+    a covered work must retain the producer line in every PDF that is created
+    or manipulated using iText.
+    
+    You can be released from the requirements of the license by purchasing
+    a commercial license. Buying such a license is mandatory as soon as you
+    develop commercial activities involving the iText software without
+    disclosing the source code of your own applications.
+    These activities include: offering paid services to customers as an ASP,
+    serving PDFs on the fly in a web application, shipping iText with a closed
+    source product.
+    
+    For more information, please contact iText Software Corp. at this
+    address: sales@itextpdf.com
+ */
 using System;
 using System.Collections;
 using System.Collections.Generic;
@@ -5,50 +47,6 @@ using System.Runtime.InteropServices;
 using iTextSharp.text.error_messages;
 using iTextSharp.text.io;
 
-/*
- * $Id$
- *
- * This file is part of the iText project.
- * Copyright (c) 1998-2016 iText Group NV
- * Authors: Kevin Day, Bruno Lowagie, Paulo Soares, et al.
- *
- * This program is free software; you can redistribute it and/or modify
- * it under the terms of the GNU Affero General Public License version 3
- * as published by the Free Software Foundation with the addition of the
- * following permission added to Section 15 as permitted in Section 7(a):
- * FOR ANY PART OF THE COVERED WORK IN WHICH THE COPYRIGHT IS OWNED BY
- * ITEXT GROUP. ITEXT GROUP DISCLAIMS THE WARRANTY OF NON INFRINGEMENT
- * OF THIRD PARTY RIGHTS
- *
- * This program is distributed in the hope that it will be useful, but
- * WITHOUT ANY WARRANTY; without even the implied warranty of MERCHANTABILITY
- * or FITNESS FOR A PARTICULAR PURPOSE.
- * See the GNU Affero General Public License for more details.
- * You should have received a copy of the GNU Affero General Public License
- * along with this program; if not, see http://www.gnu.org/licenses or write to
- * the Free Software Foundation, Inc., 51 Franklin Street, Fifth Floor,
- * Boston, MA, 02110-1301 USA, or download the license from the following URL:
- * http://itextpdf.com/terms-of-use/
- *
- * The interactive user interfaces in modified source and object code versions
- * of this program must display Appropriate Legal Notices, as required under
- * Section 5 of the GNU Affero General Public License.
- *
- * In accordance with Section 7(b) of the GNU Affero General Public License,
- * a covered work must retain the producer line in every PDF that is created
- * or manipulated using iText.
- *
- * You can be released from the requirements of the license by purchasing
- * a commercial license. Buying such a license is mandatory as soon as you
- * develop commercial activities involving the iText software without
- * disclosing the source code of your own applications.
- * These activities include: offering paid services to customers as an ASP,
- * serving PDFs on the fly in a web application, shipping iText with a closed
- * source product.
- *
- * For more information, please contact iText Software Corp. at this
- * address: sales@itextpdf.com
- */
 namespace iTextSharp.text.pdf.parser {
 
     /**
@@ -81,7 +79,7 @@ namespace iTextSharp.text.pdf.parser {
          * @since 5.0.6
          */
         /**  */
-        private IDictionary<int,CMapAwareDocumentFont> cachedFonts = new Dictionary<int, CMapAwareDocumentFont>();
+        private IDictionary<int,WeakReference> cachedFonts = new Dictionary<int, WeakReference>();
         /**
          * A stack containing marked content info.
          * @since 5.0.2
@@ -133,11 +131,14 @@ namespace iTextSharp.text.pdf.parser {
          * @since 5.0.6
          */
         private CMapAwareDocumentFont GetFont(PRIndirectReference ind) {
+            WeakReference wrFont;
             CMapAwareDocumentFont font;
-            cachedFonts.TryGetValue(ind.Number, out font);
-            if (font == null) {
+            cachedFonts.TryGetValue(ind.Number, out wrFont);
+            if (wrFont == null || wrFont.Target == null) {
                 font = new CMapAwareDocumentFont(ind);
-                cachedFonts[ind.Number] = font;
+                cachedFonts[ind.Number] = new WeakReference(font,true);
+            }else {
+                font = wrFont.Target as CMapAwareDocumentFont;
             }
             return font;
         }
@@ -344,7 +345,7 @@ namespace iTextSharp.text.pdf.parser {
          */
         private void DisplayXObject(PdfName xobjectName) {
             PdfDictionary xobjects = resources.GetAsDict(PdfName.XOBJECT);
-            PdfObject xobject = xobjects.GetDirectObject(xobjectName);
+            PdfObject xobject = PdfReader.GetPdfObjectRelease(xobjects.Get(xobjectName));
             PdfStream xobjectStream = (PdfStream)xobject;
             
             PdfName subType = xobjectStream.GetAsName(PdfName.SUBTYPE);
@@ -353,7 +354,7 @@ namespace iTextSharp.text.pdf.parser {
                 xobjectDoHandlers.TryGetValue(subType, out handler);
                 if (handler == null)
                     handler = xobjectDoHandlers[PdfName.DEFAULT];
-                handler.HandleXObject(this, xobjectStream, xobjects.GetAsIndirectObject(xobjectName));
+                handler.HandleXObject(this, xobjectStream, xobjects.GetAsIndirectObject(xobjectName), markedContentStack);
             } else {
                 throw new InvalidOperationException(MessageLocalization.GetComposedMessage("XObject.1.is.not.a.stream", xobjectName));
             }
@@ -439,7 +440,7 @@ namespace iTextSharp.text.pdf.parser {
          */
         virtual protected void HandleInlineImage(InlineImageInfo info, PdfDictionary colorSpaceDic)
         {
-            ImageRenderInfo renderInfo = ImageRenderInfo.CreateForEmbeddedImage(Gs(), info, colorSpaceDic);
+            ImageRenderInfo renderInfo = ImageRenderInfo.CreateForEmbeddedImage(Gs(), info, colorSpaceDic,markedContentStack);
             renderListener.RenderImage(renderInfo);
         }
 
@@ -1223,8 +1224,10 @@ namespace iTextSharp.text.pdf.parser {
          * An XObject subtype handler for FORM
          */
         private class FormXObjectDoHandler : IXObjectDoHandler{
-
             virtual public void HandleXObject(PdfContentStreamProcessor processor, PdfStream stream, PdfIndirectReference refi) {
+                HandleXObject(processor, stream, refi, null);
+            }
+            virtual public void HandleXObject(PdfContentStreamProcessor processor, PdfStream stream, PdfIndirectReference refi, ICollection markedContentInfoStack) {
                 
                 PdfDictionary resources = stream.GetAsDict(PdfName.RESOURCES);
 
@@ -1264,7 +1267,13 @@ namespace iTextSharp.text.pdf.parser {
 
             virtual public void HandleXObject(PdfContentStreamProcessor processor, PdfStream xobjectStream, PdfIndirectReference refi) {
                 PdfDictionary colorSpaceDic = processor.resources.GetAsDict(PdfName.COLORSPACE);
-                ImageRenderInfo renderInfo = ImageRenderInfo.CreateForXObject(processor.Gs(), refi, colorSpaceDic);
+                ImageRenderInfo renderInfo = ImageRenderInfo.CreateForXObject(processor.Gs(), refi, colorSpaceDic,null);
+                processor.renderListener.RenderImage(renderInfo);
+            }
+
+            virtual public void HandleXObject(PdfContentStreamProcessor processor, PdfStream xobjectStream, PdfIndirectReference refi, ICollection markedContentInfoStack) {
+                PdfDictionary colorSpaceDic = processor.resources.GetAsDict(PdfName.COLORSPACE);
+                ImageRenderInfo renderInfo = ImageRenderInfo.CreateForXObject(processor.Gs(), refi, colorSpaceDic, markedContentInfoStack);
                 processor.renderListener.RenderImage(renderInfo);
             }
         }
@@ -1274,6 +1283,10 @@ namespace iTextSharp.text.pdf.parser {
          */
         private class IgnoreXObjectDoHandler : IXObjectDoHandler{
             virtual public void HandleXObject(PdfContentStreamProcessor processor, PdfStream xobjectStream, PdfIndirectReference refi) {
+                // ignore XObject subtype
+            }
+
+            virtual public void HandleXObject(PdfContentStreamProcessor processor, PdfStream xobjectStream, PdfIndirectReference refi, ICollection markedContentInfoStack) {
                 // ignore XObject subtype
             }
         }    

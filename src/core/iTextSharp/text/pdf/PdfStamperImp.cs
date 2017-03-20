@@ -1,3 +1,45 @@
+/*
+    This file is part of the iText (R) project.
+    Copyright (c) 1998-2017 iText Group NV
+    Authors: iText Software.
+
+    This program is free software; you can redistribute it and/or modify
+    it under the terms of the GNU Affero General Public License version 3
+    as published by the Free Software Foundation with the addition of the
+    following permission added to Section 15 as permitted in Section 7(a):
+    FOR ANY PART OF THE COVERED WORK IN WHICH THE COPYRIGHT IS OWNED BY
+    ITEXT GROUP. ITEXT GROUP DISCLAIMS THE WARRANTY OF NON INFRINGEMENT
+    OF THIRD PARTY RIGHTS
+    
+    This program is distributed in the hope that it will be useful, but
+    WITHOUT ANY WARRANTY; without even the implied warranty of MERCHANTABILITY
+    or FITNESS FOR A PARTICULAR PURPOSE.
+    See the GNU Affero General Public License for more details.
+    You should have received a copy of the GNU Affero General Public License
+    along with this program; if not, see http://www.gnu.org/licenses or write to
+    the Free Software Foundation, Inc., 51 Franklin Street, Fifth Floor,
+    Boston, MA, 02110-1301 USA, or download the license from the following URL:
+    http://itextpdf.com/terms-of-use/
+    
+    The interactive user interfaces in modified source and object code versions
+    of this program must display Appropriate Legal Notices, as required under
+    Section 5 of the GNU Affero General Public License.
+    
+    In accordance with Section 7(b) of the GNU Affero General Public License,
+    a covered work must retain the producer line in every PDF that is created
+    or manipulated using iText.
+    
+    You can be released from the requirements of the license by purchasing
+    a commercial license. Buying such a license is mandatory as soon as you
+    develop commercial activities involving the iText software without
+    disclosing the source code of your own applications.
+    These activities include: offering paid services to customers as an ASP,
+    serving PDFs on the fly in a web application, shipping iText with a closed
+    source product.
+    
+    For more information, please contact iText Software Corp. at this
+    address: sales@itextpdf.com
+ */
 using System;
 using System.Collections;
 using System.IO;
@@ -15,48 +57,6 @@ using iTextSharp.text.error_messages;
 using iTextSharp.xmp;
 using iTextSharp.xmp.options;
 
-/*
- * This file is part of the iText project.
- * Copyright (c) 1998-2016 iText Group NV
- * Authors: Bruno Lowagie, Paulo Soares, et al.
- *
- * This program is free software; you can redistribute it and/or modify
- * it under the terms of the GNU Affero General Public License version 3
- * as published by the Free Software Foundation with the addition of the
- * following permission added to Section 15 as permitted in Section 7(a):
- * FOR ANY PART OF THE COVERED WORK IN WHICH THE COPYRIGHT IS OWNED BY
- * ITEXT GROUP. ITEXT GROUP DISCLAIMS THE WARRANTY OF NON INFRINGEMENT
- * OF THIRD PARTY RIGHTS
- *
- * This program is distributed in the hope that it will be useful, but
- * WITHOUT ANY WARRANTY; without even the implied warranty of MERCHANTABILITY
- * or FITNESS FOR A PARTICULAR PURPOSE.
- * See the GNU Affero General Public License for more details.
- * You should have received a copy of the GNU Affero General Public License
- * along with this program; if not, see http://www.gnu.org/licenses or write to
- * the Free Software Foundation, Inc., 51 Franklin Street, Fifth Floor,
- * Boston, MA, 02110-1301 USA, or download the license from the following URL:
- * http://itextpdf.com/terms-of-use/
- *
- * The interactive user interfaces in modified source and object code versions
- * of this program must display Appropriate Legal Notices, as required under
- * Section 5 of the GNU Affero General Public License.
- *
- * In accordance with Section 7(b) of the GNU Affero General Public License,
- * a covered work must retain the producer line in every PDF that is created
- * or manipulated using iText.
- *
- * You can be released from the requirements of the license by purchasing
- * a commercial license. Buying such a license is mandatory as soon as you
- * develop commercial activities involving the iText software without
- * disclosing the source code of your own applications.
- * These activities include: offering paid services to customers as an ASP,
- * serving PDFs on the fly in a web application, shipping iText with a closed
- * source product.
- *
- * For more information, please contact iText Software Corp. at this
- * address: sales@itextpdf.com
- */
 namespace iTextSharp.text.pdf {
     public class PdfStamperImp : PdfWriter {
         internal Dictionary<PdfReader, IntHashtable> readers2intrefs = new Dictionary<PdfReader,IntHashtable>();
@@ -702,6 +702,7 @@ namespace iTextSharp.text.pdf {
                 ps = new PageStamp(this, reader, pageN);
                 pagesToContent[pageN] = ps;
             }
+            ps.pageN.IndRef = reader.GetPageOrigRef(pageNum);
             return ps;
         }
         
@@ -918,19 +919,38 @@ namespace iTextSharp.text.pdf {
                                 float bboxWidth = bbox.GetAsNumber(2).FloatValue - bbox.GetAsNumber(0).FloatValue;
                                 float rectHeight = rect.GetAsNumber(3).FloatValue - rect.GetAsNumber(1).FloatValue;
                                 float bboxHeight = bbox.GetAsNumber(3).FloatValue - bbox.GetAsNumber(1).FloatValue;
+                                //Take field rotation into account
+                                double fieldRotation = 0;
+                                if (merged.GetAsDict(PdfName.MK) != null)
+                                {
+                                    if (merged.GetAsDict(PdfName.MK).Get(PdfName.R) != null)
+                                    {
+                                        fieldRotation = merged.GetAsDict(PdfName.MK).GetAsNumber(PdfName.R).DoubleValue;
+                                    }
+                                }
+                                //Cast to radians
+                                fieldRotation = fieldRotation * Math.PI / 180;
+                                //Clamp to [-2*Pi, 2*Pi]
+                                fieldRotation = fieldRotation % (2 * Math.PI);
+
+                                if (fieldRotation % Math.PI != 0)
+                                {
+                                    float temp = rectWidth;
+                                    rectWidth = rectHeight;
+                                    rectHeight = temp;
+                                }
+
                                 float widthCoef = Math.Abs(bboxWidth != 0 ? rectWidth / bboxWidth : float.MaxValue);
                                 float heightCoef = Math.Abs(bboxHeight != 0 ? rectHeight / bboxHeight : float.MaxValue);
-
-                                if (widthCoef != 1 || heightCoef != 1)
-                                {
-                                    NumberArray array = new NumberArray(widthCoef, 0, 0, heightCoef, 0, 0);
-                                    stream.Put(PdfName.MATRIX, array);
-                                    MarkUsed(stream);
-                                }
+                                //Update matrix entry. Any field rotations present here will be overwritten and handled when adding the template to the canvas.
+                                NumberArray array = new NumberArray(widthCoef, 0, 0, heightCoef, 0, 0);
+                                stream.Put(PdfName.MATRIX, array);
+                                MarkUsed(stream);
                             }
                         }
-                    } else if (appDic != null && as_n != null) {
-                        PdfArray bbox = ((PdfDictionary) as_n).GetAsArray(PdfName.BBOX);
+                    }
+                    else if (appDic != null && as_n != null) {
+                        PdfArray bbox = ((PdfDictionary)as_n).GetAsArray(PdfName.BBOX);
                         PdfArray rect = merged.GetAsArray(PdfName.RECT);
                         if (bbox != null && rect != null) {
                             float widthDiff = (bbox.GetAsNumber(2).FloatValue - bbox.GetAsNumber(0).FloatValue) -
@@ -980,8 +1000,27 @@ namespace iTextSharp.text.pdf {
                         if (app != null) {
                             Rectangle box = PdfReader.GetNormalizedRectangle(merged.GetAsArray(PdfName.RECT));
                             PdfContentByte cb = GetOverContent(page);
+
                             cb.SetLiteral("Q ");
-                            cb.AddTemplate(app, box.Left, box.Bottom);
+                            /*
+                             * Apply field rotation
+                             */
+                            AffineTransform tf = new AffineTransform();
+                            double fieldRotation = 0;
+                            if (merged.GetAsDict(PdfName.MK) != null)
+                            {
+                                if (merged.GetAsDict(PdfName.MK).Get(PdfName.R) != null)
+                                {
+                                    fieldRotation = merged.GetAsDict(PdfName.MK).GetAsNumber(PdfName.R).DoubleValue;
+                                }
+                            }
+                            //Cast to radians
+                            fieldRotation = fieldRotation * Math.PI / 180;
+                            //Clamp to [-2*Pi, 2*Pi]
+                            fieldRotation = fieldRotation % (2 * Math.PI);
+                            //Calculate transformation matrix
+                            tf = CalculateTemplateTransformationMatrix(tf, fieldRotation, box);
+                            cb.AddTemplate(app, tf);
                             cb.SetLiteral("q ");
                         }
                     }
@@ -1080,6 +1119,26 @@ namespace iTextSharp.text.pdf {
             acrodic.Remove(PdfName.DR);
     //        PdfReader.KillIndirect(acro);
     //        reader.GetCatalog().Remove(PdfName.ACROFORM);
+        }
+
+        internal AffineTransform CalculateTemplateTransformationMatrix(AffineTransform currentMatrix, double fieldRotation, Rectangle box)
+        {
+            AffineTransform templateTransform = new AffineTransform(currentMatrix);
+            //Move to new origin
+            double x = box.Left;
+            double y = box.Bottom;
+            if (fieldRotation % (Math.PI / 2) == 0 && fieldRotation % (3 * Math.PI / 2) != 0 && fieldRotation != 0)
+            {
+                x += box.Width;
+            }
+            if ((fieldRotation % (3 * Math.PI / 2) == 0 || fieldRotation % (Math.PI) == 0) && fieldRotation != 0)
+            {
+                y += box.Height;
+            }
+            templateTransform.Translate(x, y);
+            //Apply fieldrotation
+            templateTransform.Rotate(fieldRotation);
+            return templateTransform;
         }
 
         internal void SweepKids(PdfObject obj) {
@@ -1758,6 +1817,11 @@ namespace iTextSharp.text.pdf {
                 return;
             }
             PdfArray ocgs = dict.GetAsArray(PdfName.OCGS);
+            if (ocgs == null)
+            {
+                ocgs = new PdfArray();
+                dict.Put(PdfName.OCGS, ocgs);
+            }
             PdfIndirectReference refi;
             PdfLayer layer;
             Dictionary<string,PdfLayer> ocgmap = new Dictionary<string,PdfLayer>();
