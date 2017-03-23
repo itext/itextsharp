@@ -94,7 +94,10 @@ namespace iTextSharp.text.pdf.codec {
             TIFFDirectory dir = new TIFFDirectory(s, page - 1);
             if (dir.IsTagPresent(TIFFConstants.TIFFTAG_TILEWIDTH))
                 throw new ArgumentException(MessageLocalization.GetComposedMessage("tiles.are.not.supported"));
-            int compression = (int)dir.GetFieldAsLong(TIFFConstants.TIFFTAG_COMPRESSION);
+            int compression = TIFFConstants.COMPRESSION_NONE;
+            if (dir.IsTagPresent(TIFFConstants.TIFFTAG_COMPRESSION)) {
+                compression = (int)dir.GetFieldAsLong(TIFFConstants.TIFFTAG_COMPRESSION);
+            }
             switch (compression) {
                 case TIFFConstants.COMPRESSION_CCITTRLEW:
                 case TIFFConstants.COMPRESSION_CCITTRLE:
@@ -300,7 +303,10 @@ namespace iTextSharp.text.pdf.codec {
         protected static Image GetTiffImageColor(TIFFDirectory dir, RandomAccessFileOrArray s) {
             int predictor = 1;
             TIFFLZWDecoder lzwDecoder = null;
-            int compression = (int)dir.GetFieldAsLong(TIFFConstants.TIFFTAG_COMPRESSION);
+            int compression = TIFFConstants.COMPRESSION_NONE;
+            if (dir.IsTagPresent(TIFFConstants.TIFFTAG_COMPRESSION)) {
+                compression = (int)dir.GetFieldAsLong(TIFFConstants.TIFFTAG_COMPRESSION);
+            }
             switch (compression) {
                 case TIFFConstants.COMPRESSION_NONE:
                 case TIFFConstants.COMPRESSION_LZW:
