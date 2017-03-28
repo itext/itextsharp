@@ -897,7 +897,9 @@ namespace iTextSharp.text.pdf {
                     PdfDictionary appDic = merged.GetAsDict(PdfName.AP);
                     PdfObject as_n = null;
                     if (appDic != null) {
-                        as_n = appDic.GetAsStream(PdfName.N);
+                        as_n = appDic.GetDirectObject(PdfName.N);
+                        if (as_n == null)
+                            as_n = appDic.GetAsStream(PdfName.N);
                         if (as_n == null)
                             as_n = appDic.GetAsDict(PdfName.N);
                     }

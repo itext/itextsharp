@@ -41,6 +41,7 @@
     address: sales@itextpdf.com
  */
 using System;
+using System.Collections.Generic;
 using System.IO;
 using iTextSharp.testutils;
 using iTextSharp.text;
@@ -60,6 +61,35 @@ namespace itextsharp.tests.iTextSharp.text.pdf {
         [SetUp]
         public void SetUp() {
             Directory.CreateDirectory(OUTPUT_FOLDER);
+        }
+
+        [Test]
+        public virtual void TestFlatteningNewAppearances() {
+            String OUT = "tpl3_flattened.pdf";
+
+            PdfReader reader = new PdfReader(RESOURCES_FOLDER + "tpl3.pdf");
+            AcroFields fields = reader.AcroFields;
+            if (fields != null && fields.Fields != null && fields.Fields.Count > 0) {
+                FileStream @out = null;
+                @out = new FileStream(OUTPUT_FOLDER + OUT, FileMode.Create);
+                PdfStamper stamp = new PdfStamper(reader, @out);
+                stamp.FormFlattening = true;
+                AcroFields form = stamp.AcroFields;
+
+                foreach (KeyValuePair<String, AcroFields.Item> e in form.Fields) {
+                    form.SetField(e.Key, e.Key);
+                }
+
+                stamp.Close();
+                @out.Close();
+            }
+            reader.Close();
+
+            CompareTool compareTool = new CompareTool();
+            String errorMessage = compareTool.Compare(OUTPUT_FOLDER + OUT, RESOURCES_FOLDER + "cmp_" + OUT, OUTPUT_FOLDER, "diff");
+            if (errorMessage != null) {
+                Assert.Fail(errorMessage);
+            }
         }
 
         [Test]
