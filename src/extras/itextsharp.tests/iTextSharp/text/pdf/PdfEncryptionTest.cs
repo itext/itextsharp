@@ -128,12 +128,12 @@ namespace itextsharp.tests.iTextSharp.text.pdf {
 
             EncryptPdfWithCertificate(inPdf, tmpPdf, SOURCE_FOLDER + "test.cer");
 
-            var cert = new X509Certificate();
+            X509Certificate cert = new X509Certificate();
             cert.Import(SOURCE_FOLDER + "test.cer");
 
-            var pkstore = new Pkcs12Store(new FileStream(SOURCE_FOLDER + "test.p12", FileMode.Open, FileAccess.Read), "kspass".ToCharArray());
+            Pkcs12Store pkstore = new Pkcs12Store(new FileStream(SOURCE_FOLDER + "test.p12", FileMode.Open, FileAccess.Read), "kspass".ToCharArray());
             string pkalias = null;
-            foreach (var a in pkstore.Aliases)
+            foreach (object a in pkstore.Aliases)
             {
                 pkalias = ((string)a);
                 if (pkstore.IsKeyEntry(pkalias))
@@ -141,18 +141,18 @@ namespace itextsharp.tests.iTextSharp.text.pdf {
             }
             ICipherParameters certpk = pkstore.GetKey(pkalias).Key;
 
-            var signCert = new X509Certificate2(SOURCE_FOLDER + "test.p12", "kspass");
+            X509Certificate2 signCert = new X509Certificate2(SOURCE_FOLDER + "test.p12", "kspass");
             CertSign(signCert, new X509CertificateParser(), outPdf, new PdfReader(tmpPdf, Org.BouncyCastle.Security.DotNetUtilities.FromX509Certificate(cert), certpk), "reason", "location");
         }
 
         public static void EncryptPdfWithCertificate(string sourceDocument, string targetDocument, string certPath)
         {
-            var chain = new X509Certificate();
+            X509Certificate chain = new X509Certificate();
             chain.Import(certPath);
-            var cert = Org.BouncyCastle.Security.DotNetUtilities.FromX509Certificate(chain);
-            var certs = new Org.BouncyCastle.X509.X509Certificate[1] { cert };
-            var reader = new PdfReader(sourceDocument);
-            var st = new PdfStamper(reader, new FileStream(targetDocument, FileMode.Create, FileAccess.Write), '\0', false);
+            Org.BouncyCastle.X509.X509Certificate cert = Org.BouncyCastle.Security.DotNetUtilities.FromX509Certificate(chain);
+            Org.BouncyCastle.X509.X509Certificate[] certs = new Org.BouncyCastle.X509.X509Certificate[1] { cert };
+            PdfReader reader = new PdfReader(sourceDocument);
+            PdfStamper st = new PdfStamper(reader, new FileStream(targetDocument, FileMode.Create, FileAccess.Write), '\0', false);
             int[] x = new int[1];
             x[0] = PdfWriter.ALLOW_SCREENREADERS;
             st.SetEncryption(certs, x, PdfWriter.STANDARD_ENCRYPTION_40);
@@ -161,18 +161,18 @@ namespace itextsharp.tests.iTextSharp.text.pdf {
 
         private static void CertSign(X509Certificate2 cert, X509CertificateParser cp, string destinationPath, PdfReader reader, string reason, string location)
         {
-            var chain = new[]
+            Org.BouncyCastle.X509.X509Certificate[] chain = new Org.BouncyCastle.X509.X509Certificate[]
             {
                 cp.ReadCertificate(cert.RawData)
             };
 
             IExternalSignature externalSignature = new X509Certificate2Signature(cert, "SHA-1");
 
-            using (var fout = new FileStream(destinationPath, FileMode.Create, FileAccess.ReadWrite))
+            using (FileStream fout = new FileStream(destinationPath, FileMode.Create, FileAccess.ReadWrite))
             {
-                using (var stamper = PdfStamper.CreateSignature(reader, fout, '\0', null, true))
+                using (PdfStamper stamper = PdfStamper.CreateSignature(reader, fout, '\0', null, true))
                 {
-                    var appearance = stamper.SignatureAppearance;
+                    PdfSignatureAppearance appearance = stamper.SignatureAppearance;
                     appearance.Reason = reason;
                     appearance.Location = location;
                     MakeSignature.SignDetached(appearance, externalSignature, chain, null, null, null, 0,
