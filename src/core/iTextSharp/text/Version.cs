@@ -66,7 +66,7 @@ namespace iTextSharp.text {
 	     * iText is a registered trademark by iText Group NV.
 	     * Please don't change this constant.
 	     */
-	    static private String iText = "iTextSharp\u2122";
+	    static private String iText = "iTextSharp\u2122 pdfXfa";
     	
 	    /**
 	     * This String contains the version number of this iText release.
@@ -97,7 +97,7 @@ namespace iTextSharp.text {
                 version = new Version();
                 lock (version) {
                     try {
-                        Type type = Type.GetType("iTextSharp.license.LicenseKey, itextsharp.LicenseKey");
+                        Type type = Type.GetType("iTextSharp.license.XfaLicenseKey, itextsharp.XfaLicenseKey");
                         MethodInfo m = type.GetMethod("GetLicenseeInfo");
                         String[] info = (String[]) m.Invoke(Activator.CreateInstance(type), null);
                         if (info[3] != null && info[3].Trim().Length > 0) {
