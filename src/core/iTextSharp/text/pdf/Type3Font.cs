@@ -49,6 +49,7 @@ namespace iTextSharp.text.pdf {
     /**
     * A class to support Type3 fonts.
     */
+    [Obsolete("For internal use only. If you want to use iText, please use a dependency on iText 7. ")]
     public class Type3Font : BaseFont {
         
         private bool[] usedSlot;

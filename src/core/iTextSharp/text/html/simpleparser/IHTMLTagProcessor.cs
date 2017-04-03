@@ -49,7 +49,7 @@ namespace iTextSharp.text.html.simpleparser {
      * Interface that needs to be implemented by every tag that is supported by HTMLWorker.
      * @deprecated since 5.5.2
      */
-    [Obsolete]
+    [Obsolete("For internal use only. If you want to use iText, please use a dependency on iText 7. ")]
     public interface IHTMLTagProcessor {
         
         /**

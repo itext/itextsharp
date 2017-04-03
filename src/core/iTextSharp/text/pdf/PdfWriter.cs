@@ -65,7 +65,8 @@ namespace iTextSharp.text.pdf {
     * added to this Document will be written to the outputstream.</P>
     */
 
-    public class PdfWriter : DocWriter, 
+    [Obsolete("For internal use only. If you want to use iText, please use a dependency on iText 7. ")]
+    public class PdfWriter : DocWriter,
         IPdfViewerPreferences,
         IPdfEncryptionSettings,
         IPdfVersion,
@@ -622,10 +623,14 @@ namespace iTextSharp.text.pdf {
         *
         * @throws   DocumentException on error
         */
-        
         public static PdfWriter GetInstance(Document document, Stream os)
         {
-            PdfDocument pdf = new PdfDocument();
+            return GetInstance(document, os, Version.GetInstance().GetVersion);
+        }
+        
+        private static PdfWriter GetInstance(Document document, Stream os, string producer)
+        {
+            PdfDocument pdf = new PdfDocument(producer);
             document.AddDocListener(pdf);
             PdfWriter writer = new PdfWriter(pdf, os);
             pdf.AddWriter(writer);
@@ -1260,7 +1265,7 @@ namespace iTextSharp.text.pdf {
                     }
                     catalog.Put(PdfName.METADATA, body.Add(xmp).IndirectReference);
                 }
-                Info.Put(PdfName.PRODUCER, new PdfString(Version.GetInstance().GetVersion));
+                Info.Put(PdfName.PRODUCER, pdf.info.GetAsString(PdfName.PRODUCER));
                 // [C10] make pdfx conformant
                 if (IsPdfX()) {
                     CompleteInfoDictionary(Info);

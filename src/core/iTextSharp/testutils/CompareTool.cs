@@ -58,7 +58,8 @@ using Path = System.IO.Path;
 
 namespace iTextSharp.testutils {
 
-public class CompareTool {
+[Obsolete("For internal use only. If you want to use iText, please use a dependency on iText 7. ")]
+    public class CompareTool {
     protected class ObjectPath {
         protected RefKey baseCmpObject;
         protected RefKey baseOutObject;

@@ -49,6 +49,7 @@ namespace iTextSharp.text.pdf {
      * Wrapper class for PdfCopy and PdfSmartCopy.
      * Allows you to concatenate existing PDF documents with much less code.
      */
+    [Obsolete("For internal use only. If you want to use iText, please use a dependency on iText 7. ")]
     public class PdfConcatenate {
         /** The Document object for PdfCopy. */
         protected internal Document document;

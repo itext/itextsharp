@@ -52,6 +52,7 @@ namespace iTextSharp.text.pdf.crypto {
  * Creates an AES Cipher with CBC and padding PKCS5/7.
  * @author Paulo Soares
  */
+    [Obsolete("For internal use only. If you want to use iText, please use a dependency on iText 7. ")]
     public class AESCipher {
         private PaddedBufferedBlockCipher bp;
         

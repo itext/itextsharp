@@ -53,6 +53,7 @@ using iTextSharp.text.pdf.parser;
 
 namespace itextsharp.tests.text.pdf
 {
+    [Obsolete("For internal use only. If you want to use iText, please use a dependency on iText 7. ")]
     public class TaggedPdfCopyTest
     {
         private Document document;

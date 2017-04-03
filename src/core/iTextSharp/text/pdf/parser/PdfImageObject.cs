@@ -53,6 +53,7 @@ namespace iTextSharp.text.pdf.parser {
      * An object that contains an image dictionary and image bytes.
      * @since 5.0.2
      */
+    [Obsolete("For internal use only. If you want to use iText, please use a dependency on iText 7. ")]
     public class PdfImageObject {
 
         /**

@@ -48,6 +48,7 @@ using iTextSharp.text.log;
 
 namespace iTextSharp.text.pdf.intern
 {
+    [Obsolete("For internal use only. If you want to use iText, please use a dependency on iText 7. ")]
     public abstract class PdfAChecker {
 
         protected static ILogger LOGGER = LoggerFactory.GetLogger(typeof(PdfAChecker));

@@ -50,6 +50,7 @@ namespace iTextSharp.text.pdf.intern{
      * including the level of conformance.
      * @see PdfAConformance
      */
+    [Obsolete("For internal use only. If you want to use iText, please use a dependency on iText 7. ")]
     public class PdfAConformanceImp : IPdfAConformance {
 
         /**

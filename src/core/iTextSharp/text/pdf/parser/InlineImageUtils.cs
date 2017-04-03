@@ -54,6 +54,7 @@ namespace iTextSharp.text.pdf.parser {
      * Utility methods to help with processing of inline images
      * @since 5.0.4
      */
+    [Obsolete("For internal use only. If you want to use iText, please use a dependency on iText 7. ")]
     public static class InlineImageUtils {
          private static ILogger LOGGER = LoggerFactory.GetLogger(typeof(InlineImageUtils));
 
@@ -63,7 +64,8 @@ namespace iTextSharp.text.pdf.parser {
          * @since 5.0.4
          */
 		[Serializable]
-        public class InlineImageParseException : IOException {
+        [Obsolete("For internal use only. If you want to use iText, please use a dependency on iText 7. ")]
+    public class InlineImageParseException : IOException {
             public InlineImageParseException(String message) : base(message) {
             }
 

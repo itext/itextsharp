@@ -40,15 +40,17 @@
     For more information, please contact iText Software Corp. at this
     address: sales@itextpdf.com
  */
+using System;
 using iTextSharp.text.io;
 using NUnit.Framework;
 
 namespace itextsharp.tests {
     [SetUpFixture]
+    [Obsolete("For internal use only. If you want to use iText, please use a dependency on iText 7. ")]
     public class GlobalSetUp {
         [SetUp]
         public virtual void SetUp() {
-            StreamUtil.AddToResourceSearch(@"iTextAsian.dll");
+            StreamUtil.AddToResourceSearch(@"itext.font_asian.dll");
         }
     }
 }
