@@ -7,11 +7,11 @@ using System.Runtime.InteropServices;
 // set of attributes. Change these attribute values to modify the information
 // associated with an assembly.
 //
-[assembly: AssemblyTitle("iTextSharp")]
+[assembly: AssemblyTitle("Xfa-iTextSharp")]
 [assembly: AssemblyDescription("A free PDF library ported from Java iText.")]
 [assembly: AssemblyConfiguration("")]
 [assembly: AssemblyCompany("iText Group NV")]
-[assembly: AssemblyProduct("iTextSharp")]
+[assembly: AssemblyProduct("Xfa-iTextSharp")]
 [assembly: AssemblyCopyright("Copyright (C) 1999-2016 by iText Group NV")]
 [assembly: AssemblyTrademark("")]
 [assembly: AssemblyCulture("")]
