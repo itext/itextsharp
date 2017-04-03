@@ -84,6 +84,7 @@ namespace iTextSharp.text.pdf {
     // <P>
     // @see java.util.Hashtable
 
+    [Obsolete("For internal use only. If you want to use iText, please use a dependency on iText 7. ")]
     public class LongHashtable {
         /// The hash table data.
         private LongHashtableEntry[] table;

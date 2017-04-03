@@ -56,6 +56,7 @@ namespace iTextSharp.text.pdf.codec {
      * The strLen_ table to give quick access to the lenght of an expanded
      * code for use by the <code>expandCode</code> method added by Robin.
      **/
+    [Obsolete("For internal use only. If you want to use iText, please use a dependency on iText 7. ")]
     public class LZWStringTable {
         /** codesize + Reserved Codes */
         private const int RES_CODES = 2;

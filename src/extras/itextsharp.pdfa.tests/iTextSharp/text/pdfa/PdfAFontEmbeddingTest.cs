@@ -48,6 +48,7 @@ using NUnit.Framework;
 
 namespace itextsharp.tests.iTextSharp.text.pdf.fonts
 {
+    [Obsolete("For internal use only. If you want to use iText, please use a dependency on iText 7. ")]
     public class FontEmbeddingTest
     {
         public const String RESOURCES = @"..\..\resources\text\pdfa\";

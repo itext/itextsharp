@@ -55,6 +55,7 @@ namespace iTextSharp.text {
     /// <seealso cref="T:iTextSharp.text.Table"/>
     /// <seealso cref="T:iTextSharp.text.Cell"/>
     /// <seealso cref="T:iTextSharp.text.HeaderFooter"/>
+    [Obsolete("For internal use only. If you want to use iText, please use a dependency on iText 7. ")]
     public class Rectangle : Element, IElement {
     
         // static membervariables (concerning the presence of borders)

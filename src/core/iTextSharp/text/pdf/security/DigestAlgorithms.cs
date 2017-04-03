@@ -50,6 +50,7 @@ namespace iTextSharp.text.pdf.security {
     /**
      * Class that contains a map with the different message digest algorithms.
      */
+    [Obsolete("For internal use only. If you want to use iText, please use a dependency on iText 7. ")]
     public static class DigestAlgorithms {
 
         /** Algorithm available for signatures since PDF 1.3 */

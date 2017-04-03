@@ -50,6 +50,7 @@ namespace iTextSharp.text.pdf.ocg {
     /// <summary>
     /// A helper class for OCGRemover.
     /// </summary>
+    [Obsolete("For internal use only. If you want to use iText, please use a dependency on iText 7. ")]
     public class OCGParser {
         /// <summary>
         /// Constant used for the default operator. </summary>

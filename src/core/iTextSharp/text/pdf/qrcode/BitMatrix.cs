@@ -33,6 +33,7 @@ namespace iTextSharp.text.pdf.qrcode {
      * @author Sean Owen
      * @author dswitkin@google.com (Daniel Switkin)
      */
+    [Obsolete("For internal use only. If you want to use iText, please use a dependency on iText 7. ")]
     public sealed class BitMatrix {
 
         // TODO: Just like BitArray, these need to be public so ProGuard can inline them.

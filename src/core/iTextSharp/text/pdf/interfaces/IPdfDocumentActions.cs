@@ -49,6 +49,7 @@ namespace iTextSharp.text.pdf.interfaces {
     * A PDF document can have an open action and other additional actions.
     */
 
+    [Obsolete("For internal use only. If you want to use iText, please use a dependency on iText 7. ")]
     public interface IPdfDocumentActions {
         /**
         * When the document opens it will jump to the destination with

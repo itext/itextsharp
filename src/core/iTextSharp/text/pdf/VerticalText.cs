@@ -53,7 +53,8 @@ namespace iTextSharp.text.pdf {
 	 * A line with the alignment Element.LEFT_ALIGN will actually
 	 * be top aligned.
 	 */
-	public class VerticalText {
+	[Obsolete("For internal use only. If you want to use iText, please use a dependency on iText 7. ")]
+    public class VerticalText {
 
 		/** Signals that there are no more text available. */    
 		public static int NO_MORE_TEXT = 1;

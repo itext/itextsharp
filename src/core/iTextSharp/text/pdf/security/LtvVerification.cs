@@ -56,6 +56,7 @@ namespace iTextSharp.text.pdf.security {
      * Add verification according to PAdES-LTV (part 4)
      * @author psoares
      */
+    [Obsolete("For internal use only. If you want to use iText, please use a dependency on iText 7. ")]
     public class LtvVerification {
 
         private ILogger LOGGER = LoggerFactory.GetLogger(typeof (LtvVerification));

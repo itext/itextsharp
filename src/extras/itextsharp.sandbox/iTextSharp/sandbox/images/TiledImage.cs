@@ -47,6 +47,7 @@ using iTextSharp.text.pdf;
 namespace iTextSharp.sandbox.images
 {
     [WrapToTest]
+    [Obsolete("For internal use only. If you want to use iText, please use a dependency on iText 7. ")]
     public class TiledImage
     {
         public static readonly string IMAGE = "../../resources/images/bruno_ingeborg.jpg";

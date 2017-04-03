@@ -53,6 +53,7 @@ namespace iTextSharp.text.pdf {
     /// <summary>
     /// Summary description for BaseFont.
     /// </summary>
+    [Obsolete("For internal use only. If you want to use iText, please use a dependency on iText 7. ")]
     public abstract class BaseFont {
         /** This is a possible value of a base 14 type 1 font */
         public const string COURIER = "Courier";
@@ -244,7 +245,9 @@ namespace iTextSharp.text.pdf {
     
         /** The path to the font resources. */    
         public const string RESOURCE_PATH = "iTextSharp.text.pdf.fonts.";
-        /** The fake CID code that represents a newline. */    
+        /** The itext7 fonts-asian path to the font resources. */
+        public const string ITEXT_7_RESOURCE_PATH = "iText.IO.Font.";
+        /** The fake CID code that represents a newline. */
         public const char CID_NEWLINE = '\u7fff';
 
        	/**

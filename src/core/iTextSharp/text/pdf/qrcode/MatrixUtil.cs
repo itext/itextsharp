@@ -21,6 +21,7 @@ namespace iTextSharp.text.pdf.qrcode {
      * @author satorux@google.com (Satoru Takabayashi) - creator
      * @author dswitkin@google.com (Daniel Switkin) - ported from C++
      */
+    [Obsolete("For internal use only. If you want to use iText, please use a dependency on iText 7. ")]
     public sealed class MatrixUtil {
 
         private MatrixUtil() {

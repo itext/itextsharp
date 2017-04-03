@@ -49,6 +49,7 @@ namespace itextsharp.tests.iTextSharp.text.pdf.fonts {
     /**
     * @author Daniel Lichtenberger, CHEMDOX
     */
+    [Obsolete("For internal use only. If you want to use iText, please use a dependency on iText 7. ")]
     public class FontFamilyTest {
 
         private static string srcFolder = @"..\..\resources\text\pdf\fonts\NotoFont\";

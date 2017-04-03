@@ -46,6 +46,7 @@ using iTextSharp.xmp.options;
 
 namespace iTextSharp.text.xml.xmp {
 
+    [Obsolete("For internal use only. If you want to use iText, please use a dependency on iText 7. ")]
     public class DublinCoreProperties {
         /** External Contributors to the resource (other than the authors). */
         public static readonly String CONTRIBUTOR = "contributor";

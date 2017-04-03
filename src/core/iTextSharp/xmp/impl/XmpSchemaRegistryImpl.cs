@@ -42,6 +42,7 @@ namespace iTextSharp.xmp.impl {
     /// 
     /// @since 27.01.2006
     /// </summary>
+    [Obsolete("For internal use only. If you want to use iText, please use a dependency on iText 7. ")]
     public sealed class XmpSchemaRegistryImpl : XmpConst, IXmpSchemaRegistry {
         /// <summary>
         /// a map of all registered aliases. 
@@ -467,6 +468,7 @@ namespace iTextSharp.xmp.impl {
         #endregion
     }
 
+    [Obsolete("For internal use only. If you want to use iText, please use a dependency on iText 7. ")]
     public class ReadOnlyDictionary : IDictionary {
         #region ReadOnlyDictionary members
 
