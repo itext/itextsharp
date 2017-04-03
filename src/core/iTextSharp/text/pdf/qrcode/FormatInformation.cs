@@ -24,6 +24,7 @@ namespace iTextSharp.text.pdf.qrcode {
      * @author Sean Owen
      * @see ErrorCorrectionLevel
      */
+    [Obsolete("For internal use only. If you want to use iText, please use a dependency on iText 7. ")]
     public sealed class FormatInformation {
 
         private const int FORMAT_INFO_MASK_QR = 0x5412;

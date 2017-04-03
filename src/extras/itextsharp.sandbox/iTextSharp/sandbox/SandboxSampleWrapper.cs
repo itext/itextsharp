@@ -51,6 +51,7 @@ namespace iTextSharp.sandbox
     /// <summary>
     /// Wraps samples from dlls into tests. Dll file name, name of class and name of namespace must be the same.
     /// </summary>
+    [Obsolete("For internal use only. If you want to use iText, please use a dependency on iText 7. ")]
     public class SandboxSampleWrapper : GenericTest
     {
         /// <summary>

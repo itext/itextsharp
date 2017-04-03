@@ -1,9 +1,9 @@
 ﻿<?xml version="1.0" encoding="utf-8"?>
 <package xmlns="http://schemas.microsoft.com/packaging/2011/08/nuspec.xsd">
   <metadata>
-    <id>itextsharp.pdfa</id>
-    <version>5.5.14-SNAPSHOT</version>
-    <title>iTextSharp.pdfa</title>
+    <id>Xfa-iTextSharp.pdfa</id>
+    <version>3.0.0-SNAPSHOT</version>
+    <title>Xfa-iTextSharp.pdfa</title>
     <authors>iText Software</authors>
     <owners>Bruno Lowagie,Paulo Soares,et al.</owners>
     <licenseUrl>https://www.gnu.org/licenses/agpl.html</licenseUrl>
@@ -31,12 +31,12 @@ iText 7 Community: https://www.nuget.org/packages/itext7/</summary>
     <language>en-US</language>
     <tags>itext itextsharp c# csharp .net pdf pdfa</tags>
     <dependencies>
-      <dependency id="iTextSharp" version="5.5.14-SNAPSHOT" />
+      <dependency id="Xfa-iTextSharp" version="3.0.0-SNAPSHOT" />
     </dependencies>
   </metadata>
 
   <files> 
-    <file src="src\extras\itextsharp.pdfa\bin\Release\itextsharp.pdfa.dll" target="lib\" />
+    <file src="src\extras\itextsharp.pdfa\bin\Release\xfaitextsharp.pdfa.dll" target="lib\" />
     <file src="gnu-agpl-v3.0.md" target="" />
     <file src="LICENSE.md" target="" />
   </files>

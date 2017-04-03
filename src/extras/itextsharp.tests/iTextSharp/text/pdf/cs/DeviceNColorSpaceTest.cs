@@ -48,6 +48,7 @@ using iTextSharp.text.pdf;
 using NUnit.Framework;
 
 namespace itextsharp.tests.iTextSharp.text.pdf.cs {
+    [Obsolete("For internal use only. If you want to use iText, please use a dependency on iText 7. ")]
     public class DeviceNColorSpaceTest {
 
         public const String DEST_FOLDER = @"cs\DeviceNColorSpaceTest\";

@@ -24,6 +24,7 @@ namespace iTextSharp.text.pdf.qrcode {
      *
      * @author dswitkin@google.com (Daniel Switkin)
      */
+    [Obsolete("For internal use only. If you want to use iText, please use a dependency on iText 7. ")]
     public sealed class QRCodeWriter {
 
         private const int QUIET_ZONE_SIZE = 4;

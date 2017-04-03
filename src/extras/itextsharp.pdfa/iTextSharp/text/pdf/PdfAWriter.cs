@@ -53,6 +53,7 @@ namespace iTextSharp.text.pdf {
     /**
      * @see PdfWriter
      */
+    [Obsolete("For internal use only. If you want to use iText, please use a dependency on iText 7. ")]
     public class PdfAWriter : PdfWriter {
         public static String MimeTypePdf = "application/pdf";
         public static String MimeTypeOctetStream = "application/octet-stream";
@@ -65,8 +66,13 @@ namespace iTextSharp.text.pdf {
          * @return	a new <CODE>PdfWriter</CODE>
          * @throws	DocumentException on error
          */
-        public static PdfAWriter GetInstance(Document document, Stream os, PdfAConformanceLevel conformanceLevel) {
-            PdfDocument pdf = new PdfDocument();
+        public static PdfAWriter GetInstance(Document document, Stream os, PdfAConformanceLevel conformanceLevel)
+        {
+            return GetInstance(document, os, conformanceLevel, Version.GetInstance().GetVersion);
+        }
+        
+        private static PdfAWriter GetInstance(Document document, Stream os, PdfAConformanceLevel conformanceLevel, string producer) {
+            PdfDocument pdf = new PdfDocument(producer);
             document.AddDocListener(pdf);
             PdfAWriter writer = new PdfAWriter(pdf, os, conformanceLevel);
             pdf.AddWriter(writer);

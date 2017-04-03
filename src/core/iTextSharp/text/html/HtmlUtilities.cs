@@ -52,7 +52,7 @@ namespace iTextSharp.text.html {
      * @since 5.0.6 (some of these methods used to be in the Markup class)
      * @deprecated since 5.5.2
      */
-    [Obsolete]
+    [Obsolete("For internal use only. If you want to use iText, please use a dependency on iText 7. ")]
     public class HtmlUtilities {
 
         /**

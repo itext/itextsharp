@@ -50,6 +50,7 @@ namespace iTextSharp.text.xml.simpleparser {
     * This class contains entities that can be used in an entity tag.
     */
 
+    [Obsolete("For internal use only. If you want to use iText, please use a dependency on iText 7. ")]
     public class EntitiesToSymbol {
         
         /**

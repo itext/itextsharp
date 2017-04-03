@@ -28,10 +28,13 @@
 //
 //        http://www.adobe.com/devnet/xmp/library/eula-xmp-library-java.html
 
+using System;
+
 namespace iTextSharp.xmp {
     /// <summary>
     /// @since   21.09.2006
     /// </summary>
+    [Obsolete("For internal use only. If you want to use iText, please use a dependency on iText 7. ")]
     public class XmpError {
         public const int UNKNOWN = 0;
         public const int BADPARAM = 4;

@@ -53,6 +53,7 @@ namespace iTextSharp.tool.xml.net {
      * @author redlab_b
      *
      */
+    [Obsolete("For internal use only. If you want to use iText, please use a dependency on iText 7. ")]
     public class FileRetrieveImpl : IFileRetrieve {
 
         private static ILogger LOGGER = LoggerFactory.GetLogger(typeof(FileRetrieveImpl));

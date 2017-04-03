@@ -50,6 +50,7 @@ using iTextSharp.text.pdf.parser;
 using NUnit.Framework;
 
 namespace itextsharp.tests.iTextSharp.text.pdf.parser {
+    [Obsolete("For internal use only. If you want to use iText, please use a dependency on iText 7. ")]
     public class HighlightItemsTest {
 
         private const string outputPath = @"itextpdf\text\pdf\parser\HighlightItemsTest\";

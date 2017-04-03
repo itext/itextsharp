@@ -1,3 +1,4 @@
+using System;
 using System.Text;
 
 //Copyright (c) 2006, Adobe Systems Incorporated
@@ -39,6 +40,7 @@ namespace iTextSharp.xmp.impl {
     /// 
     /// @since 06.06.2006
     /// </summary>
+    [Obsolete("For internal use only. If you want to use iText, please use a dependency on iText 7. ")]
     public class Utils : XmpConst {
         /// <summary>
         /// segments of a UUID </summary>

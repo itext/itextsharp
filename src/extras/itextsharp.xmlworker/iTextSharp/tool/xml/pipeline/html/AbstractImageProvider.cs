@@ -49,6 +49,7 @@ namespace iTextSharp.tool.xml.pipeline.html {
      * @author itextpdf.com
      *
      */
+    [Obsolete("For internal use only. If you want to use iText, please use a dependency on iText 7. ")]
     public abstract class AbstractImageProvider : IImageProvider {
 
         private IDictionary<String, Image> map;

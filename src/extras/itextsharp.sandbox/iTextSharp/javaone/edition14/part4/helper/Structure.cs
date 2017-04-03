@@ -48,6 +48,7 @@ namespace iTextSharp.javaone.edition14.part4.helper
     /// MyItem implementation that gets its coordinates and color from a list
     /// of lines that belong to the same structure.
     /// </summary>
+    [Obsolete("For internal use only. If you want to use iText, please use a dependency on iText 7. ")]
     public class Structure : Line
     {
         /// <summary>
