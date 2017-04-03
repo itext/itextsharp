@@ -28,6 +28,7 @@
 //
 //        http://www.adobe.com/devnet/xmp/library/eula-xmp-library-java.html
 
+using System;
 using iTextSharp.xmp.options;
 
 namespace iTextSharp.xmp.properties {
@@ -36,6 +37,7 @@ namespace iTextSharp.xmp.properties {
     /// 
     /// @since   23.01.2006
     /// </summary>
+    [Obsolete("For internal use only. If you want to use iText, please use a dependency on iText 7. ")]
     public interface IXmpProperty {
         /// <returns> Returns the value of the property. </returns>
         string Value { get; }

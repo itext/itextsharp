@@ -50,6 +50,7 @@ namespace iTextSharp.text.pdf.collection {
     * @author blowagie
     *
     */
+    [Obsolete("For internal use only. If you want to use iText, please use a dependency on iText 7. ")]
     public class PdfCollectionField : PdfDictionary {
         /** A possible type of collection field. */
         public const int TEXT = 0;

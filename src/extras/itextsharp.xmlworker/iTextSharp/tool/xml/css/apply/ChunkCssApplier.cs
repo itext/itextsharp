@@ -57,6 +57,7 @@ namespace iTextSharp.tool.xml.css.apply {
  * Applies CSS Rules to Chunks
  */
 
+    [Obsolete("For internal use only. If you want to use iText, please use a dependency on iText 7. ")]
     public class ChunkCssApplier : CssApplier<Chunk> {
         /**
          * FF4 and IE8 provide normal text and bold text. All other values are translated to one of these 2 styles <br />

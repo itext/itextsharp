@@ -48,6 +48,7 @@ namespace iTextSharp.text.pdf.fonts.cmaps {
      *
      * @author psoares
      */
+    [Obsolete("For internal use only. If you want to use iText, please use a dependency on iText 7. ")]
     public class CMapCache {
         private static readonly Dictionary<String,CMapUniCid> cacheUniCid = new Dictionary<String,CMapUniCid>();
         private static readonly Dictionary<String,CMapCidUni> cacheCidUni = new Dictionary<String,CMapCidUni>();

@@ -28,12 +28,15 @@
 //
 //        http://www.adobe.com/devnet/xmp/library/eula-xmp-library-java.html
 
+using System;
+
 namespace iTextSharp.xmp.options {
     /// <summary>
     /// Options for <seealso cref="XmpMetaFactory.Parse(System.IO.Stream, ParseOptions)"/>.
     /// 
     /// @since 24.01.2006
     /// </summary>
+    [Obsolete("For internal use only. If you want to use iText, please use a dependency on iText 7. ")]
     public sealed class ParseOptions : XmpOptions {
         /// <summary>
         /// Require a surrounding &quot;x:xmpmeta&quot; element in the xml-document. </summary>

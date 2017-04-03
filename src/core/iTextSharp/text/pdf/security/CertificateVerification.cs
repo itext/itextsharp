@@ -52,6 +52,7 @@ namespace iTextSharp.text.pdf.security {
     /**
      * This class consists of some methods that allow you to verify certificates.
      */
+    [Obsolete("For internal use only. If you want to use iText, please use a dependency on iText 7. ")]
     public static class CertificateVerification {
 
         /**

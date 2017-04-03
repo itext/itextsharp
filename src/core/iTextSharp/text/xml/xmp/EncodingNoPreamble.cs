@@ -48,6 +48,7 @@ namespace iTextSharp.text.xml.xmp {
     /// <summary>
     /// A wrapper for an Encoding to suppress the preamble.
     /// </summary>
+    [Obsolete("For internal use only. If you want to use iText, please use a dependency on iText 7. ")]
     public class EncodingNoPreamble : Encoding {
 
         private Encoding encoding;

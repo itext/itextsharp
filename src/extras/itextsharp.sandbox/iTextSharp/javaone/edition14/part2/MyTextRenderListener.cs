@@ -49,6 +49,7 @@ namespace iTextSharp.javaone.edition14.part2
     /// <summary>
     /// A very simple text render listener that writes snippets of text to a PrintWriter.
     /// </summary>
+    [Obsolete("For internal use only. If you want to use iText, please use a dependency on iText 7. ")]
     public class MyTextRenderListener : IRenderListener
     {
         /// <summary>The print writer to which the information will be written.</summary>
