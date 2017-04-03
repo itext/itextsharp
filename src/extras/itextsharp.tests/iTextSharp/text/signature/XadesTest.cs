@@ -52,6 +52,7 @@ using iTextSharp.text.pdf.security;
 
 namespace itextsharp.tests.resources.text.signature {
     [TestFixture]
+    [Obsolete("For internal use only. If you want to use iText, please use a dependency on iText 7. ")]
     public class XadesTest : XmlDSigTest {
         public const String KEYSTORE = @"..\..\resources\text\pdf\signature\ds-ks\pkcs12";
         public const string PASSWORD = "password";

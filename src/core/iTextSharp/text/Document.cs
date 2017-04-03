@@ -92,6 +92,7 @@ namespace iTextSharp.text {
     /// <strong>document.Close();</strong>
     /// </code>
     /// </example>
+    [Obsolete("For internal use only. If you want to use iText, please use a dependency on iText 7. ")]
     public class Document : IDocListener, IAccessibleElement {
 
         ///<summary> Allows the pdf documents to be produced without compression for debugging purposes. </summary>

@@ -51,6 +51,7 @@ namespace iTextSharp.text.pdf.fonts.cmaps {
      *
      * @author psoares
      */
+    [Obsolete("For internal use only. If you want to use iText, please use a dependency on iText 7. ")]
     public class CMapParserEx {
         
         private static readonly PdfName CMAPNAME = new PdfName("CMapName");

@@ -61,6 +61,7 @@ namespace iTextSharp.text.pdf.codec {
     * @since 2.1.5
     */
 
+    [Obsolete("For internal use only. If you want to use iText, please use a dependency on iText 7. ")]
     public class JBIG2SegmentReader {
 
         public const int SYMBOL_DICTIONARY = 0; //see 7.4.2.                                               

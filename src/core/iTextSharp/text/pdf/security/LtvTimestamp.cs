@@ -53,6 +53,7 @@ namespace iTextSharp.text.pdf.security {
      * PAdES-LTV Timestamp
      * @author Pulo Soares
      */
+    [Obsolete("For internal use only. If you want to use iText, please use a dependency on iText 7. ")]
     public static class LtvTimestamp {
         /**
          * Signs a document with a PAdES-LTV Timestamp. The document is closed at the end.

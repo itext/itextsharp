@@ -40,7 +40,10 @@
     For more information, please contact iText Software Corp. at this
     address: sales@itextpdf.com
  */
+using System;
+ 
 namespace iTextSharp.tool.xml.css {
+    [Obsolete("For internal use only. If you want to use iText, please use a dependency on iText 7. ")]
     public interface ICssSelectorItem {
         bool Matches(Tag t);
 

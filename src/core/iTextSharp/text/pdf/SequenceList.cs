@@ -57,6 +57,7 @@ namespace iTextSharp.text.pdf {
     * range from what is already selected. The range changes are incremental, that is,
     * numbers are added or deleted as the range appears. The start or the end, but not both, can be ommited.
     */
+    [Obsolete("For internal use only. If you want to use iText, please use a dependency on iText 7. ")]
     public class SequenceList {
         protected const int COMMA = 1;
         protected const int MINUS = 2;

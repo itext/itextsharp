@@ -55,6 +55,7 @@ namespace iTextSharp.text.pdf {
     * see reference manual version 1.6 section 5.3.2, pages 378-379.
     */
 
+    [Obsolete("For internal use only. If you want to use iText, please use a dependency on iText 7. ")]
     public class PdfTextArray{
         List<Object> arrayList = new List<Object>();
         

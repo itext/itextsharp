@@ -1,9 +1,9 @@
 ﻿<?xml version="1.0" encoding="utf-8"?>
 <package xmlns="http://schemas.microsoft.com/packaging/2011/08/nuspec.xsd">
   <metadata>
-    <id>itextsharp.xtra</id>
-    <version>5.5.14-SNAPSHOT</version>
-    <title>iTextSharp.xtra</title>
+    <id>xfa-itextsharp.xmlworker</id>
+    <version>2.0.9-SNAPSHOT</version>
+    <title>xfa iTextSharp XML Worker</title>
     <authors>iText Software</authors>
     <owners>Bruno Lowagie,Paulo Soares,et al.</owners>
     <licenseUrl>https://www.gnu.org/licenses/agpl.html</licenseUrl>
@@ -24,19 +24,20 @@ We HIGHLY recommend customers use iText 7 for new projects, and to consider movi
 - Extra practical add-ons
 - Encryption, hashing and digital signatures
 
-This DEPRECATED library adds extra functionality for iTextSharp. Please use iText 7 instead. iText 7 Community: https://www.nuget.org/packages/itext7/ and iText 7 pdfSweep addon: https://www.nuget.org/packages/itext7.pdfsweep/</description>
-    <summary>Extra functionality for DEPRECACTED iTextSharp PDF generation library written entirely in C# for the .NET platform. Please use iText 7 instead.
-iText 7 Community: https://www.nuget.org/packages/itext7/</summary>
+This DEPRECATED tool parses (X)HTML snippets and the associated CSS and converts them to PDF. It is replaced by iText7 pdfHTML addon https://www.nuget.org/packages/itext7.pdfhtml/ and iText 7 Community: https://www.nuget.org/packages/itext7/
+
+XMLWorker is an extra component for iTextSharp. The first XML to PDF implementation, is a new version of the old HTMLWorker that used to be shipped with iTextSharp.</description>
+    <summary>This DEPRECATED tool parses (X)HTML snippets and the associated CSS and converts them to PDF. It is replaced by iText 7 pdfHTML addon https://www.nuget.org/packages/itext7.pdfhtml/ and iText 7 Community: https://www.nuget.org/packages/itext7/</summary>
     <copyright>Copyright (c) 1998-2020 iText Group NV</copyright>
     <language>en-US</language>
-    <tags>itext itextsharp c# csharp .net pdf</tags>
+    <tags>itext itextsharp c# csharp xml worker pdf html xhtml css</tags>
     <dependencies>
-      <dependency id="iTextSharp" version="5.5.14-SNAPSHOT" />
+      <dependency id="Xfa-iTextSharp" version="2.0.9-SNAPSHOT" />
     </dependencies>
   </metadata>
 
   <files>
-    <file src="src\extras\itextsharp.xtra\bin\Release\itextsharp.xtra.dll" target="lib\" />
+    <file src="src\extras\itextsharp.xmlworker\bin\Release\xfaitextsharp.xmlworker.dll" target="lib\" />
     <file src="gnu-agpl-v3.0.md" target="" />
     <file src="LICENSE.md" target="" />
   </files>

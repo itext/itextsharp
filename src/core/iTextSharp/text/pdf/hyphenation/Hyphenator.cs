@@ -28,6 +28,7 @@ namespace iTextSharp.text.pdf.hyphenation {
     *
     * @author Carlos Villegas <cav@uniscope.co.jp>
     */
+    [Obsolete("For internal use only. If you want to use iText, please use a dependency on iText 7. ")]
     public class Hyphenator {
         
         /** TODO: Don't use statics */
@@ -36,8 +37,8 @@ namespace iTextSharp.text.pdf.hyphenation {
         private HyphenationTree hyphenTree = null;
         private int remainCharCount = 2;
         private int pushCharCount = 2;
-        private const String defaultHyphLocation = "iTextSharp.text.pdf.hyphenation.hyph.";
-       
+        private const String defaultHyphLocation = "iText.Hyph.";
+
         /**
         * @param lang
         * @param country

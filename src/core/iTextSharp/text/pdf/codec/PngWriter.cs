@@ -48,6 +48,7 @@ using iTextSharp.text;
 using System.util.zlib;
 
 namespace iTextSharp.text.pdf.codec {
+    [Obsolete("For internal use only. If you want to use iText, please use a dependency on iText 7. ")]
     public class PngWriter {
         private static readonly byte[] PNG_SIGNTURE = {(byte)137, 80, 78, 71, 13, 10, 26, 10};
 

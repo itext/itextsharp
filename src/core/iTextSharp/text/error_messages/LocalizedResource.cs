@@ -49,6 +49,7 @@ using System.Reflection;
 using System.util;
 
 namespace iTextSharp.text.error_messages {
+    [Obsolete("For internal use only. If you want to use iText, please use a dependency on iText 7. ")]
     public class LocalizedResource {
         private static readonly char[] splt = new char[]{'_'};
         private Properties msgs = new Properties();

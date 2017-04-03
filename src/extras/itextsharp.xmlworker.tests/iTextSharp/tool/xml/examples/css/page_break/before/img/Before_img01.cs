@@ -40,7 +40,10 @@
     For more information, please contact iText Software Corp. at this
     address: sales@itextpdf.com
  */
+using System;
+ 
 namespace itextsharp.xmlworker.tests.iTextSharp.tool.xml.examples.css.page_break.before.img {
+    [Obsolete("For internal use only. If you want to use iText, please use a dependency on iText 7. ")]
     public class Before_img01 : SampleTest {
         protected override string GetTestName() {
             return "before_img01";

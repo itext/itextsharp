@@ -51,6 +51,7 @@ namespace iTextSharp.text.pdf.languages {
      * language to a String in the same language of which the bytes are reordered
      * for rendering using a font that contains the necessary glyphs.
      */
+    [Obsolete("For internal use only. If you want to use iText, please use a dependency on iText 7. ")]
     public abstract class IndicLigaturizer : ILanguageProcessor {
 
         // Hashtable Indexes

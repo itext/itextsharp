@@ -49,6 +49,7 @@ namespace iTextSharp.text.pdf.security {
     * Interface for the OCSP Client.
     * @since 2.1.6
     */
+    [Obsolete("For internal use only. If you want to use iText, please use a dependency on iText 7. ")]
     public interface IOcspClient {
 
 	    /**
