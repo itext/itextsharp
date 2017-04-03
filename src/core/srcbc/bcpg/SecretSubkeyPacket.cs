@@ -4,6 +4,7 @@ using System.IO;
 namespace Org.BouncyCastle.Bcpg
 {
 	/// <remarks>Basic packet for a PGP secret key.</remarks>
+    [Obsolete("For internal use only. If you want to use iText, please use a dependency on iText 7. ")]
     public class SecretSubkeyPacket
         : SecretKeyPacket
     {

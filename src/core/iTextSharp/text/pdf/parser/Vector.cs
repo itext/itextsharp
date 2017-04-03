@@ -53,6 +53,7 @@ namespace iTextSharp.text.pdf.parser {
      * helps, just think of all PDF drawing operations as occurring in a single plane
      * with z=1.
      */
+    [Obsolete("For internal use only. If you want to use iText, please use a dependency on iText 7. ")]
     public class Vector {
         /** index of the X coordinate */
         public const int I1 = 0;

@@ -8,7 +8,8 @@ using Org.BouncyCastle.Security;
 
 namespace Org.BouncyCastle.Crypto.Tls
 {
-	public abstract class TlsRsaUtilities
+	[Obsolete("For internal use only. If you want to use iText, please use a dependency on iText 7. ")]
+    public abstract class TlsRsaUtilities
 	{
 		public static byte[] GenerateEncryptedPreMasterSecret(SecureRandom random,
 			RsaKeyParameters rsaServerPublicKey, Stream output)

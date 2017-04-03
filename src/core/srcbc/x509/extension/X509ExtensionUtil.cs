@@ -9,7 +9,8 @@ using Org.BouncyCastle.Utilities;
 
 namespace Org.BouncyCastle.X509.Extension
 {
-	public class X509ExtensionUtilities
+	[Obsolete("For internal use only. If you want to use iText, please use a dependency on iText 7. ")]
+    public class X509ExtensionUtilities
 	{
 		public static Asn1Object FromExtensionValue(
 			Asn1OctetString extensionValue)

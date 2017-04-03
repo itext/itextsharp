@@ -7,6 +7,7 @@ using Org.BouncyCastle.Utilities.IO;
 namespace Org.BouncyCastle.Bcpg
 {
 	/// <remarks>The string to key specifier class.</remarks>
+    [Obsolete("For internal use only. If you want to use iText, please use a dependency on iText 7. ")]
     public class S2k
         : BcpgObject
     {

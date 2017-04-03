@@ -11,7 +11,8 @@ namespace Org.BouncyCastle.Crypto.Engines
 	/**
 	 * Wrap keys according to RFC 3217 - RC2 mechanism
 	 */
-	public class RC2WrapEngine
+	[Obsolete("For internal use only. If you want to use iText, please use a dependency on iText 7. ")]
+    public class RC2WrapEngine
 		: IWrapper
 	{
 		/** Field engine */

@@ -43,6 +43,7 @@ namespace iTextSharp.xmp.impl {
     ///  
     /// @since   29.06.2006
     /// </summary>
+    [Obsolete("For internal use only. If you want to use iText, please use a dependency on iText 7. ")]
     public class XmpIteratorImpl : IXmpIterator {
         private static readonly IList EmptyList = new ArrayList();
 

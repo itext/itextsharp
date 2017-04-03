@@ -1,3 +1,4 @@
+using System;
 using Org.BouncyCastle.Math;
 using Org.BouncyCastle.Math.EC;
 using Org.BouncyCastle.Crypto;
@@ -19,6 +20,7 @@ namespace Org.BouncyCastle.Crypto.Agreement
      * DL/ECKAS-DH2. It assumes that the input keys are valid (see also
      * Section 7.2.2).
      */
+    [Obsolete("For internal use only. If you want to use iText, please use a dependency on iText 7. ")]
     public class ECDHBasicAgreement
 		: IBasicAgreement
     {

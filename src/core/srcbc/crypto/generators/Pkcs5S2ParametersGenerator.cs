@@ -18,6 +18,7 @@ namespace Org.BouncyCastle.Crypto.Generators
     * <a href="http://www.rsasecurity.com/rsalabs/pkcs/pkcs-5/index.html">
     * RSA's Pkcs5 Page</a></p>
     */
+    [Obsolete("For internal use only. If you want to use iText, please use a dependency on iText 7. ")]
     public class Pkcs5S2ParametersGenerator
         : PbeParametersGenerator
     {

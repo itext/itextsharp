@@ -46,6 +46,7 @@ using iTextSharp.text.error_messages;
 
 namespace iTextSharp.text.pdf.collection {
 
+    [Obsolete("For internal use only. If you want to use iText, please use a dependency on iText 7. ")]
     public class PdfCollectionItem : PdfDictionary {
         
         /** The PdfCollectionSchema with the names and types of the items. */

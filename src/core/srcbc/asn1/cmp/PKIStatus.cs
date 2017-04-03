@@ -4,7 +4,8 @@ using Org.BouncyCastle.Math;
 
 namespace Org.BouncyCastle.Asn1.Cmp
 {
-	public enum PkiStatus
+	[Obsolete("For internal use only. If you want to use iText, please use a dependency on iText 7. ")]
+    public enum PkiStatus
 	{
 		Granted					= 0,
 		GrantedWithMods			= 1,
@@ -15,7 +16,8 @@ namespace Org.BouncyCastle.Asn1.Cmp
     	KeyUpdateWarning		= 6,
 	}
 
-	public class PkiStatusEncodable
+	[Obsolete("For internal use only. If you want to use iText, please use a dependency on iText 7. ")]
+    public class PkiStatusEncodable
 		: Asn1Encodable
 	{
 		public static readonly PkiStatusEncodable granted = new PkiStatusEncodable(PkiStatus.Granted);

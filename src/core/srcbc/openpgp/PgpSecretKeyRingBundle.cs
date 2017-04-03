@@ -12,6 +12,7 @@ namespace Org.BouncyCastle.Bcpg.OpenPgp
 	/// Often a PGP key ring file is made up of a succession of master/sub-key key rings.
 	/// If you want to read an entire secret key file in one hit this is the class for you.
 	/// </remarks>
+    [Obsolete("For internal use only. If you want to use iText, please use a dependency on iText 7. ")]
     public class PgpSecretKeyRingBundle
     {
         private readonly IDictionary secretRings;

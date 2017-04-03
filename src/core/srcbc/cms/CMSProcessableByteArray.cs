@@ -6,7 +6,8 @@ namespace Org.BouncyCastle.Cms
 	/**
 	* a holding class for a byte array of data to be processed.
 	*/
-	public class CmsProcessableByteArray
+	[Obsolete("For internal use only. If you want to use iText, please use a dependency on iText 7. ")]
+    public class CmsProcessableByteArray
 		: CmsProcessable, CmsReadable
 	{
 		private readonly byte[] bytes;

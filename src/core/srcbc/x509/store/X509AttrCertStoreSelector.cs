@@ -18,7 +18,8 @@ namespace Org.BouncyCastle.X509.Store
 	* @see org.bouncycastle.x509.X509AttributeCertificate
 	* @see org.bouncycastle.x509.X509Store
 	*/
-	public class X509AttrCertStoreSelector
+	[Obsolete("For internal use only. If you want to use iText, please use a dependency on iText 7. ")]
+    public class X509AttrCertStoreSelector
 		: IX509Selector
 	{
 		// TODO: name constraints???

@@ -3,6 +3,7 @@ using System;
 namespace Org.BouncyCastle.Crypto
 {
 	/// <remarks>Base interface for a symmetric key block cipher.</remarks>
+    [Obsolete("For internal use only. If you want to use iText, please use a dependency on iText 7. ")]
     public interface IBlockCipher
     {
 		/// <summary>The name of the algorithm this cipher implements.</summary>

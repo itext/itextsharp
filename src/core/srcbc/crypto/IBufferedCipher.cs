@@ -3,6 +3,7 @@ using System;
 namespace Org.BouncyCastle.Crypto
 {
 	/// <remarks>Block cipher engines are expected to conform to this interface.</remarks>
+    [Obsolete("For internal use only. If you want to use iText, please use a dependency on iText 7. ")]
     public interface IBufferedCipher
     {
 		/// <summary>The name of the algorithm this cipher implements.</summary>

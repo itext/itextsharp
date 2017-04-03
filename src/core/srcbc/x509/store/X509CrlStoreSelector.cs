@@ -11,7 +11,8 @@ using Org.BouncyCastle.X509.Extension;
 
 namespace Org.BouncyCastle.X509.Store
 {
-	public class X509CrlStoreSelector
+	[Obsolete("For internal use only. If you want to use iText, please use a dependency on iText 7. ")]
+    public class X509CrlStoreSelector
 		: IX509Selector
 	{
 		// TODO Missing criteria?

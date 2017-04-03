@@ -11,7 +11,8 @@ namespace Org.BouncyCastle.Asn1.IsisMtt.X509
 	*  RestrictionSyntax ::= DirectoryString (SIZE(1..1024))
 	* </pre>
 	*/
-	public class Restriction
+	[Obsolete("For internal use only. If you want to use iText, please use a dependency on iText 7. ")]
+    public class Restriction
 		: Asn1Encodable
 	{
 		private readonly DirectoryString restriction;

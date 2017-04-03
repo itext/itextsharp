@@ -18,7 +18,8 @@ namespace Org.BouncyCastle.Cms
 	/**
 	* an expanded SignerInfo block from a CMS Signed message
 	*/
-	public class SignerInformation
+	[Obsolete("For internal use only. If you want to use iText, please use a dependency on iText 7. ")]
+    public class SignerInformation
 	{
 		private static readonly CmsSignedHelper Helper = CmsSignedHelper.Instance;
 

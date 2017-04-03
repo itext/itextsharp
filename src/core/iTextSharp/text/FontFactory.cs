@@ -53,6 +53,7 @@ namespace iTextSharp.text {
     /// to this static class first and then create fonts in your code using one of the static getFont-method
     /// without having to enter a path as parameter.
     /// </summary>
+    [Obsolete("For internal use only. If you want to use iText, please use a dependency on iText 7. ")]
     public sealed class FontFactory {
     
         /// <summary> This is a possible value of a base 14 type 1 font </summary>

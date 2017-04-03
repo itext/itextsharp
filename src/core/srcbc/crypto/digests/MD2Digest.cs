@@ -8,6 +8,7 @@ namespace Org.BouncyCastle.Crypto.Digests
     * implementation of MD2
     * as outlined in RFC1319 by B.Kaliski from RSA Laboratories April 1992
     */
+    [Obsolete("For internal use only. If you want to use iText, please use a dependency on iText 7. ")]
     public class MD2Digest
 		: IDigest
     {

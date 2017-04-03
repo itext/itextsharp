@@ -12,7 +12,8 @@ namespace Org.BouncyCastle.Asn1.Esf
 	/// SignaturePolicyImplied ::= NULL
 	/// </code>
 	/// </remarks>
-	public class SignaturePolicyIdentifier
+	[Obsolete("For internal use only. If you want to use iText, please use a dependency on iText 7. ")]
+    public class SignaturePolicyIdentifier
 		: Asn1Encodable, IAsn1Choice
 	{
 		private readonly SignaturePolicyId sigPolicy;

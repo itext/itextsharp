@@ -4,7 +4,8 @@ using Org.BouncyCastle.Asn1;
 
 namespace Org.BouncyCastle.Asn1.Eac
 {
-	public abstract class EacObjectIdentifiers
+	[Obsolete("For internal use only. If you want to use iText, please use a dependency on iText 7. ")]
+    public abstract class EacObjectIdentifiers
 	{
 		// bsi-de OBJECT IDENTIFIER ::= {
 		//         itu-t(0) identified-organization(4) etsi(0)

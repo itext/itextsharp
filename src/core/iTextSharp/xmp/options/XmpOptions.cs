@@ -1,3 +1,4 @@
+using System;
 using System.Collections;
 using System.Text;
 
@@ -41,6 +42,7 @@ namespace iTextSharp.xmp.options {
     /// 
     /// @since 24.01.2006
     /// </summary>
+    [Obsolete("For internal use only. If you want to use iText, please use a dependency on iText 7. ")]
     public abstract class XmpOptions {
         /// <summary>
         /// a map containing the bit names </summary>

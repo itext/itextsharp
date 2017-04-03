@@ -3,6 +3,7 @@ using System;
 namespace Org.BouncyCastle.Bcpg.OpenPgp
 {
 	/// <remarks>Holder for a list of PgpOnePassSignature objects.</remarks>
+    [Obsolete("For internal use only. If you want to use iText, please use a dependency on iText 7. ")]
     public class PgpOnePassSignatureList
 		: PgpObject
     {

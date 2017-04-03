@@ -9,7 +9,8 @@ namespace Org.BouncyCastle.Ocsp
 	 * base generator for an OCSP response - at the moment this only supports the
 	 * generation of responses containing BasicOCSP responses.
 	 */
-	public class OCSPRespGenerator
+	[Obsolete("For internal use only. If you want to use iText, please use a dependency on iText 7. ")]
+    public class OCSPRespGenerator
 	{
 		public const int Successful			= 0;	// Response has valid confirmations
 		public const int MalformedRequest	= 1;	// Illegal confirmation request

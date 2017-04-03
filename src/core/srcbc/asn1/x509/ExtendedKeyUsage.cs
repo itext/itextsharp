@@ -11,6 +11,7 @@ namespace Org.BouncyCastle.Asn1.X509
      *      extendedKeyUsage ::= Sequence SIZE (1..MAX) OF KeyPurposeId
      * </pre>
      */
+    [Obsolete("For internal use only. If you want to use iText, please use a dependency on iText 7. ")]
     public class ExtendedKeyUsage
         : Asn1Encodable
     {

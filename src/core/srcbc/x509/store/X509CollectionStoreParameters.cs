@@ -7,7 +7,8 @@ using Org.BouncyCastle.Utilities;
 namespace Org.BouncyCastle.X509.Store
 {
 	/// <remarks>This class contains a collection for collection based <code>X509Store</code>s.</remarks>
-	public class X509CollectionStoreParameters
+	[Obsolete("For internal use only. If you want to use iText, please use a dependency on iText 7. ")]
+    public class X509CollectionStoreParameters
 		: IX509StoreParameters
 	{
 		private readonly IList collection;

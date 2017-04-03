@@ -1,3 +1,4 @@
+using System;
 using System.Collections;
 using iTextSharp.xmp.properties;
 
@@ -60,6 +61,7 @@ namespace iTextSharp.xmp {
     /// 
     /// @since 27.01.2006
     /// </summary>
+    [Obsolete("For internal use only. If you want to use iText, please use a dependency on iText 7. ")]
     public interface IXmpSchemaRegistry {
         // ---------------------------------------------------------------------------------------------
         // Namespace Functions

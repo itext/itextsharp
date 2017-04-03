@@ -2,7 +2,8 @@ using System;
 
 namespace Org.BouncyCastle.Crypto.Engines
 {
-	public class VmpcKsa3Engine
+	[Obsolete("For internal use only. If you want to use iText, please use a dependency on iText 7. ")]
+    public class VmpcKsa3Engine
 		: VmpcEngine
 	{
 		public override string AlgorithmName

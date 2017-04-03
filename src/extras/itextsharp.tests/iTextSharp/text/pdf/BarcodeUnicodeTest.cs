@@ -50,6 +50,7 @@ using iTextSharp.text.pdf.qrcode;
 using NUnit.Framework;
 
 namespace itextsharp.tests.iTextSharp.text.pdf {
+    [Obsolete("For internal use only. If you want to use iText, please use a dependency on iText 7. ")]
     public class BarcodeUnicodeTest : ITextTest {
         private const String OUT_DIR = "com/itextpdf/test/pdf/BarcodeUnicodeTest/";
 

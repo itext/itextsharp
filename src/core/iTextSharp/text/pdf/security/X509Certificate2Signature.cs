@@ -51,6 +51,7 @@ namespace iTextSharp.text.pdf.security {
     /// Creates a signature using a X509Certificate2. It supports smartcards without 
     /// exportable private keys.
     /// </summary>
+    [Obsolete("For internal use only. If you want to use iText, please use a dependency on iText 7. ")]
     public class X509Certificate2Signature : IExternalSignature {
         /// <summary>
         /// The certificate with the private key

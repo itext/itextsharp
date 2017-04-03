@@ -37,7 +37,8 @@ namespace Org.BouncyCastle.Asn1.IsisMtt.Ocsp
 	*            }
 	* </pre>
 	*/
-	public class RequestedCertificate
+	[Obsolete("For internal use only. If you want to use iText, please use a dependency on iText 7. ")]
+    public class RequestedCertificate
 		: Asn1Encodable, IAsn1Choice
 	{
 		public enum Choice

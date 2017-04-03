@@ -35,7 +35,8 @@ namespace Org.BouncyCastle.Cms
 	*  }
 	* </pre>
 	*/
-	public class CmsSignedData
+	[Obsolete("For internal use only. If you want to use iText, please use a dependency on iText 7. ")]
+    public class CmsSignedData
 	{
 		private static readonly CmsSignedHelper Helper = CmsSignedHelper.Instance;
 

@@ -12,7 +12,8 @@ namespace Org.BouncyCastle.X509
 	/**
 	 * Carrying class for an attribute certificate issuer.
 	 */
-	public class AttributeCertificateIssuer
+	[Obsolete("For internal use only. If you want to use iText, please use a dependency on iText 7. ")]
+    public class AttributeCertificateIssuer
 		//: CertSelector, Selector
 		: IX509Selector
 	{

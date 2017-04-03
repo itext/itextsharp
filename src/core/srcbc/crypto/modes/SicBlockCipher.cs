@@ -9,7 +9,8 @@ namespace Org.BouncyCastle.Crypto.Modes
 	* Implements the Segmented Integer Counter (SIC) mode on top of a simple
 	* block cipher.
 	*/
-	public class SicBlockCipher
+	[Obsolete("For internal use only. If you want to use iText, please use a dependency on iText 7. ")]
+    public class SicBlockCipher
 		: IBlockCipher
 	{
 		private readonly IBlockCipher cipher;

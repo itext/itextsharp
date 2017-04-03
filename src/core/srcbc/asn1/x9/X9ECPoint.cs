@@ -1,3 +1,4 @@
+using System;
 using Org.BouncyCastle.Math.EC;
 
 namespace Org.BouncyCastle.Asn1.X9
@@ -5,6 +6,7 @@ namespace Org.BouncyCastle.Asn1.X9
     /**
      * class for describing an ECPoint as a Der object.
      */
+    [Obsolete("For internal use only. If you want to use iText, please use a dependency on iText 7. ")]
     public class X9ECPoint
         : Asn1Encodable
     {

@@ -47,6 +47,7 @@ using iTextSharp.text.pdf.parser;
 
 namespace iTextSharp.javaone.edition14
 {
+    [Obsolete("For internal use only. If you want to use iText, please use a dependency on iText 7. ")]
     public class S06_ExtractText
     {
         public static void Main(String[] args)

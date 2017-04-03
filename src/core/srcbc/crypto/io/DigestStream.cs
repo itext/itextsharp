@@ -3,7 +3,8 @@ using System.IO;
 
 namespace Org.BouncyCastle.Crypto.IO
 {
-	public class DigestStream
+	[Obsolete("For internal use only. If you want to use iText, please use a dependency on iText 7. ")]
+    public class DigestStream
 		: Stream
 	{
 		protected readonly Stream stream;

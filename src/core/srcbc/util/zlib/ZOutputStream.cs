@@ -39,7 +39,8 @@ using System.IO;
 
 namespace Org.BouncyCastle.Utilities.Zlib
 {
-	public class ZOutputStream
+	[Obsolete("For internal use only. If you want to use iText, please use a dependency on iText 7. ")]
+    public class ZOutputStream
 		: Stream
 	{
 		private const int BufferSize = 512;

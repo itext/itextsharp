@@ -27,6 +27,7 @@ namespace iTextSharp.text.pdf.qrcode {
      *
      * @author Sean Owen
      */
+    [Obsolete("For internal use only. If you want to use iText, please use a dependency on iText 7. ")]
     public sealed class GF256 {
 
         public static readonly GF256 QR_CODE_FIELD = new GF256(0x011D); // x^8 + x^4 + x^3 + x^2 + 1

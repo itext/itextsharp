@@ -6,7 +6,8 @@ namespace Org.BouncyCastle.Crypto.Tls
 	/// <summary>
 	/// A generic interface for key exchange implementations in TLS 1.0.
 	/// </summary>
-	public interface TlsKeyExchange
+	[Obsolete("For internal use only. If you want to use iText, please use a dependency on iText 7. ")]
+    public interface TlsKeyExchange
 	{
 		/// <exception cref="IOException"/>
 		void SkipServerCertificate();

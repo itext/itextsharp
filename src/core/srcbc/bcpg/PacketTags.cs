@@ -1,6 +1,9 @@
+using System;
+
 namespace Org.BouncyCastle.Bcpg
 {
 	/// <remarks>Basic PGP packet tag types.</remarks>
+    [Obsolete("For internal use only. If you want to use iText, please use a dependency on iText 7. ")]
     public enum PacketTag
     {
         Reserved =  0,								//  Reserved - a packet tag must not have this value

@@ -3,7 +3,8 @@ using System.IO;
 
 namespace Org.BouncyCastle.Utilities.IO
 {
-	public sealed class Streams
+	[Obsolete("For internal use only. If you want to use iText, please use a dependency on iText 7. ")]
+    public sealed class Streams
 	{
 		private const int BufferSize = 512;
 
