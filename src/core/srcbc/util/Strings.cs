@@ -24,7 +24,8 @@ using System.Text;
 namespace Org.BouncyCastle.Utilities
 {
 	/// <summary> General string utilities.</summary>
-	public sealed class Strings
+	[Obsolete("For internal use only. If you want to use iText, please use a dependency on iText 7. ")]
+    public sealed class Strings
 	{
 		private Strings()
 		{

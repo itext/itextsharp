@@ -24,7 +24,8 @@ using Org.BouncyCastle.Math;
 
 namespace Org.BouncyCastle.Asn1.Cmp
 {
-	public class PkiStatusInfo
+	[Obsolete("For internal use only. If you want to use iText, please use a dependency on iText 7. ")]
+    public class PkiStatusInfo
 		: Asn1Encodable
 	{
 		DerInteger      status;

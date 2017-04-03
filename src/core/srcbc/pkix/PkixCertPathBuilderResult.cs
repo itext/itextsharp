@@ -29,7 +29,8 @@ namespace Org.BouncyCastle.Pkix
 	/// <summary>
 	/// Summary description for PkixCertPathBuilderResult.
 	/// </summary>
-	public class PkixCertPathBuilderResult
+	[Obsolete("For internal use only. If you want to use iText, please use a dependency on iText 7. ")]
+    public class PkixCertPathBuilderResult
 		: PkixCertPathValidatorResult//, ICertPathBuilderResult
 	{
 		private PkixCertPath certPath;

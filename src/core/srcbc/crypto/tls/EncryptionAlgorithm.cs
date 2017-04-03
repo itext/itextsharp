@@ -22,7 +22,8 @@ using System;
 
 namespace Org.BouncyCastle.Crypto.Tls
 {
-	public enum EncryptionAlgorithm
+	[Obsolete("For internal use only. If you want to use iText, please use a dependency on iText 7. ")]
+    public enum EncryptionAlgorithm
 	{
 		/*
 		 * Note that the values here are implementation-specific and arbitrary.

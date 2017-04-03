@@ -51,7 +51,8 @@ using iTextSharp.text.log;
  * containing trusted anchors.
  */
 namespace iTextSharp.text.pdf.security {
-	public class RootStoreVerifier : CertificateVerifier {
+	[Obsolete("For internal use only. If you want to use iText, please use a dependency on iText 7. ")]
+    public class RootStoreVerifier : CertificateVerifier {
         /** The Logger instance */
 	    private static ILogger LOGGER = LoggerFactory.GetLogger(typeof(RootStoreVerifier));
 

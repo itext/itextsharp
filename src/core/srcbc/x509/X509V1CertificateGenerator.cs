@@ -34,7 +34,8 @@ namespace Org.BouncyCastle.X509
 	/// <summary>
 	/// Class to Generate X509V1 Certificates.
 	/// </summary>
-	public class X509V1CertificateGenerator
+	[Obsolete("For internal use only. If you want to use iText, please use a dependency on iText 7. ")]
+    public class X509V1CertificateGenerator
 	{
 		private V1TbsCertificateGenerator   tbsGen;
 		private DerObjectIdentifier         sigOID;

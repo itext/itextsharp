@@ -26,7 +26,8 @@ using Org.BouncyCastle.Math;
 
 namespace Org.BouncyCastle.Asn1.Pkcs
 {
-	public class PbeParameter
+	[Obsolete("For internal use only. If you want to use iText, please use a dependency on iText 7. ")]
+    public class PbeParameter
 		: Asn1Encodable
 	{
 		private readonly Asn1OctetString	salt;

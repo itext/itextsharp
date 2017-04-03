@@ -28,6 +28,7 @@ namespace Org.BouncyCastle.Crypto.Digests
     /**
     * Base class for SHA-384 and SHA-512.
     */
+    [Obsolete("For internal use only. If you want to use iText, please use a dependency on iText 7. ")]
     public abstract class LongDigest
 		: IDigest
     {

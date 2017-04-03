@@ -27,7 +27,8 @@ using Org.BouncyCastle.Utilities;
 
 namespace Org.BouncyCastle.Crypto
 {
-	public class BufferedIesCipher
+	[Obsolete("For internal use only. If you want to use iText, please use a dependency on iText 7. ")]
+    public class BufferedIesCipher
 		: BufferedCipherBase
 	{
 		private readonly IesEngine engine;

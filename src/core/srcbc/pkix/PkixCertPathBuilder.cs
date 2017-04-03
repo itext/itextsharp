@@ -42,7 +42,8 @@ namespace Org.BouncyCastle.Pkix
 	*
 	* @see CertPathBuilderSpi
 	*/
-	public class PkixCertPathBuilder
+	[Obsolete("For internal use only. If you want to use iText, please use a dependency on iText 7. ")]
+    public class PkixCertPathBuilder
 		//		: CertPathBuilderSpi
 	{
 		/**

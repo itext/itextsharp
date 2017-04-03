@@ -35,6 +35,7 @@ namespace Org.BouncyCastle.X509
     /// <summary>
     /// A class to Generate Version 3 X509Certificates.
     /// </summary>
+    [Obsolete("For internal use only. If you want to use iText, please use a dependency on iText 7. ")]
     public class X509V3CertificateGenerator
     {
 		private readonly X509ExtensionsGenerator extGenerator = new X509ExtensionsGenerator();

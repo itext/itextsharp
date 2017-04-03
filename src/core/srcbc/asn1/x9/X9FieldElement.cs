@@ -28,6 +28,7 @@ namespace Org.BouncyCastle.Asn1.X9
     /**
      * Class for processing an ECFieldElement as a DER object.
      */
+    [Obsolete("For internal use only. If you want to use iText, please use a dependency on iText 7. ")]
     public class X9FieldElement
         : Asn1Encodable
     {

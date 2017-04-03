@@ -24,6 +24,7 @@ using Org.BouncyCastle.Asn1.Cms;
 
 namespace Org.BouncyCastle.Asn1.Crmf
 {
+    [Obsolete("For internal use only. If you want to use iText, please use a dependency on iText 7. ")]
     public class PopoPrivKey
         : Asn1Encodable, IAsn1Choice
     {

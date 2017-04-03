@@ -33,6 +33,7 @@ namespace Org.BouncyCastle.Asn1.Esf
     *       qualifier          ANY DEFINED BY commitmentTypeIdentifier OPTIONAL }
     * </pre>
     */
+    [Obsolete("For internal use only. If you want to use iText, please use a dependency on iText 7. ")]
     public class CommitmentTypeQualifier
         : Asn1Encodable
     {

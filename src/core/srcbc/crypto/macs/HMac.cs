@@ -31,6 +31,7 @@ namespace Org.BouncyCastle.Crypto.Macs
     *
     * H(K XOR opad, H(K XOR ipad, text))
     */
+    [Obsolete("For internal use only. If you want to use iText, please use a dependency on iText 7. ")]
     public class HMac
 		: IMac
     {

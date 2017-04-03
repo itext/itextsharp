@@ -28,6 +28,7 @@ namespace Org.BouncyCastle.Crypto.Engines
     * an implementation of RC2 as described in RFC 2268
     *      "A Description of the RC2(r) Encryption Algorithm" R. Rivest.
     */
+    [Obsolete("For internal use only. If you want to use iText, please use a dependency on iText 7. ")]
     public class RC2Engine
 		: IBlockCipher
     {

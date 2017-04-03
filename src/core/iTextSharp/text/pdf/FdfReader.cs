@@ -50,6 +50,7 @@ namespace iTextSharp.text.pdf {
     /** Reads an FDF form and makes the fields available
     * @author Paulo Soares
     */
+    [Obsolete("For internal use only. If you want to use iText, please use a dependency on iText 7. ")]
     public class FdfReader : PdfReader {
         
         internal Dictionary<String, PdfDictionary> fields;

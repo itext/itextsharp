@@ -46,6 +46,7 @@ namespace iTextSharp.text.pdf {
     /**
     * A Rendition dictionary (pdf spec 1.5)
     */
+    [Obsolete("For internal use only. If you want to use iText, please use a dependency on iText 7. ")]
     public class PdfRendition : PdfDictionary {
         public PdfRendition(String file, PdfFileSpecification fs, String mimeType) {
             Put(PdfName.S, new PdfName("MR"));

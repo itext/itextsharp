@@ -44,6 +44,7 @@ using System.Collections;
 
 
 namespace System.util.collections {
+    [Obsolete("For internal use only. If you want to use iText, please use a dependency on iText 7. ")]
     public class OrderedTree {
         // the number of nodes contained in the tree
         private int intCount;
@@ -668,6 +669,7 @@ namespace System.util.collections {
         }
     }
 
+    [Obsolete("For internal use only. If you want to use iText, please use a dependency on iText 7. ")]
     public class OrderedTreeEnumerator : IEnumerator {
         // the treap uses the stack to order the nodes
         private Stack stack;
@@ -835,6 +837,7 @@ namespace System.util.collections {
         }
     }
 
+    [Obsolete("For internal use only. If you want to use iText, please use a dependency on iText 7. ")]
     public class OrderedTreeNode {
         // tree node colors
         public const bool RED = false;

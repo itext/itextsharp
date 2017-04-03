@@ -30,7 +30,8 @@ namespace Org.BouncyCastle.Asn1.X509
 	/// notAfter        [1]     GeneralizedTime OPTIONAL }
 	/// </pre>
 	/// </remarks>
-	public class PrivateKeyUsagePeriod
+	[Obsolete("For internal use only. If you want to use iText, please use a dependency on iText 7. ")]
+    public class PrivateKeyUsagePeriod
 		: Asn1Encodable
 	{
 		public static PrivateKeyUsagePeriod GetInstance(

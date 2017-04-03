@@ -33,7 +33,8 @@ namespace Org.BouncyCastle.Tsp
 	/**
 	 * Generator for RFC 3161 Time Stamp Request objects.
 	 */
-	public class TimeStampRequestGenerator
+	[Obsolete("For internal use only. If you want to use iText, please use a dependency on iText 7. ")]
+    public class TimeStampRequestGenerator
 	{
 		private DerObjectIdentifier reqPolicy;
 

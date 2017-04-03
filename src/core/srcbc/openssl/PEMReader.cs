@@ -50,7 +50,8 @@ namespace Org.BouncyCastle.OpenSsl
 	* In the case of PKCS7 objects the reader will return a CMS ContentInfo object. Keys and
 	* Certificates will be returned using the appropriate java.security type.</p>
 	*/
-	public class PemReader
+	[Obsolete("For internal use only. If you want to use iText, please use a dependency on iText 7. ")]
+    public class PemReader
 		: Org.BouncyCastle.Utilities.IO.Pem.PemReader
 	{
 //		private static readonly IDictionary parsers = new Hashtable();

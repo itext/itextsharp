@@ -25,7 +25,8 @@ namespace Org.BouncyCastle.Asn1
 	/**
 	 * A Null object.
 	 */
-	public class DerNull
+	[Obsolete("For internal use only. If you want to use iText, please use a dependency on iText 7. ")]
+    public class DerNull
 		: Asn1Null
 	{
 		public static readonly DerNull Instance = new DerNull(0);

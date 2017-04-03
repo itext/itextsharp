@@ -29,7 +29,8 @@ namespace Org.BouncyCastle.Crypto.Engines
 	/**
 	* implementation of GOST 28147-89
 	*/
-	public class Gost28147Engine
+	[Obsolete("For internal use only. If you want to use iText, please use a dependency on iText 7. ")]
+    public class Gost28147Engine
 		: IBlockCipher
 	{
 		private const int  BlockSize = 8;

@@ -31,6 +31,7 @@ namespace Org.BouncyCastle.Asn1.CryptoPro
     /**
     * table of the available named parameters for GOST 3410-94.
     */
+    [Obsolete("For internal use only. If you want to use iText, please use a dependency on iText 7. ")]
     public sealed class Gost3410NamedParameters
     {
 		private Gost3410NamedParameters()

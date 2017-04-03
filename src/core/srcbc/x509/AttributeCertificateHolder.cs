@@ -47,7 +47,8 @@ namespace Org.BouncyCastle.X509
  	/// }
 	/// </pre>
 	/// </remarks>
-	public class AttributeCertificateHolder
+	[Obsolete("For internal use only. If you want to use iText, please use a dependency on iText 7. ")]
+    public class AttributeCertificateHolder
 		//: CertSelector, Selector
 		: IX509Selector
 	{

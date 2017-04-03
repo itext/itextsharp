@@ -22,7 +22,8 @@ using System;
 
 namespace Org.BouncyCastle.Utilities.Date
 {
-	public sealed class DateTimeObject
+	[Obsolete("For internal use only. If you want to use iText, please use a dependency on iText 7. ")]
+    public sealed class DateTimeObject
 	{
 		private readonly DateTime dt;
 

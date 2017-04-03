@@ -28,7 +28,8 @@ namespace Org.BouncyCastle.X509.Store
 	/// criteria is given from two <code>X509CertStoreSelector</code> objects,
 	/// each of which, if present, must match the respective component of a pair.
 	/// </remarks>
-	public class X509CertPairStoreSelector
+	[Obsolete("For internal use only. If you want to use iText, please use a dependency on iText 7. ")]
+    public class X509CertPairStoreSelector
 		: IX509Selector
 	{
 		private static X509CertStoreSelector CloneSelector(

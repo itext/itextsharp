@@ -50,7 +50,8 @@ namespace Org.BouncyCastle.Crypto.Engines
 	* This file contains the middle performance version with 2Kbytes of static tables for round precomputation.
 	* </p>
 	*/
-	public class AesEngine
+	[Obsolete("For internal use only. If you want to use iText, please use a dependency on iText 7. ")]
+    public class AesEngine
 		: IBlockCipher
 	{
 		// The S box

@@ -31,6 +31,7 @@ namespace Org.BouncyCastle.Crypto.Generators
     * <br/>
     * This implementation is based on ISO 18033/P1363a.
     */
+    [Obsolete("For internal use only. If you want to use iText, please use a dependency on iText 7. ")]
     public class BaseKdfBytesGenerator
         : IDerivationFunction
     {

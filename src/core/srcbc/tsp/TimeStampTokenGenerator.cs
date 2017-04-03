@@ -38,7 +38,8 @@ using Org.BouncyCastle.X509.Store;
 
 namespace Org.BouncyCastle.Tsp
 {
-	public class TimeStampTokenGenerator
+	[Obsolete("For internal use only. If you want to use iText, please use a dependency on iText 7. ")]
+    public class TimeStampTokenGenerator
 	{
 		private int accuracySeconds = -1;
 		private int accuracyMillis = -1;

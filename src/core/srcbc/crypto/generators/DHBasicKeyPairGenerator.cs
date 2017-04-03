@@ -31,6 +31,7 @@ namespace Org.BouncyCastle.Crypto.Generators
      * This generates keys consistent for use with the basic algorithm for
      * Diffie-Hellman.
      */
+    [Obsolete("For internal use only. If you want to use iText, please use a dependency on iText 7. ")]
     public class DHBasicKeyPairGenerator
 		: IAsymmetricCipherKeyPairGenerator
     {

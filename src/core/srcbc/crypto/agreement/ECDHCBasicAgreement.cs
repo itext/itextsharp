@@ -46,6 +46,7 @@ namespace Org.BouncyCastle.Crypto.Agreement
      * (if you want that just use ECDHBasicAgreement and note they both implement
      * BasicAgreement!).</p>
      */
+    [Obsolete("For internal use only. If you want to use iText, please use a dependency on iText 7. ")]
     public class ECDHCBasicAgreement
         : IBasicAgreement
     {

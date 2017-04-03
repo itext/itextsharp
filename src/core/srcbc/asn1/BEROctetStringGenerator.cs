@@ -25,7 +25,8 @@ using Org.BouncyCastle.Utilities.IO;
 
 namespace Org.BouncyCastle.Asn1
 {
-	public class BerOctetStringGenerator
+	[Obsolete("For internal use only. If you want to use iText, please use a dependency on iText 7. ")]
+    public class BerOctetStringGenerator
 		: BerGenerator
 	{
 		public BerOctetStringGenerator(Stream outStream)

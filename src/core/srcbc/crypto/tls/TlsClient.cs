@@ -24,7 +24,8 @@ using System.IO;
 
 namespace Org.BouncyCastle.Crypto.Tls
 {
-	public interface TlsClient
+	[Obsolete("For internal use only. If you want to use iText, please use a dependency on iText 7. ")]
+    public interface TlsClient
 	{
 		/// <summary>
 		/// Called at the start of a new TLS session, before any other methods.

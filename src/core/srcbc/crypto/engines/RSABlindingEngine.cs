@@ -31,7 +31,8 @@ namespace Org.BouncyCastle.Crypto.Engines
 	* trying to get another party to generate signatures without them being aware
 	* of the message they are signing.
 	*/
-	public class RsaBlindingEngine
+	[Obsolete("For internal use only. If you want to use iText, please use a dependency on iText 7. ")]
+    public class RsaBlindingEngine
 		: IAsymmetricBlockCipher
 	{
 		private readonly RsaCoreEngine core = new RsaCoreEngine();

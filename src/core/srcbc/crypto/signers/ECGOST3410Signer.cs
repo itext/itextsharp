@@ -31,6 +31,7 @@ namespace Org.BouncyCastle.Crypto.Signers
     /**
      * GOST R 34.10-2001 Signature Algorithm
      */
+    [Obsolete("For internal use only. If you want to use iText, please use a dependency on iText 7. ")]
     public class ECGost3410Signer
         : IDsa
     {

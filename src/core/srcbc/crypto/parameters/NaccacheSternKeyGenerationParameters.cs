@@ -32,7 +32,8 @@ namespace Org.BouncyCastle.Crypto.Parameters
 	 *
 	 * http://www.gemplus.com/smart/rd/publications/pdf/NS98pkcs.pdf
 	 */
-	public class NaccacheSternKeyGenerationParameters : KeyGenerationParameters
+	[Obsolete("For internal use only. If you want to use iText, please use a dependency on iText 7. ")]
+    public class NaccacheSternKeyGenerationParameters : KeyGenerationParameters
 	{
 		// private BigInteger publicExponent;
 		private readonly int certainty;

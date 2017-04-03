@@ -31,7 +31,7 @@ namespace Org.BouncyCastle.Crypto.Tls
 	/// </pre>
 	/// </remarks>
 	[Obsolete("Perform certificate verification in TlsAuthentication implementation")]
-	public class AlwaysValidVerifyer
+    public class AlwaysValidVerifyer
 		: ICertificateVerifyer
 	{
 		/// <summary>Return true.</summary>

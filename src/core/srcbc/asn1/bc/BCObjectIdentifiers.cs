@@ -22,7 +22,8 @@ using System;
 
 namespace Org.BouncyCastle.Asn1.BC
 {
-	public abstract class BCObjectIdentifiers
+	[Obsolete("For internal use only. If you want to use iText, please use a dependency on iText 7. ")]
+    public abstract class BCObjectIdentifiers
 	{
 		// iso.org.dod.internet.private.enterprise.legion-of-the-bouncy-castle
 		// 1.3.6.1.4.1.22554

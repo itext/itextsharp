@@ -29,7 +29,8 @@ namespace Org.BouncyCastle.Crypto.Signers
 	/**
 	 * Gost R 34.10-94 Signature Algorithm
 	 */
-	public class Gost3410Signer
+	[Obsolete("For internal use only. If you want to use iText, please use a dependency on iText 7. ")]
+    public class Gost3410Signer
 		: IDsa
 	{
 		private Gost3410KeyParameters key;

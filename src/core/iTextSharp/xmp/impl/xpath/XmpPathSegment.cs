@@ -28,12 +28,15 @@
 //
 //        http://www.adobe.com/devnet/xmp/library/eula-xmp-library-java.html
 
+using System;
+
 namespace iTextSharp.xmp.impl.xpath {
     /// <summary>
     /// A segment of a parsed <code>XmpPath</code>.
     ///  
     /// @since   23.06.2006
     /// </summary>
+    [Obsolete("For internal use only. If you want to use iText, please use a dependency on iText 7. ")]
     public class XmpPathSegment {
         /// <summary>
         /// flag if segment is an alias </summary>

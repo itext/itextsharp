@@ -28,7 +28,8 @@ namespace Org.BouncyCastle.Cms
 	/// <remarks>
 	/// The 'Signature' parameter is only available when generating unsigned attributes.
 	/// </remarks>
-	public enum CmsAttributeTableParameter
+	[Obsolete("For internal use only. If you want to use iText, please use a dependency on iText 7. ")]
+    public enum CmsAttributeTableParameter
 	{
 //		const string ContentType = "contentType";
 //		const string Digest = "digest";
@@ -38,7 +39,8 @@ namespace Org.BouncyCastle.Cms
 		ContentType, Digest, Signature, DigestAlgorithmIdentifier
 	}
 
-	public interface CmsAttributeTableGenerator
+	[Obsolete("For internal use only. If you want to use iText, please use a dependency on iText 7. ")]
+    public interface CmsAttributeTableGenerator
 	{
 		AttributeTable GetAttributes(IDictionary parameters);
 	}

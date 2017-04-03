@@ -25,7 +25,7 @@ using Org.BouncyCastle.Asn1.X509;
 namespace Org.BouncyCastle.Asn1.Ess
 {
 	[Obsolete("Use version in Asn1.Esf instead")]
-	public class OtherCertID
+    public class OtherCertID
 		: Asn1Encodable
 	{
 		private Asn1Encodable otherCertHash;

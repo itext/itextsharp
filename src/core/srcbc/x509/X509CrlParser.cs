@@ -33,7 +33,8 @@ using Org.BouncyCastle.Utilities.IO;
 
 namespace Org.BouncyCastle.X509
 {
-	public class X509CrlParser
+	[Obsolete("For internal use only. If you want to use iText, please use a dependency on iText 7. ")]
+    public class X509CrlParser
 	{
 		private static readonly PemParser PemCrlParser = new PemParser("CRL");
 

@@ -54,6 +54,7 @@ namespace iTextSharp.text.pdf.interfaces {
     * and 3.3 (Version history).
     */
 
+    [Obsolete("For internal use only. If you want to use iText, please use a dependency on iText 7. ")]
     public interface IPdfVersion {
         
         /**

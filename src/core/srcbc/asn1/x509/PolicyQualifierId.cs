@@ -18,6 +18,8 @@ You can be released from the requirements of the license by purchasing a commerc
 These activities include: offering paid services to customers as an ASP, serving PDFs on the fly in a web application, shipping iText with a closed source product.
 
 For more information, please contact iText Software Corp. at this address: sales@itextpdf.com */
+using System;
+
 namespace Org.BouncyCastle.Asn1.X509
 {
 	/**
@@ -32,7 +34,8 @@ namespace Org.BouncyCastle.Asn1.X509
 	 *       OBJECT IDENTIFIER ( id-qt-cps | id-qt-unotice )
 	 * </pre>
 	 */
-	public sealed class PolicyQualifierID : DerObjectIdentifier
+	[Obsolete("For internal use only. If you want to use iText, please use a dependency on iText 7. ")]
+    public sealed class PolicyQualifierID : DerObjectIdentifier
 	{
 		private const string IdQt = "1.3.6.1.5.5.7.2";
 

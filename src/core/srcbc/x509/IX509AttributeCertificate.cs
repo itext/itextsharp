@@ -27,7 +27,8 @@ using Org.BouncyCastle.Math;
 namespace Org.BouncyCastle.X509
 {
 	/// <remarks>Interface for an X.509 Attribute Certificate.</remarks>
-	public interface IX509AttributeCertificate
+	[Obsolete("For internal use only. If you want to use iText, please use a dependency on iText 7. ")]
+    public interface IX509AttributeCertificate
 		: IX509Extension
 	{
 		/// <summary>The version number for the certificate.</summary>

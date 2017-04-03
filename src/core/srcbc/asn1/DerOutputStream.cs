@@ -25,7 +25,8 @@ using Org.BouncyCastle.Asn1.Utilities;
 
 namespace Org.BouncyCastle.Asn1
 {
-	public class DerOutputStream
+	[Obsolete("For internal use only. If you want to use iText, please use a dependency on iText 7. ")]
+    public class DerOutputStream
 		: FilterStream
 	{
 		public DerOutputStream(Stream os)

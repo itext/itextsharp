@@ -27,6 +27,7 @@ namespace Org.BouncyCastle.Asn1
     /**
      * We insert one of these when we find a tag we don't recognise.
      */
+    [Obsolete("For internal use only. If you want to use iText, please use a dependency on iText 7. ")]
     public class DerUnknownTag
         : Asn1Object
     {

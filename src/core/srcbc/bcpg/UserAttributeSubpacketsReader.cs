@@ -28,7 +28,8 @@ namespace Org.BouncyCastle.Bcpg
 	/**
 	* reader for user attribute sub-packets
 	*/
-	public class UserAttributeSubpacketsParser
+	[Obsolete("For internal use only. If you want to use iText, please use a dependency on iText 7. ")]
+    public class UserAttributeSubpacketsParser
 	{
 		private readonly Stream input;
 

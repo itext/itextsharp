@@ -42,7 +42,8 @@ namespace Org.BouncyCastle.Cms
 	* the RecipientInfo class for a recipient who has been sent a message
 	* encrypted using key agreement.
 	*/
-	public class KeyAgreeRecipientInformation
+	[Obsolete("For internal use only. If you want to use iText, please use a dependency on iText 7. ")]
+    public class KeyAgreeRecipientInformation
 		: RecipientInformation
 	{
 		private KeyAgreeRecipientInfo info;

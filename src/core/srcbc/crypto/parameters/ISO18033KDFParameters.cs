@@ -26,7 +26,8 @@ namespace Org.BouncyCastle.Crypto.Parameters
 	/**
 	* parameters for Key derivation functions for ISO-18033
 	*/
-	public class Iso18033KdfParameters
+	[Obsolete("For internal use only. If you want to use iText, please use a dependency on iText 7. ")]
+    public class Iso18033KdfParameters
 		: IDerivationParameters
 	{
 		byte[]  seed;

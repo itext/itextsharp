@@ -36,6 +36,7 @@ namespace iTextSharp.xmp.impl {
     /// 
     /// @since   16.02.2006
     /// </summary>
+    [Obsolete("For internal use only. If you want to use iText, please use a dependency on iText 7. ")]
     public static class Iso8601Converter {
         /// <summary>
         /// Converts an ISO 8601 string to an <code>XMPDateTime</code>.

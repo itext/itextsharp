@@ -26,7 +26,8 @@ using Org.BouncyCastle.Math;
 
 namespace Org.BouncyCastle.Crypto.Parameters
 {
-	public class Gost3410PrivateKeyParameters
+	[Obsolete("For internal use only. If you want to use iText, please use a dependency on iText 7. ")]
+    public class Gost3410PrivateKeyParameters
 		: Gost3410KeyParameters
 	{
 		private readonly BigInteger x;

@@ -28,7 +28,8 @@ namespace Org.BouncyCastle.X509
 	/**
 	 * Class for carrying the values in an X.509 Attribute.
 	 */
-	public class X509Attribute
+	[Obsolete("For internal use only. If you want to use iText, please use a dependency on iText 7. ")]
+    public class X509Attribute
 		: Asn1Encodable
 	{
 		private readonly AttributeX509 attr;

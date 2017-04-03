@@ -45,6 +45,7 @@ using System.util;
 using iTextSharp.text.error_messages;
 
 namespace iTextSharp.text.pdf {
+    [Obsolete("For internal use only. If you want to use iText, please use a dependency on iText 7. ")]
     public class PdfLabColor : ICachedColorSpace {
         float[] whitePoint = new float[] {0.9505f, 1.0f, 1.0890f};
         float[] blackPoint = null;

@@ -25,6 +25,7 @@ using Org.BouncyCastle.Asn1.Pkcs;
 
 namespace Org.BouncyCastle.Asn1.Cmp
 {
+    [Obsolete("For internal use only. If you want to use iText, please use a dependency on iText 7. ")]
     public class PkiBody
         : Asn1Encodable, IAsn1Choice
     {

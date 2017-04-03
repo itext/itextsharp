@@ -34,7 +34,8 @@ namespace Org.BouncyCastle.Cms
 	 * the RecipientInfo class for a recipient who has been sent a message
 	 * encrypted using a password.
 	 */
-	public class PasswordRecipientInformation
+	[Obsolete("For internal use only. If you want to use iText, please use a dependency on iText 7. ")]
+    public class PasswordRecipientInformation
 		: RecipientInformation
 	{
 		private readonly PasswordRecipientInfo	info;

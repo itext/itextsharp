@@ -27,6 +27,7 @@ namespace Org.BouncyCastle.Crypto.Engines
     /**
     * a class that provides a basic SKIPJACK engine.
     */
+    [Obsolete("For internal use only. If you want to use iText, please use a dependency on iText 7. ")]
     public class SkipjackEngine
 		: IBlockCipher
     {

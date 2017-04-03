@@ -24,7 +24,8 @@ using Org.BouncyCastle.Crypto.Parameters;
 
 namespace Org.BouncyCastle.Crypto.Macs
 {
-	public class VmpcMac
+	[Obsolete("For internal use only. If you want to use iText, please use a dependency on iText 7. ")]
+    public class VmpcMac
 		: IMac
 	{
 		private byte g;

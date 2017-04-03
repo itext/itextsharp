@@ -52,6 +52,7 @@ namespace Org.BouncyCastle.Asn1.Icao
     *
     * </pre>
     */
+    [Obsolete("For internal use only. If you want to use iText, please use a dependency on iText 7. ")]
     public class DataGroupHash
         : Asn1Encodable
     {

@@ -30,7 +30,8 @@ namespace Org.BouncyCastle.Crypto.Digests
 	/**
 	* implementation of GOST R 34.11-94
 	*/
-	public class Gost3411Digest
+	[Obsolete("For internal use only. If you want to use iText, please use a dependency on iText 7. ")]
+    public class Gost3411Digest
 		: IDigest
 	{
 		private const int DIGEST_LENGTH = 32;

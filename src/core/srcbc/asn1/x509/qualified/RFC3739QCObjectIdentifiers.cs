@@ -24,6 +24,7 @@ using Org.BouncyCastle.Asn1;
 
 namespace Org.BouncyCastle.Asn1.X509.Qualified
 {
+    [Obsolete("For internal use only. If you want to use iText, please use a dependency on iText 7. ")]
     public sealed class Rfc3739QCObjectIdentifiers
     {
 		private Rfc3739QCObjectIdentifiers()

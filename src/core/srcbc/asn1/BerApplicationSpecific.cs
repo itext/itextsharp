@@ -22,7 +22,8 @@ using System;
 
 namespace Org.BouncyCastle.Asn1
 {
-	public class BerApplicationSpecific
+	[Obsolete("For internal use only. If you want to use iText, please use a dependency on iText 7. ")]
+    public class BerApplicationSpecific
 		: DerApplicationSpecific
 	{
 		public BerApplicationSpecific(

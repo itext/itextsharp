@@ -30,6 +30,7 @@ namespace Org.BouncyCastle.Asn1.X509
      * The GetEncoded() method in the public keys in the JCE produces a DER
      * encoded one of these.</p>
      */
+    [Obsolete("For internal use only. If you want to use iText, please use a dependency on iText 7. ")]
     public class SubjectPublicKeyInfo
         : Asn1Encodable
     {

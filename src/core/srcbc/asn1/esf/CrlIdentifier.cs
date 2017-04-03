@@ -36,7 +36,8 @@ namespace Org.BouncyCastle.Asn1.Esf
 	/// }
 	/// </code>
 	/// </remarks>
-	public class CrlIdentifier
+	[Obsolete("For internal use only. If you want to use iText, please use a dependency on iText 7. ")]
+    public class CrlIdentifier
 		: Asn1Encodable
 	{
 		private readonly X509Name	crlIssuer;

@@ -44,7 +44,8 @@ namespace Org.BouncyCastle.Asn1.X509
      * Note: issuerUniqueID and subjectUniqueID are both deprecated by the IETF. This class
      * will parse them, but you really shouldn't be creating new ones.</p>
      */
-	public class TbsCertificateStructure
+	[Obsolete("For internal use only. If you want to use iText, please use a dependency on iText 7. ")]
+    public class TbsCertificateStructure
 		: Asn1Encodable
 	{
 		internal Asn1Sequence            seq;

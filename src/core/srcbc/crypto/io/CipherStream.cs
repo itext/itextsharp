@@ -26,6 +26,7 @@ using Org.BouncyCastle.Crypto;
 
 namespace Org.BouncyCastle.Crypto.IO
 {
+    [Obsolete("For internal use only. If you want to use iText, please use a dependency on iText 7. ")]
     public class CipherStream
 		: Stream
     {

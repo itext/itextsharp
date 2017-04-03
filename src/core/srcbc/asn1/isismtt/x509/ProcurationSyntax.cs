@@ -60,7 +60,8 @@ namespace Org.BouncyCastle.Asn1.IsisMtt.X509
 	* </pre>
 	* 
 	*/
-	public class ProcurationSyntax
+	[Obsolete("For internal use only. If you want to use iText, please use a dependency on iText 7. ")]
+    public class ProcurationSyntax
 		: Asn1Encodable
 	{
 		private readonly string				country;

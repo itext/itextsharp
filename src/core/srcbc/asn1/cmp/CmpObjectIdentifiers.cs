@@ -22,7 +22,8 @@ using System;
 
 namespace Org.BouncyCastle.Asn1.Cmp
 {
-	public abstract class CmpObjectIdentifiers
+	[Obsolete("For internal use only. If you want to use iText, please use a dependency on iText 7. ")]
+    public abstract class CmpObjectIdentifiers
 	{
 		// RFC 4210
 
