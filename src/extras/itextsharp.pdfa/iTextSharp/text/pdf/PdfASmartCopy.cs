@@ -60,6 +60,7 @@ namespace itextsharp.pdfa.iTextSharp.text.pdf {
      * of the resulting PDF document.
      */
 
+    [Obsolete("For internal use only. If you want to use iText, please use a dependency on iText 7. ")]
     public class PdfASmartCopy : PdfACopy {
 
         private static readonly ILogger LOGGER = LoggerFactory.GetLogger(typeof(PdfSmartCopy));

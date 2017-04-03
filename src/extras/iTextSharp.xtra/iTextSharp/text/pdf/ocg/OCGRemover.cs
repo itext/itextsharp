@@ -40,6 +40,7 @@
     For more information, please contact iText Software Corp. at this
     address: sales@itextpdf.com
  */
+using System;
 using System.Collections.Generic;
 using System.IO;
 using System.util.collections;
@@ -48,6 +49,7 @@ namespace iTextSharp.text.pdf.ocg {
     /// <summary>
     /// Class that knows how to remove OCG layers.
     /// </summary>
+    [Obsolete("For internal use only. If you want to use iText, please use a dependency on iText 7. ")]
     public class OCGRemover {
 
         /// <summary>

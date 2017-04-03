@@ -54,6 +54,7 @@ namespace iTextSharp.text {
      * Changing the version makes it extremely difficult to debug an application.
      * Also, the nature of open source software is that you honor the copyright of the original creators of the software.
      */
+    [Obsolete("For internal use only. If you want to use iText, please use a dependency on iText 7. ")]
     public sealed class Version {
 
         private static readonly object staticLock = new object();
@@ -71,13 +72,13 @@ namespace iTextSharp.text {
 	     * iText is a registered trademark by iText Group NV.
 	     * Please don't change this constant.
 	     */
-	    private const String iText = "iTextSharp\u2122";
+	    private const String iText = "iText\u2122 pdfXFA";
     	
 	    /**
 	     * This String contains the version number of this iText release.
 	     * For debugging purposes, we request you NOT to change this constant.
 	     */
-        private const String release = "5.5.14-SNAPSHOT";
+        private const String release = "2.0.9-SNAPSHOT";
 
 	    /**
 	     * This String contains the iText version as shown in the producer line.
@@ -147,7 +148,8 @@ namespace iTextSharp.text {
                 Type[] cArg = new Type[] { typeof(String) };
                 MethodInfo m = type.GetMethod("GetLicenseeInfoForVersion", cArg);
                 String coreVersion = release;
-                Object[] args = new Object[] { coreVersion };
+                //Actual iText version should be used here to get correct license info
+                Object[] args = new Object[] { "7.1" };
                 String[] info = (String[])m.Invoke(Activator.CreateInstance(type), args);
                 if (info[3] != null && info[3].Trim().Length > 0) {
                     localVersion.key = info[3];

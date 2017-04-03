@@ -47,6 +47,7 @@ namespace System.util.zlib {
     /// <summary>
     /// Summary description for DeflaterOutputStream.
     /// </summary>
+    [Obsolete("For internal use only. If you want to use iText, please use a dependency on iText 7. ")]
     public class ZInflaterInputStream : Stream {
         protected ZStream z=new ZStream();
         protected int flushLevel=JZlib.Z_NO_FLUSH;

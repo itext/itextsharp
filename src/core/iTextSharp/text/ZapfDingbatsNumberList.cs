@@ -52,6 +52,7 @@ namespace iTextSharp.text
     * @version 2003-06-22
     * @author Michael Niedermair
     */
+    [Obsolete("For internal use only. If you want to use iText, please use a dependency on iText 7. ")]
     public class ZapfDingbatsNumberList : List {
 
         /**

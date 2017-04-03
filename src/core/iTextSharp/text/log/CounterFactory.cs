@@ -53,6 +53,7 @@ namespace iTextSharp.text.log
      * 
      * This functionality can be used to create metrics in a SaaS context.
      */
+    [Obsolete("For internal use only. If you want to use iText, please use a dependency on iText 7. ")]
     public class CounterFactory {
 
 	    /** The singleton instance. */

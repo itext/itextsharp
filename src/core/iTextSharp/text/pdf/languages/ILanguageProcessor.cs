@@ -51,6 +51,7 @@ namespace iTextSharp.text.pdf.languages
      * order to Right to Left and/or applying ligatures.
      */
 
+    [Obsolete("For internal use only. If you want to use iText, please use a dependency on iText 7. ")]
     public interface ILanguageProcessor
     {
 

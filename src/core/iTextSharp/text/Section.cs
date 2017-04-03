@@ -76,6 +76,7 @@ namespace iTextSharp.text {
     /// section11.Add(someSectionText);</strong>strong>
     /// </code>
     /// </example>
+    [Obsolete("For internal use only. If you want to use iText, please use a dependency on iText 7. ")]
     public class Section : List<IElement>, ITextElementArray, ILargeElement, IIndentable, IAccessibleElement {
         
         // constant

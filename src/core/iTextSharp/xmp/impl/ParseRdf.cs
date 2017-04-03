@@ -1,3 +1,4 @@
+using System;
 using System.Collections;
 using System.Diagnostics;
 using System.Xml;
@@ -39,6 +40,7 @@ namespace iTextSharp.xmp.impl {
     /// 
     /// @since   14.07.2006
     /// </summary>
+    [Obsolete("For internal use only. If you want to use iText, please use a dependency on iText 7. ")]
     public class ParseRdf : XmpConst {
         public const int RDFTERM_OTHER = 0;
 

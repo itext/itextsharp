@@ -33,6 +33,7 @@ namespace iTextSharp.xmp.impl {
     /// @author      Mark Reinhold
     /// @since       JDK1.1
     /// </summary>
+    [Obsolete("For internal use only. If you want to use iText, please use a dependency on iText 7. ")]
     public class PushbackReader : FilterReader {
         /// <summary>
         /// Pushback buffer </summary>

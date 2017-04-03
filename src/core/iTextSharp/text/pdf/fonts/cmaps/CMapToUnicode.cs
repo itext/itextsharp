@@ -42,6 +42,7 @@ namespace iTextSharp.text.pdf.fonts.cmaps {
      * @author Ben Litchfield (ben@benlitchfield.com)
      * @since   2.1.4
      */
+    [Obsolete("For internal use only. If you want to use iText, please use a dependency on iText 7. ")]
     public class CMapToUnicode : AbstractCMap {
 
         private IDictionary<int, String> singleByteMappings = new Dictionary<int, String>();

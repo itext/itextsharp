@@ -49,6 +49,7 @@ using iTextSharp.text.io;
 
 namespace iTextSharp.text.pdf {
 
+    [Obsolete("For internal use only. If you want to use iText, please use a dependency on iText 7. ")]
     public class GlyphList {
         private static Dictionary<int,string> unicode2names = new Dictionary<int,string>();
         private static Dictionary<string,int[]> names2unicode = new Dictionary<string,int[]>();

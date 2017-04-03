@@ -49,6 +49,7 @@ namespace iTextSharp.sandbox.tables
 {
 
     [WrapToTest]
+    [Obsolete("For internal use only. If you want to use iText, please use a dependency on iText 7. ")]
     public class SimpleRowColspan
     {
         public static readonly String DEST = "results/tables/simple_rowspan_colspan.pdf";

@@ -50,6 +50,7 @@ namespace iTextSharp.tool.xml {
  *
  */
 
+    [Obsolete("For internal use only. If you want to use iText, please use a dependency on iText 7. ")]
     public class XMLWorkerFontProvider : FontFactoryImp {
         public const String DONTLOOKFORFONTS = "\ufffc";
 
