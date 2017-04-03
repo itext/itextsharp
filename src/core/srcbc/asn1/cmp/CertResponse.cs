@@ -2,7 +2,8 @@ using System;
 
 namespace Org.BouncyCastle.Asn1.Cmp
 {
-	public class CertResponse
+	[Obsolete("For internal use only. If you want to use iText, please use a dependency on iText 7. ")]
+    public class CertResponse
 		: Asn1Encodable
 	{
 		private readonly DerInteger certReqId;

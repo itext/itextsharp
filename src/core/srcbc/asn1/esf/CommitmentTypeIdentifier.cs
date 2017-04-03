@@ -5,6 +5,7 @@ using Org.BouncyCastle.Asn1.Pkcs;
 
 namespace Org.BouncyCastle.Asn1.Esf
 {
+    [Obsolete("For internal use only. If you want to use iText, please use a dependency on iText 7. ")]
     public abstract class CommitmentTypeIdentifier
     {
         public static readonly DerObjectIdentifier ProofOfOrigin = PkcsObjectIdentifiers.IdCtiEtsProofOfOrigin;

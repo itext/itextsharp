@@ -53,6 +53,7 @@ namespace iTextSharp.text.pdf.codec {
      * Modified - to allow for output compressed data without the block counts
      * which breakup the compressed data stream for GIF.
      **/
+    [Obsolete("For internal use only. If you want to use iText, please use a dependency on iText 7. ")]
     public class BitFile {
         Stream output_;
         byte[] buffer_;

@@ -69,7 +69,8 @@ namespace iTextSharp.text
     /// section1.Add(someSectionText);
     /// </code>
     /// </example>
-    public class Chapter : Section 
+    [Obsolete("For internal use only. If you want to use iText, please use a dependency on iText 7. ")]
+    public class Chapter : Section
     {
     
         // constructors

@@ -2,7 +2,8 @@ using System;
 
 namespace Org.BouncyCastle.Asn1.X500
 {
-	public class DirectoryString
+	[Obsolete("For internal use only. If you want to use iText, please use a dependency on iText 7. ")]
+    public class DirectoryString
 		: Asn1Encodable, IAsn1Choice, IAsn1String
 	{
 		private readonly DerStringBase str;

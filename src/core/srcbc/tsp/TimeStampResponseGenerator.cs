@@ -14,6 +14,7 @@ namespace Org.BouncyCastle.Tsp
     /**
      * Generator for RFC 3161 Time Stamp Responses.
      */
+    [Obsolete("For internal use only. If you want to use iText, please use a dependency on iText 7. ")]
     public class TimeStampResponseGenerator
     {
         private PkiStatus status;

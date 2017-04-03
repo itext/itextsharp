@@ -31,7 +31,8 @@ namespace Org.BouncyCastle.Asn1.Cmp
 	 *    -- the request cannot be handled due to system failure
 	 * </pre>
 	 */
-	public class PkiFailureInfo
+	[Obsolete("For internal use only. If you want to use iText, please use a dependency on iText 7. ")]
+    public class PkiFailureInfo
 		: DerBitString
 	{
 		public const int BadAlg               = (1 << 7); // unrecognized or unsupported Algorithm Identifier

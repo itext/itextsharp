@@ -12,6 +12,7 @@ using Org.BouncyCastle.Utilities.Collections;
 namespace Org.BouncyCastle.Bcpg.OpenPgp
 {
 	/// <remarks>General class to handle a PGP public key object.</remarks>
+    [Obsolete("For internal use only. If you want to use iText, please use a dependency on iText 7. ")]
     public class PgpPublicKey
     {
 		private static readonly int[] MasterKeyCertificationTypes = new int[]

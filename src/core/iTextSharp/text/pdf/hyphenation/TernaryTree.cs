@@ -52,6 +52,7 @@ namespace iTextSharp.text.pdf.hyphenation {
      * @author cav@uniscope.co.jp
      */
 
+    [Obsolete("For internal use only. If you want to use iText, please use a dependency on iText 7. ")]
     public class TernaryTree : ICloneable {
 
         /**

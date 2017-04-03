@@ -23,7 +23,8 @@ using Org.BouncyCastle.X509;
 namespace Org.BouncyCastle.OpenSsl
 {
 	/// <remarks>General purpose writer for OpenSSL PEM objects.</remarks>
-	public class PemWriter
+	[Obsolete("For internal use only. If you want to use iText, please use a dependency on iText 7. ")]
+    public class PemWriter
 		: Org.BouncyCastle.Utilities.IO.Pem.PemWriter
 	{
 		/// <param name="writer">The TextWriter object to write the output to.</param>

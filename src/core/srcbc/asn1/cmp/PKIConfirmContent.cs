@@ -2,7 +2,8 @@ using System;
 
 namespace Org.BouncyCastle.Asn1.Cmp
 {
-	public class PkiConfirmContent
+	[Obsolete("For internal use only. If you want to use iText, please use a dependency on iText 7. ")]
+    public class PkiConfirmContent
 		: Asn1Encodable
 	{
 		public static PkiConfirmContent GetInstance(object obj)

@@ -19,7 +19,8 @@ namespace Org.BouncyCastle.Crypto.Agreement
 	 * It's possible to extend this to more than two parties as well, for the moment
 	 * that is left as an exercise for the reader.</p>
 	 */
-	public class DHAgreement
+	[Obsolete("For internal use only. If you want to use iText, please use a dependency on iText 7. ")]
+    public class DHAgreement
 	{
 		private DHPrivateKeyParameters  key;
 		private DHParameters			dhParams;

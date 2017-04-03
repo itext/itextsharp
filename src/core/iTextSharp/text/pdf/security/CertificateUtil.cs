@@ -52,6 +52,7 @@ namespace iTextSharp.text.pdf.security {
      * This class contains a series of static methods that
      * allow you to retrieve information from a Certificate.
      */
+    [Obsolete("For internal use only. If you want to use iText, please use a dependency on iText 7. ")]
     public static class CertificateUtil {
 
         // Certificate Revocation Lists

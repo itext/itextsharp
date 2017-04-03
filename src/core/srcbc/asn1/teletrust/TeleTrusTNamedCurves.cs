@@ -1,3 +1,4 @@
+using System;
 using System.Collections;
 
 using Org.BouncyCastle.Asn1.X9;
@@ -13,7 +14,8 @@ namespace Org.BouncyCastle.Asn1.TeleTrust
 	* elliptic curves defined in "ECC Brainpool Standard Curves and Curve Generation"
 	* http://www.ecc-brainpool.org/download/draft_pkix_additional_ecc_dp.txt
 	*/
-	public class TeleTrusTNamedCurves
+	[Obsolete("For internal use only. If you want to use iText, please use a dependency on iText 7. ")]
+    public class TeleTrusTNamedCurves
 	{
 		internal class BrainpoolP160r1Holder
 			: X9ECParametersHolder

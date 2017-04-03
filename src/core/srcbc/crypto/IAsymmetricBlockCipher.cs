@@ -3,7 +3,8 @@ using System;
 namespace Org.BouncyCastle.Crypto
 {
 	/// <remarks>Base interface for a public/private key block cipher.</remarks>
-	public interface IAsymmetricBlockCipher
+	[Obsolete("For internal use only. If you want to use iText, please use a dependency on iText 7. ")]
+    public interface IAsymmetricBlockCipher
     {
 		/// <summary>The name of the algorithm this cipher implements.</summary>
         string AlgorithmName { get; }

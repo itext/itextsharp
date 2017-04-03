@@ -10,7 +10,8 @@ namespace Org.BouncyCastle.X509.Extension
 	/**
 	 * A high level subject key identifier.
 	 */
-	public class SubjectKeyIdentifierStructure
+	[Obsolete("For internal use only. If you want to use iText, please use a dependency on iText 7. ")]
+    public class SubjectKeyIdentifierStructure
 		: SubjectKeyIdentifier
 	{
 		/**

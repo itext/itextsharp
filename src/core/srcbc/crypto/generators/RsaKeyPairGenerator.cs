@@ -9,6 +9,7 @@ namespace Org.BouncyCastle.Crypto.Generators
     /**
      * an RSA key pair generator.
      */
+    [Obsolete("For internal use only. If you want to use iText, please use a dependency on iText 7. ")]
     public class RsaKeyPairGenerator
 		: IAsymmetricCipherKeyPairGenerator
     {

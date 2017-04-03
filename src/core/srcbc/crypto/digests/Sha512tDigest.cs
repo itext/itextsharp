@@ -7,6 +7,7 @@ namespace Org.BouncyCastle.Crypto.Digests
     /**
      * FIPS 180-4 implementation of SHA-512/t
      */
+    [Obsolete("For internal use only. If you want to use iText, please use a dependency on iText 7. ")]
     public class Sha512tDigest
         : LongDigest
     {

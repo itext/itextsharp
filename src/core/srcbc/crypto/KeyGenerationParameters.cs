@@ -6,6 +6,7 @@ namespace Org.BouncyCastle.Crypto
     /**
      * The base class for parameters to key generators.
      */
+    [Obsolete("For internal use only. If you want to use iText, please use a dependency on iText 7. ")]
     public class KeyGenerationParameters
     {
         private SecureRandom	random;

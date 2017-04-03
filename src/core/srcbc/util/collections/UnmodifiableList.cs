@@ -3,7 +3,8 @@ using System.Collections;
 
 namespace Org.BouncyCastle.Utilities.Collections
 {
-	public abstract class UnmodifiableList
+	[Obsolete("For internal use only. If you want to use iText, please use a dependency on iText 7. ")]
+    public abstract class UnmodifiableList
 		: IList
 	{
 		protected UnmodifiableList()

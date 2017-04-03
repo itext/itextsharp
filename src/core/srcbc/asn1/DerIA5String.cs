@@ -8,6 +8,7 @@ namespace Org.BouncyCastle.Asn1
     /**
      * Der IA5String object - this is an ascii string.
      */
+    [Obsolete("For internal use only. If you want to use iText, please use a dependency on iText 7. ")]
     public class DerIA5String
         : DerStringBase
     {

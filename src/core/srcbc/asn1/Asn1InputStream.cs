@@ -13,7 +13,8 @@ namespace Org.BouncyCastle.Asn1
 	 * the stream. If an ASN.1 Null is encountered a Der/BER Null object is
 	 * returned.
 	 */
-	public class Asn1InputStream
+	[Obsolete("For internal use only. If you want to use iText, please use a dependency on iText 7. ")]
+    public class Asn1InputStream
 		: FilterStream
 	{
 		private readonly int limit;

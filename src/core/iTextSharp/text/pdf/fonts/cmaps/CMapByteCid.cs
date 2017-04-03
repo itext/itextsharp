@@ -48,6 +48,7 @@ using iTextSharp.text.pdf;
 using iTextSharp.text.error_messages;
 namespace iTextSharp.text.pdf.fonts.cmaps {
 
+    [Obsolete("For internal use only. If you want to use iText, please use a dependency on iText 7. ")]
     public class CMapByteCid : AbstractCMap {
         private List<char[]> planes = new List<char[]>();
 

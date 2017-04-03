@@ -30,6 +30,7 @@ namespace Org.BouncyCastle.Apache.Bzip2
     *
     * @author <a href="mailto:keiron@aftexsw.com">Keiron Liddle</a>
     */
+    [Obsolete("For internal use only. If you want to use iText, please use a dependency on iText 7. ")]
     public class BZip2Constants {
 
         public const int baseBlockSize = 100000;

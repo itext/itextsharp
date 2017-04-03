@@ -34,7 +34,8 @@ namespace Org.BouncyCastle.Apache.Bzip2
     * <b>NB:</b> note this class has been modified to add a leading BZ to the
     * start of the BZIP2 stream to make it compatible with other PGP programs.
     */
-    public class CBZip2OutputStream : Stream 
+    [Obsolete("For internal use only. If you want to use iText, please use a dependency on iText 7. ")]
+    public class CBZip2OutputStream : Stream
 	{
         protected const int SETMASK = (1 << 21);
         protected const int CLEARMASK = (~SETMASK);

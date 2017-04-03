@@ -9,7 +9,8 @@ namespace Org.BouncyCastle.Utilities.IO.Pem
 	/**
 	* A generic PEM writer, based on RFC 1421
 	*/
-	public class PemWriter
+	[Obsolete("For internal use only. If you want to use iText, please use a dependency on iText 7. ")]
+    public class PemWriter
 	{
 		private const int LineLength = 64;
 

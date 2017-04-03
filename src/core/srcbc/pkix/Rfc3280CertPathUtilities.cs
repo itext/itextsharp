@@ -16,7 +16,8 @@ using Org.BouncyCastle.X509.Store;
 
 namespace Org.BouncyCastle.Pkix
 {
-	public class Rfc3280CertPathUtilities
+	[Obsolete("For internal use only. If you want to use iText, please use a dependency on iText 7. ")]
+    public class Rfc3280CertPathUtilities
 	{
 		private static readonly PkixCrlUtilities CrlUtilities = new PkixCrlUtilities();
 

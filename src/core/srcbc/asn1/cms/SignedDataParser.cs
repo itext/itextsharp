@@ -15,7 +15,8 @@ namespace Org.BouncyCastle.Asn1.Cms
 	*   }
 	* </pre>
 	*/
-	public class SignedDataParser
+	[Obsolete("For internal use only. If you want to use iText, please use a dependency on iText 7. ")]
+    public class SignedDataParser
 	{
 		private Asn1SequenceParser	_seq;
 		private DerInteger			_version;

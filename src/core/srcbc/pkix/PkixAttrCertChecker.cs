@@ -6,7 +6,8 @@ using Org.BouncyCastle.X509;
 
 namespace Org.BouncyCastle.Pkix
 {
-	public abstract class PkixAttrCertChecker
+	[Obsolete("For internal use only. If you want to use iText, please use a dependency on iText 7. ")]
+    public abstract class PkixAttrCertChecker
 	{
 		/**
 		 * Returns an immutable <code>Set</code> of X.509 attribute certificate

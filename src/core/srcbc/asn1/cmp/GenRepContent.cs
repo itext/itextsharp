@@ -2,7 +2,8 @@ using System;
 
 namespace Org.BouncyCastle.Asn1.Cmp
 {
-	public class GenRepContent
+	[Obsolete("For internal use only. If you want to use iText, please use a dependency on iText 7. ")]
+    public class GenRepContent
 		: Asn1Encodable
 	{
 		private readonly Asn1Sequence content;

@@ -24,7 +24,8 @@ namespace Org.BouncyCastle.Asn1.IsisMtt.Ocsp
 	*     }
 	* </pre>
 	*/
-	public class CertHash
+	[Obsolete("For internal use only. If you want to use iText, please use a dependency on iText 7. ")]
+    public class CertHash
 		: Asn1Encodable
 	{
 		private readonly AlgorithmIdentifier	hashAlgorithm;

@@ -24,7 +24,8 @@ namespace Org.BouncyCastle.Ocsp
 	/// }
 	/// </code>
 	/// </remarks>
-	public class BasicOcspResp
+	[Obsolete("For internal use only. If you want to use iText, please use a dependency on iText 7. ")]
+    public class BasicOcspResp
 		: X509ExtensionBase
 	{
 		private readonly BasicOcspResponse	resp;

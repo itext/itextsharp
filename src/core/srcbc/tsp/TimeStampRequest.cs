@@ -16,7 +16,8 @@ namespace Org.BouncyCastle.Tsp
 	/**
 	 * Base class for an RFC 3161 Time Stamp Request.
 	 */
-	public class TimeStampRequest
+	[Obsolete("For internal use only. If you want to use iText, please use a dependency on iText 7. ")]
+    public class TimeStampRequest
 		: X509ExtensionBase
 	{
 		private TimeStampReq req;

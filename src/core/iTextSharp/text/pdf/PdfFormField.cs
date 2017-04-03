@@ -49,6 +49,7 @@ namespace iTextSharp.text.pdf {
      *
      * @author Paulo Soares
      */
+    [Obsolete("For internal use only. If you want to use iText, please use a dependency on iText 7. ")]
     public class PdfFormField : PdfAnnotation {
 
         public const int FF_READ_ONLY = 1;

@@ -40,6 +40,7 @@
     For more information, please contact iText Software Corp. at this
     address: sales@itextpdf.com
  */
+using System;
 using iTextSharp.text.pdf.intern;
 
 namespace iTextSharp.text.pdf {
@@ -47,6 +48,7 @@ namespace iTextSharp.text.pdf {
     *
     * @author Paulo Soares
     */
+    [Obsolete("For internal use only. If you want to use iText, please use a dependency on iText 7. ")]
     public class PdfGState : PdfDictionary {
         /** A possible blend mode */
         public static PdfName BM_NORMAL = new PdfName("Normal");

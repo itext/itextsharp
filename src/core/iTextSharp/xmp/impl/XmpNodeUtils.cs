@@ -49,6 +49,7 @@ namespace iTextSharp.xmp.impl {
     /// 
     /// @since   Aug 28, 2006
     /// </summary>
+    [Obsolete("For internal use only. If you want to use iText, please use a dependency on iText 7. ")]
     public class XmpNodeUtils : XmpConst {
         internal const int CLT_NO_VALUES = 0;
         internal const int CLT_SPECIFIC_MATCH = 1;

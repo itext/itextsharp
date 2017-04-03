@@ -13,6 +13,7 @@ namespace Org.BouncyCastle.Crypto.Generators
      * This Generates DSA keys in line with the method described
 	 * in <i>FIPS 186-3 B.1 FFC Key Pair Generation</i>.
      */
+    [Obsolete("For internal use only. If you want to use iText, please use a dependency on iText 7. ")]
     public class DsaKeyPairGenerator
 		: IAsymmetricCipherKeyPairGenerator
     {

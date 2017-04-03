@@ -40,6 +40,7 @@
     For more information, please contact iText Software Corp. at this
     address: sales@itextpdf.com
  */
+using System;
 using System.Collections.Generic;
 using iTextSharp.text;
 using iTextSharp.tool.xml;
@@ -53,6 +54,7 @@ namespace iTextSharp.tool.xml
  * you build a list of iText <code>Element</code>s.
  */
 
+    [Obsolete("For internal use only. If you want to use iText, please use a dependency on iText 7. ")]
     public class ElementList : List<IElement>, IElementHandler
     {
 

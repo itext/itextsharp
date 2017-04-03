@@ -49,6 +49,7 @@ namespace iTextSharp.text.pdf {
     * All the option in the Acrobat GUI are supported in an easy to use API.
     * @author Paulo Soares
     */
+    [Obsolete("For internal use only. If you want to use iText, please use a dependency on iText 7. ")]
     public class TextField : BaseField {
         
         /** Holds value of property defaultText. */

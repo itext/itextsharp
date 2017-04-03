@@ -1,6 +1,9 @@
+using System;
+
 namespace Org.BouncyCastle.Asn1
 {
-	public class DerSequenceParser
+	[Obsolete("For internal use only. If you want to use iText, please use a dependency on iText 7. ")]
+    public class DerSequenceParser
 		: Asn1SequenceParser
 	{
 		private readonly Asn1StreamParser _parser;

@@ -7,6 +7,7 @@ namespace Org.BouncyCastle.Bcpg.Sig
     /**
     * packet giving the User ID of the signer.
     */
+    [Obsolete("For internal use only. If you want to use iText, please use a dependency on iText 7. ")]
     public class SignerUserId
         : SignatureSubpacket
     {

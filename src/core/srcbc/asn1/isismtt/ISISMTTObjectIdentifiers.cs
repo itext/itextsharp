@@ -1,6 +1,9 @@
+using System;
+
 namespace Org.BouncyCastle.Asn1.IsisMtt
 {
-	public abstract class IsisMttObjectIdentifiers
+	[Obsolete("For internal use only. If you want to use iText, please use a dependency on iText 7. ")]
+    public abstract class IsisMttObjectIdentifiers
 	{
 		public static readonly DerObjectIdentifier IdIsisMtt = new DerObjectIdentifier("1.3.36.8");
 

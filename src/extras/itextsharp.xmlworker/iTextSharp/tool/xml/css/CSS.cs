@@ -50,6 +50,7 @@ namespace iTextSharp.tool.xml.css {
      * CSS Property-Value container.
      *
      */
+    [Obsolete("For internal use only. If you want to use iText, please use a dependency on iText 7. ")]
     public static class CSS {
 
         /**

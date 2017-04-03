@@ -8,7 +8,8 @@ namespace Org.BouncyCastle.Crypto
 	 * a wrapper for block ciphers with a single byte block size, so that they
 	 * can be treated like stream ciphers.
 	 */
-	public class StreamBlockCipher
+	[Obsolete("For internal use only. If you want to use iText, please use a dependency on iText 7. ")]
+    public class StreamBlockCipher
 		: IStreamCipher
 	{
 		private readonly IBlockCipher cipher;

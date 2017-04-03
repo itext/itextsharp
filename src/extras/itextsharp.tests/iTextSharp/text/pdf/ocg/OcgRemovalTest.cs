@@ -48,6 +48,7 @@ using System.IO;
 using iTextSharp.testutils;
 
 namespace itextsharp.tests.iTextSharp.text.pdf.ocg {
+    [Obsolete("For internal use only. If you want to use iText, please use a dependency on iText 7. ")]
     public class OcgRemovalTest {
         private static readonly String INPUT_DIR = @"..\..\resources\text\pdf\ocg\";
         private static readonly String INPUT = INPUT_DIR + "Example.pdf";

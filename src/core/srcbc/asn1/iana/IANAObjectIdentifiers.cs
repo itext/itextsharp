@@ -1,6 +1,9 @@
+using System;
+
 namespace Org.BouncyCastle.Asn1.Iana
 {
-	public abstract class IanaObjectIdentifiers
+	[Obsolete("For internal use only. If you want to use iText, please use a dependency on iText 7. ")]
+    public abstract class IanaObjectIdentifiers
 	{
 		// id-SHA1 OBJECT IDENTIFIER ::=
 		// {iso(1) identified-organization(3) dod(6) internet(1) security(5) mechanisms(5) ipsec(8) isakmpOakley(1)}

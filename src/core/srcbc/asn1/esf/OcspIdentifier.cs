@@ -15,7 +15,8 @@ namespace Org.BouncyCastle.Asn1.Esf
 	/// }
 	/// </code>
 	/// </remarks>
-	public class OcspIdentifier
+	[Obsolete("For internal use only. If you want to use iText, please use a dependency on iText 7. ")]
+    public class OcspIdentifier
 		: Asn1Encodable
 	{
 		private readonly ResponderID		ocspResponderID;
