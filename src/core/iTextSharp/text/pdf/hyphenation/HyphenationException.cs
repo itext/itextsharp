@@ -20,6 +20,7 @@ namespace iTextSharp.text.pdf.hyphenation {
     * @author Carlos Villegas <cav@uniscope.co.jp>
     */
 	[Serializable]
+    [Obsolete("For internal use only. If you want to use iText, please use a dependency on iText 7. ")]
     public class HyphenationException : Exception {
 
         public HyphenationException(String msg) : base(msg) {

@@ -57,6 +57,7 @@ namespace iTextSharp.text.pdf.security {
      *      "G7roucf600+f03r/o0bAOQ6WAs0=", "SHA-1", "https://sede.060.gob.es/politica_de_firma_anexo_1.pdf");
      */
 
+    [Obsolete("For internal use only. If you want to use iText, please use a dependency on iText 7. ")]
     public class SignaturePolicyInfo {
         private string policyIdentifier;
         private byte[] policyHash;
@@ -118,7 +119,8 @@ namespace iTextSharp.text.pdf.security {
 
             signaturePolicyIdentifier = new SignaturePolicyIdentifier(new SignaturePolicyId(
                         DerObjectIdentifier.GetInstance(new DerObjectIdentifier(this.PolicyIdentifier.Replace("urn:oid:", ""))),
-                        new OtherHashAlgAndValue(new AlgorithmIdentifier(algId), new DerOctetString(this.PolicyHash)), spqi));
+                        new OtherHashAlgAndValue(new AlgorithmIdentifier(new DerObjectIdentifier(algId)), 
+                            new DerOctetString(this.PolicyHash)), spqi));
 
             return signaturePolicyIdentifier;
         }

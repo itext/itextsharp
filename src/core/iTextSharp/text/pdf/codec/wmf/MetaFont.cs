@@ -43,6 +43,7 @@
 using System;
 
 namespace iTextSharp.text.pdf.codec.wmf {
+    [Obsolete("For internal use only. If you want to use iText, please use a dependency on iText 7. ")]
     public class MetaFont : MetaObject {
         static string[] fontNames = {
                                         "Courier", "Courier-Bold", "Courier-Oblique", "Courier-BoldOblique",

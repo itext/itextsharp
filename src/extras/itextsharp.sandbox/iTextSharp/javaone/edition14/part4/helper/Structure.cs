@@ -40,6 +40,7 @@
     For more information, please contact iText Software Corp. at this
     address: sales@itextpdf.com
  */
+using System;
 using System.Collections.Generic;
 
 namespace iTextSharp.javaone.edition14.part4.helper
@@ -48,6 +49,7 @@ namespace iTextSharp.javaone.edition14.part4.helper
     /// MyItem implementation that gets its coordinates and color from a list
     /// of lines that belong to the same structure.
     /// </summary>
+    [Obsolete("For internal use only. If you want to use iText, please use a dependency on iText 7. ")]
     public class Structure : Line
     {
         /// <summary>

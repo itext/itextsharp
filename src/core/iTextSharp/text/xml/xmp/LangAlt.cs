@@ -45,7 +45,7 @@ using System.Text;
 using System.util;
 
 namespace iTextSharp.text.xml.xmp {
-    [Obsolete]
+    [Obsolete("For internal use only. If you want to use iText, please use a dependency on iText 7. ")]
     public class LangAlt : Properties {
 
         /** Key for the default language. */

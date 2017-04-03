@@ -54,6 +54,7 @@ using List = iTextSharp.text.List;
 
 namespace itextsharp.tests.text.pdf {
 
+    [Obsolete("For internal use only. If you want to use iText, please use a dependency on iText 7. ")]
     public class TaggedPdfTest {
 
         private const String text = "Lorem ipsum dolor sit amet," +

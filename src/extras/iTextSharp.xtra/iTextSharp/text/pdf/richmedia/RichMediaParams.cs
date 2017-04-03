@@ -51,6 +51,7 @@ namespace iTextSharp.text.pdf.richmedia {
      * See ExtensionLevel 3 p90
      * @since   5.0.0
      */
+    [Obsolete("For internal use only. If you want to use iText, please use a dependency on iText 7. ")]
     public class RichMediaParams : PdfDictionary {
 
         /**

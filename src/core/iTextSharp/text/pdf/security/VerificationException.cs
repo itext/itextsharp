@@ -41,7 +41,6 @@
     address: sales@itextpdf.com
  */
 using System;
-using Org.BouncyCastle.Crypto.Tls;
 using Org.BouncyCastle.Security;
 using Org.BouncyCastle.X509;
 
@@ -51,6 +50,7 @@ namespace iTextSharp.text.pdf.security {
  * An exception that is thrown when something is wrong with a certificate.
  */
 
+    [Obsolete("For internal use only. If you want to use iText, please use a dependency on iText 7. ")]
     public class VerificationException : GeneralSecurityException {
 
         /**

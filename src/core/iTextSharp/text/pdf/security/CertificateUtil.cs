@@ -52,6 +52,7 @@ namespace iTextSharp.text.pdf.security {
      * This class contains a series of static methods that
      * allow you to retrieve information from a Certificate.
      */
+    [Obsolete("For internal use only. If you want to use iText, please use a dependency on iText 7. ")]
     public static class CertificateUtil {
 
         // Certificate Revocation Lists
@@ -136,7 +137,7 @@ namespace iTextSharp.text.pdf.security {
          * @throws IOException
          */
         public static String GetTSAURL(X509Certificate certificate) {
-            Asn1OctetString octetString = certificate.GetExtensionValue(SecurityIDs.ID_TSA);
+            Asn1OctetString octetString = certificate.GetExtensionValue(new DerObjectIdentifier(SecurityIDs.ID_TSA));
             if (octetString == null)
                 return null;
             byte[] der = octetString.GetOctets();

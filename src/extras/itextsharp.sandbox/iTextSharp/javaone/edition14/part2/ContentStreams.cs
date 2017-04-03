@@ -40,12 +40,14 @@
     For more information, please contact iText Software Corp. at this
     address: sales@itextpdf.com
  */
+using System;
 using System.IO;
 using iTextSharp.text;
 using iTextSharp.text.pdf;
 
 namespace iTextSharp.javaone.edition14.part2
 {
+    [Obsolete("For internal use only. If you want to use iText, please use a dependency on iText 7. ")]
     public class ContentStreams
     {
         public static readonly string RESULT_HIGH = "results/javaone/edition2014/part2/hello-highlevel.pdf";

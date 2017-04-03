@@ -52,6 +52,7 @@ using iTextSharp.text.pdf.security;
 
 namespace itextsharp.tests.resources.text.signature {
     [TestFixture]
+    [Obsolete("For internal use only. If you want to use iText, please use a dependency on iText 7. ")]
     public class XadesTest : XmlDSigTest {
         public const String KEYSTORE = @"..\..\resources\text\pdf\signature\ds-ks\pkcs12";
         public const string PASSWORD = "password";
@@ -75,7 +76,8 @@ namespace itextsharp.tests.resources.text.signature {
                 ks.Write(buffer, 0, buffer.Length);
                 ks.Position = 0;
             }
-            Pkcs12Store store = new Pkcs12Store(ks, PASSWORD.ToCharArray());
+            Pkcs12Store store = new Pkcs12StoreBuilder().Build();
+            store.Load(ks, PASSWORD.ToCharArray());
             String alias = "";
             List<X509Certificate> chain = new List<X509Certificate>();
             // searching for private key
@@ -115,7 +117,8 @@ namespace itextsharp.tests.resources.text.signature {
                 ks.Write(buffer, 0, buffer.Length);
                 ks.Position = 0;
             }
-            Pkcs12Store store = new Pkcs12Store(ks, PASSWORD.ToCharArray());
+            Pkcs12Store store = new Pkcs12StoreBuilder().Build();
+            store.Load(ks, PASSWORD.ToCharArray());
             String alias = "";
             List<X509Certificate> chain = new List<X509Certificate>();
             // searching for private key
@@ -155,7 +158,8 @@ namespace itextsharp.tests.resources.text.signature {
                 ks.Write(buffer, 0, buffer.Length);
                 ks.Position = 0;
             }
-            Pkcs12Store store = new Pkcs12Store(ks, PASSWORD.ToCharArray());
+            Pkcs12Store store = new Pkcs12StoreBuilder().Build();
+            store.Load(ks, PASSWORD.ToCharArray());
             String alias = "";
             List<X509Certificate> chain = new List<X509Certificate>();
             // searching for private key
@@ -194,7 +198,8 @@ namespace itextsharp.tests.resources.text.signature {
                 ks.Write(buffer, 0, buffer.Length);
                 ks.Position = 0;
             }
-            Pkcs12Store store = new Pkcs12Store(ks, PASSWORD.ToCharArray());
+            Pkcs12Store store = new Pkcs12StoreBuilder().Build();
+            store.Load(ks, PASSWORD.ToCharArray());
             String alias = "";
             List<X509Certificate> chain = new List<X509Certificate>();
             // searching for private key

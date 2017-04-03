@@ -40,6 +40,7 @@
     For more information, please contact iText Software Corp. at this
     address: sales@itextpdf.com
  */
+using System;
 using System.Collections.Generic;
 using System.IO;
 using iTextSharp.text;
@@ -48,6 +49,7 @@ using iTextSharp.text.pdf;
 namespace iTextSharp.sandbox.images
 {
     [WrapToTest]
+    [Obsolete("For internal use only. If you want to use iText, please use a dependency on iText 7. ")]
     public class RepeatImage
     {
         public static readonly string SRC = "../../resources/pdfs/chinese.pdf";

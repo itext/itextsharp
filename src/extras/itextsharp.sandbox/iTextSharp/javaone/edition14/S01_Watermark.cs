@@ -50,6 +50,7 @@ namespace iTextSharp.javaone.edition14
     /// <summary>
     /// Example that shows how to add a watermark to a simple PDF.
     /// </summary>
+    [Obsolete("For internal use only. If you want to use iText, please use a dependency on iText 7. ")]
     public class S01_Watermark
     {
         /// <summary>

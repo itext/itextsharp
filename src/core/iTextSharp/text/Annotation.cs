@@ -52,6 +52,7 @@ namespace iTextSharp.text {
     /// </summary>
     /// <seealso cref="T:iTextSharp.text.Element"/>
     /// <seealso cref="T:iTextSharp.text.Anchor"/>
+    [Obsolete("For internal use only. If you want to use iText, please use a dependency on iText 7. ")]
     public class Annotation : IElement {
 
         // membervariables

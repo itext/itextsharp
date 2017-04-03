@@ -1,3 +1,4 @@
+using System;
 using System.Collections;
 using System.Text;
 
@@ -37,6 +38,7 @@ namespace iTextSharp.xmp.impl.xpath {
     /// 
     /// @since   28.02.2006
     /// </summary>
+    [Obsolete("For internal use only. If you want to use iText, please use a dependency on iText 7. ")]
     public class XmpPath {
         // Bits for XPathStepInfo options.
 

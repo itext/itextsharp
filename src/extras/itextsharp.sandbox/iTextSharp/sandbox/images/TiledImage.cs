@@ -40,6 +40,7 @@
     For more information, please contact iText Software Corp. at this
     address: sales@itextpdf.com
  */
+using System;
 using System.IO;
 using iTextSharp.text;
 using iTextSharp.text.pdf;
@@ -47,6 +48,7 @@ using iTextSharp.text.pdf;
 namespace iTextSharp.sandbox.images
 {
     [WrapToTest]
+    [Obsolete("For internal use only. If you want to use iText, please use a dependency on iText 7. ")]
     public class TiledImage
     {
         public static readonly string IMAGE = "../../resources/images/bruno_ingeborg.jpg";

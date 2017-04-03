@@ -60,6 +60,7 @@ namespace iTextSharp.text {
     /// </summary>
     /// <seealso cref="T:iTextSharp.text.Element"/>
     /// <seealso cref="T:iTextSharp.text.Rectangle"/>
+    [Obsolete("For internal use only. If you want to use iText, please use a dependency on iText 7. ")]
     public abstract class Image : Rectangle, IIndentable, ISpaceable, IAccessibleElement, IAlternateDescription {
     
         // static membervariables (concerning the presence of borders)

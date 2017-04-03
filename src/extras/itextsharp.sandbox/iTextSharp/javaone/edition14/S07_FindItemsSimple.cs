@@ -55,6 +55,7 @@ namespace iTextSharp.javaone.edition14
     /// we'll highlight all the different text items and images that are
     /// encountered during the parsing process.
     /// </summary>
+    [Obsolete("For internal use only. If you want to use iText, please use a dependency on iText 7. ")]
     public class S07_FindItemsSimple
     {
         /// <summary>

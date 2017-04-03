@@ -54,6 +54,7 @@ namespace iTextSharp.text.pdf.events {
     * the PdfWriter.
     */
 
+    [Obsolete("For internal use only. If you want to use iText, please use a dependency on iText 7. ")]
     public class PdfPageEventForwarder : IPdfPageEvent {
 
         /** ArrayList containing all the PageEvents that have to be executed. */

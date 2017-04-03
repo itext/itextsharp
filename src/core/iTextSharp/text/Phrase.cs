@@ -69,6 +69,7 @@ namespace iTextSharp.text {
     /// Phrase phrase5 = new Phrase(18, new Chunk("this is a phrase", FontFactory.GetFont(FontFactory.HELVETICA, 16, Font.BOLD, new Color(255, 0, 0)));</strong>
     /// </code>
     /// </example>
+    [Obsolete("For internal use only. If you want to use iText, please use a dependency on iText 7. ")]
     public class Phrase : List<IElement>, ITextElementArray {
     
         // membervariables

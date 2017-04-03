@@ -42,6 +42,7 @@
  */
 using iTextSharp.text;
 using iTextSharp.text.pdf.parser;
+using System;
 
 namespace iTextSharp.javaone.edition14.part4.helper
 {
@@ -49,6 +50,7 @@ namespace iTextSharp.javaone.edition14.part4.helper
     /// Subclass of the MyItem class that is used to store the coordinates
     /// of an image.
     /// </summary>
+    [Obsolete("For internal use only. If you want to use iText, please use a dependency on iText 7. ")]
     public class ImageItem : MyItem
     {
         /// <summary>
