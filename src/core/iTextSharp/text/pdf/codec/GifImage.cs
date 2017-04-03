@@ -54,6 +54,7 @@ namespace iTextSharp.text.pdf.codec {
     * and can be retrieved with other methods.
     * @author Paulo Soares
     */
+    [Obsolete("For internal use only. If you want to use iText, please use a dependency on iText 7. ")]
     public class GifImage {
         
         protected Stream inp;

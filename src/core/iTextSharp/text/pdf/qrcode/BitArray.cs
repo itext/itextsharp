@@ -23,6 +23,7 @@ namespace iTextSharp.text.pdf.qrcode {
      *
      * @author Sean Owen
      */
+    [Obsolete("For internal use only. If you want to use iText, please use a dependency on iText 7. ")]
     public sealed class BitArray {
 
         // TODO: I have changed these members to be public so ProGuard can inline Get() and Set(). Ideally

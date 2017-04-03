@@ -66,6 +66,7 @@ namespace iTextSharp.text.pdf.parser.clipper {
     using Path = List<IntPoint>;
     using Paths = List<List<IntPoint>>;
 
+    [Obsolete("For internal use only. If you want to use iText, please use a dependency on iText 7. ")]
     public struct DoublePoint {
         public double X;
         public double Y;
@@ -89,6 +90,7 @@ namespace iTextSharp.text.pdf.parser.clipper {
     // PolyTree & PolyNode classes
     //------------------------------------------------------------------------------
 
+    [Obsolete("For internal use only. If you want to use iText, please use a dependency on iText 7. ")]
     public class PolyTree : PolyNode {
         internal List<PolyNode> m_AllPolys = new List<PolyNode>();
 
@@ -121,6 +123,7 @@ namespace iTextSharp.text.pdf.parser.clipper {
 
     }
 
+    [Obsolete("For internal use only. If you want to use iText, please use a dependency on iText 7. ")]
     public class PolyNode {
         internal PolyNode m_Parent;
         internal Path m_polygon = new Path();
@@ -327,6 +330,7 @@ namespace iTextSharp.text.pdf.parser.clipper {
     //------------------------------------------------------------------------------
     //------------------------------------------------------------------------------
 
+    [Obsolete("For internal use only. If you want to use iText, please use a dependency on iText 7. ")]
     public struct IntPoint {
         public cInt X;
         public cInt Y;
@@ -393,6 +397,7 @@ namespace iTextSharp.text.pdf.parser.clipper {
 
     }// end struct IntPoint
 
+    [Obsolete("For internal use only. If you want to use iText, please use a dependency on iText 7. ")]
     public struct IntRect {
         public cInt left;
         public cInt top;
@@ -413,16 +418,21 @@ namespace iTextSharp.text.pdf.parser.clipper {
         }
     }
 
+    [Obsolete("For internal use only. If you want to use iText, please use a dependency on iText 7. ")]
     public enum ClipType { ctIntersection, ctUnion, ctDifference, ctXor };
+    [Obsolete("For internal use only. If you want to use iText, please use a dependency on iText 7. ")]
     public enum PolyType { ptSubject, ptClip };
 
     //By far the most widely used winding rules for polygon filling are
     //EvenOdd & NonZero (GDI, GDI+, XLib, OpenGL, Cairo, AGG, Quartz, SVG, Gr32)
     //Others rules include Positive, Negative and ABS_GTR_EQ_TWO (only in OpenGL)
     //see http://glprogramming.com/red/chapter11.html
+    [Obsolete("For internal use only. If you want to use iText, please use a dependency on iText 7. ")]
     public enum PolyFillType { pftEvenOdd, pftNonZero, pftPositive, pftNegative };
 
+    [Obsolete("For internal use only. If you want to use iText, please use a dependency on iText 7. ")]
     public enum JoinType { jtBevel, jtRound, jtMiter };
+    [Obsolete("For internal use only. If you want to use iText, please use a dependency on iText 7. ")]
     public enum EndType { etClosedPolygon, etClosedLine, etOpenButt, etOpenSquare, etOpenRound };
 
     internal enum EdgeSide { esLeft, esRight };
@@ -449,12 +459,14 @@ namespace iTextSharp.text.pdf.parser.clipper {
         internal TEdge PrevInSEL;
     };
 
+    [Obsolete("For internal use only. If you want to use iText, please use a dependency on iText 7. ")]
     public class IntersectNode {
         internal TEdge Edge1;
         internal TEdge Edge2;
         internal IntPoint Pt;
     };
 
+    [Obsolete("For internal use only. If you want to use iText, please use a dependency on iText 7. ")]
     public class MyIntersectNodeSort : IComparer<IntersectNode> {
         public int Compare(IntersectNode node1, IntersectNode node2) {
             cInt i = node2.Pt.Y - node1.Pt.Y;
@@ -508,6 +520,7 @@ namespace iTextSharp.text.pdf.parser.clipper {
         internal IntPoint OffPt;
     };
 
+    [Obsolete("For internal use only. If you want to use iText, please use a dependency on iText 7. ")]
     public class ClipperBase {
         protected const double horizontal = -3.4E+38;
         protected const int Skip = -2;
@@ -1126,6 +1139,7 @@ namespace iTextSharp.text.pdf.parser.clipper {
 
     } //end ClipperBase
 
+    [Obsolete("For internal use only. If you want to use iText, please use a dependency on iText 7. ")]
     public class Clipper : ClipperBase {
         //InitOptions that can be passed to the constructor ...
         public const int ioReverseSolution = 1;
@@ -4071,6 +4085,7 @@ namespace iTextSharp.text.pdf.parser.clipper {
 
     } //end Clipper
 
+    [Obsolete("For internal use only. If you want to use iText, please use a dependency on iText 7. ")]
     public class ClipperOffset {
         private Paths m_destPolys;
         private Path m_srcPoly;

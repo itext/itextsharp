@@ -1,9 +1,9 @@
 ﻿<?xml version="1.0" encoding="utf-8"?>
 <package xmlns="http://schemas.microsoft.com/packaging/2011/08/nuspec.xsd">
   <metadata>
-    <id>itextsharp.xmlworker</id>
-    <version>5.5.14-SNAPSHOT</version>
-    <title>iTextSharp XML Worker</title>
+    <id>xfa-itextsharp.xmlworker</id>
+    <version>2.0.8-SNAPSHOT</version>
+    <title>xfa iTextSharp XML Worker</title>
     <authors>Bruno Lowagie, Paulo Soares, et al.</authors>
     <owners>Bruno Lowagie,Paulo Soares,et al.</owners>
     <licenseUrl>https://www.gnu.org/licenses/agpl.html</licenseUrl>
@@ -32,12 +32,12 @@ XMLWorker is an extra component for iTextSharp. The first XML to PDF implementat
     <language>en-US</language>
     <tags>itext itextsharp c# csharp xml worker pdf html xhtml css</tags>
     <dependencies>
-      <dependency id="iTextSharp" version="5.5.14-SNAPSHOT" />
+      <dependency id="Xfa-iTextSharp" version="2.0.8-SNAPSHOT" />
     </dependencies>
   </metadata>
 
   <files>
-    <file src="src\extras\itextsharp.xmlworker\bin\Release\itextsharp.xmlworker.dll" target="lib\" />
+    <file src="src\extras\itextsharp.xmlworker\bin\Release\xfaitextsharp.xmlworker.dll" target="lib\" />
     <file src="gnu-agpl-v3.0.md" target="" />
     <file src="LICENSE.md" target="" />
   </files>

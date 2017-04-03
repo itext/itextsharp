@@ -51,6 +51,7 @@ namespace iTextSharp.text.pdf.draw {
     * Can also be used to create a separator chunk.
     * @since   2.1.2 
     */
+    [Obsolete("For internal use only. If you want to use iText, please use a dependency on iText 7. ")]
     public class DottedLineSeparator : LineSeparator {
 
         /** the gap between the dots. */

@@ -28,6 +28,8 @@
 //
 //        http://www.adobe.com/devnet/xmp/library/eula-xmp-library-java.html
 
+using System;
+
 namespace iTextSharp.xmp.options {
     using XMPError = XmpError;
     using XmpException = XmpException;
@@ -39,6 +41,7 @@ namespace iTextSharp.xmp.options {
     /// 
     /// @since   03.07.2006
     /// </summary>
+    [Obsolete("For internal use only. If you want to use iText, please use a dependency on iText 7. ")]
     public sealed class PropertyOptions : XmpOptions {
         public const uint NO_OPTIONS = 0x00000000;
         public const uint URI = 0x00000002;

@@ -28,6 +28,8 @@
 //
 //        http://www.adobe.com/devnet/xmp/library/eula-xmp-library-java.html
 
+using System;
+
 namespace iTextSharp.xmp.options {
     using XmpException = XmpException;
 
@@ -37,6 +39,7 @@ namespace iTextSharp.xmp.options {
     /// 
     /// @since 20.02.2006
     /// </summary>
+    [Obsolete("For internal use only. If you want to use iText, please use a dependency on iText 7. ")]
     public sealed class AliasOptions : XmpOptions {
         /// <summary>
         /// This is a direct mapping. The actual data type does not matter. </summary>

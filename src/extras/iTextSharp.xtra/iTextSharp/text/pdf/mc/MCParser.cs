@@ -56,6 +56,7 @@ namespace iTextSharp.text.pdf.mc {
      * in a marked-content sequence for every field that needs to be
      * flattened.
      */
+    [Obsolete("For internal use only. If you want to use iText, please use a dependency on iText 7. ")]
     public class MCParser {
         /** The Logger instance */
         protected static ILogger LOGGER = LoggerFactory.GetLogger(typeof(MCParser));

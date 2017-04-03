@@ -45,6 +45,7 @@ using iTextSharp.xmp;
 
 namespace iTextSharp.text.xml.xmp {
 
+    [Obsolete("For internal use only. If you want to use iText, please use a dependency on iText 7. ")]
     public class PdfProperties {
         /** Keywords. */
         public static readonly String KEYWORDS = "Keywords";

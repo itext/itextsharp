@@ -50,6 +50,7 @@ namespace iTextSharp.text.xml.simpleparser {
     * Translates a IANA encoding name to a Java encoding.
     */
 
+    [Obsolete("For internal use only. If you want to use iText, please use a dependency on iText 7. ")]
     public class IanaEncodings {
 
 	    /** The object that maps IANA to Java encodings. */

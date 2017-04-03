@@ -55,6 +55,7 @@ namespace iTextSharp.text {
     ///               <strong>new Font(Font.HELVETICA, 18, Font.BOLDITALIC, new BaseColor(0, 0, 255))</strong>);
     /// </code>
     /// </example>
+    [Obsolete("For internal use only. If you want to use iText, please use a dependency on iText 7. ")]
     public class Font : IComparable<Font> {
     
         // static membervariables for the different families

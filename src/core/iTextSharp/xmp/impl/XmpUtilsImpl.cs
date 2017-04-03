@@ -28,6 +28,7 @@
 //
 //        http://www.adobe.com/devnet/xmp/library/eula-xmp-library-java.html
 
+using System;
 using System.Collections;
 using System.Diagnostics;
 using System.Text;
@@ -39,6 +40,7 @@ namespace iTextSharp.xmp.impl {
     /// <summary>
     /// @since 11.08.2006
     /// </summary>
+    [Obsolete("For internal use only. If you want to use iText, please use a dependency on iText 7. ")]
     public class XmpUtilsImpl : XmpConst {
         private const int UCK_NORMAL = 0;
         private const int UCK_SPACE = 1;

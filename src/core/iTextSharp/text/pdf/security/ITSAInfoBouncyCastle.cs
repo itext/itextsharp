@@ -48,6 +48,7 @@ namespace iTextSharp.text.pdf.security {
      * Interface you can implement and pass to TSAClientBouncyCastle in case
      * you want to do something with the information returned
      */
+    [Obsolete("For internal use only. If you want to use iText, please use a dependency on iText 7. ")]
     public interface ITSAInfoBouncyCastle {
 
         /**

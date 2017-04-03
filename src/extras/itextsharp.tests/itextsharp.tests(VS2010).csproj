@@ -10,12 +10,13 @@
     <AppDesignerFolder>Properties</AppDesignerFolder>
     <RootNamespace>itextsharp.tests</RootNamespace>
     <AssemblyName>itextsharp.tests</AssemblyName>
-    <TargetFrameworkVersion>v2.0</TargetFrameworkVersion>
+    <TargetFrameworkVersion>v4.0</TargetFrameworkVersion>
     <FileUpgradeFlags>
     </FileUpgradeFlags>
     <UpgradeBackupLocation>
     </UpgradeBackupLocation>
     <OldToolsVersion>2.0</OldToolsVersion>
+    <TargetFrameworkProfile />
   </PropertyGroup>
   <PropertyGroup Condition=" '$(Configuration)|$(Platform)' == 'Debug|AnyCPU' ">
     <DebugSymbols>true</DebugSymbols>
@@ -62,11 +63,14 @@
     <CodeAnalysisRuleSet>AllRules.ruleset</CodeAnalysisRuleSet>
   </PropertyGroup>
   <ItemGroup>
-    <Reference Include="nunit.framework, Version=2.6.2.12296, Culture=neutral, PublicKeyToken=96d09a1eb7f44a77, processorArchitecture=MSIL">
-      <HintPath>$(SolutionDir)\packages\NUnit.2.6.2\lib\nunit.framework.dll</HintPath>
+    <Reference Include="itext.font_asian, Version=7.1.12.0, Culture=neutral, PublicKeyToken=8354ae6d2174ddca, processorArchitecture=MSIL">
+      <HintPath>$(SolutionDir)\packages\itext7.font-asian.7.1.12\lib\net40\itext.font_asian.dll</HintPath>
     </Reference>
-    <Reference Include="BouncyCastle.Crypto, Version=1.8.6.0, Culture=neutral, PublicKeyToken=0e99375e54769942">
-      <HintPath>$(SolutionDir)\packages\BouncyCastle.1.8.6.1\lib\BouncyCastle.Crypto.dll</HintPath>
+    <Reference Include="nunit.framework, Version=2.6.4.14350, Culture=neutral, PublicKeyToken=96d09a1eb7f44a77, processorArchitecture=MSIL">
+      <HintPath>$(SolutionDir)\packages\NUnit.2.6.4\lib\nunit.framework.dll</HintPath>
+    </Reference>
+    <Reference Include="BouncyCastle.Crypto, Version=1.8.5.0, Culture=neutral, PublicKeyToken=0e99375e54769942">
+      <HintPath>$(SolutionDir)\packages\Portable.BouncyCastle.1.8.5\lib\net40\BouncyCastle.Crypto.dll</HintPath>
       <Private>True</Private>
     </Reference>
     <Reference Include="System" />
@@ -436,21 +440,17 @@
     <Content Include="resources\text\pdf\TaggedPdfCopyTest\pdf\source53.pdf" />
   </ItemGroup>
   <ItemGroup>
-    <ProjectReference Include="..\..\core\itextsharp%28VS2010%29.csproj">
+    <ProjectReference Include="..\..\core\xfaitextsharp%28VS2010%29.csproj">
       <Project>{84C4FDD9-3ED7-453B-B9DA-B3ED52CB071C}</Project>
-      <Name>itextsharp%28VS2010%29</Name>
+      <Name>xfaitextsharp%28VS2010%29</Name>
     </ProjectReference>
-    <ProjectReference Include="..\iTextAsian\iTextAsian%28VS2010%29.csproj">
-      <Project>{2f467830-a94b-4c44-b17b-0a81cbdb8cb2}</Project>
-      <Name>iTextAsian%28VS2010%29</Name>
-    </ProjectReference>
-    <ProjectReference Include="..\itextsharp.pdfa\itextsharp.pdfa%28VS2010%29.csproj">
+    <ProjectReference Include="..\itextsharp.pdfa\xfaitextsharp.pdfa%28VS2010%29.csproj">
       <Project>{C892FA61-C495-4F30-8799-A198F89F23F4}</Project>
-      <Name>itextsharp.pdfa%28VS2010%29</Name>
+      <Name>xfaitextsharp.pdfa%28VS2010%29</Name>
     </ProjectReference>
-    <ProjectReference Include="..\iTextSharp.xtra\iTextSharp.xtra%28VS2010%29.csproj">
+    <ProjectReference Include="..\iTextSharp.xtra\xfaitextsharp.xtra%28VS2010%29.csproj">
       <Project>{BE1934CF-90A9-43D3-A794-7E540874EDBB}</Project>
-      <Name>itextsharp.xtra%28VS2010%29</Name>
+      <Name>xfaitextsharp.xtra%28VS2010%29</Name>
     </ProjectReference>
   </ItemGroup>
   <ItemGroup />

@@ -92,6 +92,7 @@ namespace iTextSharp.text {
     /// </example>
     /// <seealso cref="T:iTextSharp.text.Element"/>
     /// <seealso cref="T:iTextSharp.text.ListItem"/>
+    [Obsolete("For internal use only. If you want to use iText, please use a dependency on iText 7. ")]
     public class List : ITextElementArray, IIndentable, IAccessibleElement {
     
         // membervariables
