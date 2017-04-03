@@ -52,6 +52,7 @@ namespace iTextSharp.tool.xml.pipeline {
      * @author redlab_b
      *
      */
+    [Obsolete("For internal use only. If you want to use iText, please use a dependency on iText 7. ")]
     public class WritableElement : IWritable {
 
         private List<IElement> list;

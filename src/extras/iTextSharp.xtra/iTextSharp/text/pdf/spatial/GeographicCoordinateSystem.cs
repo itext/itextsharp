@@ -53,6 +53,7 @@ namespace iTextSharp.text.pdf.spatial {
      * of algorithms and parameters needed for transformations.
      * @since @5.1.0
      */
+    [Obsolete("For internal use only. If you want to use iText, please use a dependency on iText 7. ")]
     public class GeographicCoordinateSystem : CoordinateSystem {
         /**
          * Creates a GeographicCoordinateSystem.

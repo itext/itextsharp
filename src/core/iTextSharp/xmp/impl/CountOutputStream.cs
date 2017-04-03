@@ -37,6 +37,7 @@ namespace iTextSharp.xmp.impl {
     /// 
     /// @since   08.11.2006
     /// </summary>
+    [Obsolete("For internal use only. If you want to use iText, please use a dependency on iText 7. ")]
     public sealed class CountOutputStream : Stream {
         /// <summary>
         /// the decorated output stream </summary>

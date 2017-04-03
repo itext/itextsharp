@@ -45,6 +45,7 @@ using System.Collections.Generic;
 using System.Text;
 
 namespace iTextSharp.tool.xml.css {
+    [Obsolete("For internal use only. If you want to use iText, please use a dependency on iText 7. ")]
     public class CssSelector {
         private IList<ICssSelectorItem> selectorItems;
 

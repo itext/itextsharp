@@ -40,6 +40,7 @@
     For more information, please contact iText Software Corp. at this
     address: sales@itextpdf.com
  */
+using System;
 using System.util;
 namespace iTextSharp.text.pdf.parser {
 
@@ -48,6 +49,7 @@ namespace iTextSharp.text.pdf.parser {
      * A {@link RenderFilter} that only allows text within a specified rectangular region
      * @since 5.0.1
      */
+    [Obsolete("For internal use only. If you want to use iText, please use a dependency on iText 7. ")]
     public class RegionTextRenderFilter : RenderFilter {
 
         /** the region to allow text from */

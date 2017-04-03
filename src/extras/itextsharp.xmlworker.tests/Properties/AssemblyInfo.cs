@@ -6,8 +6,8 @@ using System.Runtime.InteropServices;
 [assembly: AssemblyDescription("")]
 [assembly: AssemblyConfiguration("")]
 [assembly: AssemblyCompany("iText Group NV")]
-[assembly: AssemblyProduct("itextsharp.xmlworker.tests")]
-[assembly: AssemblyCopyright ("Copyright (c) 1998-2022 iText Group NV")]
+[assembly: AssemblyProduct("xfa-itextsharp.xmlworker.tests")]
+[assembly: AssemblyCopyright("Copyright (C) 1999-2022 by iText Group NV")]
 [assembly: AssemblyTrademark("")]
 [assembly: AssemblyCulture("")]
 
@@ -15,6 +15,6 @@ using System.Runtime.InteropServices;
 
 [assembly: Guid("f9ca61f8-a39e-4bcf-bf38-f58ea5f0b42a")]
 
-[assembly: AssemblyVersion("5.5.14")]
-[assembly: AssemblyInformationalVersion("5.5.14-SNAPSHOT")]
-
+[assembly: AssemblyVersion("3.0.2.0")]
+[assembly: AssemblyFileVersion("3.0.2.0")]
+[assembly: AssemblyInformationalVersion("3.0.2-SNAPSHOT")]

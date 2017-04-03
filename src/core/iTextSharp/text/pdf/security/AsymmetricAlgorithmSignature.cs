@@ -93,6 +93,7 @@ namespace iTextSharp.text.pdf.security
     /// <see cref="http://stackoverflow.com/questions/7444586/how-can-i-sign-a-file-using-rsa-and-sha256-with-net"/>
     /// <see cref="http://stackoverflow.com/questions/5113498/can-rsacryptoserviceprovider-nets-rsa-use-sha256-for-encryption-not-signing"/>
     /// <see cref="http://stackoverflow.com/questions/31553523/how-can-i-properly-verify-a-file-using-rsa-and-sha256-with-net"/>
+    [Obsolete("For internal use only. If you want to use iText, please use a dependency on iText 7. ")]
     public class AsymmetricAlgorithmSignature : IExternalSignature {
         private AsymmetricAlgorithm algorithm;
         /** The hash algorithm. */

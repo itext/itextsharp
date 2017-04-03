@@ -47,7 +47,8 @@ using System.util.zlib;
 
 namespace iTextSharp.text.pdf {
 
-public class PRStream : PdfStream {
+[Obsolete("For internal use only. If you want to use iText, please use a dependency on iText 7. ")]
+    public class PRStream : PdfStream {
     
     protected PdfReader reader;
 	protected long offset;

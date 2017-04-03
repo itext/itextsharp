@@ -66,7 +66,8 @@ namespace iTextSharp.text
     /// <seealso cref="T:iTextSharp.text.Row"/>
     /// <seealso cref="T:iTextSharp.text.Section"/>
     /// <seealso cref="T:iTextSharp.text.Table"/>
-    public class Element 
+    [Obsolete("For internal use only. If you want to use iText, please use a dependency on iText 7. ")]
+    public class Element
     {
     
         // static membervariables (meta information)

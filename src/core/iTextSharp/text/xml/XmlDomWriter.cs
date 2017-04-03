@@ -25,6 +25,7 @@ namespace iTextSharp.text.xml {
      *
      * @author psoares
      */
+    [Obsolete("For internal use only. If you want to use iText, please use a dependency on iText 7. ")]
     public class XmlDomWriter {
         
         /** Print writer. */

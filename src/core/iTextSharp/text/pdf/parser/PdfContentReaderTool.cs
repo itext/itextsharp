@@ -52,6 +52,7 @@ namespace iTextSharp.text.pdf.parser {
      * Tool that parses the content of a PDF document.
      * @since   2.1.4
      */
+    [Obsolete("For internal use only. If you want to use iText, please use a dependency on iText 7. ")]
     public class PdfContentReaderTool {
 
         /**

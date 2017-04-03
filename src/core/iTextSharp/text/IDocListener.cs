@@ -50,6 +50,7 @@ namespace iTextSharp.text {
     /// <seealso cref="T:iTextSharp.text.IElementListener"/>
     /// <seealso cref="T:iTextSharp.text.Document"/>
     /// <seealso cref="T:iTextSharp.text.DocWriter"/>
+    [Obsolete("For internal use only. If you want to use iText, please use a dependency on iText 7. ")]
     public interface IDocListener : IElementListener, IDisposable {
     
         // methods

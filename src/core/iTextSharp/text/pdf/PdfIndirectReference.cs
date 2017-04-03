@@ -59,6 +59,7 @@ namespace iTextSharp.text.pdf {
      * @see        PdfIndirectObject
      */
 
+    [Obsolete("For internal use only. If you want to use iText, please use a dependency on iText 7. ")]
     public class PdfIndirectReference : PdfObject {
     
         // membervariables

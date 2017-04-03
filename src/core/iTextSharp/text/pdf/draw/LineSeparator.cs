@@ -40,6 +40,8 @@
     For more information, please contact iText Software Corp. at this
     address: sales@itextpdf.com
  */
+using System;
+ 
 namespace iTextSharp.text.pdf.draw {
 
     /**
@@ -49,6 +51,7 @@ namespace iTextSharp.text.pdf.draw {
     * @author   Paulo Soares
     * @since    2.1.2
     */
+    [Obsolete("For internal use only. If you want to use iText, please use a dependency on iText 7. ")]
     public class LineSeparator : VerticalPositionMark {
         
         /** The thickness of the line. */

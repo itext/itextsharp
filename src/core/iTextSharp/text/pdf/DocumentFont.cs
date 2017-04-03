@@ -46,6 +46,7 @@ using iTextSharp.text.pdf.fonts.cmaps;
 using iTextSharp.text.io;
 
 namespace iTextSharp.text.pdf {
+    [Obsolete("For internal use only. If you want to use iText, please use a dependency on iText 7. ")]
     public class DocumentFont : BaseFont {
         
         // code, [glyph, width]

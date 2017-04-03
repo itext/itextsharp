@@ -28,6 +28,7 @@
 //
 //        http://www.adobe.com/devnet/xmp/library/eula-xmp-library-java.html
 
+using System;
 using iTextSharp.xmp.impl;
 using iTextSharp.xmp.impl.xpath;
 
@@ -77,6 +78,7 @@ namespace iTextSharp.xmp {
     /// 
     /// @since 25.01.2006
     /// </summary>
+    [Obsolete("For internal use only. If you want to use iText, please use a dependency on iText 7. ")]
     public static class XmpPathFactory {
         /// <summary>
         /// Compose the path expression for an item in an array.

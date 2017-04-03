@@ -50,6 +50,7 @@ namespace iTextSharp.text.pdf {
      * Implements the pattern.
      */
 
+    [Obsolete("For internal use only. If you want to use iText, please use a dependency on iText 7. ")]
     public sealed class PdfPatternPainter : PdfTemplate {
     
         internal float xstep, ystep;

@@ -18,6 +18,7 @@ namespace iTextSharp.xmp {
     /// 
     /// @since 21.02.2006
     /// </summary>
+    [Obsolete("For internal use only. If you want to use iText, please use a dependency on iText 7. ")]
     public class XmpUtils {
         /// <summary>
         /// Private constructor </summary>

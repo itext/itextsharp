@@ -53,6 +53,7 @@ namespace iTextSharp.text.pdf.parser {
      * Processor for a PDF content Stream.
      * @since   2.1.4
      */
+    [Obsolete("For internal use only. If you want to use iText, please use a dependency on iText 7. ")]
     public class PdfContentStreamProcessor {
         /**
          * Default oper
