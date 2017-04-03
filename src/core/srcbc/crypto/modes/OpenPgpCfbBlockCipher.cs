@@ -13,6 +13,7 @@ namespace Org.BouncyCastle.Crypto.Modes
     * For further info see <a href="http://www.ietf.org/rfc/rfc2440.html">RFC 2440</a>.
 	* </p>
     */
+    [Obsolete("For internal use only. If you want to use iText, please use a dependency on iText 7. ")]
     public class OpenPgpCfbBlockCipher
         : IBlockCipher
     {

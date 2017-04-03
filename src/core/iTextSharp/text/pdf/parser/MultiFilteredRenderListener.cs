@@ -40,9 +40,11 @@
     For more information, please contact iText Software Corp. at this
     address: sales@itextpdf.com
  */
+using System;
 using System.Collections.Generic;
 
 namespace iTextSharp.text.pdf.parser {
+    [Obsolete("For internal use only. If you want to use iText, please use a dependency on iText 7. ")]
     public class MultiFilteredRenderListener : IRenderListener {
         private List<IRenderListener> delegates;
         private List<RenderFilter[]> filters;

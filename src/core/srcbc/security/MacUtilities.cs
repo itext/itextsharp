@@ -1,3 +1,4 @@
+using System;
 using System.Collections;
 
 using Org.BouncyCastle.Asn1;
@@ -14,6 +15,7 @@ namespace Org.BouncyCastle.Security
     /// <remarks>
     ///  Utility class for creating HMac object from their names/Oids
     /// </remarks>
+    [Obsolete("For internal use only. If you want to use iText, please use a dependency on iText 7. ")]
     public sealed class MacUtilities
     {
         private MacUtilities()

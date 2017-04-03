@@ -11,7 +11,8 @@ namespace Org.BouncyCastle.Crypto.Engines
 	* Note: this implementation is based on information prior to readonly NIST publication.
 	* </p>
 	*/
-	public class RijndaelEngine
+	[Obsolete("For internal use only. If you want to use iText, please use a dependency on iText 7. ")]
+    public class RijndaelEngine
 		: IBlockCipher
 	{
 		private static readonly int MAXROUNDS = 14;

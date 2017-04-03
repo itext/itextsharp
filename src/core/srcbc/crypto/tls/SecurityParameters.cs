@@ -2,7 +2,8 @@ using System;
 
 namespace Org.BouncyCastle.Crypto.Tls
 {
-	public class SecurityParameters
+	[Obsolete("For internal use only. If you want to use iText, please use a dependency on iText 7. ")]
+    public class SecurityParameters
 	{
 		internal byte[] clientRandom = null;
 		internal byte[] serverRandom = null;

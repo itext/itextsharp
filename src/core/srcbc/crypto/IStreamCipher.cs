@@ -3,6 +3,7 @@ using System;
 namespace Org.BouncyCastle.Crypto
 {
 	/// <summary>The interface stream ciphers conform to.</summary>
+    [Obsolete("For internal use only. If you want to use iText, please use a dependency on iText 7. ")]
     public interface IStreamCipher
     {
 		/// <summary>The name of the algorithm this cipher implements.</summary>

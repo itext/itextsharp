@@ -24,6 +24,7 @@ namespace iTextSharp.text.pdf.qrcode {
      * @author Sean Owen
      */
 	[Serializable]
+    [Obsolete("For internal use only. If you want to use iText, please use a dependency on iText 7. ")]
     public sealed class ReedSolomonException : Exception {
 
         public ReedSolomonException(String message)

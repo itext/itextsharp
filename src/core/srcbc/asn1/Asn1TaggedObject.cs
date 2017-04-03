@@ -9,6 +9,7 @@ namespace Org.BouncyCastle.Asn1
      * a [n] where n is some number - these are assumed to follow the construction
      * rules (as with sequences).
      */
+    [Obsolete("For internal use only. If you want to use iText, please use a dependency on iText 7. ")]
     public abstract class Asn1TaggedObject
 		: Asn1Object, Asn1TaggedObjectParser
     {

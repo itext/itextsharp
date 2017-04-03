@@ -12,7 +12,8 @@ namespace Org.BouncyCastle.Crypto.Modes
 	/// Implements the Galois/Counter mode (GCM) detailed in
 	/// NIST Special Publication 800-38D.
 	/// </summary>
-	public class GcmBlockCipher
+	[Obsolete("For internal use only. If you want to use iText, please use a dependency on iText 7. ")]
+    public class GcmBlockCipher
 		: IAeadBlockCipher
 	{
 		private const int BlockSize = 16;

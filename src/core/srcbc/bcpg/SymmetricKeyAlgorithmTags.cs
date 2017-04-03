@@ -1,8 +1,11 @@
+using System;
+
 namespace Org.BouncyCastle.Bcpg
 {
     /**
     * Basic tags for symmetric key algorithms
     */
+    [Obsolete("For internal use only. If you want to use iText, please use a dependency on iText 7. ")]
     public enum SymmetricKeyAlgorithmTag
     {
         Null = 0,        // Plaintext or unencrypted data

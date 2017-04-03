@@ -8,7 +8,8 @@ namespace Org.BouncyCastle.Cms
 	/**
 	* a holding class for a file of data to be processed.
 	*/
-	public class CmsProcessableFile
+	[Obsolete("For internal use only. If you want to use iText, please use a dependency on iText 7. ")]
+    public class CmsProcessableFile
 		: CmsProcessable, CmsReadable
 	{
 		private const int DefaultBufSize = 32 * 1024;

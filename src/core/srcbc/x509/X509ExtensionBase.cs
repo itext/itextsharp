@@ -6,7 +6,8 @@ using Org.BouncyCastle.Utilities.Collections;
 
 namespace Org.BouncyCastle.X509
 {
-	public abstract class X509ExtensionBase
+	[Obsolete("For internal use only. If you want to use iText, please use a dependency on iText 7. ")]
+    public abstract class X509ExtensionBase
 		: IX509Extension
 	{
 		protected abstract X509Extensions GetX509Extensions();

@@ -44,6 +44,7 @@ using System;
 
 namespace iTextSharp.text.pdf.interfaces {
 
+    [Obsolete("For internal use only. If you want to use iText, please use a dependency on iText 7. ")]
     public interface IPdfXConformance : IPdfIsoConformance {
         /**
         * Sets the PDF/X conformance level.

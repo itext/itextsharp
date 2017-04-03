@@ -11,7 +11,8 @@ using Org.BouncyCastle.Utilities.IO;
 
 namespace Org.BouncyCastle.X509
 {
-	public class X509AttrCertParser
+	[Obsolete("For internal use only. If you want to use iText, please use a dependency on iText 7. ")]
+    public class X509AttrCertParser
 	{
 		private static readonly PemParser PemAttrCertParser = new PemParser("ATTRIBUTE CERTIFICATE");
 

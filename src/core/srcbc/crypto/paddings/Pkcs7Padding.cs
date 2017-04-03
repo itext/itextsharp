@@ -8,6 +8,7 @@ namespace Org.BouncyCastle.Crypto.Paddings
     /**
     * A padder that adds Pkcs7/Pkcs5 padding to a block.
     */
+    [Obsolete("For internal use only. If you want to use iText, please use a dependency on iText 7. ")]
     public class Pkcs7Padding
 		: IBlockCipherPadding
     {

@@ -12,7 +12,8 @@ namespace Org.BouncyCastle.Cms
 	/**
 	* containing class for an CMS Authenticated Data object
 	*/
-	public class CmsAuthenticatedData
+	[Obsolete("For internal use only. If you want to use iText, please use a dependency on iText 7. ")]
+    public class CmsAuthenticatedData
 	{
 		internal RecipientInformationStore recipientInfoStore;
 		internal ContentInfo contentInfo;

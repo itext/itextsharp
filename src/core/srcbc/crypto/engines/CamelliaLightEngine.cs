@@ -7,7 +7,8 @@ namespace Org.BouncyCastle.Crypto.Engines
 	/**
 	* Camellia - based on RFC 3713, smaller implementation, about half the size of CamelliaEngine.
 	*/
-	public class CamelliaLightEngine
+	[Obsolete("For internal use only. If you want to use iText, please use a dependency on iText 7. ")]
+    public class CamelliaLightEngine
 		: IBlockCipher
 	{
 		private const int BLOCK_SIZE = 16;

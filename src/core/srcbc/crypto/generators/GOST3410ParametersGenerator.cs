@@ -9,7 +9,8 @@ namespace Org.BouncyCastle.Crypto.Generators
 	/**
 	 * generate suitable parameters for GOST3410.
 	 */
-	public class Gost3410ParametersGenerator
+	[Obsolete("For internal use only. If you want to use iText, please use a dependency on iText 7. ")]
+    public class Gost3410ParametersGenerator
 	{
 		private int             size;
 		private int             typeproc;

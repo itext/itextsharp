@@ -1,8 +1,11 @@
+using System;
+
 namespace Org.BouncyCastle.Crypto.Tls
 {
 	/// <summary>
 	/// RFC 2246 7.4.4
 	/// </summary>
+    [Obsolete("For internal use only. If you want to use iText, please use a dependency on iText 7. ")]
     public enum ClientCertificateType : byte
 	{
 		rsa_sign = 1,

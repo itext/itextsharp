@@ -85,7 +85,8 @@ namespace itextsharp.tests.iTextSharp.text.pdf {
             exceptions.Add(thread, exception);
         }
 
-        public class MultithreadedTtfTestSettableLatch {
+        [Obsolete("For internal use only. If you want to use iText, please use a dependency on iText 7. ")]
+    public class MultithreadedTtfTestSettableLatch {
             private readonly Object _lock;
             private int interrups;
             private int locks;

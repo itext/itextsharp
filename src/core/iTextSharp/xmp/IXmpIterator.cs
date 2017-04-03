@@ -28,6 +28,7 @@
 //
 //        http://www.adobe.com/devnet/xmp/library/eula-xmp-library-java.html
 
+using System;
 using System.Collections;
 
 namespace iTextSharp.xmp {
@@ -84,6 +85,7 @@ namespace iTextSharp.xmp {
     /// 
     /// @since 25.01.2006
     /// </summary>
+    [Obsolete("For internal use only. If you want to use iText, please use a dependency on iText 7. ")]
     public interface IXmpIterator : IEnumerator {
         /// <summary>
         /// Skip the subtree below the current node when <code>next()</code> is

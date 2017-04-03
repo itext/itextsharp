@@ -58,6 +58,7 @@ namespace iTextSharp.xtra.iTextSharp.text.pdf.pdfcleanup {
      *
      * @since 5.5.5
      */
+    [Obsolete("For internal use only. If you want to use iText, please use a dependency on iText 7. ")]
     public class PdfCleanUpProcessor {
 
         /**

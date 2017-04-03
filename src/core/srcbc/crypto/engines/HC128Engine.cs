@@ -18,7 +18,8 @@ namespace Org.BouncyCastle.Crypto.Engines
 	* http://www.ecrypt.eu.org/stream/hcp3.html
 	* </p>
 	*/
-	public class HC128Engine
+	[Obsolete("For internal use only. If you want to use iText, please use a dependency on iText 7. ")]
+    public class HC128Engine
 		: IStreamCipher
 	{
 		private uint[] p = new uint[512];

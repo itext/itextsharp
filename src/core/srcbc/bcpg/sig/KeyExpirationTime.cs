@@ -7,6 +7,7 @@ namespace Org.BouncyCastle.Bcpg.Sig
     /**
     * packet giving time after creation at which the key expires.
     */
+    [Obsolete("For internal use only. If you want to use iText, please use a dependency on iText 7. ")]
     public class KeyExpirationTime
         : SignatureSubpacket
     {

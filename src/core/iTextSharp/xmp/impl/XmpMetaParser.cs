@@ -57,6 +57,7 @@ namespace iTextSharp.xmp.impl {
     /// 
     /// @since 01.02.2006
     /// </summary>
+    [Obsolete("For internal use only. If you want to use iText, please use a dependency on iText 7. ")]
     public class XmpMetaParser {
         private static readonly object XmpRdf = new object();
 

@@ -3,7 +3,8 @@ using System;
 namespace Org.BouncyCastle.Crypto.Prng
 {
 	/// <remarks>Generic interface for objects generating random bytes.</remarks>
-	public interface IRandomGenerator
+	[Obsolete("For internal use only. If you want to use iText, please use a dependency on iText 7. ")]
+    public interface IRandomGenerator
 	{
 		/// <summary>Add more seed material to the generator.</summary>
 		/// <param name="seed">A byte array to be mixed into the generator's state.</param>

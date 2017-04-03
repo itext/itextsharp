@@ -58,6 +58,7 @@ namespace iTextSharp.text.pdf {
     * calls or by FDF merging.
     * @author Paulo Soares
     */
+    [Obsolete("For internal use only. If you want to use iText, please use a dependency on iText 7. ")]
     public class AcroFields {
         public const int DA_FONT = 0;
         public const int DA_SIZE = 1;

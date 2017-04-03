@@ -11,7 +11,8 @@ namespace Org.BouncyCastle.Pkix
 	/// <summary>
     /// Summary description for PkixBuilderParameters.
 	/// </summary>
-	public class PkixBuilderParameters
+	[Obsolete("For internal use only. If you want to use iText, please use a dependency on iText 7. ")]
+    public class PkixBuilderParameters
 		: PkixParameters
 	{
 		private int maxPathLength = 5;

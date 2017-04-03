@@ -1,8 +1,11 @@
+using System;
+
 namespace Org.BouncyCastle.Crypto.Tls
 {
 	/// <summary>
 	/// RFC 4492 5.4
 	/// </summary>
+    [Obsolete("For internal use only. If you want to use iText, please use a dependency on iText 7. ")]
     public enum ECCurveType : byte
 	{
 		/**

@@ -46,6 +46,7 @@ namespace iTextSharp.text.io {
     /**
      * @since 5.3.5
      */
+    [Obsolete("For internal use only. If you want to use iText, please use a dependency on iText 7. ")]
     public class GetBufferedRandomAccessSource : IRandomAccessSource {
         /**
          * The source

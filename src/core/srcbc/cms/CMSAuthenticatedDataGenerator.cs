@@ -26,7 +26,8 @@ namespace Org.BouncyCastle.Cms
 	 *      CMSAuthenticatedData         data = fact.generate(content, algorithm, "BC");
 	 * </pre>
 	 */
-	public class CmsAuthenticatedDataGenerator
+	[Obsolete("For internal use only. If you want to use iText, please use a dependency on iText 7. ")]
+    public class CmsAuthenticatedDataGenerator
 	    : CmsAuthenticatedGenerator
 	{
 	    /**

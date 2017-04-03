@@ -52,6 +52,7 @@ using Org.BouncyCastle.Asn1.Esf;
 
 namespace iTextSharp.text.pdf.security {
 
+    [Obsolete("For internal use only. If you want to use iText, please use a dependency on iText 7. ")]
     public enum CryptoStandard {
         CMS, CADES
     }
@@ -60,6 +61,7 @@ namespace iTextSharp.text.pdf.security {
      * Class that signs your PDF.
      * @author Paulo Soares
      */
+    [Obsolete("For internal use only. If you want to use iText, please use a dependency on iText 7. ")]
     public static class MakeSignature {
         /** The Logger instance. */
         private static readonly ILogger LOGGER = LoggerFactory.GetLogger(typeof(MakeSignature));

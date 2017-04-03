@@ -16,7 +16,8 @@ namespace Org.BouncyCastle.Asn1.Mozilla
 	 *
 	 *  </pre>
 	 */
-	public class PublicKeyAndChallenge
+	[Obsolete("For internal use only. If you want to use iText, please use a dependency on iText 7. ")]
+    public class PublicKeyAndChallenge
 		: Asn1Encodable
 	{
 		private Asn1Sequence			pkacSeq;

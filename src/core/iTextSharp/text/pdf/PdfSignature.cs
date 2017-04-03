@@ -40,6 +40,8 @@
     For more information, please contact iText Software Corp. at this
     address: sales@itextpdf.com
  */
+
+using System;
 using iTextSharp.text.pdf.security;
 
 namespace iTextSharp.text.pdf {
@@ -48,6 +50,7 @@ namespace iTextSharp.text.pdf {
      *
      * @author Paulo Soares
      */
+    [Obsolete("For internal use only. If you want to use iText, please use a dependency on iText 7. ")]
     public class PdfSignature : PdfDictionary {
 
         /** Creates new PdfSignature */

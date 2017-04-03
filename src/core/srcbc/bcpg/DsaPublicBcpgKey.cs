@@ -5,7 +5,8 @@ using Org.BouncyCastle.Math;
 namespace Org.BouncyCastle.Bcpg
 {
 	/// <remarks>Base class for a DSA public key.</remarks>
-	public class DsaPublicBcpgKey
+	[Obsolete("For internal use only. If you want to use iText, please use a dependency on iText 7. ")]
+    public class DsaPublicBcpgKey
 		: BcpgObject, IBcpgKey
     {
         private readonly MPInteger p, q, g, y;

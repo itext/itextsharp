@@ -7,6 +7,7 @@ namespace Org.BouncyCastle.Crypto.Digests
     /**
     * implementation of MD5 as outlined in "Handbook of Applied Cryptography", pages 346 - 347.
     */
+    [Obsolete("For internal use only. If you want to use iText, please use a dependency on iText 7. ")]
     public class MD5Digest
         : GeneralDigest
     {

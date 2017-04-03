@@ -11,6 +11,7 @@ namespace Org.BouncyCastle.Crypto.Generators
      * This Generates keys consistent for use with ElGamal as described in
      * page 164 of "Handbook of Applied Cryptography".</p>
      */
+    [Obsolete("For internal use only. If you want to use iText, please use a dependency on iText 7. ")]
     public class ElGamalKeyPairGenerator
 		: IAsymmetricCipherKeyPairGenerator
     {

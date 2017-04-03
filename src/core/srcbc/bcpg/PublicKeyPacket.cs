@@ -6,6 +6,7 @@ using Org.BouncyCastle.Utilities.Date;
 namespace Org.BouncyCastle.Bcpg
 {
 	/// <remarks>Basic packet for a PGP public key.</remarks>
+    [Obsolete("For internal use only. If you want to use iText, please use a dependency on iText 7. ")]
     public class PublicKeyPacket
         : ContainedPacket //, PublicKeyAlgorithmTag
     {

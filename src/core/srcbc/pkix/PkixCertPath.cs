@@ -78,7 +78,8 @@ namespace Org.BouncyCastle.Pkix
 	/// <summary>
 	/// CertPath implementation for X.509 certificates.
 	/// </summary>
-	public class PkixCertPath
+	[Obsolete("For internal use only. If you want to use iText, please use a dependency on iText 7. ")]
+    public class PkixCertPath
 //		: CertPath
 	{
 		internal static readonly IList certPathEncodings;

@@ -50,6 +50,7 @@ namespace iTextSharp.xmp {
     /// without a time has zeros for all the time fields. A time without a date has zeros for all date
     /// fields (year, month, and day).
     /// </summary>
+    [Obsolete("For internal use only. If you want to use iText, please use a dependency on iText 7. ")]
     public interface IXmpDateTime : IComparable {
         /// <returns> Returns the year, can be negative. </returns>
         int Year { get; set; }

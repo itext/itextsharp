@@ -12,7 +12,8 @@ namespace Org.BouncyCastle.Crypto.Signers
 	/**
 	 * EC-NR as described in IEEE 1363-2000
 	 */
-	public class ECNRSigner
+	[Obsolete("For internal use only. If you want to use iText, please use a dependency on iText 7. ")]
+    public class ECNRSigner
 		: IDsa
 	{
 		private bool			forSigning;

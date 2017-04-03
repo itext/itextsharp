@@ -1,7 +1,9 @@
+using System;
 using Org.BouncyCastle.Asn1;
 
 namespace Org.BouncyCastle.Asn1.Pkcs
 {
+    [Obsolete("For internal use only. If you want to use iText, please use a dependency on iText 7. ")]
     public class AuthenticatedSafe
         : Asn1Encodable
     {

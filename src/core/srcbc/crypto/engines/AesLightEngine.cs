@@ -32,7 +32,8 @@ namespace Org.BouncyCastle.Crypto.Engines
 	* for round precomputation, but it has the smallest foot print.
 	* </p>
 	*/
-	public class AesLightEngine
+	[Obsolete("For internal use only. If you want to use iText, please use a dependency on iText 7. ")]
+    public class AesLightEngine
 		: IBlockCipher
 	{
 		// The S box

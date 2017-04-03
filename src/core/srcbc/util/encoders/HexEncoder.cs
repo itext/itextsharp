@@ -3,7 +3,8 @@ using System.IO;
 
 namespace Org.BouncyCastle.Utilities.Encoders
 {
-	public class HexEncoder
+	[Obsolete("For internal use only. If you want to use iText, please use a dependency on iText 7. ")]
+    public class HexEncoder
 		: IEncoder
 	{
 		private static readonly byte[] encodingTable =

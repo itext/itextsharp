@@ -5,6 +5,7 @@ namespace Org.BouncyCastle.Utilities
 {
 
     /// <summary> General array utilities.</summary>
+    [Obsolete("For internal use only. If you want to use iText, please use a dependency on iText 7. ")]
     public sealed class Arrays
     {
         private Arrays()
