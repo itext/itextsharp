@@ -51,6 +51,7 @@ namespace iTextSharp.text.pdf {
     * Reads a XFDF.
     * @author Leonard Rosenthol (leonardr@pdfsages.com)
     */
+    [Obsolete("For internal use only. If you want to use iText, please use a dependency on iText 7. ")]
     public class XfdfReader : ISimpleXMLDocHandler {
         // stuff used during parsing to handle state
         private bool foundRoot = false;

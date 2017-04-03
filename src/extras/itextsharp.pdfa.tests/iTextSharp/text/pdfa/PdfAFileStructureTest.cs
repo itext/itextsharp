@@ -49,6 +49,7 @@ using iTextSharp.text.pdf;
 namespace iTextSharp.text.pdfa
 {
     [TestFixture]
+    [Obsolete("For internal use only. If you want to use iText, please use a dependency on iText 7. ")]
     public class PdfAFileStructureTest
     {
         /*

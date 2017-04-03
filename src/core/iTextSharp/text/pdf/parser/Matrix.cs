@@ -49,6 +49,7 @@ namespace iTextSharp.text.pdf.parser {
      * and allows you to do some math with matrices.
      * @since   2.1.4
      */
+    [Obsolete("For internal use only. If you want to use iText, please use a dependency on iText 7. ")]
     public class Matrix {
         /** the row=1, col=1 position ('a') in the matrix. */
         public const int I11 = 0; 

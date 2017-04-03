@@ -46,6 +46,7 @@ using System.Text;
 using System.Text.RegularExpressions;
 
 namespace iTextSharp.tool.xml.css.parser {
+    [Obsolete("For internal use only. If you want to use iText, please use a dependency on iText 7. ")]
     public class CssSelectorParser {
         private const String selectorPatternString =
             "(\\*)|([_a-zA-Z][\\w-]*)|(\\.[_a-zA-Z][\\w-]*)|(#[_a-z][\\w-]*)|(\\[[_a-zA-Z][\\w-]*(([~^$*|])?=((\"[\\w-]+\")|([\\w-]+)))?\\])|(:[\\w()-]*)|( )|(\\+)|(>)|(~)";

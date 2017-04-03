@@ -49,6 +49,7 @@ using iTextSharp.text.xml.xmp;
 using iTextSharp.xmp;
 
 namespace itextsharp.pdfa.iTextSharp.text.pdf.intern {
+    [Obsolete("For internal use only. If you want to use iText, please use a dependency on iText 7. ")]
     public class ZugferdChecker : PdfA3Checker {
 
         private IList<PdfFileSpecification> attachments = new List<PdfFileSpecification>();

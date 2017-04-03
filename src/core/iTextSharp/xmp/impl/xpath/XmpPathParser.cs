@@ -28,6 +28,7 @@
 //
 //        http://www.adobe.com/devnet/xmp/library/eula-xmp-library-java.html
 
+using System;
 using iTextSharp.xmp.properties;
 
 namespace iTextSharp.xmp.impl.xpath {
@@ -37,6 +38,7 @@ namespace iTextSharp.xmp.impl.xpath {
      * @since   01.03.2006
      */
 
+    [Obsolete("For internal use only. If you want to use iText, please use a dependency on iText 7. ")]
     public sealed class XmpPathParser {
         /**
 	     * Private constructor
@@ -457,6 +459,7 @@ namespace iTextSharp.xmp.impl.xpath {
      * This objects contains all needed char positions to parse.
      */
 
+    [Obsolete("For internal use only. If you want to use iText, please use a dependency on iText 7. ")]
     public class PathPosition {
         /** the complete path */
         /** the end of a segment name */

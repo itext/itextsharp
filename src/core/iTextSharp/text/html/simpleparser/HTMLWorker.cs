@@ -59,7 +59,7 @@ namespace iTextSharp.text.html.simpleparser {
      * We've completely rewritten HTML to PDF conversion and we made it a separate project named XML Worker.
      * @deprecated since 5.5.2; please switch to XML Worker instead (this is a separate project)
      */
-    [Obsolete]
+    [Obsolete("For internal use only. If you want to use iText, please use a dependency on iText 7. ")]
     public class HTMLWorker : ISimpleXMLDocHandler, IDocListener {
 
         private static readonly ILogger LOGGER = LoggerFactory.GetLogger(typeof(HTMLWorker));

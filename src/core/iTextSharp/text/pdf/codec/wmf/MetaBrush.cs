@@ -44,6 +44,7 @@ using System;
 using iTextSharp.text;
 
 namespace iTextSharp.text.pdf.codec.wmf {
+    [Obsolete("For internal use only. If you want to use iText, please use a dependency on iText 7. ")]
     public class MetaBrush : MetaObject {
 
         public const int BS_SOLID = 0;

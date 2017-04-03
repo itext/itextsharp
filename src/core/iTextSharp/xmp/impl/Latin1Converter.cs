@@ -35,6 +35,7 @@ namespace iTextSharp.xmp.impl {
     /// <summary>
     /// @since   12.10.2006
     /// </summary>
+    [Obsolete("For internal use only. If you want to use iText, please use a dependency on iText 7. ")]
     public class Latin1Converter {
         private const int STATE_START = 0;
         private const int STATE_UTF8CHAR = 11;

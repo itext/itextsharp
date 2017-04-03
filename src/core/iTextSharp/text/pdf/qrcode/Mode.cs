@@ -23,6 +23,7 @@ namespace iTextSharp.text.pdf.qrcode {
      *
      * @author Sean Owen
      */
+    [Obsolete("For internal use only. If you want to use iText, please use a dependency on iText 7. ")]
     public sealed class Mode {
 
         // No, we can't use an enum here. J2ME doesn't support it.

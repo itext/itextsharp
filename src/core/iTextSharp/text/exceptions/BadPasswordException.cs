@@ -51,6 +51,7 @@ namespace iTextSharp.text.exceptions {
      * @since 2.1.5 It was written for iText 2.0.8, but moved to another package
      */
 	[Serializable]
+    [Obsolete("For internal use only. If you want to use iText, please use a dependency on iText 7. ")]
     public class BadPasswordException : IOException {
 
         /**

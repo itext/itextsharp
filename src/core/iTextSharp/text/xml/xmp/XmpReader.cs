@@ -52,7 +52,7 @@ namespace iTextSharp.text.xml.xmp {
     * Allows you to replace the contents of a specific tag.
     * @since 2.1.3
     */
-    [Obsolete]
+    [Obsolete("For internal use only. If you want to use iText, please use a dependency on iText 7. ")]
     public class XmpReader {
 
 
