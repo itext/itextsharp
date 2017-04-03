@@ -40,10 +40,12 @@
     For more information, please contact iText Software Corp. at this
     address: sales@itextpdf.com
  */
+using System;
 using Org.BouncyCastle.X509;
 
 namespace iTextSharp.text.pdf {
 
+    [Obsolete("For internal use only. If you want to use iText, please use a dependency on iText 7. ")]
     public class PdfPublicKeyRecipient {
 
         private X509Certificate certificate = null;

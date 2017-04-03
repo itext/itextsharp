@@ -72,6 +72,7 @@ namespace iTextSharp.text.pdf.codec {
     *
     * @see TIFFField
     */
+    [Obsolete("For internal use only. If you want to use iText, please use a dependency on iText 7. ")]
     public class TIFFDirectory {
         
         /** A bool storing the endianness of the stream. */

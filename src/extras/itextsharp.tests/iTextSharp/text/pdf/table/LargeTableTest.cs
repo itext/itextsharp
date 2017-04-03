@@ -50,6 +50,7 @@ using NUnit.Framework;
 namespace itextsharp.tests.iTextSharp.text.pdf.table {
 
     [TestFixture]
+    [Obsolete("For internal use only. If you want to use iText, please use a dependency on iText 7. ")]
     public class LargeTableTest {
         private static readonly String CMP_FOLDER = @"..\..\resources\text\pdf\table\LargeTableTest\";
         private static readonly String OUTPUT_FOLDER = @"table\LargeTableTest\";

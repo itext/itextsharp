@@ -53,6 +53,7 @@ namespace iTextSharp.text.pdf.codec {
      * Modified from original LZWCompressor to change interface to passing a
      * buffer of data to be compressed.
      **/
+    [Obsolete("For internal use only. If you want to use iText, please use a dependency on iText 7. ")]
     public class LZWCompressor {
         /** base underlying code size of data being compressed 8 for TIFF, 1 to 8 for GIF **/
         int codeSize_;

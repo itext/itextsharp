@@ -40,6 +40,7 @@
     For more information, please contact iText Software Corp. at this
     address: sales@itextpdf.com
  */
+using System;
 using System.util;
 namespace iTextSharp.text.pdf.parser {
 
@@ -47,6 +48,7 @@ namespace iTextSharp.text.pdf.parser {
      * Allows you to find the rectangle that contains all the text in a page.
      * @since 5.0.2
      */
+    [Obsolete("For internal use only. If you want to use iText, please use a dependency on iText 7. ")]
     public class TextMarginFinder : IRenderListener {
         private RectangleJ textRectangle = null;
         

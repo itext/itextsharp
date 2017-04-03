@@ -57,6 +57,7 @@ namespace iTextSharp.text.pdf.parser {
      * 
      * @since   2.1.5
      */
+    [Obsolete("For internal use only. If you want to use iText, please use a dependency on iText 7. ")]
     public class SimpleTextExtractionStrategy : ITextExtractionStrategy {
 
         private Vector lastStart;
