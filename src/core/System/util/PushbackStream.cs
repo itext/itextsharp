@@ -45,7 +45,8 @@ using System.IO;
 
 namespace System.util
 {
-	public class PushbackStream
+	[Obsolete("For internal use only. If you want to use iText, please use a dependency on iText 7. ")]
+    public class PushbackStream
 		: FilterStream
 	{
 		private int buf = -1;

@@ -28,7 +28,8 @@ namespace Org.BouncyCastle.Crypto.Macs
 	/**
 	* implementation of GOST 28147-89 MAC
 	*/
-	public class Gost28147Mac : IMac
+	[Obsolete("For internal use only. If you want to use iText, please use a dependency on iText 7. ")]
+    public class Gost28147Mac : IMac
 	{
 		private const int			blockSize = 8;
 		private const int			macSize = 4;

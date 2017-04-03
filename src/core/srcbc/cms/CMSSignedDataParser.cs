@@ -75,7 +75,8 @@ namespace Org.BouncyCastle.Cms
 	*  </pre>
 	*  where bufSize is a suitably large buffer size.
 	*/
-	public class CmsSignedDataParser
+	[Obsolete("For internal use only. If you want to use iText, please use a dependency on iText 7. ")]
+    public class CmsSignedDataParser
 		: CmsContentInfoParser
 	{
 		private static readonly CmsSignedHelper Helper = CmsSignedHelper.Instance;

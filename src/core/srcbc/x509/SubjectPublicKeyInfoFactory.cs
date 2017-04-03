@@ -40,6 +40,7 @@ namespace Org.BouncyCastle.X509
     /// <summary>
     /// A factory to produce Public Key Info Objects.
     /// </summary>
+    [Obsolete("For internal use only. If you want to use iText, please use a dependency on iText 7. ")]
     public sealed class SubjectPublicKeyInfoFactory
     {
         private SubjectPublicKeyInfoFactory()

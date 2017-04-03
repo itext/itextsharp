@@ -25,6 +25,7 @@ namespace Org.BouncyCastle.Crypto
     /**
      * interface that a message digest conforms to.
      */
+    [Obsolete("For internal use only. If you want to use iText, please use a dependency on iText 7. ")]
     public interface IDigest
     {
         /**

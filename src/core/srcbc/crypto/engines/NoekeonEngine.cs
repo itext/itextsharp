@@ -28,7 +28,8 @@ namespace Org.BouncyCastle.Crypto.Engines
 	/**
 	* A Noekeon engine, using direct-key mode.
 	*/
-	public class NoekeonEngine
+	[Obsolete("For internal use only. If you want to use iText, please use a dependency on iText 7. ")]
+    public class NoekeonEngine
 		: IBlockCipher
 	{
 		private const int GenericSize = 16; // Block and key size, as well as the amount of rounds.

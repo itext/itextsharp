@@ -28,7 +28,8 @@ namespace Org.BouncyCastle.Crypto.Modes
 	/**
 	* implements the GOST 28147 OFB counter mode (GCTR).
 	*/
-	public class GOfbBlockCipher
+	[Obsolete("For internal use only. If you want to use iText, please use a dependency on iText 7. ")]
+    public class GOfbBlockCipher
 		: IBlockCipher
 	{
 		private byte[]	IV;

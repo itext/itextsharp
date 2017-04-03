@@ -22,7 +22,8 @@ using System;
 
 namespace Org.BouncyCastle.Asn1.X9
 {
-	public class DHValidationParms
+	[Obsolete("For internal use only. If you want to use iText, please use a dependency on iText 7. ")]
+    public class DHValidationParms
 		: Asn1Encodable
 	{
 		private readonly DerBitString seed;

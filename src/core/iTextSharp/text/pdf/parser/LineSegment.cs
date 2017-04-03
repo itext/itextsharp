@@ -48,6 +48,7 @@ namespace iTextSharp.text.pdf.parser {
      * Represents a line segment in a particular coordinate system.  This class is immutable.
      * @since 5.0.2
      */
+    [Obsolete("For internal use only. If you want to use iText, please use a dependency on iText 7. ")]
     public class LineSegment {
 
         /** Start vector of the segment. */

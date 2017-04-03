@@ -27,7 +27,8 @@ namespace Org.BouncyCastle.Crypto.Agreement.Srp
 	/**
 	 * Generates new SRP verifier for user
 	 */
-	public class Srp6VerifierGenerator
+	[Obsolete("For internal use only. If you want to use iText, please use a dependency on iText 7. ")]
+    public class Srp6VerifierGenerator
 	{
 	    protected BigInteger N;
 	    protected BigInteger g;

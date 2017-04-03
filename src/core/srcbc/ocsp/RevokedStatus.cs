@@ -29,7 +29,8 @@ namespace Org.BouncyCastle.Ocsp
 	/**
 	 * wrapper for the RevokedInfo object
 	 */
-	public class RevokedStatus
+	[Obsolete("For internal use only. If you want to use iText, please use a dependency on iText 7. ")]
+    public class RevokedStatus
 		: CertificateStatus
 	{
 		internal readonly RevokedInfo info;

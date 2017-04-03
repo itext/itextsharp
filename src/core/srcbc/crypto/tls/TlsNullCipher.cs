@@ -25,7 +25,8 @@ namespace Org.BouncyCastle.Crypto.Tls
 	/// <summary>
 	/// A NULL cipher suite, for use during handshake.
 	/// </summary>
-	public class TlsNullCipher
+	[Obsolete("For internal use only. If you want to use iText, please use a dependency on iText 7. ")]
+    public class TlsNullCipher
 		: TlsCipher
 	{
 		public virtual byte[] EncodePlaintext(ContentType type, byte[] plaintext, int offset, int len)

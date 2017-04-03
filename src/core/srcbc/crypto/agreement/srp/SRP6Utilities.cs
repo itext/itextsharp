@@ -26,7 +26,8 @@ using Org.BouncyCastle.Utilities;
 
 namespace Org.BouncyCastle.Crypto.Agreement.Srp
 {
-	public class Srp6Utilities
+	[Obsolete("For internal use only. If you want to use iText, please use a dependency on iText 7. ")]
+    public class Srp6Utilities
 	{
 		public static BigInteger CalculateK(IDigest digest, BigInteger N, BigInteger g)
 		{

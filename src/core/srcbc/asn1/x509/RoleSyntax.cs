@@ -33,7 +33,8 @@ namespace Org.BouncyCastle.Asn1.X509
 	*           }
 	* </pre>
 	*/
-	public class RoleSyntax
+	[Obsolete("For internal use only. If you want to use iText, please use a dependency on iText 7. ")]
+    public class RoleSyntax
 		: Asn1Encodable
 	{
 		private readonly GeneralNames	roleAuthority;

@@ -25,7 +25,8 @@ using Org.BouncyCastle.Utilities;
 
 namespace Org.BouncyCastle.Asn1
 {
-	public class BerTaggedObjectParser
+	[Obsolete("For internal use only. If you want to use iText, please use a dependency on iText 7. ")]
+    public class BerTaggedObjectParser
 		: Asn1TaggedObjectParser
 	{
 		private bool				_constructed;

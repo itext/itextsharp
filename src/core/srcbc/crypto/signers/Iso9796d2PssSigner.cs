@@ -33,6 +33,7 @@ namespace Org.BouncyCastle.Crypto.Signers
     /// Note: the usual length for the salt is the length of the hash
     /// function used in bytes.</p>
     /// </summary>
+    [Obsolete("For internal use only. If you want to use iText, please use a dependency on iText 7. ")]
     public class Iso9796d2PssSigner
         : ISignerWithRecovery
     {

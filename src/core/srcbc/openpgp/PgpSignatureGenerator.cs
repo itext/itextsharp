@@ -32,6 +32,7 @@ namespace Org.BouncyCastle.Bcpg.OpenPgp
 {
 	/// <remarks>Generator for PGP signatures.</remarks>
 	// TODO Should be able to implement ISigner?
+    [Obsolete("For internal use only. If you want to use iText, please use a dependency on iText 7. ")]
     public class PgpSignatureGenerator
     {
 		private static readonly SignatureSubpacket[] EmptySignatureSubpackets = new SignatureSubpacket[0];

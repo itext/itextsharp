@@ -25,6 +25,7 @@ using Org.BouncyCastle.Utilities.Zlib;
 
 namespace Org.BouncyCastle.Crypto.Tls
 {
+    [Obsolete("For internal use only. If you want to use iText, please use a dependency on iText 7. ")]
     public class TlsDeflateCompression : TlsCompression
     {
         public const int LEVEL_NONE = JZlib.Z_NO_COMPRESSION;

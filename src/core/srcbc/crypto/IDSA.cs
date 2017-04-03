@@ -26,6 +26,7 @@ namespace Org.BouncyCastle.Crypto
     /**
      * interface for classes implementing the Digital Signature Algorithm
      */
+    [Obsolete("For internal use only. If you want to use iText, please use a dependency on iText 7. ")]
     public interface IDsa
     {
 		string AlgorithmName { get; }

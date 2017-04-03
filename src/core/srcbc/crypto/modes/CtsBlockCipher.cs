@@ -30,6 +30,7 @@ namespace Org.BouncyCastle.Crypto.Modes
     * A Cipher Text Stealing (CTS) mode cipher. CTS allows block ciphers to
     * be used to produce cipher text which is the same outLength as the plain text.
     */
+    [Obsolete("For internal use only. If you want to use iText, please use a dependency on iText 7. ")]
     public class CtsBlockCipher
 		: BufferedBlockCipher
     {

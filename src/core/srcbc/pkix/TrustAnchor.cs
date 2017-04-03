@@ -40,7 +40,8 @@ namespace Org.BouncyCastle.Pkix
 	/// specified in the form of a trusted X509Certificate or as individual
 	/// parameters.
 	/// </summary>
-	public class TrustAnchor
+	[Obsolete("For internal use only. If you want to use iText, please use a dependency on iText 7. ")]
+    public class TrustAnchor
 	{
 		private readonly AsymmetricKeyParameter pubKey;
 		private readonly string caName;

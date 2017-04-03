@@ -31,6 +31,7 @@ namespace Org.BouncyCastle.Crypto.Signers
     /**
      * EC-DSA as described in X9.62
      */
+    [Obsolete("For internal use only. If you want to use iText, please use a dependency on iText 7. ")]
     public class ECDsaSigner
         : IDsa
     {

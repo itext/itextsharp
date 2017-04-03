@@ -27,7 +27,8 @@ using Org.BouncyCastle.Utilities.Collections;
 
 namespace Org.BouncyCastle.Asn1
 {
-    abstract public class Asn1Set
+    [Obsolete("For internal use only. If you want to use iText, please use a dependency on iText 7.")]
+    public abstract class Asn1Set
         : Asn1Object, IEnumerable
     {
         private readonly IList _set;

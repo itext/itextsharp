@@ -29,6 +29,7 @@ namespace Org.BouncyCastle.Crypto.Generators
     /**
     * Generator for MGF1 as defined in Pkcs 1v2
     */
+    [Obsolete("For internal use only. If you want to use iText, please use a dependency on iText 7. ")]
     public class Mgf1BytesGenerator : IDerivationFunction
     {
         private IDigest digest;

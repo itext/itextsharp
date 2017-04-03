@@ -53,7 +53,8 @@ namespace iTextSharp.text.pdf {
      */
 
 	[Serializable]
-    public class PdfException : DocumentException {    
+    [Obsolete("For internal use only. If you want to use iText, please use a dependency on iText 7. ")]
+    public class PdfException : DocumentException {
         public PdfException() : base() {}
 
         public PdfException(string message) : base(message) {}

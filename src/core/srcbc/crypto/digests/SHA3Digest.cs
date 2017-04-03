@@ -30,6 +30,7 @@ namespace Org.BouncyCastle.Crypto.Digests
     /// <remarks>
     /// Following the naming conventions used in the C source code to enable easy review of the implementation.
     /// </remarks>
+    [Obsolete("For internal use only. If you want to use iText, please use a dependency on iText 7. ")]
     public class Sha3Digest
         : IDigest
     {

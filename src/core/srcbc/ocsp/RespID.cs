@@ -32,7 +32,8 @@ namespace Org.BouncyCastle.Ocsp
 	/**
 	 * Carrier for a ResponderID.
 	 */
-	public class RespID
+	[Obsolete("For internal use only. If you want to use iText, please use a dependency on iText 7. ")]
+    public class RespID
 	{
 		internal readonly ResponderID id;
 

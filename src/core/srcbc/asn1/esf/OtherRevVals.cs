@@ -34,7 +34,8 @@ namespace Org.BouncyCastle.Asn1.Esf
 	/// OtherRevValType ::= OBJECT IDENTIFIER
 	/// </code>
 	/// </remarks>
-	public class OtherRevVals
+	[Obsolete("For internal use only. If you want to use iText, please use a dependency on iText 7. ")]
+    public class OtherRevVals
 		: Asn1Encodable
 	{
 		private readonly DerObjectIdentifier	otherRevValType;

@@ -29,6 +29,7 @@ namespace Org.BouncyCastle.Crypto.Paddings
     /**
     * A padder that adds ISO10126-2 padding to a block.
     */
+    [Obsolete("For internal use only. If you want to use iText, please use a dependency on iText 7. ")]
     public class ISO10126d2Padding: IBlockCipherPadding
     {
         private SecureRandom random;

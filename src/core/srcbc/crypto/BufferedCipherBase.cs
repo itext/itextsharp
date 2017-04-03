@@ -22,7 +22,8 @@ using System;
 
 namespace Org.BouncyCastle.Crypto
 {
-	public abstract class BufferedCipherBase
+	[Obsolete("For internal use only. If you want to use iText, please use a dependency on iText 7. ")]
+    public abstract class BufferedCipherBase
 		: IBufferedCipher
 	{
 		protected static readonly byte[] EmptyBuffer = new byte[0];

@@ -56,6 +56,7 @@ namespace iTextSharp.text.pdf {
      *
      * @see     PdfDictionary
      */
+    [Obsolete("For internal use only. If you want to use iText, please use a dependency on iText 7. ")]
     public class PdfAnnotation : PdfDictionary, IAccessibleElement {
     
         public static readonly PdfName HIGHLIGHT_NONE = PdfName.N;

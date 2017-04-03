@@ -36,7 +36,8 @@ namespace Org.BouncyCastle.X509
 	/**
 	* class to produce an X.509 Version 2 CRL.
 	*/
-	public class X509V2CrlGenerator
+	[Obsolete("For internal use only. If you want to use iText, please use a dependency on iText 7. ")]
+    public class X509V2CrlGenerator
 	{
 		private readonly X509ExtensionsGenerator extGenerator = new X509ExtensionsGenerator();
 

@@ -25,6 +25,7 @@ using Org.BouncyCastle.Asn1;
 
 namespace Org.BouncyCastle.Asn1.CryptoPro
 {
+    [Obsolete("For internal use only. If you want to use iText, please use a dependency on iText 7. ")]
     public class Gost28147Parameters
         : Asn1Encodable
     {

@@ -44,7 +44,8 @@ namespace Org.BouncyCastle.OpenSsl
 	/**
 	* PEM generator for the original set of PEM objects used in Open SSL.
 	*/
-	public class MiscPemGenerator
+	[Obsolete("For internal use only. If you want to use iText, please use a dependency on iText 7. ")]
+    public class MiscPemGenerator
 		: PemObjectGenerator
 	{
 		private object obj;

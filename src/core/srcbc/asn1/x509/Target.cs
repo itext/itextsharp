@@ -38,7 +38,8 @@ namespace Org.BouncyCastle.Asn1.X509
 	 * The targetCert field is currently not supported and must not be used
 	 * according to RFC 3281.</p>
 	 */
-	public class Target
+	[Obsolete("For internal use only. If you want to use iText, please use a dependency on iText 7. ")]
+    public class Target
 		: Asn1Encodable, IAsn1Choice
 	{
 		public enum Choice

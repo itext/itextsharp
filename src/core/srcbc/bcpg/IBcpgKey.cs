@@ -23,6 +23,7 @@ using System;
 namespace Org.BouncyCastle.Bcpg
 {
 	/// <remarks>Base interface for a PGP key.</remarks>
+    [Obsolete("For internal use only. If you want to use iText, please use a dependency on iText 7. ")]
     public interface IBcpgKey
     {
 		/// <summary>

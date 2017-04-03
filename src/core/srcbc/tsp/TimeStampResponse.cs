@@ -33,7 +33,8 @@ namespace Org.BouncyCastle.Tsp
 	/**
 	 * Base class for an RFC 3161 Time Stamp Response object.
 	 */
-	public class TimeStampResponse
+	[Obsolete("For internal use only. If you want to use iText, please use a dependency on iText 7. ")]
+    public class TimeStampResponse
 	{
 		private TimeStampResp	resp;
 		private TimeStampToken	timeStampToken;

@@ -25,7 +25,8 @@ using Org.BouncyCastle.Math;
 namespace Org.BouncyCastle.Bcpg
 {
 	/// <remarks>Base class for an RSA public key.</remarks>
-	public class RsaPublicBcpgKey
+	[Obsolete("For internal use only. If you want to use iText, please use a dependency on iText 7. ")]
+    public class RsaPublicBcpgKey
 		: BcpgObject, IBcpgKey
 	{
 		private readonly MPInteger n, e;

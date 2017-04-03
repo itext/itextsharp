@@ -46,7 +46,8 @@ using System.Text;
 
 namespace iTextSharp.text.pdf
 {
-	public class PdfBody : Rectangle, IElement
+	[Obsolete("For internal use only. If you want to use iText, please use a dependency on iText 7. ")]
+    public class PdfBody : Rectangle, IElement
 	{
         public PdfBody(Rectangle rectangle) : base(rectangle)
         {

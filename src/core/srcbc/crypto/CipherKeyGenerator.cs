@@ -27,7 +27,8 @@ namespace Org.BouncyCastle.Crypto
 	/**
 	 * The base class for symmetric, or secret, cipher key generators.
 	 */
-	public class CipherKeyGenerator
+	[Obsolete("For internal use only. If you want to use iText, please use a dependency on iText 7. ")]
+    public class CipherKeyGenerator
 	{
 		protected internal SecureRandom	random;
 		protected internal int			strength;

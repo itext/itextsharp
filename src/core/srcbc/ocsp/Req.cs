@@ -29,7 +29,8 @@ using Org.BouncyCastle.X509;
 
 namespace Org.BouncyCastle.Ocsp
 {
-	public class Req
+	[Obsolete("For internal use only. If you want to use iText, please use a dependency on iText 7. ")]
+    public class Req
 		: X509ExtensionBase
 	{
 		private Request req;

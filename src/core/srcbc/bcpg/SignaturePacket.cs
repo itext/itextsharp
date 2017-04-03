@@ -29,6 +29,7 @@ using Org.BouncyCastle.Utilities.Date;
 namespace Org.BouncyCastle.Bcpg
 {
 	/// <remarks>Generic signature packet.</remarks>
+    [Obsolete("For internal use only. If you want to use iText, please use a dependency on iText 7. ")]
     public class SignaturePacket
         : ContainedPacket //, PublicKeyAlgorithmTag
     {

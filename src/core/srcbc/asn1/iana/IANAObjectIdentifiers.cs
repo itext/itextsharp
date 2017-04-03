@@ -18,9 +18,12 @@ You can be released from the requirements of the license by purchasing a commerc
 These activities include: offering paid services to customers as an ASP, serving PDFs on the fly in a web application, shipping iText with a closed source product.
 
 For more information, please contact iText Software Corp. at this address: sales@itextpdf.com */
+using System;
+
 namespace Org.BouncyCastle.Asn1.Iana
 {
-	public abstract class IanaObjectIdentifiers
+	[Obsolete("For internal use only. If you want to use iText, please use a dependency on iText 7. ")]
+    public abstract class IanaObjectIdentifiers
 	{
 		// id-SHA1 OBJECT IDENTIFIER ::=
 		// {iso(1) identified-organization(3) dod(6) internet(1) security(5) mechanisms(5) ipsec(8) isakmpOakley(1)}

@@ -26,6 +26,7 @@ namespace Org.BouncyCastle.Crypto.Digests
     * implementation of RipeMD see,
     * http://www.esat.kuleuven.ac.be/~bosselae/ripemd160.html
     */
+    [Obsolete("For internal use only. If you want to use iText, please use a dependency on iText 7. ")]
     public class RipeMD160Digest
 		: GeneralDigest
     {

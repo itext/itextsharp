@@ -32,7 +32,8 @@ namespace Org.BouncyCastle.Crypto.Engines
 	/// For further details see: <a href="http://www.ietf.org/rfc/rfc3394.txt">http://www.ietf.org/rfc/rfc3394.txt</a>
 	/// and  <a href="http://csrc.nist.gov/encryption/kms/key-wrap.pdf">http://csrc.nist.gov/encryption/kms/key-wrap.pdf</a>.
 	/// </remarks>
-	public class Rfc3394WrapEngine
+	[Obsolete("For internal use only. If you want to use iText, please use a dependency on iText 7. ")]
+    public class Rfc3394WrapEngine
 		: IWrapper
 	{
 		private readonly IBlockCipher engine;

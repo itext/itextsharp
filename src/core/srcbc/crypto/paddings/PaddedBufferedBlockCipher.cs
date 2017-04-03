@@ -33,7 +33,8 @@ namespace Org.BouncyCastle.Crypto.Paddings
 	* or on a doFinal (unless the current block in the buffer is a pad block).
 	* The default padding mechanism used is the one outlined in Pkcs5/Pkcs7.
 	*/
-	public class PaddedBufferedBlockCipher
+	[Obsolete("For internal use only. If you want to use iText, please use a dependency on iText 7. ")]
+    public class PaddedBufferedBlockCipher
 		: BufferedBlockCipher
 	{
 		private readonly IBlockCipherPadding padding;

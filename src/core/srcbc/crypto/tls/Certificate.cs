@@ -31,7 +31,8 @@ namespace Org.BouncyCastle.Crypto.Tls
 	/**
 	* A representation for a certificate chain.
 	*/
-	public class Certificate
+	[Obsolete("For internal use only. If you want to use iText, please use a dependency on iText 7. ")]
+    public class Certificate
 	{
 		public static readonly Certificate EmptyChain = new Certificate(new X509CertificateStructure[0]);
 

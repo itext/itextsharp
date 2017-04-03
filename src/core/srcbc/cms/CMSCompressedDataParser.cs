@@ -42,6 +42,7 @@ namespace Org.BouncyCastle.Cms
     *  </pre>
     *  where bufSize is a suitably large buffer size.
     */
+    [Obsolete("For internal use only. If you want to use iText, please use a dependency on iText 7. ")]
     public class CmsCompressedDataParser
         : CmsContentInfoParser
     {

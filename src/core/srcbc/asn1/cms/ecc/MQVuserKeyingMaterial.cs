@@ -22,7 +22,8 @@ using System;
 
 namespace Org.BouncyCastle.Asn1.Cms.Ecc
 {
-	public class MQVuserKeyingMaterial
+	[Obsolete("For internal use only. If you want to use iText, please use a dependency on iText 7. ")]
+    public class MQVuserKeyingMaterial
 		: Asn1Encodable
 	{
 		private OriginatorPublicKey	ephemeralPublicKey;

@@ -44,7 +44,8 @@ namespace Org.BouncyCastle.Cms
 	*      cOut.Close();
 	* </pre>
 	*/
-	public class CmsCompressedDataStreamGenerator
+	[Obsolete("For internal use only. If you want to use iText, please use a dependency on iText 7. ")]
+    public class CmsCompressedDataStreamGenerator
 	{
 		public const string ZLib = "1.2.840.113549.1.9.16.3.8";
 

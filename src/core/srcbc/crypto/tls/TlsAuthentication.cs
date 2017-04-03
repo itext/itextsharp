@@ -23,7 +23,8 @@ using System.IO;
 
 namespace Org.BouncyCastle.Crypto.Tls
 {
-	public interface TlsAuthentication
+	[Obsolete("For internal use only. If you want to use iText, please use a dependency on iText 7. ")]
+    public interface TlsAuthentication
 	{
 		/// <summary>
 		/// Called by the protocol handler to report the server certificate.

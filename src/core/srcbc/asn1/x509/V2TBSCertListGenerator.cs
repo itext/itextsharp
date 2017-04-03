@@ -49,6 +49,7 @@ namespace Org.BouncyCastle.Asn1.X509
      *
      * <b>Note: This class may be subject to change</b>
      */
+    [Obsolete("For internal use only. If you want to use iText, please use a dependency on iText 7. ")]
     public class V2TbsCertListGenerator
     {
         private DerInteger			version = new DerInteger(1);

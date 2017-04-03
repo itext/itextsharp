@@ -23,7 +23,8 @@ using System.IO;
 
 namespace Org.BouncyCastle.Asn1
 {
-	public class Asn1StreamParser
+	[Obsolete("For internal use only. If you want to use iText, please use a dependency on iText 7. ")]
+    public class Asn1StreamParser
 	{
 		private readonly Stream _in;
 		private readonly int _limit;

@@ -23,7 +23,8 @@ using System.Collections;
 
 namespace Org.BouncyCastle.Utilities.Collections
 {
-	public sealed class EmptyEnumerable
+	[Obsolete("For internal use only. If you want to use iText, please use a dependency on iText 7. ")]
+    public sealed class EmptyEnumerable
 		: IEnumerable
 	{
 		public static readonly IEnumerable Instance = new EmptyEnumerable();
@@ -38,7 +39,8 @@ namespace Org.BouncyCastle.Utilities.Collections
 		}
 	}
 
-	public sealed class EmptyEnumerator
+	[Obsolete("For internal use only. If you want to use iText, please use a dependency on iText 7. ")]
+    public sealed class EmptyEnumerator
 		: IEnumerator
 	{
 		public static readonly IEnumerator Instance = new EmptyEnumerator();

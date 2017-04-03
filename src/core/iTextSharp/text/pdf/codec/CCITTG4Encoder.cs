@@ -47,6 +47,7 @@ namespace iTextSharp.text.pdf.codec {
     /**
     * Encodes data in the CCITT G4 FAX format.
     */
+    [Obsolete("For internal use only. If you want to use iText, please use a dependency on iText 7. ")]
     public class CCITTG4Encoder {
         private int rowbytes;
         private int rowpixels;

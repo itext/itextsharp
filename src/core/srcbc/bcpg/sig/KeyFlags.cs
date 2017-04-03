@@ -27,6 +27,7 @@ namespace Org.BouncyCastle.Bcpg.Sig
     /**
     * Packet holding the key flag values.
     */
+    [Obsolete("For internal use only. If you want to use iText, please use a dependency on iText 7. ")]
     public class KeyFlags
         : SignatureSubpacket
     {

@@ -33,6 +33,7 @@ namespace Org.BouncyCastle.Bcpg
     * bytes when the data is reached. An IOException is thrown if the CRC check
     * fails.
     */
+    [Obsolete("For internal use only. If you want to use iText, please use a dependency on iText 7. ")]
     public class ArmoredInputStream
         : BaseInputStream
     {

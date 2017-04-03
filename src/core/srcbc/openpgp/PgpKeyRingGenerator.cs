@@ -30,6 +30,7 @@ namespace Org.BouncyCastle.Bcpg.OpenPgp
 	/// Generator for a PGP master and subkey ring.
 	/// This class will generate both the secret and public key rings
 	/// </remarks>
+    [Obsolete("For internal use only. If you want to use iText, please use a dependency on iText 7. ")]
     public class PgpKeyRingGenerator
     {
         private IList					    keys = Platform.CreateArrayList();

@@ -37,6 +37,7 @@ namespace Org.BouncyCastle.Security
     /// <remarks>
     ///  Utility class for creating IDigest objects from their names/Oids
     /// </remarks>
+    [Obsolete("For internal use only. If you want to use iText, please use a dependency on iText 7. ")]
     public sealed class DigestUtilities
     {
         private enum DigestAlgorithm {

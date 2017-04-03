@@ -30,7 +30,8 @@ using Org.BouncyCastle.X509;
 
 namespace Org.BouncyCastle.Ocsp
 {
-	public class CertificateID
+	[Obsolete("For internal use only. If you want to use iText, please use a dependency on iText 7. ")]
+    public class CertificateID
 	{
 		public const string HashSha1 = "1.3.14.3.2.26";
 

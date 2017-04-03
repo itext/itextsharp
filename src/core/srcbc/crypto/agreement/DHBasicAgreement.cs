@@ -33,6 +33,7 @@ namespace Org.BouncyCastle.Crypto.Agreement
      * long term public keys if they are available. See the DHAgreement class
      * for a "better" implementation.</p>
      */
+    [Obsolete("For internal use only. If you want to use iText, please use a dependency on iText 7. ")]
     public class DHBasicAgreement
         : IBasicAgreement
     {

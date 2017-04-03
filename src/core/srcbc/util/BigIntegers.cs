@@ -28,6 +28,7 @@ namespace Org.BouncyCastle.Utilities
     /**
      * BigInteger utilities.
      */
+    [Obsolete("For internal use only. If you want to use iText, please use a dependency on iText 7. ")]
     public sealed class BigIntegers
     {
         private const int MaxIterations = 1000;

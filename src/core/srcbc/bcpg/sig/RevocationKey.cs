@@ -26,6 +26,7 @@ namespace Org.BouncyCastle.Bcpg
     /// <summary>
     /// Represents revocation key OpenPGP signature sub packet.
     /// </summary>
+    [Obsolete("For internal use only. If you want to use iText, please use a dependency on iText 7. ")]
     public class RevocationKey
 		: SignatureSubpacket
     {

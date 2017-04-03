@@ -52,7 +52,8 @@ namespace Org.BouncyCastle.Asn1.X509
 	 * </pre>
 	 * </p>
 	 */
-	public class Holder
+	[Obsolete("For internal use only. If you want to use iText, please use a dependency on iText 7. ")]
+    public class Holder
         : Asn1Encodable
     {
 		internal readonly IssuerSerial		baseCertificateID;

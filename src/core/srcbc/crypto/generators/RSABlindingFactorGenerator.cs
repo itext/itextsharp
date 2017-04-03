@@ -31,7 +31,8 @@ namespace Org.BouncyCastle.Crypto.Generators
 	* as outlined in Chaum's blinding and unblinding as outlined in
 	* "Handbook of Applied Cryptography", page 475.
 	*/
-	public class RsaBlindingFactorGenerator
+	[Obsolete("For internal use only. If you want to use iText, please use a dependency on iText 7. ")]
+    public class RsaBlindingFactorGenerator
 	{
 		private RsaKeyParameters key;
 		private SecureRandom random;

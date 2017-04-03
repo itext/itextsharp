@@ -30,6 +30,7 @@ using Org.BouncyCastle.Utilities.Date;
 namespace Org.BouncyCastle.Bcpg.OpenPgp
 {
 	/// <remarks>A PGP signature object.</remarks>
+    [Obsolete("For internal use only. If you want to use iText, please use a dependency on iText 7. ")]
     public class PgpSignature
     {
         public const int BinaryDocument = 0x00;

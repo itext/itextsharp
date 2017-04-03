@@ -23,7 +23,8 @@ using System.IO;
 
 namespace Org.BouncyCastle.Utilities.Encoders
 {
-	public class Base64Encoder
+	[Obsolete("For internal use only. If you want to use iText, please use a dependency on iText 7. ")]
+    public class Base64Encoder
 		: IEncoder
 	{
 		protected readonly byte[] encodingTable =

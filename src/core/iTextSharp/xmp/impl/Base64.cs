@@ -37,6 +37,7 @@ namespace iTextSharp.xmp.impl {
     /// 
     /// @version     $Revision: 1.4 $
     /// </summary>
+    [Obsolete("For internal use only. If you want to use iText, please use a dependency on iText 7. ")]
     public class Base64 {
         /// <summary>
         /// marker for invalid bytes </summary>

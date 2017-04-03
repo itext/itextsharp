@@ -18,9 +18,12 @@ You can be released from the requirements of the license by purchasing a commerc
 These activities include: offering paid services to customers as an ASP, serving PDFs on the fly in a web application, shipping iText with a closed source product.
 
 For more information, please contact iText Software Corp. at this address: sales@itextpdf.com */
+using System;
+
 namespace Org.BouncyCastle.Bcpg.OpenPgp
 {
 	/// <remarks>Key flag values for the KeyFlags subpacket.</remarks>
+    [Obsolete("For internal use only. If you want to use iText, please use a dependency on iText 7. ")]
     public abstract class PgpKeyFlags
     {
         public const int CanCertify = 0x01; // This key may be used to certify other keys.

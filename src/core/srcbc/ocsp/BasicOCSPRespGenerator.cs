@@ -37,7 +37,8 @@ namespace Org.BouncyCastle.Ocsp
 	/**
 	 * Generator for basic OCSP response objects.
 	 */
-	public class BasicOcspRespGenerator
+	[Obsolete("For internal use only. If you want to use iText, please use a dependency on iText 7. ")]
+    public class BasicOcspRespGenerator
 	{
 		private readonly IList list = Platform.CreateArrayList();
 

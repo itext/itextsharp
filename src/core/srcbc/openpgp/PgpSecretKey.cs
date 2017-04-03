@@ -29,6 +29,7 @@ using Org.BouncyCastle.Security;
 namespace Org.BouncyCastle.Bcpg.OpenPgp
 {
 	/// <remarks>General class to handle a PGP secret key object.</remarks>
+    [Obsolete("For internal use only. If you want to use iText, please use a dependency on iText 7. ")]
     public class PgpSecretKey
     {
         private readonly SecretKeyPacket	secret;

@@ -30,7 +30,8 @@ namespace Org.BouncyCastle.Pkcs
 	/**
 	 * Utility class for reencoding PKCS#12 files to definite length.
 	 */
-	public class Pkcs12Utilities
+	[Obsolete("For internal use only. If you want to use iText, please use a dependency on iText 7. ")]
+    public class Pkcs12Utilities
 	{
 		/**
 		 * Just re-encode the outer layer of the PKCS#12 file to definite length encoding.

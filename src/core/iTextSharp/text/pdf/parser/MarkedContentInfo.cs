@@ -48,6 +48,7 @@ namespace iTextSharp.text.pdf.parser {
      * Represents a Marked Content block in a PDF
      * @since 5.0.2
      */
+    [Obsolete("For internal use only. If you want to use iText, please use a dependency on iText 7. ")]
     public class MarkedContentInfo {
         private PdfName tag;
         private PdfDictionary dictionary;

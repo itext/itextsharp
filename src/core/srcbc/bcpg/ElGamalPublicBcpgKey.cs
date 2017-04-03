@@ -25,7 +25,8 @@ using Org.BouncyCastle.Math;
 namespace Org.BouncyCastle.Bcpg
 {
 	/// <remarks>Base class for an ElGamal public key.</remarks>
-	public class ElGamalPublicBcpgKey
+	[Obsolete("For internal use only. If you want to use iText, please use a dependency on iText 7. ")]
+    public class ElGamalPublicBcpgKey
 		: BcpgObject, IBcpgKey
 	{
 		internal MPInteger p, g, y;

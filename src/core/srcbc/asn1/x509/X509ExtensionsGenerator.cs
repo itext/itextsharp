@@ -26,7 +26,8 @@ using Org.BouncyCastle.Utilities;
 namespace Org.BouncyCastle.Asn1.X509
 {
 	/// <remarks>Generator for X.509 extensions</remarks>
-	public class X509ExtensionsGenerator
+	[Obsolete("For internal use only. If you want to use iText, please use a dependency on iText 7. ")]
+    public class X509ExtensionsGenerator
 	{
 		private IDictionary extensions = Platform.CreateHashtable();
         private IList extOrdering = Platform.CreateArrayList();
