@@ -30,6 +30,7 @@ namespace Org.BouncyCastle.Crypto.Engines
     * This file contains the fast version with 8Kbytes of static tables for round precomputation
     * </p>
     */
+    [Obsolete("For internal use only. If you want to use iText, please use a dependency on iText 7. ")]
     public class AesFastEngine
 		: IBlockCipher
     {

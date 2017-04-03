@@ -6,7 +6,8 @@ namespace Org.BouncyCastle.Asn1.X509.SigI
 	 * Object Identifiers of SigI specifciation (German Signature Law
 	 * Interoperability specification).
 	 */
-	public sealed class SigIObjectIdentifiers
+	[Obsolete("For internal use only. If you want to use iText, please use a dependency on iText 7. ")]
+    public sealed class SigIObjectIdentifiers
 	{
 		private SigIObjectIdentifiers()
 		{

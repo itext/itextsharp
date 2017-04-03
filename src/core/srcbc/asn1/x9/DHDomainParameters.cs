@@ -3,7 +3,8 @@ using System.Collections;
 
 namespace Org.BouncyCastle.Asn1.X9
 {
-	public class DHDomainParameters
+	[Obsolete("For internal use only. If you want to use iText, please use a dependency on iText 7. ")]
+    public class DHDomainParameters
 		: Asn1Encodable
 	{
 		private readonly DerInteger p, g, q, j;

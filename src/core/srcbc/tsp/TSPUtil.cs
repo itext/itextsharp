@@ -18,7 +18,8 @@ using Org.BouncyCastle.X509;
 
 namespace Org.BouncyCastle.Tsp
 {
-	public class TspUtil
+	[Obsolete("For internal use only. If you want to use iText, please use a dependency on iText 7. ")]
+    public class TspUtil
 	{
 		private static ISet EmptySet = CollectionUtilities.ReadOnly(new HashSet());
 		private static IList EmptyList = CollectionUtilities.ReadOnly(Platform.CreateArrayList());

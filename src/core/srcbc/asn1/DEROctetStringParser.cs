@@ -5,7 +5,8 @@ using Org.BouncyCastle.Utilities.IO;
 
 namespace Org.BouncyCastle.Asn1
 {
-	public class DerOctetStringParser
+	[Obsolete("For internal use only. If you want to use iText, please use a dependency on iText 7. ")]
+    public class DerOctetStringParser
 		: Asn1OctetStringParser
 	{
 		private readonly DefiniteLengthInputStream stream;

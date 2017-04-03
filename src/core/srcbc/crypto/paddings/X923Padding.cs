@@ -9,6 +9,7 @@ namespace Org.BouncyCastle.Crypto.Paddings
     * A padder that adds X9.23 padding to a block - if a SecureRandom is
     * passed in random padding is assumed, otherwise padding with zeros is used.
     */
+    [Obsolete("For internal use only. If you want to use iText, please use a dependency on iText 7. ")]
     public class X923Padding
 		: IBlockCipherPadding
     {

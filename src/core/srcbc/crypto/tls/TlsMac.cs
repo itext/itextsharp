@@ -13,7 +13,8 @@ namespace Org.BouncyCastle.Crypto.Tls
 	/// A generic TLS MAC implementation, which can be used with any kind of
 	/// IDigest to act as an HMAC.
 	/// </remarks>
-	public class TlsMac
+	[Obsolete("For internal use only. If you want to use iText, please use a dependency on iText 7. ")]
+    public class TlsMac
 	{
 		protected long seqNo;
 		protected byte[] secret;

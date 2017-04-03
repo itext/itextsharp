@@ -12,7 +12,8 @@ namespace Org.BouncyCastle.Crypto.Tls
 	/// <summary>
 	/// A generic TLS 1.0 block cipher. This can be used for AES or 3DES for example.
 	/// </summary>
-	public class TlsBlockCipher
+	[Obsolete("For internal use only. If you want to use iText, please use a dependency on iText 7. ")]
+    public class TlsBlockCipher
         : TlsCipher
 	{
 		protected TlsClientContext context;

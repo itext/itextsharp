@@ -9,6 +9,7 @@ namespace Org.BouncyCastle.Crypto.Encodings
     /**
     * Optimal Asymmetric Encryption Padding (OAEP) - see PKCS 1 V 2.
     */
+    [Obsolete("For internal use only. If you want to use iText, please use a dependency on iText 7. ")]
     public class OaepEncoding
         : IAsymmetricBlockCipher
     {

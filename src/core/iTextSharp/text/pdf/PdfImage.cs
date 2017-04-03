@@ -52,6 +52,7 @@ namespace iTextSharp.text.pdf {
     * <CODE>PdfImage</CODE> is a <CODE>PdfStream</CODE> containing an image-<CODE>Dictionary</CODE> and -stream.
     */
 
+    [Obsolete("For internal use only. If you want to use iText, please use a dependency on iText 7. ")]
     public class PdfImage : PdfStream {
         
         internal const int TRANSFERSIZE = 4096;

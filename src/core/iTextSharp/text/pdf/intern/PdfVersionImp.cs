@@ -53,6 +53,7 @@ namespace iTextSharp.text.pdf.intern {
     * and how to add the version to the catalog (if necessary).
     */
 
+    [Obsolete("For internal use only. If you want to use iText, please use a dependency on iText 7. ")]
     public class PdfVersionImp : IPdfVersion {
 
         /** Contains different strings that are part of the header. */

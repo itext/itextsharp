@@ -19,7 +19,8 @@ namespace Org.BouncyCastle.Crypto.Modes
 	* 
 	* Of course, this implementations is NOT thread-safe.
 	*/
-	public class EaxBlockCipher
+	[Obsolete("For internal use only. If you want to use iText, please use a dependency on iText 7. ")]
+    public class EaxBlockCipher
 		: IAeadBlockCipher
 	{
 		private enum Tag : byte { N, H, C };

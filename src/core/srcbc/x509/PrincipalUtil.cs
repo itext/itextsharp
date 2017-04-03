@@ -14,7 +14,8 @@ namespace Org.BouncyCastle.X509
 	/// DNs are what they should be, so it's best to leave them encoded where they
 	/// can be.</p>
 	/// </remarks>
-	public class PrincipalUtilities
+	[Obsolete("For internal use only. If you want to use iText, please use a dependency on iText 7. ")]
+    public class PrincipalUtilities
 	{
 		/// <summary>Return the issuer of the given cert as an X509Principal.</summary>
 		public static X509Name GetIssuerX509Principal(

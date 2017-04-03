@@ -22,7 +22,8 @@ namespace Org.BouncyCastle.Asn1.IsisMtt.X509
 	* @see Org.BouncyCastle.Asn1.IsisMtt.X509.ProfessionInfo
 	* @see Org.BouncyCastle.Asn1.IsisMtt.X509.NamingAuthority
 	*/
-	public class Admissions
+	[Obsolete("For internal use only. If you want to use iText, please use a dependency on iText 7. ")]
+    public class Admissions
 		: Asn1Encodable
 	{
 		private readonly GeneralName		admissionAuthority;

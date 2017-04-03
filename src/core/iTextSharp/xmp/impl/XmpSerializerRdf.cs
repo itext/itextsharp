@@ -1,3 +1,4 @@
+using System;
 using System.Collections;
 using System.IO;
 using Org.BouncyCastle.Utilities.Collections;
@@ -43,6 +44,7 @@ namespace iTextSharp.xmp.impl {
     /// 
     /// @since   11.07.2006
     /// </summary>
+    [Obsolete("For internal use only. If you want to use iText, please use a dependency on iText 7. ")]
     public class XmpSerializerRdf {
         /// <summary>
         /// default padding </summary>

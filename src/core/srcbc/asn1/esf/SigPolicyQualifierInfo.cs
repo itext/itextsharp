@@ -12,7 +12,8 @@ namespace Org.BouncyCastle.Asn1.Esf
 	/// SigPolicyQualifierId ::= OBJECT IDENTIFIER
 	/// </code>
 	/// </remarks>
-	public class SigPolicyQualifierInfo
+	[Obsolete("For internal use only. If you want to use iText, please use a dependency on iText 7. ")]
+    public class SigPolicyQualifierInfo
 		: Asn1Encodable
 	{
 		private readonly DerObjectIdentifier	sigPolicyQualifierId;

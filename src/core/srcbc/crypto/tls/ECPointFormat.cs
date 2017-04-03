@@ -1,8 +1,11 @@
+using System;
+
 namespace Org.BouncyCastle.Crypto.Tls
 {
 	/// <summary>
 	/// RFC 4492 5.1.2
 	/// </summary>
+    [Obsolete("For internal use only. If you want to use iText, please use a dependency on iText 7. ")]
     public enum ECPointFormat : byte
 	{
 		uncompressed = 0,

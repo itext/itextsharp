@@ -21,7 +21,8 @@ namespace Org.BouncyCastle.Asn1.IsisMtt.X509
 	* fullAgeAtCountry indicates the majority of the owner with respect to the laws
 	* of a specific country.
 	*/
-	public class DeclarationOfMajority
+	[Obsolete("For internal use only. If you want to use iText, please use a dependency on iText 7. ")]
+    public class DeclarationOfMajority
 		: Asn1Encodable, IAsn1Choice
 	{
 		public enum Choice

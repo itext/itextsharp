@@ -62,6 +62,7 @@ namespace iTextSharp.text.pdf {
      *
      * @author Paulo Soares
      */
+    [Obsolete("For internal use only. If you want to use iText, please use a dependency on iText 7. ")]
     public class BarcodeInter25 : Barcode {
 
         /** The bars to generate the code.

@@ -47,6 +47,7 @@ using iTextSharp.text.error_messages;
 
 namespace iTextSharp.text.pdf
 {
+    [Obsolete("For internal use only. If you want to use iText, please use a dependency on iText 7. ")]
     public abstract class BaseField {
         
         /** A thin border with 1 point width. */    

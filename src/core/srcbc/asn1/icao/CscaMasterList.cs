@@ -16,7 +16,8 @@ namespace Org.BouncyCastle.Asn1.Icao
 	 * CscaMasterListVersion :: INTEGER {v0(0)}
 	 * </pre>
 	 */
-	public class CscaMasterList 
+	[Obsolete("For internal use only. If you want to use iText, please use a dependency on iText 7. ")]
+    public class CscaMasterList
 		: Asn1Encodable 
 	{
 		private DerInteger version = new DerInteger(0);

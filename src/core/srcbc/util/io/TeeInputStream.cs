@@ -4,7 +4,8 @@ using System.IO;
 
 namespace Org.BouncyCastle.Utilities.IO
 {
-	public class TeeInputStream
+	[Obsolete("For internal use only. If you want to use iText, please use a dependency on iText 7. ")]
+    public class TeeInputStream
 		: BaseInputStream
 	{
 		private readonly Stream input, tee;

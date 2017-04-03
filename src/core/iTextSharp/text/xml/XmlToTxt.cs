@@ -51,6 +51,7 @@ namespace iTextSharp.text.xml {
     /**
      * This class converts XML into plain text stripping all tags.
      */
+    [Obsolete("For internal use only. If you want to use iText, please use a dependency on iText 7. ")]
     public class XmlToTxt : ISimpleXMLDocHandler {
 
         /**

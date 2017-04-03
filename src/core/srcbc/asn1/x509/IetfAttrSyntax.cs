@@ -8,6 +8,7 @@ namespace Org.BouncyCastle.Asn1.X509
     /**
      * Implementation of <code>IetfAttrSyntax</code> as specified by RFC3281.
      */
+    [Obsolete("For internal use only. If you want to use iText, please use a dependency on iText 7. ")]
     public class IetfAttrSyntax
         : Asn1Encodable
     {

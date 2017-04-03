@@ -12,7 +12,8 @@ using Org.BouncyCastle.Security;
 
 namespace Org.BouncyCastle.Crypto.Agreement
 {
-	public class ECMqvWithKdfBasicAgreement
+	[Obsolete("For internal use only. If you want to use iText, please use a dependency on iText 7. ")]
+    public class ECMqvWithKdfBasicAgreement
 		: ECMqvBasicAgreement
 	{
 		private readonly string algorithm;

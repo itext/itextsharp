@@ -9,6 +9,7 @@ namespace Org.BouncyCastle.Crypto
     * a buffer wrapper for an asymmetric block cipher, allowing input
     * to be accumulated in a piecemeal fashion until final processing.
     */
+    [Obsolete("For internal use only. If you want to use iText, please use a dependency on iText 7. ")]
     public class BufferedAsymmetricBlockCipher
 		: BufferedCipherBase
     {

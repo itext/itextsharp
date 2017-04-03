@@ -12,7 +12,8 @@ namespace Org.BouncyCastle.Crypto.Signers
 	 * The Digital Signature Algorithm - as described in "Handbook of Applied
 	 * Cryptography", pages 452 - 453.
 	 */
-	public class DsaSigner
+	[Obsolete("For internal use only. If you want to use iText, please use a dependency on iText 7. ")]
+    public class DsaSigner
 		: IDsa
 	{
 		private DsaKeyParameters key;

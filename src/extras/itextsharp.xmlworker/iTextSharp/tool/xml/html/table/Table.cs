@@ -61,6 +61,7 @@ namespace iTextSharp.tool.xml.html.table {
      * @author Emiel Ackermann
      *
      */
+    [Obsolete("For internal use only. If you want to use iText, please use a dependency on iText 7. ")]
     public class Table : AbstractTagProcessor {
 
         public const float DEFAULT_CELL_BORDER_WIDTH = 0.75f;

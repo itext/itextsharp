@@ -51,6 +51,7 @@ namespace iTextSharp.text
     * @see com.lowagie.text.List
     * @author Michael Niedermair and Bruno Lowagie
     */
+    [Obsolete("For internal use only. If you want to use iText, please use a dependency on iText 7. ")]
     public class ZapfDingbatsList : List {
         /**
         * char-number in zapfdingbats

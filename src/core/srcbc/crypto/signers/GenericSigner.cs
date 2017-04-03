@@ -6,7 +6,8 @@ using Org.BouncyCastle.Utilities;
 
 namespace Org.BouncyCastle.Crypto.Signers
 {
-	public class GenericSigner
+	[Obsolete("For internal use only. If you want to use iText, please use a dependency on iText 7. ")]
+    public class GenericSigner
 		: ISigner
 	{
 		private readonly IAsymmetricBlockCipher engine;

@@ -7,7 +7,8 @@ using Org.BouncyCastle.Utilities.Encoders;
 
 namespace Org.BouncyCastle.Utilities.IO.Pem
 {
-	public class PemReader
+	[Obsolete("For internal use only. If you want to use iText, please use a dependency on iText 7. ")]
+    public class PemReader
 	{
 		private const string BeginString = "-----BEGIN ";
 		private const string EndString = "-----END ";

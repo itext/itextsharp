@@ -8,7 +8,8 @@ namespace Org.BouncyCastle.Crypto.Prng
 	/// <summary>
 	/// Uses Microsoft's RNGCryptoServiceProvider
 	/// </summary>
-	public class CryptoApiRandomGenerator
+	[Obsolete("For internal use only. If you want to use iText, please use a dependency on iText 7. ")]
+    public class CryptoApiRandomGenerator
 		: IRandomGenerator
 	{
 		private readonly RandomNumberGenerator rndProv;

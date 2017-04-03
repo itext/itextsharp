@@ -11,6 +11,7 @@ namespace Org.BouncyCastle.Asn1.X509
      *          digest OCTET STRING }
      * </pre>
      */
+    [Obsolete("For internal use only. If you want to use iText, please use a dependency on iText 7. ")]
     public class DigestInfo
         : Asn1Encodable
     {

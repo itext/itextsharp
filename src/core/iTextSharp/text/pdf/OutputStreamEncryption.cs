@@ -45,6 +45,7 @@ using System.IO;
 using iTextSharp.text.pdf.crypto;
 
 namespace iTextSharp.text.pdf {
+    [Obsolete("For internal use only. If you want to use iText, please use a dependency on iText 7. ")]
     public class OutputStreamEncryption : Stream {
     protected Stream outc;
     protected ARCFOUREncryption arcfour;

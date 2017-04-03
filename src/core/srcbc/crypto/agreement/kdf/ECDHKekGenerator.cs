@@ -11,6 +11,7 @@ namespace Org.BouncyCastle.Crypto.Agreement.Kdf
     /**
     * X9.63 based key derivation function for ECDH CMS.
     */
+    [Obsolete("For internal use only. If you want to use iText, please use a dependency on iText 7. ")]
     public class ECDHKekGenerator
         : IDerivationFunction
     {

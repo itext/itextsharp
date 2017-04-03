@@ -6,6 +6,7 @@ namespace Org.BouncyCastle.Utilities.Encoders
     ///  A buffering class to allow translation from one format to another to
     ///     be done in discrete chunks.
     /// </summary>
+    [Obsolete("For internal use only. If you want to use iText, please use a dependency on iText 7. ")]
     public class BufferedDecoder
     {
         internal byte[]        buffer;

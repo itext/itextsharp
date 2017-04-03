@@ -6,6 +6,7 @@ using Org.BouncyCastle.Utilities.Collections;
 
 namespace Org.BouncyCastle.Pkcs
 {
+    [Obsolete("For internal use only. If you want to use iText, please use a dependency on iText 7. ")]
     public abstract class Pkcs12Entry
     {
         private readonly IDictionary attributes;

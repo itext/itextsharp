@@ -13,7 +13,8 @@ namespace Org.BouncyCastle.Asn1.Esf
 	/// }
 	/// </code>
 	/// </remarks>
-	public class OcspListID
+	[Obsolete("For internal use only. If you want to use iText, please use a dependency on iText 7. ")]
+    public class OcspListID
 		: Asn1Encodable
 	{
 		private readonly Asn1Sequence ocspResponses;

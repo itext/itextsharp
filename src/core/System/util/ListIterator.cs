@@ -48,6 +48,7 @@ namespace System.util {
     /// <summary>
     /// Summary description for ListIterator.
     /// </summary>
+    [Obsolete("For internal use only. If you want to use iText, please use a dependency on iText 7. ")]
     public class ListIterator<T> {
         IList<T> col;
         int cursor = 0;

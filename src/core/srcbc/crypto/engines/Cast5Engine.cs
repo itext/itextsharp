@@ -16,6 +16,7 @@ namespace Org.BouncyCastle.Crypto.Engines
     *
     * and implement a simplified cryptography interface.
     */
+    [Obsolete("For internal use only. If you want to use iText, please use a dependency on iText 7. ")]
     public class Cast5Engine
 		: IBlockCipher
     {

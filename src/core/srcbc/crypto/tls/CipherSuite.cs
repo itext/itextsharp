@@ -1,9 +1,12 @@
+using System;
+
 namespace Org.BouncyCastle.Crypto.Tls
 {
 	/// <summary>
 	/// RFC 2246 A.5
 	/// </summary>
-	public enum CipherSuite : int
+	[Obsolete("For internal use only. If you want to use iText, please use a dependency on iText 7. ")]
+    public enum CipherSuite : int
 	{
 		TLS_NULL_WITH_NULL_NULL = 0x0000,
 		TLS_RSA_WITH_NULL_MD5 = 0x0001,

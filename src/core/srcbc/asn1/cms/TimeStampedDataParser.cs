@@ -2,7 +2,8 @@ using System;
 
 namespace Org.BouncyCastle.Asn1.Cms
 {
-	public class TimeStampedDataParser
+	[Obsolete("For internal use only. If you want to use iText, please use a dependency on iText 7. ")]
+    public class TimeStampedDataParser
 	{
 		private DerInteger version;
 		private DerIA5String dataUri;

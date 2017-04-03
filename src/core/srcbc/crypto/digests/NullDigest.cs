@@ -3,7 +3,8 @@ using System.IO;
 
 namespace Org.BouncyCastle.Crypto.Digests
 {
-	public class NullDigest : IDigest
+	[Obsolete("For internal use only. If you want to use iText, please use a dependency on iText 7. ")]
+    public class NullDigest : IDigest
 	{
 		private readonly MemoryStream bOut = new MemoryStream();
 

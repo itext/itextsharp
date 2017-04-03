@@ -47,6 +47,7 @@ namespace iTextSharp.text.xml.simpleparser {
     * The handler for the events fired by <CODE>SimpleXMLParser</CODE>.
     * @author Paulo Soares
     */
+    [Obsolete("For internal use only. If you want to use iText, please use a dependency on iText 7. ")]
     public interface ISimpleXMLDocHandlerComment {
         /**
         * Called when a comment is found.

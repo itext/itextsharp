@@ -1,8 +1,10 @@
+using System;
 using System.IO;
 
 namespace Org.BouncyCastle.Asn1
 {
-	public abstract class Asn1Encodable
+	[Obsolete("For internal use only. If you want to use iText, please use a dependency on iText 7. ")]
+    public abstract class Asn1Encodable
 		: IAsn1Convertible
     {
 		public const string Der = "DER";

@@ -10,7 +10,8 @@ namespace Org.BouncyCastle.Pkix
 	* 
 	* @see org.bouncycastle.x509.ExtendedPkixParameters
 	*/
-	public class PkixAttrCertPathValidator
+	[Obsolete("For internal use only. If you want to use iText, please use a dependency on iText 7. ")]
+    public class PkixAttrCertPathValidator
 	//    extends CertPathValidatorSpi
 	{
 		/**

@@ -10,7 +10,8 @@ namespace Org.BouncyCastle.Crypto.Engines
 	/**
 	 * Implementation of Daniel J. Bernstein's Salsa20 stream cipher, Snuffle 2005
 	 */
-	public class Salsa20Engine
+	[Obsolete("For internal use only. If you want to use iText, please use a dependency on iText 7. ")]
+    public class Salsa20Engine
 		: IStreamCipher
 	{
 		/** Constants */

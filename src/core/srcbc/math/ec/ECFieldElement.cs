@@ -5,7 +5,8 @@ using Org.BouncyCastle.Utilities;
 
 namespace Org.BouncyCastle.Math.EC
 {
-	public abstract class ECFieldElement
+	[Obsolete("For internal use only. If you want to use iText, please use a dependency on iText 7. ")]
+    public abstract class ECFieldElement
 	{
 		public abstract BigInteger ToBigInteger();
 		public abstract string FieldName { get; }
@@ -50,7 +51,8 @@ namespace Org.BouncyCastle.Math.EC
 		}
 	}
 
-	public class FpFieldElement
+	[Obsolete("For internal use only. If you want to use iText, please use a dependency on iText 7. ")]
+    public class FpFieldElement
 		: ECFieldElement
 	{
 		private readonly BigInteger q, x;
@@ -822,7 +824,8 @@ namespace Org.BouncyCastle.Math.EC
 	 * basis representations are supported. Gaussian normal basis (GNB)
 	 * representation is not supported.
 	 */
-	public class F2mFieldElement
+	[Obsolete("For internal use only. If you want to use iText, please use a dependency on iText 7. ")]
+    public class F2mFieldElement
 		: ECFieldElement
 	{
 		/**

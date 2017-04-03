@@ -16,6 +16,7 @@ namespace Org.BouncyCastle.Crypto.Engines
     * For full details see the <a href="http://www.cl.cam.ac.uk/~rja14/serpent.html">The Serpent home page</a>
 	* </p>
     */
+    [Obsolete("For internal use only. If you want to use iText, please use a dependency on iText 7. ")]
     public class SerpentEngine
 		: IBlockCipher
     {

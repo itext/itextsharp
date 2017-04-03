@@ -13,6 +13,7 @@ namespace Org.BouncyCastle.Cms
     /**
     * containing class for an CMS Enveloped Data object
     */
+    [Obsolete("For internal use only. If you want to use iText, please use a dependency on iText 7. ")]
     public class CmsEnvelopedData
     {
         internal RecipientInformationStore	recipientInfoStore;

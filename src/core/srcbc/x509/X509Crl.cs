@@ -26,7 +26,8 @@ namespace Org.BouncyCastle.X509
 	 * Delta CRL Indicator (critical)
 	 * Issuing Distribution Point (critical)
 	 */
-	public class X509Crl
+	[Obsolete("For internal use only. If you want to use iText, please use a dependency on iText 7. ")]
+    public class X509Crl
 		: X509ExtensionBase
 		// TODO Add interface Crl?
 	{
