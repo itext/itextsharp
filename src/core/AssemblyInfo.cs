@@ -2,11 +2,11 @@ using System.Reflection;
 using System.Runtime.CompilerServices;
 using System.Runtime.InteropServices;
 
-[assembly: AssemblyTitle("iTextSharp")]
+[assembly: AssemblyTitle("Xfa-iTextSharp")]
 [assembly: AssemblyDescription("A free PDF library ported from Java iText.")]
 [assembly: AssemblyConfiguration("")]
 [assembly: AssemblyCompany("iText Group NV")]
-[assembly: AssemblyProduct("iTextSharp")]
+[assembly: AssemblyProduct("Xfa-iTextSharp")]
 [assembly: AssemblyCopyright("Copyright (C) 1999-2017 by iText Group NV")]
 [assembly: AssemblyTrademark("")]
 [assembly: AssemblyCulture("")]
