@@ -26,6 +26,7 @@ using Org.BouncyCastle.Math.EC.Abc;
 namespace Org.BouncyCastle.Math.EC
 {
     /// <remarks>Base class for an elliptic curve.</remarks>
+    [Obsolete("For internal use only. If you want to use iText, please use a dependency on iText 7. ")]
     public abstract class ECCurve
     {
         internal ECFieldElement a, b;
@@ -132,6 +133,7 @@ namespace Org.BouncyCastle.Math.EC
     /**
      * Elliptic curve over Fp
      */
+    [Obsolete("For internal use only. If you want to use iText, please use a dependency on iText 7. ")]
     public class FpCurve : ECCurve
     {
         private readonly BigInteger q;
@@ -235,6 +237,7 @@ namespace Org.BouncyCastle.Math.EC
      * Elliptic curves over F2m. The Weierstrass equation is given by
      * <code>y<sup>2</sup> + xy = x<sup>3</sup> + ax<sup>2</sup> + b</code>.
      */
+    [Obsolete("For internal use only. If you want to use iText, please use a dependency on iText 7. ")]
     public class F2mCurve : ECCurve
     {
         /**

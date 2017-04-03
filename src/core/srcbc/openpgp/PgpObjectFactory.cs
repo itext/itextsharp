@@ -34,7 +34,8 @@ namespace Org.BouncyCastle.Bcpg.OpenPgp
     /// key found. If all you are trying to do is read a key ring file use
     /// either PgpPublicKeyRingBundle or PgpSecretKeyRingBundle.</p>
 	/// </remarks>
-	public class PgpObjectFactory
+	[Obsolete("For internal use only. If you want to use iText, please use a dependency on iText 7. ")]
+    public class PgpObjectFactory
     {
         private readonly BcpgInputStream bcpgIn;
 

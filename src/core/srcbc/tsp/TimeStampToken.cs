@@ -39,7 +39,8 @@ using Org.BouncyCastle.X509.Store;
 
 namespace Org.BouncyCastle.Tsp
 {
-	public class TimeStampToken
+	[Obsolete("For internal use only. If you want to use iText, please use a dependency on iText 7. ")]
+    public class TimeStampToken
 	{
 		private readonly CmsSignedData		tsToken;
 		private readonly SignerInformation	tsaSignerInfo;

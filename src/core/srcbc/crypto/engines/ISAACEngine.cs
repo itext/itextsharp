@@ -29,6 +29,7 @@ namespace Org.BouncyCastle.Crypto.Engines
     * Implementation of Bob Jenkin's ISAAC (Indirection Shift Accumulate Add and Count).
     * see: http://www.burtleburtle.net/bob/rand/isaacafa.html
     */
+    [Obsolete("For internal use only. If you want to use iText, please use a dependency on iText 7. ")]
     public class IsaacEngine
         : IStreamCipher
     {

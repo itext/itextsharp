@@ -47,6 +47,7 @@ using iTextSharp.text.pdf;
 
 namespace iTextSharp.text
 {
+    [Obsolete("For internal use only. If you want to use iText, please use a dependency on iText 7. ")]
     public class TabSplitCharacter : ISplitCharacter
     {
         public static readonly ISplitCharacter TAB = new TabSplitCharacter();

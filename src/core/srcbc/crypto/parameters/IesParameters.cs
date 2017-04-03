@@ -26,6 +26,7 @@ namespace Org.BouncyCastle.Crypto.Parameters
     /**
      * parameters for using an integrated cipher in stream mode.
      */
+    [Obsolete("For internal use only. If you want to use iText, please use a dependency on iText 7. ")]
     public class IesParameters : ICipherParameters
     {
         private byte[]  derivation;

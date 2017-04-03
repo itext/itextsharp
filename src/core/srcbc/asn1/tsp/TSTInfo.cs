@@ -26,7 +26,8 @@ using Org.BouncyCastle.Asn1.X509;
 
 namespace Org.BouncyCastle.Asn1.Tsp
 {
-	public class TstInfo
+	[Obsolete("For internal use only. If you want to use iText, please use a dependency on iText 7. ")]
+    public class TstInfo
 		: Asn1Encodable
 	{
 		private readonly DerInteger				version;

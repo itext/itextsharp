@@ -24,6 +24,7 @@ using System.IO;
 
 namespace Org.BouncyCastle.Utilities.IO
 {
+    [Obsolete("For internal use only. If you want to use iText, please use a dependency on iText 7. ")]
     public abstract class BaseOutputStream : Stream
     {
 		private bool closed;

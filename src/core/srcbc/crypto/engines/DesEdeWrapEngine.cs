@@ -42,6 +42,7 @@ namespace Org.BouncyCastle.Crypto.Engines
     * </ul>
 	* </p>
     */
+    [Obsolete("For internal use only. If you want to use iText, please use a dependency on iText 7. ")]
     public class DesEdeWrapEngine
 		: IWrapper
     {

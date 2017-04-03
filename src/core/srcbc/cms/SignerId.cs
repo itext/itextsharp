@@ -30,6 +30,7 @@ namespace Org.BouncyCastle.Cms
     /**
     * a basic index for a signer.
     */
+    [Obsolete("For internal use only. If you want to use iText, please use a dependency on iText 7. ")]
     public class SignerID
         : X509CertStoreSelector
     {

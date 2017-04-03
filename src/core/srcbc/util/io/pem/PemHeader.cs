@@ -22,7 +22,8 @@ using System;
 
 namespace Org.BouncyCastle.Utilities.IO.Pem
 {
-	public class PemHeader
+	[Obsolete("For internal use only. If you want to use iText, please use a dependency on iText 7. ")]
+    public class PemHeader
 	{
 		private string name;
 		private string val;

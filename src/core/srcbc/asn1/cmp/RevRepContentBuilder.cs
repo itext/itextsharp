@@ -25,7 +25,8 @@ using Org.BouncyCastle.Asn1.X509;
 
 namespace Org.BouncyCastle.Asn1.Cmp
 {
-	public class RevRepContentBuilder
+	[Obsolete("For internal use only. If you want to use iText, please use a dependency on iText 7. ")]
+    public class RevRepContentBuilder
 	{
 		private readonly Asn1EncodableVector status = new Asn1EncodableVector();
 		private readonly Asn1EncodableVector revCerts = new Asn1EncodableVector();

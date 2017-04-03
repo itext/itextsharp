@@ -31,7 +31,8 @@ namespace Org.BouncyCastle.Cms
 	/**
 	 * PKCS5 scheme-2 - password converted to bytes using UTF-8.
 	 */
-	public class Pkcs5Scheme2Utf8PbeKey
+	[Obsolete("For internal use only. If you want to use iText, please use a dependency on iText 7. ")]
+    public class Pkcs5Scheme2Utf8PbeKey
 		: CmsPbeKey
 	{
 		[Obsolete("Use version taking 'char[]' instead")]

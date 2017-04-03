@@ -25,6 +25,7 @@ namespace Org.BouncyCastle.Asn1.X509
     /**
      * an object for the elements in the X.509 V3 extension block.
      */
+    [Obsolete("For internal use only. If you want to use iText, please use a dependency on iText 7. ")]
     public class X509Extension
     {
         internal bool				critical;

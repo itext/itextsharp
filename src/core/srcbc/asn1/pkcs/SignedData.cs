@@ -28,6 +28,7 @@ namespace Org.BouncyCastle.Asn1.Pkcs
     /**
      * a Pkcs#7 signed data object.
      */
+    [Obsolete("For internal use only. If you want to use iText, please use a dependency on iText 7. ")]
     public class SignedData
         : Asn1Encodable
     {

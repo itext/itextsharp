@@ -33,7 +33,8 @@ namespace Org.BouncyCastle.Crypto.Generators
 	 * iteration count of 1.
 	 * </p>
 	 */
-	public class OpenSslPbeParametersGenerator
+	[Obsolete("For internal use only. If you want to use iText, please use a dependency on iText 7. ")]
+    public class OpenSslPbeParametersGenerator
 		: PbeParametersGenerator
 	{
 		private readonly IDigest digest = new MD5Digest();

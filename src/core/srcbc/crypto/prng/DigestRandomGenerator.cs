@@ -31,7 +31,8 @@ namespace Org.BouncyCastle.Crypto.Prng
 	 * Internal access to the digest is synchronized so a single one of these can be shared.
 	 * </p>
 	 */
-	public class DigestRandomGenerator
+	[Obsolete("For internal use only. If you want to use iText, please use a dependency on iText 7. ")]
+    public class DigestRandomGenerator
 		: IRandomGenerator
 	{
 		private const long CYCLE_COUNT = 10;

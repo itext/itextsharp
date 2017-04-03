@@ -50,7 +50,8 @@ namespace Org.BouncyCastle.Cms
 	*      CMSEnvelopedData         data = fact.generate(content, algorithm, "BC");
 	* </pre>
 	*/
-	public class CmsEnvelopedGenerator
+	[Obsolete("For internal use only. If you want to use iText, please use a dependency on iText 7. ")]
+    public class CmsEnvelopedGenerator
 	{
 		// Note: These tables are complementary: If rc2Table[i]==j, then rc2Ekb[j]==i
 		internal static readonly short[] rc2Table =

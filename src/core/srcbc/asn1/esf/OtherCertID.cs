@@ -32,7 +32,8 @@ namespace Org.BouncyCastle.Asn1.Esf
 	/// }
 	/// </code>
 	/// </remarks>
-	public class OtherCertID
+	[Obsolete("For internal use only. If you want to use iText, please use a dependency on iText 7. ")]
+    public class OtherCertID
 		: Asn1Encodable
 	{
 		private readonly OtherHash		otherCertHash;

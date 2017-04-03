@@ -43,6 +43,7 @@ namespace Org.BouncyCastle.Security
     /// <summary>
     ///
     /// </summary>
+    [Obsolete("For internal use only. If you want to use iText, please use a dependency on iText 7. ")]
     public sealed class PbeUtilities
     {
         private PbeUtilities()

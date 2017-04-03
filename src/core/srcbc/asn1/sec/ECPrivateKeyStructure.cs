@@ -29,7 +29,8 @@ namespace Org.BouncyCastle.Asn1.Sec
 	/**
 	 * the elliptic curve private key object from SEC 1
 	 */
-	public class ECPrivateKeyStructure
+	[Obsolete("For internal use only. If you want to use iText, please use a dependency on iText 7. ")]
+    public class ECPrivateKeyStructure
 		: Asn1Encodable
 	{
 		private readonly Asn1Sequence seq;

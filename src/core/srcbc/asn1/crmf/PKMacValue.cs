@@ -28,6 +28,7 @@ namespace Org.BouncyCastle.Asn1.Crmf
     /**
      * Password-based MAC value for use with POPOSigningKeyInput.
      */
+    [Obsolete("For internal use only. If you want to use iText, please use a dependency on iText 7. ")]
     public class PKMacValue
         : Asn1Encodable
     {

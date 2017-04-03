@@ -74,6 +74,7 @@ namespace iTextSharp.text.pdf {
     * </PRE>
     * @author Paulo Soares
     */
+    [Obsolete("For internal use only. If you want to use iText, please use a dependency on iText 7. ")]
     public class PushbuttonField : BaseField {
        
         /** A layout option */    

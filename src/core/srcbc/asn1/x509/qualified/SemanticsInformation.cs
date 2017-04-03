@@ -40,6 +40,7 @@ namespace Org.BouncyCastle.Asn1.X509.Qualified
     *         GeneralName
     * </pre>
     */
+    [Obsolete("For internal use only. If you want to use iText, please use a dependency on iText 7. ")]
     public class SemanticsInformation
 		: Asn1Encodable
     {

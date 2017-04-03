@@ -22,7 +22,8 @@ using System;
 
 namespace Org.BouncyCastle.Asn1.Icao
 {
-	public class LdsVersionInfo
+	[Obsolete("For internal use only. If you want to use iText, please use a dependency on iText 7. ")]
+    public class LdsVersionInfo
 		: Asn1Encodable
 	{
 		private DerPrintableString ldsVersion;

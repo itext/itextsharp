@@ -31,7 +31,8 @@ namespace Org.BouncyCastle.Crypto.Encodings
 	* this does your basic Pkcs 1 v1.5 padding - whether or not you should be using this
 	* depends on your application - see Pkcs1 Version 2 for details.
 	*/
-	public class Pkcs1Encoding
+	[Obsolete("For internal use only. If you want to use iText, please use a dependency on iText 7. ")]
+    public class Pkcs1Encoding
 		: IAsymmetricBlockCipher
 	{
 		/**

@@ -31,6 +31,7 @@ namespace Org.BouncyCastle.Math.EC
     /**
      * base class for points on elliptic curves.
      */
+    [Obsolete("For internal use only. If you want to use iText, please use a dependency on iText 7. ")]
     public abstract class ECPoint
     {
         internal readonly ECCurve			curve;
@@ -159,6 +160,7 @@ namespace Org.BouncyCastle.Math.EC
         }
     }
 
+    [Obsolete("For internal use only. If you want to use iText, please use a dependency on iText 7. ")]
     public abstract class ECPointBase
         : ECPoint
     {
@@ -233,6 +235,7 @@ namespace Org.BouncyCastle.Math.EC
     /**
      * Elliptic curve points over Fp
      */
+    [Obsolete("For internal use only. If you want to use iText, please use a dependency on iText 7. ")]
     public class FpPoint
         : ECPointBase
     {
@@ -370,6 +373,7 @@ namespace Org.BouncyCastle.Math.EC
     /**
      * Elliptic curve points over F2m
      */
+    [Obsolete("For internal use only. If you want to use iText, please use a dependency on iText 7. ")]
     public class F2mPoint
         : ECPointBase
     {

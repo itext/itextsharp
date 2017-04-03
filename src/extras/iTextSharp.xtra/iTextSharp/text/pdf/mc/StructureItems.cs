@@ -52,6 +52,7 @@ namespace iTextSharp.text.pdf.mc {
      * Structure Tree of a PDF document.
      */
 
+    [Obsolete("For internal use only. If you want to use iText, please use a dependency on iText 7. ")]
     public class StructureItems : List<StructureItem> {
 
         /** The Logger instance */

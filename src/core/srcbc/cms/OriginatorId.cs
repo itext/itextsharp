@@ -30,6 +30,7 @@ namespace Org.BouncyCastle.Cms
     /**
     * a basic index for an originator.
     */
+    [Obsolete("For internal use only. If you want to use iText, please use a dependency on iText 7. ")]
     public class OriginatorID
         : X509CertStoreSelector
     {

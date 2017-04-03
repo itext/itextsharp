@@ -35,6 +35,7 @@ namespace Org.BouncyCastle.Crypto.Macs
     /// finalization round and this round function is called SipRound. Given a 128-bit key k and a
     /// (possibly empty) byte string m, SipHash-c-d returns a 64-bit value..."
     /// </remarks>
+    [Obsolete("For internal use only. If you want to use iText, please use a dependency on iText 7. ")]
     public class SipHash
         : IMac
     {

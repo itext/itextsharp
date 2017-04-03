@@ -39,7 +39,8 @@ namespace Org.BouncyCastle.X509
 	 * ReasonCode Hode Instruction Code Invalidity Date Certificate Issuer
 	 * (critical)
 	 */
-	public class X509CrlEntry
+	[Obsolete("For internal use only. If you want to use iText, please use a dependency on iText 7. ")]
+    public class X509CrlEntry
 		: X509ExtensionBase
 	{
 		private CrlEntry	c;

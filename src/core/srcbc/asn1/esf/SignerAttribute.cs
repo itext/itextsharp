@@ -24,7 +24,8 @@ using Org.BouncyCastle.Asn1.X509;
 
 namespace Org.BouncyCastle.Asn1.Esf
 {
-	public class SignerAttribute
+	[Obsolete("For internal use only. If you want to use iText, please use a dependency on iText 7. ")]
+    public class SignerAttribute
 		: Asn1Encodable
 	{
 		private Asn1Sequence			claimedAttributes;

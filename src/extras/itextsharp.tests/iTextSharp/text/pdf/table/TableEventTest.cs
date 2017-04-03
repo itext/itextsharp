@@ -50,7 +50,8 @@ using iTextSharp.text;
 namespace itextsharp.tests.iTextSharp.text.pdf.table
 {
    [TestFixture]
-   public class TableEventTest
+   [Obsolete("For internal use only. If you want to use iText, please use a dependency on iText 7. ")]
+    public class TableEventTest
     {
         private static readonly String CMP_FOLDER = @"..\..\resources\text\pdf\table\TableEventTest\";
         private static readonly String OUTPUT_FOLDER = @"table\TableEventTest\";

@@ -49,6 +49,7 @@ namespace iTextSharp.text.pdf {
      * Implements the appearance stream to be used with form fields..
      */
 
+    [Obsolete("For internal use only. If you want to use iText, please use a dependency on iText 7. ")]
     public class PdfAppearance : PdfTemplate {
 
         public static Dictionary<String, PdfName> stdFieldFontNames = new Dictionary<string,PdfName>();

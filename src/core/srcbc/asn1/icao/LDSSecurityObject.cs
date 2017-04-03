@@ -42,7 +42,8 @@ namespace Org.BouncyCastle.Asn1.Icao
 	 * LDSSecurityObjectVersion :: INTEGER {V0(0)}
 	 * </pre>
 	 */
-	public class LdsSecurityObject
+	[Obsolete("For internal use only. If you want to use iText, please use a dependency on iText 7. ")]
+    public class LdsSecurityObject
 		: Asn1Encodable
 	{
 		public const int UBDataGroups = 16;

@@ -32,7 +32,8 @@ using Org.BouncyCastle.Utilities;
 namespace Org.BouncyCastle.X509
 {
 	/// <remarks>Class to produce an X.509 Version 2 AttributeCertificate.</remarks>
-	public class X509V2AttributeCertificateGenerator
+	[Obsolete("For internal use only. If you want to use iText, please use a dependency on iText 7. ")]
+    public class X509V2AttributeCertificateGenerator
 	{
 		private readonly X509ExtensionsGenerator extGenerator = new X509ExtensionsGenerator();
 

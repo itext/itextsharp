@@ -32,6 +32,7 @@ namespace Org.BouncyCastle.Crypto.Generators
     /**
      * Generate suitable parameters for DSA, in line with FIPS 186-2, or FIPS 186-3.
      */
+    [Obsolete("For internal use only. If you want to use iText, please use a dependency on iText 7. ")]
     public class DsaParametersGenerator
     {
         private IDigest         digest;

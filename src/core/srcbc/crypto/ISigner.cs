@@ -24,6 +24,7 @@ using System.Text;
 
 namespace Org.BouncyCastle.Crypto
 {
+    [Obsolete("For internal use only. If you want to use iText, please use a dependency on iText 7. ")]
     public interface ISigner
     {
         /**

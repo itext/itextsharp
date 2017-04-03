@@ -26,6 +26,7 @@ namespace Org.BouncyCastle.Crypto.Parameters
 {
 
     /// <summary> Cipher parameters with a fixed salt value associated with them.</summary>
+    [Obsolete("For internal use only. If you want to use iText, please use a dependency on iText 7. ")]
     public class ParametersWithSalt : ICipherParameters
     {
         private byte[] salt;

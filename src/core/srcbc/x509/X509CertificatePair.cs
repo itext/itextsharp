@@ -33,7 +33,8 @@ namespace Org.BouncyCastle.X509
 	/// other CA to this CA is contained in the forward certificate, the certificate
 	/// from this CA to the other CA is contained in the reverse certificate.
 	/// </remarks>
-	public class X509CertificatePair
+	[Obsolete("For internal use only. If you want to use iText, please use a dependency on iText 7. ")]
+    public class X509CertificatePair
 	{
 		private readonly X509Certificate forward;
 		private readonly X509Certificate reverse;

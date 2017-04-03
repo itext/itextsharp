@@ -27,6 +27,7 @@ namespace Org.BouncyCastle.Asn1.X509
      * The default converter for X509 DN entries when going from their
      * string value to ASN.1 strings.
      */
+    [Obsolete("For internal use only. If you want to use iText, please use a dependency on iText 7. ")]
     public class X509DefaultEntryConverter
         : X509NameEntryConverter
     {

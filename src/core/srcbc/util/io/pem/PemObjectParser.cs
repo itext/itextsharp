@@ -23,7 +23,8 @@ using System.IO;
 
 namespace Org.BouncyCastle.Utilities.IO.Pem
 {
-	public interface PemObjectParser
+	[Obsolete("For internal use only. If you want to use iText, please use a dependency on iText 7. ")]
+    public interface PemObjectParser
 	{
 		/// <param name="obj">
 		/// A <see cref="PemObject"/>

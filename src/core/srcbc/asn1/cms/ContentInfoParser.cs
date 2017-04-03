@@ -31,7 +31,8 @@ namespace Org.BouncyCastle.Asn1.Cms
 	*          [0] EXPLICIT ANY DEFINED BY contentType OPTIONAL }
 	* </pre>
 	*/
-	public class ContentInfoParser
+	[Obsolete("For internal use only. If you want to use iText, please use a dependency on iText 7. ")]
+    public class ContentInfoParser
 	{
 		private DerObjectIdentifier		contentType;
 		private Asn1TaggedObjectParser	content;

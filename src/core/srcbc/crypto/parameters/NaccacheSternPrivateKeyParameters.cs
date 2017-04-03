@@ -31,7 +31,8 @@ namespace Org.BouncyCastle.Crypto.Parameters
 	 *
 	 * http://www.gemplus.com/smart/rd/publications/pdf/NS98pkcs.pdf
 	 */
-	public class NaccacheSternPrivateKeyParameters : NaccacheSternKeyParameters
+	[Obsolete("For internal use only. If you want to use iText, please use a dependency on iText 7. ")]
+    public class NaccacheSternPrivateKeyParameters : NaccacheSternKeyParameters
 	{
 		private readonly BigInteger phiN;
 		private readonly IList smallPrimes;

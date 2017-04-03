@@ -24,7 +24,8 @@ using Org.BouncyCastle.Asn1.Crmf;
 
 namespace Org.BouncyCastle.Asn1.Cmp
 {
-	public class CertifiedKeyPair
+	[Obsolete("For internal use only. If you want to use iText, please use a dependency on iText 7. ")]
+    public class CertifiedKeyPair
 		: Asn1Encodable
 	{
 		private readonly CertOrEncCert certOrEncCert;

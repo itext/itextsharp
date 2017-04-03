@@ -34,7 +34,8 @@ using Org.BouncyCastle.Utilities.IO.Pem;
 
 namespace Org.BouncyCastle.OpenSsl
 {
-	public class Pkcs8Generator
+	[Obsolete("For internal use only. If you want to use iText, please use a dependency on iText 7. ")]
+    public class Pkcs8Generator
 		: PemObjectGenerator
 	{
 		// FIXME See PbeUtilities static constructor

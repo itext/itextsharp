@@ -29,6 +29,7 @@ using Org.BouncyCastle.Utilities;
 namespace Org.BouncyCastle.Crypto.Signers
 {
     /// <summary> ISO9796-2 - mechanism using a hash function with recovery (scheme 1)</summary>
+    [Obsolete("For internal use only. If you want to use iText, please use a dependency on iText 7. ")]
     public class Iso9796d2Signer : ISignerWithRecovery
     {
         /// <summary>

@@ -29,7 +29,8 @@ namespace Org.BouncyCastle.Crypto
 	* The AEAD block ciphers already handle buffering internally, so this class
 	* just takes care of implementing IBufferedCipher methods.
 	*/
-	public class BufferedAeadBlockCipher
+	[Obsolete("For internal use only. If you want to use iText, please use a dependency on iText 7. ")]
+    public class BufferedAeadBlockCipher
 		: BufferedCipherBase
 	{
 		private readonly IAeadBlockCipher cipher;

@@ -47,6 +47,7 @@ namespace System.util {
     /// <summary>
     /// Summary description for Util.
     /// </summary>
+    [Obsolete("For internal use only. If you want to use iText, please use a dependency on iText 7. ")]
     public static class Util {
         public static int USR(int op1, int op2) {        
             if (op2 < 1) {

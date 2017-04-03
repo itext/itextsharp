@@ -28,6 +28,7 @@ namespace Org.BouncyCastle.Crypto.Agreement.Kdf
     /**
     * RFC 2631 Diffie-hellman KEK derivation function.
     */
+    [Obsolete("For internal use only. If you want to use iText, please use a dependency on iText 7. ")]
     public class DHKekGenerator
         : IDerivationFunction
     {

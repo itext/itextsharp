@@ -36,6 +36,7 @@ namespace Org.BouncyCastle.Asn1.X509.Qualified
     *       sourceDataUri        IA5String OPTIONAL  }
     * </pre>
     */
+    [Obsolete("For internal use only. If you want to use iText, please use a dependency on iText 7. ")]
     public class BiometricData
         : Asn1Encodable
     {

@@ -18,6 +18,7 @@ You can be released from the requirements of the license by purchasing a commerc
 These activities include: offering paid services to customers as an ASP, serving PDFs on the fly in a web application, shipping iText with a closed source product.
 
 For more information, please contact iText Software Corp. at this address: sales@itextpdf.com */
+using System;
 using System.Collections;
 
 namespace Org.BouncyCastle.Asn1.X509
@@ -32,7 +33,8 @@ namespace Org.BouncyCastle.Asn1.X509
 	 *
 	 * @see <a href="http://www.faqs.org/rfc/rfc3280.txt">RFC 3280, section 4.2.1.6</a>
 	 */
-	public class PolicyMappings
+	[Obsolete("For internal use only. If you want to use iText, please use a dependency on iText 7. ")]
+    public class PolicyMappings
 		: Asn1Encodable
 	{
 		private readonly Asn1Sequence seq;

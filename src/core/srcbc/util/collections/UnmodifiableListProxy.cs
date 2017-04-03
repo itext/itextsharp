@@ -23,7 +23,8 @@ using System.Collections;
 
 namespace Org.BouncyCastle.Utilities.Collections
 {
-	public class UnmodifiableListProxy
+	[Obsolete("For internal use only. If you want to use iText, please use a dependency on iText 7. ")]
+    public class UnmodifiableListProxy
 		: UnmodifiableList
 	{
 		private readonly IList l;

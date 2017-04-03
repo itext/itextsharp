@@ -28,7 +28,8 @@ using Org.BouncyCastle.Crypto.Utilities;
 
 namespace Org.BouncyCastle.Crypto.Generators
 {
-	public class SCrypt
+	[Obsolete("For internal use only. If you want to use iText, please use a dependency on iText 7. ")]
+    public class SCrypt
 	{
 		// TODO Validate arguments
 		public static byte[] Generate(byte[] P, byte[] S, int N, int r, int p, int dkLen)

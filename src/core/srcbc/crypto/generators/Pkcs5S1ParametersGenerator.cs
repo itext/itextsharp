@@ -38,7 +38,8 @@ namespace Org.BouncyCastle.Crypto.Generators
 	* RSA's Pkcs5 Page</a>
 	* </p>
 	*/
-	public class Pkcs5S1ParametersGenerator
+	[Obsolete("For internal use only. If you want to use iText, please use a dependency on iText 7. ")]
+    public class Pkcs5S1ParametersGenerator
 		: PbeParametersGenerator
 	{
 		private readonly IDigest digest;

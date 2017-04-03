@@ -34,6 +34,7 @@ using Org.BouncyCastle.Utilities.IO;
 namespace Org.BouncyCastle.Crypto.Tls
 {
     /// <remarks>Some helper functions for MicroTLS.</remarks>
+    [Obsolete("For internal use only. If you want to use iText, please use a dependency on iText 7. ")]
     public class TlsUtilities
     {
         internal static void WriteUint8(byte i, Stream os)

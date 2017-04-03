@@ -22,7 +22,8 @@ using System;
 
 namespace Org.BouncyCastle.Utilities.Date
 {
-	public class DateTimeUtilities
+	[Obsolete("For internal use only. If you want to use iText, please use a dependency on iText 7. ")]
+    public class DateTimeUtilities
 	{
 		public static readonly DateTime UnixEpoch = new DateTime(1970, 1, 1);
 

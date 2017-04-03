@@ -37,6 +37,7 @@ namespace iTextSharp.xmp.impl {
     /// 
     /// @since   11.10.2006
     /// </summary>
+    [Obsolete("For internal use only. If you want to use iText, please use a dependency on iText 7. ")]
     public class ByteBuffer {
         private byte[] _buffer;
         private string _encoding;

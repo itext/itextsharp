@@ -43,7 +43,8 @@ namespace Org.BouncyCastle.Asn1.X509
 	 * id-ad-ocsp OBJECT IDENTIFIER ::= { id-ad 1 }
 	 * </pre>
 	 */
-	public class AuthorityInformationAccess
+	[Obsolete("For internal use only. If you want to use iText, please use a dependency on iText 7. ")]
+    public class AuthorityInformationAccess
 		: Asn1Encodable
 	{
 		private readonly AccessDescription[] descriptions;

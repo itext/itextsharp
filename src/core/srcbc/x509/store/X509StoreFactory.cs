@@ -25,7 +25,8 @@ using Org.BouncyCastle.Utilities;
 
 namespace Org.BouncyCastle.X509.Store
 {
-	public sealed class X509StoreFactory
+	[Obsolete("For internal use only. If you want to use iText, please use a dependency on iText 7. ")]
+    public sealed class X509StoreFactory
 	{
 		private X509StoreFactory()
 		{

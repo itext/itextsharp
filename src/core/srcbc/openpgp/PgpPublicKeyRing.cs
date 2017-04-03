@@ -34,7 +34,8 @@ namespace Org.BouncyCastle.Bcpg.OpenPgp
 	/// or construct one of these you should use the <c>PgpPublicKeyRingBundle</c> class.
 	/// </p>
 	/// </remarks>
-	public class PgpPublicKeyRing
+	[Obsolete("For internal use only. If you want to use iText, please use a dependency on iText 7. ")]
+    public class PgpPublicKeyRing
 		: PgpKeyRing
     {
         private readonly IList keys;

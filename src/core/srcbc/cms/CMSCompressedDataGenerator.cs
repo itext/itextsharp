@@ -40,6 +40,7 @@ namespace Org.BouncyCastle.Cms
     * </pre>
 	* </p>
     */
+    [Obsolete("For internal use only. If you want to use iText, please use a dependency on iText 7. ")]
     public class CmsCompressedDataGenerator
     {
         public const string ZLib = "1.2.840.113549.1.9.16.3.8";

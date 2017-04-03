@@ -45,7 +45,8 @@ namespace Org.BouncyCastle.Asn1.X509
 	 *
 	 * @see org.bouncycastle.asn1.x509.X509Name for AttributeType ObjectIdentifiers.
 	 */
-	public class SubjectDirectoryAttributes
+	[Obsolete("For internal use only. If you want to use iText, please use a dependency on iText 7. ")]
+    public class SubjectDirectoryAttributes
 		: Asn1Encodable
 	{
 		private readonly IList attributes;

@@ -26,6 +26,7 @@ namespace Org.BouncyCastle.Crypto.Digests
     /// <p>Implementation of RipeMD256.</p>
     /// <p><b>Note:</b> this algorithm offers the same level of security as RipeMD128.</p>
     /// </remarks>
+    [Obsolete("For internal use only. If you want to use iText, please use a dependency on iText 7. ")]
     public class RipeMD256Digest
 		: GeneralDigest
     {

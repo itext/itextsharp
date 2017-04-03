@@ -31,6 +31,7 @@ namespace Org.BouncyCastle.Crypto.Digests
      * It is interesting to ponder why the, apart from the extra IV, the other difference here from MD5
      * is the "endianness" of the word processing!
      */
+    [Obsolete("For internal use only. If you want to use iText, please use a dependency on iText 7. ")]
     public class Sha1Digest
         : GeneralDigest
     {

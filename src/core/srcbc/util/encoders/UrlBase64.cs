@@ -36,7 +36,8 @@ namespace Org.BouncyCastle.Utilities.Encoders
 	* parameter.
 	* </p>
 	*/
-	public class UrlBase64
+	[Obsolete("For internal use only. If you want to use iText, please use a dependency on iText 7. ")]
+    public class UrlBase64
 	{
 		private static readonly IEncoder encoder = new UrlBase64Encoder();
 

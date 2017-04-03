@@ -30,7 +30,8 @@ namespace Org.BouncyCastle.Bcpg.OpenPgp
 {
 	/// <remarks>Generator for old style PGP V3 Signatures.</remarks>
 	// TODO Should be able to implement ISigner?
-	public class PgpV3SignatureGenerator
+	[Obsolete("For internal use only. If you want to use iText, please use a dependency on iText 7. ")]
+    public class PgpV3SignatureGenerator
     {
         private PublicKeyAlgorithmTag keyAlgorithm;
         private HashAlgorithmTag hashAlgorithm;

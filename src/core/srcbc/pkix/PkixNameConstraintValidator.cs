@@ -28,6 +28,7 @@ using Org.BouncyCastle.Utilities.Collections;
 
 namespace Org.BouncyCastle.Pkix
 {
+    [Obsolete("For internal use only. If you want to use iText, please use a dependency on iText 7. ")]
     public class PkixNameConstraintValidator
     {
         private ISet excludedSubtreesDN = new HashSet();

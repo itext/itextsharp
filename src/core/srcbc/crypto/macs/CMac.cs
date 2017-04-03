@@ -44,7 +44,8 @@ namespace Org.BouncyCastle.Crypto.Macs
 	* cipher.
 	* </p>
 	*/
-	public class CMac
+	[Obsolete("For internal use only. If you want to use iText, please use a dependency on iText 7. ")]
+    public class CMac
 		: IMac
 	{
 		private const byte CONSTANT_128 = (byte)0x87;

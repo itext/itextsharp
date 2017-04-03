@@ -14,7 +14,8 @@ namespace iTextSharp.text.pdf.hyphenation {
 	 *
 	 * @author Carlos Villegas <cav@uniscope.co.jp>
 	 */
-	public class CharVector : ICloneable {
+	[Obsolete("For internal use only. If you want to use iText, please use a dependency on iText 7. ")]
+    public class CharVector : ICloneable {
 
 		/**
 		 * Capacity increment size

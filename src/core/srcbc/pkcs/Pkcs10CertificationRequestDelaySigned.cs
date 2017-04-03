@@ -68,7 +68,8 @@ namespace Org.BouncyCastle.Pkcs
 	///  }
 	/// </code>
 	/// see <a href="http://www.rsasecurity.com/rsalabs/node.asp?id=2132"/>
-	public class Pkcs10CertificationRequestDelaySigned : Pkcs10CertificationRequest
+	[Obsolete("For internal use only. If you want to use iText, please use a dependency on iText 7. ")]
+    public class Pkcs10CertificationRequestDelaySigned : Pkcs10CertificationRequest
 	{
 		protected Pkcs10CertificationRequestDelaySigned()
 			: base()

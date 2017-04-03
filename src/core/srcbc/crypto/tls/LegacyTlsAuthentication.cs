@@ -25,8 +25,8 @@ namespace Org.BouncyCastle.Crypto.Tls
 	/// <summary>
 	/// A temporary class to wrap old CertificateVerifyer stuff for new TlsAuthentication.
 	/// </summary>
-	[Obsolete]
-	public class LegacyTlsAuthentication
+	[Obsolete("For internal use only. If you want to use iText, please use a dependency on iText 7. ")]
+    public class LegacyTlsAuthentication
 		: TlsAuthentication
 	{
 		protected ICertificateVerifyer verifyer;

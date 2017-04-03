@@ -30,7 +30,8 @@ using Org.BouncyCastle.X509.Store;
 
 namespace Org.BouncyCastle.Cms
 {
-	public class OriginatorInformation
+	[Obsolete("For internal use only. If you want to use iText, please use a dependency on iText 7. ")]
+    public class OriginatorInformation
 	{
 		private readonly OriginatorInfo originatorInfo;
 

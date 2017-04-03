@@ -51,6 +51,7 @@ namespace iTextSharp.tool.xml.net {
      * @author itextpdf.com
      *
      */
+    [Obsolete("For internal use only. If you want to use iText, please use a dependency on iText 7. ")]
     public interface IFileRetrieve {
 
         /**

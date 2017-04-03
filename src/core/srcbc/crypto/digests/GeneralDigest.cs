@@ -26,6 +26,7 @@ namespace Org.BouncyCastle.Crypto.Digests
     * base implementation of MD4 family style digest as outlined in
     * "Handbook of Applied Cryptography", pages 344 - 347.
     */
+    [Obsolete("For internal use only. If you want to use iText, please use a dependency on iText 7. ")]
     public abstract class GeneralDigest
 		: IDigest
     {

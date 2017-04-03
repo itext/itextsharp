@@ -25,6 +25,7 @@ using Org.BouncyCastle.Crypto.Parameters;
 namespace Org.BouncyCastle.Crypto.Engines
 {
     /// <remarks>A class that provides a basic DESede (or Triple DES) engine.</remarks>
+    [Obsolete("For internal use only. If you want to use iText, please use a dependency on iText 7. ")]
     public class DesEdeEngine
         : DesEngine
     {

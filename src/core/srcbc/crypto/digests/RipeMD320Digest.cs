@@ -26,6 +26,7 @@ namespace Org.BouncyCastle.Crypto.Digests
 	/// <p>Implementation of RipeMD 320.</p>
 	/// <p><b>Note:</b> this algorithm offers the same level of security as RipeMD160.</p>
 	/// </remarks>
+    [Obsolete("For internal use only. If you want to use iText, please use a dependency on iText 7. ")]
     public class RipeMD320Digest
 		: GeneralDigest
     {

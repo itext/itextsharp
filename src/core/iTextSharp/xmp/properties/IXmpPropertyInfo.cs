@@ -28,6 +28,8 @@
 //
 //        http://www.adobe.com/devnet/xmp/library/eula-xmp-library-java.html
 
+using System;
+
 namespace iTextSharp.xmp.properties {
     /// <summary>
     /// This interface is used to return a property together with its path and namespace.
@@ -35,6 +37,7 @@ namespace iTextSharp.xmp.properties {
     /// 
     /// @since   06.07.2006
     /// </summary>
+    [Obsolete("For internal use only. If you want to use iText, please use a dependency on iText 7. ")]
     public interface IXmpPropertyInfo : IXmpProperty {
         /// <returns> Returns the namespace of the property </returns>
         string Namespace { get; }

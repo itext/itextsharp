@@ -22,7 +22,8 @@ using System;
 
 namespace Org.BouncyCastle.Asn1.X9
 {
-	public class DHPublicKey
+	[Obsolete("For internal use only. If you want to use iText, please use a dependency on iText 7. ")]
+    public class DHPublicKey
 		: Asn1Encodable
 	{
 		private readonly DerInteger y;
