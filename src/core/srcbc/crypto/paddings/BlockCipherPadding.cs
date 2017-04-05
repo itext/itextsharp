@@ -8,6 +8,7 @@ namespace Org.BouncyCastle.Crypto.Paddings
     /**
      * Block cipher padders are expected to conform to this interface
      */
+    [Obsolete("For internal use only. If you want to use iText, please use a dependency on iText 7. ")]
     public interface IBlockCipherPadding
     {
         /**

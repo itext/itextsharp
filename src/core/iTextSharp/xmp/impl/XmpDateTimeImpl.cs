@@ -42,6 +42,7 @@ namespace iTextSharp.xmp.impl {
     /// 
     /// @since 16.02.2006
     /// </summary>
+    [Obsolete("For internal use only. If you want to use iText, please use a dependency on iText 7. ")]
     public class XmpDateTimeImpl : XMPDateTime {
         private int _day;
         private bool _hasDate;

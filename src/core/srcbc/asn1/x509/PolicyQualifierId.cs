@@ -1,3 +1,5 @@
+using System;
+
 namespace Org.BouncyCastle.Asn1.X509
 {
 	/**
@@ -12,7 +14,8 @@ namespace Org.BouncyCastle.Asn1.X509
 	 *       OBJECT IDENTIFIER ( id-qt-cps | id-qt-unotice )
 	 * </pre>
 	 */
-	public sealed class PolicyQualifierID : DerObjectIdentifier
+	[Obsolete("For internal use only. If you want to use iText, please use a dependency on iText 7. ")]
+    public sealed class PolicyQualifierID : DerObjectIdentifier
 	{
 		private const string IdQt = "1.3.6.1.5.5.7.2";
 

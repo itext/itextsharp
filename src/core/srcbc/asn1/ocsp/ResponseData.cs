@@ -5,7 +5,8 @@ using Org.BouncyCastle.Asn1.X509;
 
 namespace Org.BouncyCastle.Asn1.Ocsp
 {
-	public class ResponseData
+	[Obsolete("For internal use only. If you want to use iText, please use a dependency on iText 7. ")]
+    public class ResponseData
 		: Asn1Encodable
 	{
 		private static readonly DerInteger V1 = new DerInteger(0);

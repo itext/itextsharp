@@ -7,7 +7,8 @@ using Org.BouncyCastle.Utilities.IO;
 
 namespace Org.BouncyCastle.Cms
 {
-	public class CmsTypedStream
+	[Obsolete("For internal use only. If you want to use iText, please use a dependency on iText 7. ")]
+    public class CmsTypedStream
 	{
 		private const int BufferSize = 32 * 1024;
 

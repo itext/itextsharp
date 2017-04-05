@@ -7,6 +7,7 @@ namespace Org.BouncyCastle.Bcpg.Sig
     /**
     * packet giving whether or not the signature is signed using the primary user ID for the key.
     */
+    [Obsolete("For internal use only. If you want to use iText, please use a dependency on iText 7. ")]
     public class PrimaryUserId
         : SignatureSubpacket
     {

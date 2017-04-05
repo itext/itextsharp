@@ -1,3 +1,4 @@
+using System;
 using System.IO;
 
 using Org.BouncyCastle.Apache.Bzip2;
@@ -6,6 +7,7 @@ using Org.BouncyCastle.Utilities.Zlib;
 namespace Org.BouncyCastle.Bcpg.OpenPgp
 {
 	/// <remarks>Compressed data objects</remarks>
+    [Obsolete("For internal use only. If you want to use iText, please use a dependency on iText 7. ")]
     public class PgpCompressedData
 		: PgpObject
     {

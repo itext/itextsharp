@@ -16,6 +16,7 @@ namespace Org.BouncyCastle.Crypto.Digests
      * SHA-512 1024   64    512
      * </pre>
      */
+    [Obsolete("For internal use only. If you want to use iText, please use a dependency on iText 7. ")]
     public class Sha512Digest
 		: LongDigest
     {

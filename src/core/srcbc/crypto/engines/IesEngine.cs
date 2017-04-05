@@ -10,6 +10,7 @@ namespace Org.BouncyCastle.Crypto.Engines
     * support class for constructing intergrated encryption ciphers
     * for doing basic message exchanges on top of key agreement ciphers
     */
+    [Obsolete("For internal use only. If you want to use iText, please use a dependency on iText 7. ")]
     public class IesEngine
     {
         private readonly IBasicAgreement     agree;

@@ -12,7 +12,8 @@ namespace Org.BouncyCastle.Crypto.Encodings
 	* message is small don't sign the message, sign it's hash) or some "random"
 	* value. See your favorite search engine for details.
 	*/
-	public class ISO9796d1Encoding
+	[Obsolete("For internal use only. If you want to use iText, please use a dependency on iText 7. ")]
+    public class ISO9796d1Encoding
 		: IAsymmetricBlockCipher
 	{
 		private static readonly BigInteger Sixteen = BigInteger.ValueOf(16);

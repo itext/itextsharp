@@ -8,6 +8,7 @@ namespace Org.BouncyCastle.Crypto.Tls
     /// This file could be more optimized.
     /// </p>
     /// </remarks>
+    [Obsolete("For internal use only. If you want to use iText, please use a dependency on iText 7. ")]
     public class ByteQueue
     {
         /// <returns>The smallest number which can be written as 2^x which is bigger than i.</returns>

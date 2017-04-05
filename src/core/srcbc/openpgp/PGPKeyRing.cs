@@ -1,3 +1,4 @@
+using System;
 using System.Collections;
 using System.IO;
 
@@ -5,7 +6,8 @@ using Org.BouncyCastle.Utilities;
 
 namespace Org.BouncyCastle.Bcpg.OpenPgp
 {
-	public abstract class PgpKeyRing
+	[Obsolete("For internal use only. If you want to use iText, please use a dependency on iText 7. ")]
+    public abstract class PgpKeyRing
 		: PgpObject
 	{
 		internal PgpKeyRing()

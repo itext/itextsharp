@@ -12,7 +12,8 @@ namespace Org.BouncyCastle.Asn1.X509
 	 *       qualifier          ANY DEFINED BY policyQualifierId }
 	 * </pre>
 	 */
-	public class PolicyQualifierInfo
+	[Obsolete("For internal use only. If you want to use iText, please use a dependency on iText 7. ")]
+    public class PolicyQualifierInfo
 		: Asn1Encodable
 	{
 		internal readonly DerObjectIdentifier	policyQualifierId;

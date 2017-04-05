@@ -4,7 +4,8 @@ using Org.BouncyCastle.Asn1.X509;
 
 namespace Org.BouncyCastle.Asn1.Ess
 {
-	public class EssCertID
+	[Obsolete("For internal use only. If you want to use iText, please use a dependency on iText 7. ")]
+    public class EssCertID
 		: Asn1Encodable
 	{
 		private Asn1OctetString certHash;

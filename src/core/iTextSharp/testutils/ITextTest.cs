@@ -44,6 +44,7 @@ using System;
 using System.IO;
 
 namespace iTextSharp.testutils {
+    [Obsolete("For internal use only. If you want to use iText, please use a dependency on iText 7. ")]
     public abstract class ITextTest {
         public virtual void RunTest() {
             Console.WriteLine("Starting test.");

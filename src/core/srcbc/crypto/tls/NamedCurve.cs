@@ -14,7 +14,8 @@ namespace Org.BouncyCastle.Crypto.Tls
 	/// client supports arbitrary prime and characteristic-2 curves, respectively (the curve
 	/// parameters must be encoded explicitly in ECParameters).
 	/// </summary>
-	public enum NamedCurve : int
+	[Obsolete("For internal use only. If you want to use iText, please use a dependency on iText 7. ")]
+    public enum NamedCurve : int
 	{
 		sect163k1 = 1,
 		sect163r1 = 2,

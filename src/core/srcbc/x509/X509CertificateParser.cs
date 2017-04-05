@@ -20,7 +20,8 @@ namespace Org.BouncyCastle.X509
 	 * base 64 encoded certs, as well as the BER binaries of certificates and some classes of PKCS#7
 	 * objects.</p>
 	 */
-	public class X509CertificateParser
+	[Obsolete("For internal use only. If you want to use iText, please use a dependency on iText 7. ")]
+    public class X509CertificateParser
 	{
 		private static readonly PemParser PemCertParser = new PemParser("CERTIFICATE");
 

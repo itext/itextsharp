@@ -44,6 +44,7 @@ using System;
 
 namespace iTextSharp.text.xml.xmp {
 
+    [Obsolete("For internal use only. If you want to use iText, please use a dependency on iText 7. ")]
     public class XmpMMProperties {
         /** A reference to the original document from which this one is derived. It is a minimal reference; missing components can be assumed to be unchanged. For example, a new version might only need to specify the instance ID and version number of the previous version, or a rendition might only need to specify the instance ID and rendition class of the original. */
         public static readonly String DERIVEDFROM = "DerivedFrom";

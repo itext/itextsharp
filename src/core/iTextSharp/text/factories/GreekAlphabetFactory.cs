@@ -51,6 +51,7 @@ namespace iTextSharp.text.factories {
     * but this isn't implemented yet; the main reason being the fact that we
     * need a font that has the obsolete Greek characters qoppa and sampi.
     */
+    [Obsolete("For internal use only. If you want to use iText, please use a dependency on iText 7. ")]
     public class GreekAlphabetFactory {
         /** 
         * Changes an int into a lower case Greek letter combination.

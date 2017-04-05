@@ -57,8 +57,8 @@ namespace iTextSharp.text {
     *
     * @deprecated since 5.5.9. This class is no longer used.
     */
-
-    [Obsolete]
+    
+    [Obsolete("For internal use only. If you want to use iText, please use a dependency on iText 7. ")]
     public class MarkedSection : MarkedObject, IIndentable {
 
         /** This is the title of this section. */

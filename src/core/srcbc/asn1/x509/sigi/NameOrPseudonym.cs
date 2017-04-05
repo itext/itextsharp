@@ -21,7 +21,8 @@ namespace Org.BouncyCastle.Asn1.X509.SigI
 	* @see org.bouncycastle.asn1.x509.sigi.PersonalData
 	* 
 	*/
-	public class NameOrPseudonym
+	[Obsolete("For internal use only. If you want to use iText, please use a dependency on iText 7. ")]
+    public class NameOrPseudonym
 		: Asn1Encodable, IAsn1Choice
 	{
 		private readonly DirectoryString	pseudonym;

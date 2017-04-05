@@ -40,6 +40,7 @@ namespace iTextSharp.xmp.impl {
     /// 
     /// @since 17.02.2006
     /// </summary>
+    [Obsolete("For internal use only. If you want to use iText, please use a dependency on iText 7. ")]
     public class XmpMetaImpl : XmpConst, IXmpMeta {
         /// <summary>
         /// Property values are Strings by default </summary>

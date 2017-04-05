@@ -38,6 +38,7 @@ using System.Diagnostics;
 using System.IO;
 
 namespace System.util.zlib {
+    [Obsolete("For internal use only. If you want to use iText, please use a dependency on iText 7. ")]
     public class ZOutputStream : Stream
 	{
 		private const int BufferSize = 512;

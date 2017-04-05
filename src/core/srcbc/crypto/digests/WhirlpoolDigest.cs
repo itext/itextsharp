@@ -9,7 +9,8 @@ namespace Org.BouncyCastle.Crypto.Digests
 	* and Rijmen.
 	*
 	*/
-	public sealed class WhirlpoolDigest : IDigest
+	[Obsolete("For internal use only. If you want to use iText, please use a dependency on iText 7. ")]
+    public sealed class WhirlpoolDigest : IDigest
 	{
 		private const int BYTE_LENGTH = 64;
 

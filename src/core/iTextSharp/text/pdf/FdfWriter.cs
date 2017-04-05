@@ -50,6 +50,7 @@ namespace iTextSharp.text.pdf {
     /** Writes an FDF form.
     * @author Paulo Soares
     */
+    [Obsolete("For internal use only. If you want to use iText, please use a dependency on iText 7. ")]
     public class FdfWriter {
         private static readonly byte[] HEADER_FDF = DocWriter.GetISOBytes("%FDF-1.4\n%\u00e2\u00e3\u00cf\u00d3\n");
         Dictionary<String, Object> fields = new Dictionary<string,object>();

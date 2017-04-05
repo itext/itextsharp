@@ -53,6 +53,7 @@ using iTextSharp.tool.xml.pipeline.end;
 using iTextSharp.tool.xml.pipeline.html;
 
 namespace itextsharp.xmlworker.tests.iTextSharp.tool.xml.examples.css.div {
+    [Obsolete("For internal use only. If you want to use iText, please use a dependency on iText 7. ")]
     public class ComplexDivPagination01Test : SampleTest {
         protected override string GetTestName() {
             return "complexDivPagination01";

@@ -4,7 +4,8 @@ using Org.BouncyCastle.Math;
 
 namespace Org.BouncyCastle.Math.EC
 {
-	public class ECAlgorithms
+	[Obsolete("For internal use only. If you want to use iText, please use a dependency on iText 7. ")]
+    public class ECAlgorithms
 	{
 		public static ECPoint SumOfTwoMultiplies(ECPoint P, BigInteger a,
 			ECPoint Q, BigInteger b)

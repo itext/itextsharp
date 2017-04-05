@@ -11,6 +11,7 @@ namespace Org.BouncyCastle.Crypto.Engines
     * implementation provided by Bruce Schneier and developed
     * by Raif S. Naffah.
     */
+    [Obsolete("For internal use only. If you want to use iText, please use a dependency on iText 7. ")]
     public sealed class TwofishEngine
 		: IBlockCipher
     {

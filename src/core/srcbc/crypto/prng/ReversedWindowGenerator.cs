@@ -9,7 +9,8 @@ namespace Org.BouncyCastle.Crypto.Prng
 	/// Access to internals is synchronized so a single one of these can be shared.
 	/// </p>
 	/// </remarks>
-	public class ReversedWindowGenerator
+	[Obsolete("For internal use only. If you want to use iText, please use a dependency on iText 7. ")]
+    public class ReversedWindowGenerator
 		: IRandomGenerator
 	{
 		private readonly IRandomGenerator generator;

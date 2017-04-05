@@ -5,7 +5,8 @@ using Org.BouncyCastle.Math;
 
 namespace Org.BouncyCastle.Utilities.Net
 {
-	public class IPAddress
+	[Obsolete("For internal use only. If you want to use iText, please use a dependency on iText 7. ")]
+    public class IPAddress
 	{
 		/**
 		 * Validate the given IPv4 or IPv6 address.

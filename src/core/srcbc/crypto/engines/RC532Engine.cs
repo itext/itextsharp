@@ -11,6 +11,7 @@ namespace Org.BouncyCastle.Crypto.Engines
     * <p>
     * This implementation has a word size of 32 bits.</p>
     */
+    [Obsolete("For internal use only. If you want to use iText, please use a dependency on iText 7. ")]
     public class RC532Engine
 		: IBlockCipher
     {

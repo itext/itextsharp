@@ -24,6 +24,7 @@ namespace Org.BouncyCastle.Security
     /// <remarks>
     ///  Cipher Utility class contains methods that can not be specifically grouped into other classes.
     /// </remarks>
+    [Obsolete("For internal use only. If you want to use iText, please use a dependency on iText 7. ")]
     public sealed class CipherUtilities
     {
         private enum CipherAlgorithm {

@@ -2,7 +2,8 @@ using System;
 
 namespace Org.BouncyCastle.Asn1.Gnu
 {
-	public abstract class GnuObjectIdentifiers
+	[Obsolete("For internal use only. If you want to use iText, please use a dependency on iText 7. ")]
+    public abstract class GnuObjectIdentifiers
 	{
 		public static readonly DerObjectIdentifier Gnu					= new DerObjectIdentifier("1.3.6.1.4.1.11591.1"); // GNU Radius
 		public static readonly DerObjectIdentifier GnuPG				= new DerObjectIdentifier("1.3.6.1.4.1.11591.2"); // GnuPG (Ägypten)

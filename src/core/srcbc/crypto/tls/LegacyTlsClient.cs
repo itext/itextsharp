@@ -5,8 +5,8 @@ namespace Org.BouncyCastle.Crypto.Tls
 	/// <summary>
 	/// A temporary class to use LegacyTlsAuthentication 
 	/// </summary>
-	[Obsolete]
-	public class LegacyTlsClient
+	[Obsolete("For internal use only. If you want to use iText, please use a dependency on iText 7. ")]
+    public class LegacyTlsClient
 		: DefaultTlsClient
 	{
 		[Obsolete]

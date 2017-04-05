@@ -7,6 +7,7 @@ namespace Org.BouncyCastle.Utilities.Encoders
     /// <summary>
     /// Class to decode and encode Hex.
     /// </summary>
+    [Obsolete("For internal use only. If you want to use iText, please use a dependency on iText 7. ")]
     public sealed class Hex
     {
         private static readonly IEncoder encoder = new HexEncoder();

@@ -45,6 +45,7 @@ using NUnit.Framework;
 namespace itextsharp.xmlworker.tests.iTextSharp.tool.xml.examples.css.selector {
     //escaped symbols
     [Ignore("ignore")]
+    [Obsolete("For internal use only. If you want to use iText, please use a dependency on iText 7. ")]
     public class Css3Modsel_175cTest : SampleTest {
         protected override string GetTestName() {
             return "css3-modsel-175c";

@@ -141,6 +141,7 @@ namespace iTextSharp.text.pdf {
     /**
     * Converts a PFM file into an AFM file.
     */
+    [Obsolete("For internal use only. If you want to use iText, please use a dependency on iText 7. ")]
     public sealed class Pfm2afm {
         private RandomAccessFileOrArray inp;
         private StreamWriter outp;

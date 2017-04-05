@@ -53,6 +53,7 @@ namespace iTextSharp.text.pdf.security {
     * @author Martin Brunecky, 07/17/2007
     * @since    2.1.6
     */
+    [Obsolete("For internal use only. If you want to use iText, please use a dependency on iText 7. ")]
     public interface ITSAClient {
         /**
         * Get the time stamp token size estimate.

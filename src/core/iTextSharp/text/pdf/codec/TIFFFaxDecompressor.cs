@@ -49,6 +49,7 @@ namespace iTextSharp.text.pdf.codec {
 
     //import com.itextpdf.text.error_messages.MessageLocalization;
 
+    [Obsolete("For internal use only. If you want to use iText, please use a dependency on iText 7. ")]
     public class TIFFFaxDecompressor {
 
         /**

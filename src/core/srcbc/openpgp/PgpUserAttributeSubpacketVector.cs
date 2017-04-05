@@ -1,8 +1,10 @@
+using System;
 using Org.BouncyCastle.Bcpg.Attr;
 
 namespace Org.BouncyCastle.Bcpg.OpenPgp
 {
 	/// <remarks>Container for a list of user attribute subpackets.</remarks>
+    [Obsolete("For internal use only. If you want to use iText, please use a dependency on iText 7. ")]
     public class PgpUserAttributeSubpacketVector
     {
         private readonly UserAttributeSubpacket[] packets;

@@ -5,6 +5,7 @@ namespace Org.BouncyCastle.Crypto
     /**
      * a holding class for public/private parameter pairs.
      */
+    [Obsolete("For internal use only. If you want to use iText, please use a dependency on iText 7. ")]
     public class AsymmetricCipherKeyPair
     {
         private readonly AsymmetricKeyParameter publicParameter;

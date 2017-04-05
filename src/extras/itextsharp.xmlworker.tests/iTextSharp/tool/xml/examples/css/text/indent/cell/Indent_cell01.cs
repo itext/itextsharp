@@ -41,6 +41,7 @@
     address: sales@itextpdf.com
  */
 namespace itextsharp.xmlworker.tests.iTextSharp.tool.xml.examples.css.text.indent.cell {
+    [Obsolete("For internal use only. If you want to use iText, please use a dependency on iText 7. ")]
     public class Indent_cell01 : SampleTest {
         protected override string GetTestName() {
             return "indent_cell01";

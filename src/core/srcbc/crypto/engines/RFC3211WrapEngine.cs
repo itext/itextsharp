@@ -10,7 +10,8 @@ namespace Org.BouncyCastle.Crypto.Engines
 	 * an implementation of the RFC 3211 Key Wrap
 	 * Specification.
 	 */
-	public class Rfc3211WrapEngine
+	[Obsolete("For internal use only. If you want to use iText, please use a dependency on iText 7. ")]
+    public class Rfc3211WrapEngine
 		: IWrapper
 	{
 		private CbcBlockCipher		engine;

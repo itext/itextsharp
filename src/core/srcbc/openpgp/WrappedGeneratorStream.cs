@@ -1,10 +1,12 @@
+using System;
 using System.IO;
 
 using Org.BouncyCastle.Asn1.Utilities;
 
 namespace Org.BouncyCastle.Bcpg.OpenPgp
 {
-	public class WrappedGeneratorStream
+	[Obsolete("For internal use only. If you want to use iText, please use a dependency on iText 7. ")]
+    public class WrappedGeneratorStream
 		: FilterStream
 	{
 		private readonly IStreamGenerator gen;

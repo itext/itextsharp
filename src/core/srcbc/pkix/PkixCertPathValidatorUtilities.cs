@@ -22,7 +22,8 @@ namespace Org.BouncyCastle.Pkix
 	/// <summary>
 	/// Summary description for PkixCertPathValidatorUtilities.
 	/// </summary>
-	public class PkixCertPathValidatorUtilities
+	[Obsolete("For internal use only. If you want to use iText, please use a dependency on iText 7. ")]
+    public class PkixCertPathValidatorUtilities
 	{
 		private static readonly PkixCrlUtilities CrlUtilities = new PkixCrlUtilities();
 

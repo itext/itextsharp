@@ -30,6 +30,7 @@ namespace Org.BouncyCastle.Crypto.Engines
 	* included in the extended assembly. It is not included in the default distributions.
 	* </p>
     */
+    [Obsolete("For internal use only. If you want to use iText, please use a dependency on iText 7. ")]
     public class IdeaEngine
 		: IBlockCipher
     {

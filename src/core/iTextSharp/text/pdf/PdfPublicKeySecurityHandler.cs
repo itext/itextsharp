@@ -99,6 +99,7 @@ namespace iTextSharp.text.pdf {
     /**
     * @author Aiken Sam (aikensam@ieee.org)
     */
+    [Obsolete("For internal use only. If you want to use iText, please use a dependency on iText 7. ")]
     public class PdfPublicKeySecurityHandler {
         
         private const int SEED_LENGTH = 20;

@@ -7,7 +7,8 @@ using Org.BouncyCastle.Crypto.Modes;
 
 namespace Org.BouncyCastle.Crypto.Tls
 {
-	public class DefaultTlsCipherFactory
+	[Obsolete("For internal use only. If you want to use iText, please use a dependency on iText 7. ")]
+    public class DefaultTlsCipherFactory
 		: TlsCipherFactory
 	{
 		public virtual TlsCipher CreateCipher(TlsClientContext context,

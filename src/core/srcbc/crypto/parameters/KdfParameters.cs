@@ -6,6 +6,7 @@ namespace Org.BouncyCastle.Crypto.Parameters
     /**
      * parameters for Key derivation functions for IEEE P1363a
      */
+    [Obsolete("For internal use only. If you want to use iText, please use a dependency on iText 7. ")]
     public class KdfParameters : IDerivationParameters
     {
         byte[]  iv;

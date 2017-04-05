@@ -47,6 +47,7 @@ namespace iTextSharp.text.log {
     /**
      * Implementation of the Counter interface that doesn't do anything.
      */
+    [Obsolete("For internal use only. If you want to use iText, please use a dependency on iText 7. ")]
     public class DefaultCounter : ICounter {
         private int count = 0;
         private int level = 0;

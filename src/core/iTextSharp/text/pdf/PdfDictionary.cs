@@ -66,6 +66,7 @@ namespace iTextSharp.text.pdf {
      * @see        BadPdfFormatException
      */
 
+    [Obsolete("For internal use only. If you want to use iText, please use a dependency on iText 7. ")]
     public class PdfDictionary : PdfObject {
     
         // static membervariables (types of dictionary's)

@@ -10,7 +10,8 @@ namespace Org.BouncyCastle.Crypto.Generators
 	 * <br/>
 	 * This implementation is based on IEEE P1363/ISO 18033.
 	 */
-	public class Kdf2BytesGenerator
+	[Obsolete("For internal use only. If you want to use iText, please use a dependency on iText 7. ")]
+    public class Kdf2BytesGenerator
 		: BaseKdfBytesGenerator
 	{
 		/**

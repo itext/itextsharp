@@ -58,6 +58,7 @@ namespace iTextSharp.text.pdf {
     * @see        PdfPage
     */
 
+    [Obsolete("For internal use only. If you want to use iText, please use a dependency on iText 7. ")]
     public class PdfPages {
         
         private List<PdfIndirectReference> pages = new List<PdfIndirectReference>();

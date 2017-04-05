@@ -8,6 +8,7 @@ using Org.BouncyCastle.Utilities.Encoders;
 
 namespace Org.BouncyCastle.Asn1.Utilities
 {
+    [Obsolete("For internal use only. If you want to use iText, please use a dependency on iText 7. ")]
     public sealed class Asn1Dump
     {
 		private static readonly string NewLine = Platform.NewLine;

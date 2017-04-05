@@ -12,7 +12,8 @@ namespace Org.BouncyCastle.Asn1.IsisMtt.X509
 	*    AdditionalInformationSyntax ::= DirectoryString (SIZE(1..2048))
 	* </pre>
 	*/
-	public class AdditionalInformationSyntax
+	[Obsolete("For internal use only. If you want to use iText, please use a dependency on iText 7. ")]
+    public class AdditionalInformationSyntax
 		: Asn1Encodable
 	{
 		private readonly DirectoryString information;

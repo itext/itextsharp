@@ -5,6 +5,7 @@ namespace Org.BouncyCastle.Utilities.Encoders
     /// <summary>
     /// Translator interface.
     /// </summary>
+    [Obsolete("For internal use only. If you want to use iText, please use a dependency on iText 7. ")]
     public interface ITranslator
     {
         int GetEncodedBlockSize();

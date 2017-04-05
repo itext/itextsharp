@@ -16,7 +16,8 @@ namespace Org.BouncyCastle.Asn1.Cms
 	 *   unauthAttrs [2] IMPLICIT UnauthAttributes OPTIONAL }
 	 * </pre>
 	*/
-	public class AuthEnvelopedDataParser
+	[Obsolete("For internal use only. If you want to use iText, please use a dependency on iText 7. ")]
+    public class AuthEnvelopedDataParser
 	{
 		private Asn1SequenceParser	seq;
 		private DerInteger			version;

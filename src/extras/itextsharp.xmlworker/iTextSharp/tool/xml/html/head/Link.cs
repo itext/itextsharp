@@ -57,6 +57,7 @@ namespace iTextSharp.tool.xml.html.head {
      * @author redlab_b
      *
      */
+    [Obsolete("For internal use only. If you want to use iText, please use a dependency on iText 7. ")]
     public class Link : AbstractTagProcessor {
 
         private static ILogger LOG = LoggerFactory.GetLogger(typeof(Link));

@@ -49,6 +49,7 @@ namespace iTextSharp.text.pdf.util {
      * This class can be used to count the number of bytes needed when copying
      * pages from an existing PDF into a newly created PDF.
      */
+    [Obsolete("For internal use only. If you want to use iText, please use a dependency on iText 7. ")]
     public class PdfResourceCounter {
         /** A map of the resources that are already taken into account */
         protected IDictionary<int, PdfObject> resources;

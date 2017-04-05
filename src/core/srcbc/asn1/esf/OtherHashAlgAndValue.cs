@@ -17,7 +17,8 @@ namespace Org.BouncyCastle.Asn1.Esf
 	/// OtherHashValue ::= OCTET STRING
 	/// </code>
 	/// </remarks>
-	public class OtherHashAlgAndValue
+	[Obsolete("For internal use only. If you want to use iText, please use a dependency on iText 7. ")]
+    public class OtherHashAlgAndValue
 		: Asn1Encodable
 	{
 		private readonly AlgorithmIdentifier	hashAlgorithm;

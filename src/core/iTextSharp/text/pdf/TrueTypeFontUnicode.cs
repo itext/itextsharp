@@ -54,6 +54,7 @@ namespace iTextSharp.text.pdf {
      * as Thai.
      * @author  Paulo Soares
      */
+    [Obsolete("For internal use only. If you want to use iText, please use a dependency on iText 7. ")]
     public class TrueTypeFontUnicode : TrueTypeFont, IComparer<int[]> {
     
         /** Creates a new TrueType font addressed by Unicode characters. The font

@@ -10,7 +10,8 @@ namespace Org.BouncyCastle.Crypto.Agreement.Srp
 	 * This implementation of SRP is based on the optimized message sequence put forth by Thomas Wu in the paper
 	 * "SRP-6: Improvements and Refinements to the Secure Remote Password Protocol, 2002"
 	 */
-	public class Srp6Server
+	[Obsolete("For internal use only. If you want to use iText, please use a dependency on iText 7. ")]
+    public class Srp6Server
 	{
 	    protected BigInteger N;
 	    protected BigInteger g;

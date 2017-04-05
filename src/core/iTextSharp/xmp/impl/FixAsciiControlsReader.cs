@@ -37,6 +37,7 @@ namespace iTextSharp.xmp.impl {
     /// <summary>
     /// @since   22.08.2006
     /// </summary>
+    [Obsolete("For internal use only. If you want to use iText, please use a dependency on iText 7. ")]
     public class FixAsciiControlsReader : PushbackReader {
         private const int STATE_START = 0;
         private const int STATE_AMP = 1;

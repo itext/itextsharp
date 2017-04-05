@@ -16,7 +16,8 @@ namespace Org.BouncyCastle.Asn1.X509
 	 *   onlyContainsAttributeCerts [5] BOOLEAN DEFAULT FALSE }
 	 * </pre>
 	 */
-	public class IssuingDistributionPoint
+	[Obsolete("For internal use only. If you want to use iText, please use a dependency on iText 7. ")]
+    public class IssuingDistributionPoint
         : Asn1Encodable
     {
 		private readonly DistributionPointName	_distributionPoint;

@@ -12,6 +12,7 @@ namespace Org.BouncyCastle.Asn1.Smime
     /**
      * Handler class for dealing with S/MIME Capabilities
      */
+    [Obsolete("For internal use only. If you want to use iText, please use a dependency on iText 7. ")]
     public class SmimeCapabilities
         : Asn1Encodable
     {

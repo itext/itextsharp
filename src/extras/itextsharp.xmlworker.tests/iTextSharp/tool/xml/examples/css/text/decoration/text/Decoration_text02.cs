@@ -41,6 +41,7 @@
     address: sales@itextpdf.com
  */
 namespace itextsharp.xmlworker.tests.iTextSharp.tool.xml.examples.css.text.decoration.text {
+    [Obsolete("For internal use only. If you want to use iText, please use a dependency on iText 7. ")]
     public class Decoration_text02 : SampleTest {
         protected override string GetTestName() {
             return "decoration_text02";

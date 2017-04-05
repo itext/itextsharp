@@ -15,6 +15,7 @@ namespace Org.BouncyCastle.Crypto.Modes
     * <b>Note</b>: this mode is a packet mode - it needs all the data up front.
     * </p>
     */
+    [Obsolete("For internal use only. If you want to use iText, please use a dependency on iText 7. ")]
     public class CcmBlockCipher
         : IAeadBlockCipher
     {

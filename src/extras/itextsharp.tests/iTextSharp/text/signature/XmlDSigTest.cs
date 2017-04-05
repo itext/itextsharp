@@ -58,6 +58,7 @@ using X509Certificate = Org.BouncyCastle.X509.X509Certificate;
 
 namespace itextsharp.tests.resources.text.signature
 {
+    [Obsolete("For internal use only. If you want to use iText, please use a dependency on iText 7. ")]
     public class XmlDSigTest
     {
         virtual protected void SignWithCertificate(String src, String dest, ICipherParameters pk,
