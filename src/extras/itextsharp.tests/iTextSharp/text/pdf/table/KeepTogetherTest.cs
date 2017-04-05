@@ -58,6 +58,7 @@ namespace itextsharp.tests.iTextSharp.text.pdf.table {
     /**
      * @author Raf Hens
      */
+    [Obsolete("For internal use only. If you want to use iText, please use a dependency on iText 7. ")]
     public class KeepTogetherTest {
 
         private String cmpFolder = @"..\..\resources\text\pdf\table\keeptogether\";

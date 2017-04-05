@@ -55,6 +55,7 @@ namespace iTextSharp.tool.xml.css.apply {
      * @author Emiel Ackermann
      *
      */
+    [Obsolete("For internal use only. If you want to use iText, please use a dependency on iText 7. ")]
     public sealed class MaxLeadingAndSize {
         private CssUtils utils = CssUtils.GetInstance();
         private FontSizeTranslator fontSizeTranslator = FontSizeTranslator.GetInstance();

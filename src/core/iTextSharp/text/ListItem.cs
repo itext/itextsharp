@@ -1,3 +1,4 @@
+using System;
 using com.itextpdf.text.pdf;
 using iTextSharp.text.pdf;
 
@@ -94,6 +95,7 @@ namespace iTextSharp.text {
     /// <seealso cref="T:iTextSharp.text.Element"/>
     /// <seealso cref="T:iTextSharp.text.List"/>
     /// <seealso cref="T:iTextSharp.text.Paragraph"/>
+    [Obsolete("For internal use only. If you want to use iText, please use a dependency on iText 7. ")]
     public class ListItem : Paragraph {
     
         // membervariables

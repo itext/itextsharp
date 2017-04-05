@@ -56,6 +56,7 @@ namespace iTextSharp.text.pdf {
     * be a CCITT G4 <CODE>Image</CODE> or a raw bitmap.
     * @author Paulo Soares
     */
+    [Obsolete("For internal use only. If you want to use iText, please use a dependency on iText 7. ")]
     public class BarcodePDF417 {
 
         /** Auto-size is made based on <CODE>aspectRatio</CODE> and <CODE>yHeight</CODE>. */    

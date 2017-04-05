@@ -61,6 +61,7 @@ namespace iTextSharp.text.pdf {
  * @author  Paulo Soares
  */
 
+    [Obsolete("For internal use only. If you want to use iText, please use a dependency on iText 7. ")]
     public class PdfEncryption {
         public const int STANDARD_ENCRYPTION_40 = 2;
         public const int STANDARD_ENCRYPTION_128 = 3;

@@ -61,6 +61,7 @@ namespace iTextSharp.text.pdf {
      * @see        BadPdfFormatException
      */
 
+    [Obsolete("For internal use only. If you want to use iText, please use a dependency on iText 7. ")]
     public class PdfNumber : PdfObject {
     
         /** actual value of this <CODE>PdfNumber</CODE>, represented as a <CODE>double</CODE> */

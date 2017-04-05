@@ -51,6 +51,7 @@ namespace iTextSharp.text.exceptions {
      * @since 2.1.6
      */
 	[Serializable]
+    [Obsolete("For internal use only. If you want to use iText, please use a dependency on iText 7. ")]
     public class IllegalPdfSyntaxException : ArgumentException {
 
         /**

@@ -48,6 +48,7 @@ using System.Collections.Generic;
  */
 
 namespace iTextSharp.text.pdf.codec.wmf {
+    [Obsolete("For internal use only. If you want to use iText, please use a dependency on iText 7. ")]
     public class MetaState {
     
         public static int TA_NOUPDATECP = 0;

@@ -47,6 +47,7 @@ namespace iTextSharp.xmp.impl {
     /// <summary>
     /// @since   Aug 18, 2006
     /// </summary>
+    [Obsolete("For internal use only. If you want to use iText, please use a dependency on iText 7. ")]
     public class XmpNormalizer {
         /// <summary>
         /// caches the correct dc-property array forms </summary>

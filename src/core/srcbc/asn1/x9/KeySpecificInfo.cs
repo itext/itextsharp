@@ -1,3 +1,4 @@
+using System;
 using System.Collections;
 
 namespace Org.BouncyCastle.Asn1.X9
@@ -6,6 +7,7 @@ namespace Org.BouncyCastle.Asn1.X9
      * ASN.1 def for Diffie-Hellman key exchange KeySpecificInfo structure. See
      * RFC 2631, or X9.42, for further details.
      */
+    [Obsolete("For internal use only. If you want to use iText, please use a dependency on iText 7. ")]
     public class KeySpecificInfo
         : Asn1Encodable
     {

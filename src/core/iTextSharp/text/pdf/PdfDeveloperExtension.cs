@@ -60,6 +60,7 @@ namespace iTextSharp.text.pdf {
     * interpret the extensions.
     * @since   2.1.6
     */
+    [Obsolete("For internal use only. If you want to use iText, please use a dependency on iText 7. ")]
     public class PdfDeveloperExtension {
 
         /** An instance of this class for Adobe 1.7 Extension level 3. */

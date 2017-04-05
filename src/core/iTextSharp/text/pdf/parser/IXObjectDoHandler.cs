@@ -42,6 +42,8 @@
  * For more information, please contact iText Software Corp. at this
  * address: sales@itextpdf.com
  */
+
+using System;
 using System.Collections;
 
 namespace iTextSharp.text.pdf.parser {
@@ -50,6 +52,7 @@ namespace iTextSharp.text.pdf.parser {
      * @author Kevin Day
      * @since iText 5.0.1
      */
+    [Obsolete("For internal use only. If you want to use iText, please use a dependency on iText 7. ")]
     public interface IXObjectDoHandler {
         void HandleXObject(PdfContentStreamProcessor processor, PdfStream stream, PdfIndirectReference refi);
         void HandleXObject(PdfContentStreamProcessor processor, PdfStream stream, PdfIndirectReference refi, ICollection markedContentInfoStack);

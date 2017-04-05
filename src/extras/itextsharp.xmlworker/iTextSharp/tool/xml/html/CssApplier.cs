@@ -52,6 +52,7 @@ namespace iTextSharp.tool.xml.html {
    /**
     * @param <T> the type of iText element that can be customized
     */
+    [Obsolete("For internal use only. If you want to use iText, please use a dependency on iText 7. ")]
     public abstract class CssApplier<T> : ICssApplier where T : IElement {
 
          public abstract T Apply(T e, Tag t, IMarginMemory mm, IPageSizeContainable psc, HtmlPipelineContext ctx);

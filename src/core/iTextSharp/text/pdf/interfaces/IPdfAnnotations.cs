@@ -47,6 +47,7 @@ using iTextSharp.text.pdf;
 
 namespace iTextSharp.text.pdf.interfaces {
 
+    [Obsolete("For internal use only. If you want to use iText, please use a dependency on iText 7. ")]
     public interface IPdfAnnotations {
         /**
         * Use this methods to get the AcroForm object.

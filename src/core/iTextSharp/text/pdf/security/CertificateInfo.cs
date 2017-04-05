@@ -76,6 +76,7 @@ namespace iTextSharp.text.pdf.security {
      * Class containing static methods that allow you to get information from
      * an X509 Certificate: the issuer and the subject.
      */
+    [Obsolete("For internal use only. If you want to use iText, please use a dependency on iText 7. ")]
     public static class CertificateInfo {
 
         // Inner classes

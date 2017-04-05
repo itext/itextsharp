@@ -42,12 +42,16 @@
  * For more information, please contact iText Software Corp. at this
  * address: sales@itextpdf.com
  */
+
+using System;
+
 namespace iTextSharp.text.pdf.parser {
 
     /**
      * A {@link RenderFilter} that only allows text within a specified marked content sequence.
      * @since 5.0.2
      */
+    [Obsolete("For internal use only. If you want to use iText, please use a dependency on iText 7. ")]
     public class MarkedContentRenderFilter : RenderFilter {
         
         /** The MCID to match. */

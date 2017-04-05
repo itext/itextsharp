@@ -11,6 +11,7 @@ namespace Org.BouncyCastle.Crypto.Generators
      * This generates keys consistent for use in the MTI/A0 key agreement protocol
      * as described in "Handbook of Applied Cryptography", Pages 516-519.
      */
+    [Obsolete("For internal use only. If you want to use iText, please use a dependency on iText 7. ")]
     public class DHKeyPairGenerator
 		: IAsymmetricCipherKeyPairGenerator
     {

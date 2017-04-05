@@ -51,6 +51,7 @@ namespace iTextSharp.javaone.edition14.part4.helper
     /// <summary>
     /// Stores the font name and font size of a text item.
     /// </summary>
+    [Obsolete("For internal use only. If you want to use iText, please use a dependency on iText 7. ")]
     public class TextStyle
     {
         /// <summary>

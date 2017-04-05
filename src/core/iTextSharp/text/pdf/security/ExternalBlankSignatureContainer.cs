@@ -42,6 +42,8 @@
  * For more information, please contact iText Software Corp. at this
  * address: sales@itextpdf.com
  */
+
+using System;
 using System.IO;
 using iTextSharp.text.pdf;
 using iTextSharp.text.pdf.security;
@@ -53,6 +55,7 @@ namespace com.itextpdf.text.pdf.security{
      * MakeSignature.signExternalContainer().
      * @author Paulo Soares
      */
+    [Obsolete("For internal use only. If you want to use iText, please use a dependency on iText 7. ")]
     public class ExternalBlankSignatureContainer : IExternalSignatureContainer {
         private PdfDictionary sigDic;
     

@@ -54,6 +54,7 @@ namespace iTextSharp.text.pdf {
     *
     * @author Paulo Soares
     */
+    [Obsolete("For internal use only. If you want to use iText, please use a dependency on iText 7. ")]
     public class PdfReaderInstance {
         internal static PdfLiteral IDENTITYMATRIX = new PdfLiteral("[1 0 0 1 0 0]");
         internal static PdfNumber ONE = new PdfNumber(1);

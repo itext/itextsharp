@@ -8,7 +8,8 @@ namespace Org.BouncyCastle.Bcpg
 	/**
 	* reader for signature sub-packets
 	*/
-	public class SignatureSubpacketsParser
+	[Obsolete("For internal use only. If you want to use iText, please use a dependency on iText 7. ")]
+    public class SignatureSubpacketsParser
 	{
 		private readonly Stream input;
 

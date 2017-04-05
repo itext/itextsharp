@@ -47,7 +47,8 @@ using iTextSharp.tool.xml.html;
  *
  */
 
-     public class HeightCalculator
+     [Obsolete("For internal use only. If you want to use iText, please use a dependency on iText 7. ")]
+    public class HeightCalculator
      {
          private CssUtils utils = CssUtils.GetInstance();
 

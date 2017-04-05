@@ -52,6 +52,7 @@ namespace iTextSharp.text.pdf.interfaces {
     * A PDF page can have an open and/or close action.
     */
 
+    [Obsolete("For internal use only. If you want to use iText, please use a dependency on iText 7. ")]
     public interface IPdfPageActions {
         /**
         * Sets the open and close page additional action.

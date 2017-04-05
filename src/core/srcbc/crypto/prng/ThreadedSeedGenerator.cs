@@ -9,7 +9,8 @@ namespace Org.BouncyCastle.Crypto.Prng
 	 * Based on an idea from Marcus Lippert.
 	 * </p>
 	 */
-	public class ThreadedSeedGenerator
+	[Obsolete("For internal use only. If you want to use iText, please use a dependency on iText 7. ")]
+    public class ThreadedSeedGenerator
 	{
 		private class SeedGenerator
 		{

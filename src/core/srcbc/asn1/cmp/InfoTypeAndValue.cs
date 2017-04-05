@@ -45,6 +45,7 @@ namespace Org.BouncyCastle.Asn1.Cmp
      *      id-it   OBJECT IDENTIFIER ::= {id-pkix 4}
      * </pre>
      */
+    [Obsolete("For internal use only. If you want to use iText, please use a dependency on iText 7. ")]
     public class InfoTypeAndValue
         : Asn1Encodable
     {

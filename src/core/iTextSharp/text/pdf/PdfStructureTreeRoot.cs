@@ -1,3 +1,4 @@
+using System;
 using System.Collections.Generic;
 using iTextSharp.text.pdf.interfaces;
 
@@ -51,6 +52,7 @@ namespace iTextSharp.text.pdf {
     * The structure tree root corresponds to the highest hierarchy level in a tagged PDF.
     * @author Paulo Soares
     */
+    [Obsolete("For internal use only. If you want to use iText, please use a dependency on iText 7. ")]
     public class PdfStructureTreeRoot : PdfDictionary, IPdfStructureElement {
         
         private Dictionary<int, PdfObject> parentTree = new Dictionary<int,PdfObject>();

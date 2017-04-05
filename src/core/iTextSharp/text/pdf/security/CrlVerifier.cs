@@ -56,7 +56,8 @@ using iTextSharp.text.log;
  * one or more Certificate Revocation Lists.
  */
 namespace iTextSharp.text.pdf.security {
-	public class CrlVerifier : RootStoreVerifier {
+	[Obsolete("For internal use only. If you want to use iText, please use a dependency on iText 7. ")]
+    public class CrlVerifier : RootStoreVerifier {
         /** The Logger instance */
 	    private static ILogger LOGGER = LoggerFactory.GetLogger(typeof(CrlVerifier));
     	

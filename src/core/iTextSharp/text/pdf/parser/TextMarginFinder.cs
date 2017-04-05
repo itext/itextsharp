@@ -1,3 +1,4 @@
+using System;
 using System.util;
 /*
  * $Id$
@@ -49,6 +50,7 @@ namespace iTextSharp.text.pdf.parser {
      * Allows you to find the rectangle that contains all the text in a page.
      * @since 5.0.2
      */
+    [Obsolete("For internal use only. If you want to use iText, please use a dependency on iText 7. ")]
     public class TextMarginFinder : IRenderListener {
         private RectangleJ textRectangle = null;
         

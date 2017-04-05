@@ -50,6 +50,7 @@ namespace iTextSharp.tool.xml {
      * @param <T> the type of CustomContext
      *
      */
+    [Obsolete("For internal use only. If you want to use iText, please use a dependency on iText 7. ")]
     public interface IPipeline {
 
         /**

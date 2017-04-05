@@ -49,6 +49,7 @@ using iTextSharp.text.pdf;
 
 namespace iTextSharp.javaone.edition14.part1
 {
+    [Obsolete("For internal use only. If you want to use iText, please use a dependency on iText 7. ")]
     public class Sample01_HelloWorld
     {
         public static readonly string DEST = "results/javaone/edition2014/part1/hello.pdf";

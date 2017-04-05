@@ -51,6 +51,7 @@ namespace iTextSharp.text.pdf
     /**
      * Constructor for xpath expression for signing XfaForm
      */
+    [Obsolete("For internal use only. If you want to use iText, please use a dependency on iText 7. ")]
     public class XfaXpathConstructor : IXpathConstructor
     {
         /**

@@ -98,6 +98,7 @@ namespace iTextSharp.text.xml.simpleparser {
     * http://www.javaworld.com/javaworld/javatips/javatip128/</A> with some extra
     * code from XERCES to recognize the encoding.
     */
+    [Obsolete("For internal use only. If you want to use iText, please use a dependency on iText 7. ")]
     public sealed class SimpleXMLParser {
         /** possible states */
         private const int UNKNOWN = 0;

@@ -51,7 +51,8 @@ namespace iTextSharp.text.pdf {
  * encrypted. All the content, links, outlines, etc, are kept.
  * It is also possible to change the info dictionary.
  */
-public sealed class PdfEncryptor {
+[Obsolete("For internal use only. If you want to use iText, please use a dependency on iText 7. ")]
+    public sealed class PdfEncryptor {
     
     private PdfEncryptor(){
     }

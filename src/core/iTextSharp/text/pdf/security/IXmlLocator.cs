@@ -1,3 +1,4 @@
+using System;
 using System.Xml;
 /*
  * $Id: XmlLocator.java 5830 2013-05-31 09:29:15Z blowagie $
@@ -48,6 +49,7 @@ namespace iTextSharp.text.pdf.security
     /**
      * Helps to locate xml stream
      */
+    [Obsolete("For internal use only. If you want to use iText, please use a dependency on iText 7. ")]
     public interface IXmlLocator
     {
         XmlDocument GetDocument();

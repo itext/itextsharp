@@ -1,3 +1,4 @@
+using System;
 using System.IO;
 using System.Collections.Generic;
 using System.Collections;
@@ -65,6 +66,7 @@ namespace iTextSharp.text.pdf {
      * @see        PdfObject
      */
 
+    [Obsolete("For internal use only. If you want to use iText, please use a dependency on iText 7. ")]
     public class PdfArray : PdfObject, IEnumerable<PdfObject> {
 
         // membervariables

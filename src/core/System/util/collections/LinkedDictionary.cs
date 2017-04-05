@@ -48,6 +48,7 @@ using System.Collections;
  */
 
 namespace System.util.collections {
+    [Obsolete("For internal use only. If you want to use iText, please use a dependency on iText 7. ")]
     public class LinkedDictionary <TKey, TValue> : IDictionary<TKey, TValue> {
         private Dictionary<TKey, LinkedListNode<KeyValuePair<TKey,TValue>>> dic;
         private LinkedList<KeyValuePair<TKey,TValue>> link;
@@ -249,7 +250,8 @@ namespace System.util.collections {
             }
         }
 
-        public sealed class KeyCollection : ICollection<TKey> {
+        [Obsolete("For internal use only. If you want to use iText, please use a dependency on iText 7. ")]
+    public sealed class KeyCollection : ICollection<TKey> {
             private LinkedList<KeyValuePair<TKey,TValue>> link;
             private Dictionary<TKey, LinkedListNode<KeyValuePair<TKey,TValue>>> dic;
 

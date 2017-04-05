@@ -56,6 +56,7 @@ namespace itextsharp.tests.iTextSharp.text.pdf {
      * @author Michael Demey
      */
 
+    [Obsolete("For internal use only. If you want to use iText, please use a dependency on iText 7. ")]
     public class FlatteningTest {
         private const string RESOURCES_FOLDER = @"..\..\resources\text\pdf\FlatteningTest\";
         private const string OUTPUT_FOLDER = "FlatteningTest/";

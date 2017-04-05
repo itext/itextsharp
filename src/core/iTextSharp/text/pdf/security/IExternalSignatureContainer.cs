@@ -51,6 +51,7 @@ namespace iTextSharp.text.pdf.security {
      * Interface to sign a document. The signing is fully done externally, including the container composition.
      * @author Paulo Soares
      */
+    [Obsolete("For internal use only. If you want to use iText, please use a dependency on iText 7. ")]
     public interface IExternalSignatureContainer {
         /**
          * Produces the container with the signature.

@@ -10,7 +10,8 @@ namespace Org.BouncyCastle.Crypto.Engines
 	/**
 	 * this does your basic RSA algorithm with blinding
 	 */
-	public class RsaBlindedEngine
+	[Obsolete("For internal use only. If you want to use iText, please use a dependency on iText 7. ")]
+    public class RsaBlindedEngine
 		: IAsymmetricBlockCipher
 	{
 		private readonly RsaCoreEngine core = new RsaCoreEngine();

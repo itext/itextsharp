@@ -53,6 +53,7 @@ namespace iTextSharp.text.pdf.parser {
      * @author kevin
      * @since 5.0.1
      */
+    [Obsolete("For internal use only. If you want to use iText, please use a dependency on iText 7. ")]
     public class ContentByteUtils {
         private ContentByteUtils() {
         }

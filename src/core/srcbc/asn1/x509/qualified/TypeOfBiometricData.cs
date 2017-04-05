@@ -16,6 +16,7 @@ namespace Org.BouncyCastle.Asn1.X509.Qualified
     *   (picture|handwritten-signature)
     * </pre>
     */
+    [Obsolete("For internal use only. If you want to use iText, please use a dependency on iText 7. ")]
     public class TypeOfBiometricData
         : Asn1Encodable, IAsn1Choice
     {

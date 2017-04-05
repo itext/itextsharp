@@ -46,6 +46,7 @@ using iTextSharp.text.pdf;
  */
 namespace iTextSharp.text.pdf.fonts.cmaps {
 
+    [Obsolete("For internal use only. If you want to use iText, please use a dependency on iText 7. ")]
     public class CMapCidByte : AbstractCMap {
         private Dictionary<int,byte[]> map = new Dictionary<int,byte[]>();
         private static byte[] EMPTY = {};

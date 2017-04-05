@@ -53,6 +53,7 @@ namespace iTextSharp.text.exceptions
      * @since 5.4.2
      */
 	[Serializable]
+    [Obsolete("For internal use only. If you want to use iText, please use a dependency on iText 7. ")]
     public class InvalidImageException : Exception
     {
         public InvalidImageException() { }

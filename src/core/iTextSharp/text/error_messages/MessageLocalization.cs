@@ -58,6 +58,7 @@ namespace iTextSharp.text.error_messages {
     * normal property file. See en.lng for more information on the internal format.
     * @author Paulo Soares (psoares@glintt.com)
     */
+    [Obsolete("For internal use only. If you want to use iText, please use a dependency on iText 7. ")]
     public class MessageLocalization {
         private static Dictionary<string,string> defaultLanguage = new Dictionary<string,string>();
         private static Dictionary<string,string> currentLanguage;

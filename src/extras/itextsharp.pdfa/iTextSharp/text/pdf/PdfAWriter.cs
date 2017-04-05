@@ -55,6 +55,7 @@ namespace iTextSharp.text.pdf {
     /**
      * @see PdfWriter
      */
+    [Obsolete("For internal use only. If you want to use iText, please use a dependency on iText 7. ")]
     public class PdfAWriter : PdfWriter {
         public static String MimeTypePdf = "application/pdf";
         public static String MimeTypeOctetStream = "application/octet-stream";

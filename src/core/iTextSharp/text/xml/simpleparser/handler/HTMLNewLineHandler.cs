@@ -58,6 +58,7 @@ namespace iTextSharp.text.xml.simpleparser.handler {
      * @author Balder
      *
      */
+    [Obsolete("For internal use only. If you want to use iText, please use a dependency on iText 7. ")]
     public class HTMLNewLineHandler : INewLineHandler {
 
         private readonly Dictionary<String,object> newLineTags = new Dictionary<string,object>();

@@ -50,6 +50,7 @@ namespace iTextSharp.text.pdf.spatial.objects {
      * Creates an Array with two PdfNumber elements, representing an X and Y coordinate.
      * @since 5.1.0
      */
+    [Obsolete("For internal use only. If you want to use iText, please use a dependency on iText 7. ")]
     public class XYArray : NumberArray {
         
         /**

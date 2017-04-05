@@ -49,6 +49,7 @@ using iTextSharp.text.error_messages;
 
 namespace iTextSharp.text.pdf.collection {
 
+    [Obsolete("For internal use only. If you want to use iText, please use a dependency on iText 7. ")]
     public class PdfCollectionSort : PdfDictionary {
         
         /**

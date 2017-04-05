@@ -55,6 +55,7 @@ namespace iTextSharp.text.pdf.security {
      * when you have a PrivateKey object.
      * @author Paulo Soares
      */
+    [Obsolete("For internal use only. If you want to use iText, please use a dependency on iText 7. ")]
     public class PrivateKeySignature : IExternalSignature {
         
         /** The private key object. */

@@ -58,6 +58,7 @@ namespace iTextSharp.tool.xml.css {
      * @author redlab_b
      *
      */
+    [Obsolete("For internal use only. If you want to use iText, please use a dependency on iText 7. ")]
     public class CssUtils {
 
         private const string COLOR = "-color";

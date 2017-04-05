@@ -60,6 +60,7 @@ namespace iTextSharp.text {
     /// <seealso cref="T:iTextSharp.text.Image"/>
     /// <seealso cref="T:iTextSharp.text.Gif"/>
     /// <seealso cref="T:iTextSharp.text.Png"/>
+    [Obsolete("For internal use only. If you want to use iText, please use a dependency on iText 7. ")]
     public class Jpeg : Image {
     
         // public static membervariables

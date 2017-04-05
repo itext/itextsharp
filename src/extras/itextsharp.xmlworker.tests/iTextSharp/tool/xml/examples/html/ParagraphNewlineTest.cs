@@ -44,6 +44,7 @@
  */
 
 namespace itextsharp.xmlworker.tests.iTextSharp.tool.xml.examples.html {
+    [Obsolete("For internal use only. If you want to use iText, please use a dependency on iText 7. ")]
     public class ParagraphNewlineTest : SampleTest {
 
         protected override string GetTestName() {

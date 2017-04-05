@@ -69,6 +69,7 @@ namespace iTextSharp.text.pdf {
  * @see        PdfIndirectReference
  */
 
+    [Obsolete("For internal use only. If you want to use iText, please use a dependency on iText 7. ")]
     public abstract class PdfObject : IComparable<PdfObject> {
     
         // static membervariables (all the possible types of a PdfObject)

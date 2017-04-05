@@ -53,6 +53,7 @@ namespace iTextSharp.javaone.edition14.part4.helper
     /// Abstract class that is used as a superclass for specific item classes
     /// such as TextItem, ImageItem, Line and Structure.
     /// </summary>
+    [Obsolete("For internal use only. If you want to use iText, please use a dependency on iText 7. ")]
     public abstract class MyItem : IComparable<MyItem>
     {
         /// <summary>

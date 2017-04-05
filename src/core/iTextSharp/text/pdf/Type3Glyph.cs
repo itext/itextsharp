@@ -48,6 +48,7 @@ namespace iTextSharp.text.pdf {
     /**
     * The content where Type3 glyphs are written to.
     */
+    [Obsolete("For internal use only. If you want to use iText, please use a dependency on iText 7. ")]
     public sealed class Type3Glyph : PdfContentByte {
 
         private PageResources pageResources;

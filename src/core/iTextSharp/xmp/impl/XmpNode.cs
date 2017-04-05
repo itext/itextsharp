@@ -53,6 +53,7 @@ namespace iTextSharp.xmp.impl {
     /// 
     /// @since 21.02.2006
     /// </summary>
+    [Obsolete("For internal use only. If you want to use iText, please use a dependency on iText 7. ")]
     public class XmpNode : IComparable, ICloneable {
         private static readonly IList EmptyList = new ArrayList();
 

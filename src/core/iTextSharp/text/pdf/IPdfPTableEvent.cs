@@ -52,6 +52,7 @@ namespace iTextSharp.text.pdf {
      *
      * @author Paulo Soares
      */
+    [Obsolete("For internal use only. If you want to use iText, please use a dependency on iText 7. ")]
     public interface IPdfPTableEvent {
     
         /** This method is called at the end of the table rendering. The text or graphics are added to

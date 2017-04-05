@@ -50,6 +50,7 @@ namespace iTextSharp.text.pdf.spatial.units {
  * Angular display units for use in a Preferred Display Units (PDU) array.
  * @since 5.1.0
  */
+    [Obsolete("For internal use only. If you want to use iText, please use a dependency on iText 7. ")]
     public enum Angular {
         /** a degree */
         DEGREE,
@@ -61,6 +62,7 @@ namespace iTextSharp.text.pdf.spatial.units {
      * from the result of converting to the units
      * @since 5.1.0
      */
+    [Obsolete("For internal use only. If you want to use iText, please use a dependency on iText 7. ")]
     public enum Fraction {
         /**
          * Show as decimal to the precision specified by D
@@ -83,6 +85,7 @@ namespace iTextSharp.text.pdf.spatial.units {
      * Linear display units for use in a Preferred Display Units (PDU) array.
      * @since 5.1.0
      */
+    [Obsolete("For internal use only. If you want to use iText, please use a dependency on iText 7. ")]
     public enum Linear {
         /** a meter */
         METER,
@@ -102,6 +105,7 @@ namespace iTextSharp.text.pdf.spatial.units {
      * internal data elements of the individual point arrays in the XPTS array
      * @since 5.1.0
      */
+    [Obsolete("For internal use only. If you want to use iText, please use a dependency on iText 7. ")]
     public enum PtIdentifier {
         /** Latitude in degrees */
         LATITUDE,
@@ -114,6 +118,7 @@ namespace iTextSharp.text.pdf.spatial.units {
      * Area display units for use in a Preferred Display Units (PDU) array.
      * @since 5.1.0
      */
+    [Obsolete("For internal use only. If you want to use iText, please use a dependency on iText 7. ")]
     public enum Square {
         /** a square meter */
         SQUARE_METER,
@@ -128,6 +133,7 @@ namespace iTextSharp.text.pdf.spatial.units {
         /** a square mile */
         SQUARE_MILE}
 
+    [Obsolete("For internal use only. If you want to use iText, please use a dependency on iText 7. ")]
     public static class DecodeUnits {
         public static PdfName Decode(Angular e) {
             switch (e) {

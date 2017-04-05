@@ -52,6 +52,7 @@ namespace iTextSharp.text.pdf.parser {
      * Interface implemented by a series of content operators
      * @since 2.1.4
      */
+    [Obsolete("For internal use only. If you want to use iText, please use a dependency on iText 7. ")]
     public interface IContentOperator {
         /**
          * Invokes a content operator.

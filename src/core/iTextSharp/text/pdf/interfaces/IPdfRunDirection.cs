@@ -46,6 +46,7 @@ using System;
 
 namespace iTextSharp.text.pdf.interfaces {
 
+    [Obsolete("For internal use only. If you want to use iText, please use a dependency on iText 7. ")]
     public interface IPdfRunDirection {
         /** Sets the run direction. This is only used as a placeholder
         * as it does not affect anything.

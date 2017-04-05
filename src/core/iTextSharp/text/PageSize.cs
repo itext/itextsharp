@@ -52,6 +52,7 @@ namespace iTextSharp.text {
     /// The PageSize-object contains a number of read only rectangles representing the most common paper sizes.
     /// </summary>
     /// <seealso cref="T:iTextSharp.text.RectangleReadOnly"/>
+    [Obsolete("For internal use only. If you want to use iText, please use a dependency on iText 7. ")]
     public class PageSize {
     
         // membervariables

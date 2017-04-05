@@ -55,6 +55,7 @@ namespace iTextSharp.javaone.edition14
     /// In this second example that parses a PDF to discover its structure,
     /// we'll highlight all the text lines and images that are encountered.
     /// </summary>
+    [Obsolete("For internal use only. If you want to use iText, please use a dependency on iText 7. ")]
     public class S09_FindLines : S08_FindItems
     {
         /// <summary>

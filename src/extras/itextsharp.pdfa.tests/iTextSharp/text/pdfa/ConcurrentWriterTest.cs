@@ -34,7 +34,8 @@ namespace itextsharp.pdfa.tests.iTextSharp.text.pdfa {
 
         }
 
-        public class PDFAConcurrencyIssue {
+        [Obsolete("For internal use only. If you want to use iText, please use a dependency on iText 7. ")]
+    public class PDFAConcurrencyIssue {
 
             public PDFAConcurrencyIssue() {
                 FontFactory.Register(RESOURCES + "FreeSans.ttf");

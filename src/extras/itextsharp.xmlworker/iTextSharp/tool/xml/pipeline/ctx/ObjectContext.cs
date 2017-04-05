@@ -53,6 +53,7 @@ namespace iTextSharp.tool.xml.pipeline.ctx {
      * @param <T> the type of object.
      *
      */
+    [Obsolete("For internal use only. If you want to use iText, please use a dependency on iText 7. ")]
     public class ObjectContext<T> : ICustomContext {
 
         private T obj;

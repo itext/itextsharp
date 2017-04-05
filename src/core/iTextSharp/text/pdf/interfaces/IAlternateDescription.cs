@@ -50,6 +50,7 @@ namespace iTextSharp.text.pdf.interfaces
     /**
      * Interface providing alternate description for accessible elements.
      */
+    [Obsolete("For internal use only. If you want to use iText, please use a dependency on iText 7. ")]
     public interface IAlternateDescription {
         String Alt { get; set; }
     }

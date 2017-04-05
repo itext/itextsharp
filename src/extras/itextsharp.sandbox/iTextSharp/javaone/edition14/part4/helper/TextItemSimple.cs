@@ -53,6 +53,7 @@ namespace iTextSharp.javaone.edition14.part4.helper
     /// Subclass of the MyItem class that is used to store the coordinates
     /// of a text snippet.
     /// </summary>
+    [Obsolete("For internal use only. If you want to use iText, please use a dependency on iText 7. ")]
     public class TextItemSimple : MyItem
     {
         /// <summary>

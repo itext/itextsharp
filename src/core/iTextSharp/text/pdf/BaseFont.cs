@@ -57,6 +57,7 @@ namespace iTextSharp.text.pdf {
     /// <summary>
     /// Summary description for BaseFont.
     /// </summary>
+    [Obsolete("For internal use only. If you want to use iText, please use a dependency on iText 7. ")]
     public abstract class BaseFont {
         /** This is a possible value of a base 14 type 1 font */
         public const string COURIER = "Courier";

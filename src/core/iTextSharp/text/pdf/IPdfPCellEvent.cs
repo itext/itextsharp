@@ -50,6 +50,7 @@ namespace iTextSharp.text.pdf
     /// <summary>
     /// Summary description for IPdfPCellEvent.
     /// </summary>
+    [Obsolete("For internal use only. If you want to use iText, please use a dependency on iText 7. ")]
     public interface IPdfPCellEvent    {
         /** This method is called at the end of the cell rendering. The text or graphics are added to
         * one of the 4 <CODE>PdfContentByte</CODE> contained in

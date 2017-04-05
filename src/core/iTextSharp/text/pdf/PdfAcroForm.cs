@@ -55,6 +55,7 @@ namespace iTextSharp.text.pdf {
     /**
      * Each PDF document can contain maximum 1 AcroForm.
      */
+    [Obsolete("For internal use only. If you want to use iText, please use a dependency on iText 7. ")]
     public class PdfAcroForm : PdfDictionary {
 
         private PdfWriter writer;

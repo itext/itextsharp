@@ -43,6 +43,7 @@
  * address: sales@itextpdf.com
  */
 
+using System;
 using System.Collections.Generic;
 
 namespace iTextSharp.text.pdf.parser {
@@ -52,6 +53,7 @@ namespace iTextSharp.text.pdf.parser {
      * through a specified RenderListener.
      * @since 5.0.2
      */
+    [Obsolete("For internal use only. If you want to use iText, please use a dependency on iText 7. ")]
     public class PdfReaderContentParser {
         /** the reader this parser will process */
         private PdfReader reader;

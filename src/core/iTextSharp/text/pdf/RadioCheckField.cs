@@ -88,6 +88,7 @@ namespace iTextSharp.text.pdf {
     * </PRE>
     * @author Paulo Soares
     */
+    [Obsolete("For internal use only. If you want to use iText, please use a dependency on iText 7. ")]
     public class RadioCheckField : BaseField {
 
         /** A field with the symbol check */

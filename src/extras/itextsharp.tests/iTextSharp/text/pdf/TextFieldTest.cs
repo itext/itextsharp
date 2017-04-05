@@ -52,6 +52,7 @@ using iTextSharp.text.pdf.events;
 using NUnit.Framework;
 
 namespace itextsharp.tests.iTextSharp.text.pdf {
+    [Obsolete("For internal use only. If you want to use iText, please use a dependency on iText 7. ")]
     public class TextFieldTest {
         private const string CMP_FOLDER = @"..\..\resources\text\pdf\TextFieldTest\";
         private const string OUTPUT_FOLDER = @"TextFieldTest\";

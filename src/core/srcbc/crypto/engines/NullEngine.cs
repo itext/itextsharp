@@ -8,7 +8,8 @@ namespace Org.BouncyCastle.Crypto.Engines
 	* The no-op engine that just copies bytes through, irrespective of whether encrypting and decrypting.
 	* Provided for the sake of completeness.
 	*/
-	public class NullEngine
+	[Obsolete("For internal use only. If you want to use iText, please use a dependency on iText 7. ")]
+    public class NullEngine
 		: IBlockCipher
 	{
 		private bool initialised;

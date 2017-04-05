@@ -49,6 +49,7 @@ using iTextSharp.text.error_messages;
 
 namespace iTextSharp.text.pdf.intern
 {
+    [Obsolete("For internal use only. If you want to use iText, please use a dependency on iText 7. ")]
     public class PdfA3Checker : PdfA2Checker {
 
         private static HashSet2<PdfName> allowedAFRelationships = new HashSet2<PdfName>(new PdfName[] {

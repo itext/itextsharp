@@ -79,6 +79,7 @@ namespace System.util.collections {
     /// </para>
     /// </remarks>
     [Serializable]
+    [Obsolete("For internal use only. If you want to use iText, please use a dependency on iText 7. ")]
     public class ReadOnlyDictionary<TKey, TValue> : IDictionary<TKey, TValue>,
         ICollection {
         private readonly IDictionary<TKey, TValue> source;

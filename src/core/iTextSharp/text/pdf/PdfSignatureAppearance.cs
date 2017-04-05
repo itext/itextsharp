@@ -56,6 +56,7 @@ namespace iTextSharp.text.pdf {
      * Class that takes care of the cryptographic options
      * and appearances that form a signature.
      */
+    [Obsolete("For internal use only. If you want to use iText, please use a dependency on iText 7. ")]
     public class PdfSignatureAppearance {
 
         /**

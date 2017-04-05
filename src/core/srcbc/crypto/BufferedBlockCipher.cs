@@ -14,7 +14,8 @@ namespace Org.BouncyCastle.Crypto
 	* OFB one the last block may not be a multiple of the block size.
 	* </p>
 	*/
-	public class BufferedBlockCipher
+	[Obsolete("For internal use only. If you want to use iText, please use a dependency on iText 7. ")]
+    public class BufferedBlockCipher
 		: BufferedCipherBase
 	{
 		internal byte[]			buf;

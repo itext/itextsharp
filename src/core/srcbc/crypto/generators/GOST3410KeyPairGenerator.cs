@@ -12,7 +12,8 @@ namespace Org.BouncyCastle.Crypto.Generators
 	 * This generates GOST3410 keys in line with the method described
 	 * in GOST R 34.10-94.
 	 */
-	public class Gost3410KeyPairGenerator
+	[Obsolete("For internal use only. If you want to use iText, please use a dependency on iText 7. ")]
+    public class Gost3410KeyPairGenerator
 		: IAsymmetricCipherKeyPairGenerator
 	{
 		private Gost3410KeyGenerationParameters param;

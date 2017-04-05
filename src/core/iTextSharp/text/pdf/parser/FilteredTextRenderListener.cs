@@ -50,6 +50,7 @@ namespace iTextSharp.text.pdf.parser {
      * @since 5.0.1
      */
 
+    [Obsolete("For internal use only. If you want to use iText, please use a dependency on iText 7. ")]
     public class FilteredTextRenderListener : FilteredRenderListener, ITextExtractionStrategy {
 
         /** The deleg that will receive the text render operation if the filters all pass */

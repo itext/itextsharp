@@ -2,7 +2,8 @@ using System;
 
 namespace Org.BouncyCastle.Crypto.Parameters
 {
-	public class MqvPublicParameters
+	[Obsolete("For internal use only. If you want to use iText, please use a dependency on iText 7. ")]
+    public class MqvPublicParameters
 		: ICipherParameters
 	{
 		private readonly ECPublicKeyParameters staticPublicKey;

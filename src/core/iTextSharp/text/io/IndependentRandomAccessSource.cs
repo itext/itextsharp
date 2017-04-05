@@ -47,6 +47,7 @@ namespace iTextSharp.text.io {
      * passing a RandomAccessSource to a method that would normally close the source.
      * @since 5.3.5
      */
+    [Obsolete("For internal use only. If you want to use iText, please use a dependency on iText 7. ")]
     public class IndependentRandomAccessSource : IRandomAccessSource {
         /**
          * The source

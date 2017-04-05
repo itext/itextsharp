@@ -7,6 +7,7 @@ namespace Org.BouncyCastle.Crypto.Modes
     /**
     * implements a Cipher-FeedBack (CFB) mode on top of a simple cipher.
     */
+    [Obsolete("For internal use only. If you want to use iText, please use a dependency on iText 7. ")]
     public class CfbBlockCipher
 		: IBlockCipher
     {

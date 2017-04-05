@@ -55,6 +55,7 @@ namespace iTextSharp.tool.xml.pipeline.css {
      * @author redlab_b
      *
      */
+    [Obsolete("For internal use only. If you want to use iText, please use a dependency on iText 7. ")]
     public class CssResolverPipeline : AbstractPipeline {
 
 	    private ICSSResolver resolver;

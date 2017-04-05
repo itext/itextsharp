@@ -52,6 +52,7 @@ namespace iTextSharp.text.pdf.mc
      * It can refer to a marked-content sequence in a page or an object
      * reference (in this case the subclass StructureObject is used).
      */
+    [Obsolete("For internal use only. If you want to use iText, please use a dependency on iText 7. ")]
     public class StructureMCID : StructureItem {
         /** The mcid of the structure element. */
         protected int mcid = -1;

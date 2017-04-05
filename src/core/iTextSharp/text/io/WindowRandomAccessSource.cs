@@ -47,6 +47,7 @@ namespace iTextSharp.text.io {
      * a specific length.  Position 0 becomes the offset position in the underlying source.
      * @since 5.3.5
      */
+    [Obsolete("For internal use only. If you want to use iText, please use a dependency on iText 7. ")]
     public class WindowRandomAccessSource : IRandomAccessSource {
         /**
          * The source

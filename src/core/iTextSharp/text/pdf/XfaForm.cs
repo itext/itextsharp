@@ -55,6 +55,7 @@ namespace iTextSharp.text.pdf {
     * Processes XFA forms.
     * @author Paulo Soares
     */
+    [Obsolete("For internal use only. If you want to use iText, please use a dependency on iText 7. ")]
     public class XfaForm {
 
         private Xml2SomTemplate templateSom;

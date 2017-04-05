@@ -44,6 +44,7 @@
  */
 
 namespace itextsharp.xmlworker.tests.iTextSharp.tool.xml.examples.css.padding.padding.text {
+    [Obsolete("For internal use only. If you want to use iText, please use a dependency on iText 7. ")]
     public class Padding_text01 : SampleTest {
         protected override string GetTestName() {
             return "padding_text01";

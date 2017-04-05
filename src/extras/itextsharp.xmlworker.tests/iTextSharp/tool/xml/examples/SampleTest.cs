@@ -59,6 +59,7 @@ using iTextSharp.tool.xml.pipeline.html;
 using NUnit.Framework;
 
 namespace itextsharp.xmlworker.tests.iTextSharp.tool.xml.examples {
+    [Obsolete("For internal use only. If you want to use iText, please use a dependency on iText 7. ")]
     public class SampleTest : ITextTest {
         protected String inputPath;
         protected static String testPath;

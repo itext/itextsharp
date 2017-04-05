@@ -43,6 +43,8 @@
  * address: sales@itextpdf.com
  */
 
+using System;
+
 namespace iTextSharp.text {
     /// <summary>
     /// Interface for a text element to which other objects can be added.
@@ -54,6 +56,7 @@ namespace iTextSharp.text {
     /// <seealso cref="T:iTextSharp.text.Chapter"/>
     /// <seealso cref="T:iTextSharp.text.Anchor"/>
     /// <seealso cref="T:iTextSharp.text.Cell"/>
+    [Obsolete("For internal use only. If you want to use iText, please use a dependency on iText 7. ")]
     public interface ITextElementArray : IElement {
         /// <summary>
         /// Adds an object to the TextElementArray.

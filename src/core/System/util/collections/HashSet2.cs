@@ -49,6 +49,7 @@ using System.Collections.Generic;
 
 namespace System.util.collections
 {
+    [Obsolete("For internal use only. If you want to use iText, please use a dependency on iText 7. ")]
     public class HashSet2<T>: ICollection<T>
     {
         private Dictionary<T, object> set;

@@ -53,6 +53,7 @@ namespace iTextSharp.text.xml
     /// <summary>
     /// The <CODE>ParserBase</CODE>-class provides XML document parsing.
     /// </summary>
+    [Obsolete("For internal use only. If you want to use iText, please use a dependency on iText 7. ")]
     public abstract class ParserBase
     {
         virtual public void Parse(XmlDocument xDoc) {

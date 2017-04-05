@@ -49,6 +49,7 @@ using iTextSharp.text.pdf;
 
 namespace iTextSharp.javaone.edition14.part2
 {
+    [Obsolete("For internal use only. If you want to use iText, please use a dependency on iText 7. ")]
     public class ContentStreams
     {
         public static readonly string RESULT_HIGH = "results/javaone/edition2014/part2/hello-highlevel.pdf";

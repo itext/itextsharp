@@ -43,7 +43,10 @@
  * address: sales@itextpdf.com
  */
 
+using System;
+
 namespace iTextSharp.text.pdf {
+    [Obsolete("For internal use only. If you want to use iText, please use a dependency on iText 7. ")]
     public class StringUtils {
 
         private static readonly byte[] r = DocWriter.GetISOBytes("\\r");

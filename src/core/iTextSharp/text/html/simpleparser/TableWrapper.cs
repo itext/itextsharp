@@ -58,7 +58,7 @@ namespace iTextSharp.text.html.simpleparser {
      * @since 5.0.6 (renamed)
      * @deprecated since 5.5.2
      */
-    [Obsolete]
+    [Obsolete("For internal use only. If you want to use iText, please use a dependency on iText 7. ")]
     public class TableWrapper : IElement {
         /**
          * The styles that need to be applied to the table

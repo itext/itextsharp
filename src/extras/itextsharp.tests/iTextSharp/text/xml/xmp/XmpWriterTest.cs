@@ -55,6 +55,7 @@ using iTextSharp.xmp.options;
 
 namespace iTextSharp.text.xml.xmp {
     [TestFixture]
+    [Obsolete("For internal use only. If you want to use iText, please use a dependency on iText 7. ")]
     public class XmpWriterTest {
 
         public static String OUT_FOLDER = "XmpWriterTest/";

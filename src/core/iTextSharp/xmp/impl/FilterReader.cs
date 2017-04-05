@@ -43,6 +43,7 @@
  * address: sales@itextpdf.com
  */
 
+using System;
 using System.IO;
 
 namespace iTextSharp.xmp.impl {
@@ -57,6 +58,7 @@ namespace iTextSharp.xmp.impl {
     /// @author      Mark Reinhold
     /// @since       JDK1.1
     /// </summary>
+    [Obsolete("For internal use only. If you want to use iText, please use a dependency on iText 7. ")]
     public abstract class FilterReader : TextReader {
         protected TextReader inp;
 

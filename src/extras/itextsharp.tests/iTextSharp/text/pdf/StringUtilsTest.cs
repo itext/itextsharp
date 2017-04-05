@@ -6,6 +6,7 @@ using NUnit.Framework;
 
 namespace itextsharp.tests.iTextSharp.text.pdf
 {
+    [Obsolete("For internal use only. If you want to use iText, please use a dependency on iText 7. ")]
     public class StringUtilsTest {
 
     [TestCase('\u0000', (byte)0x0, (byte)0x0)]

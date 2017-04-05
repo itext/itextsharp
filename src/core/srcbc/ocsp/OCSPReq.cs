@@ -44,7 +44,8 @@ namespace Org.BouncyCastle.Ocsp
 	 *       serialNumber        CertificateSerialNumber }
 	 * </pre>
 	 */
-	public class OcspReq
+	[Obsolete("For internal use only. If you want to use iText, please use a dependency on iText 7. ")]
+    public class OcspReq
 		: X509ExtensionBase
 	{
 		private OcspRequest req;

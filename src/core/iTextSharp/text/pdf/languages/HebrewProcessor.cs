@@ -48,6 +48,7 @@ using iTextSharp.text.pdf;
 
 namespace iTextSharp.text.pdf.languages {
 
+    [Obsolete("For internal use only. If you want to use iText, please use a dependency on iText 7. ")]
     public class HebrewProcessor : ILanguageProcessor {
 
         protected int runDirection = PdfWriter.RUN_DIRECTION_RTL;

@@ -52,7 +52,7 @@ namespace iTextSharp.text.html.simpleparser {
      * @since 5.0.6
      * @deprecated since 5.5.2
      */
-    [Obsolete]
+    [Obsolete("For internal use only. If you want to use iText, please use a dependency on iText 7. ")]
     public class ImageStore : Dictionary<String, Image> {
     }
 }

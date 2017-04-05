@@ -51,13 +51,15 @@ using System.Collections.Generic;
  * (certification or approval) and the signature's DMP settings.
  */
 namespace iTextSharp.text.pdf.security {
-	public class SignaturePermissions {
+	[Obsolete("For internal use only. If you want to use iText, please use a dependency on iText 7. ")]
+    public class SignaturePermissions {
 
         /**
 	     * Class that contains a field lock action and
 	     * an array of the fields that are involved.
 	     */
-        public class FieldLock {
+        [Obsolete("For internal use only. If you want to use iText, please use a dependency on iText 7. ")]
+    public class FieldLock {
             /** Can be /All, /Exclude or /Include */
             readonly PdfName action;
             /** An array of PdfString values with fieldnames */

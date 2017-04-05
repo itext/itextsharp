@@ -44,6 +44,7 @@
  */
 
 namespace itextsharp.xmlworker.tests.iTextSharp.tool.xml.examples.css.selector {
+    [Obsolete("For internal use only. If you want to use iText, please use a dependency on iText 7. ")]
     public class Css3Modsel_155aTest : SampleTest {
         protected override string GetTestName() {
             return "css3-modsel-155a";

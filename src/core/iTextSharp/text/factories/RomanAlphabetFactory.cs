@@ -53,6 +53,7 @@ namespace iTextSharp.text.factories {
     * "a" to "z" represent 1 to 26, "AA" represents 27, "AB" represents 28,
     * and so on; "ZZ" is followed by "AAA".
     */
+    [Obsolete("For internal use only. If you want to use iText, please use a dependency on iText 7. ")]
     public class RomanAlphabetFactory {
 
         /**

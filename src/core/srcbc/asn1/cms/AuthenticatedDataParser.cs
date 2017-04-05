@@ -25,7 +25,8 @@ namespace Org.BouncyCastle.Asn1.Cms
 	 * MessageAuthenticationCode ::= OCTET STRING
 	 * </pre>
 	 */
-	public class AuthenticatedDataParser
+	[Obsolete("For internal use only. If you want to use iText, please use a dependency on iText 7. ")]
+    public class AuthenticatedDataParser
 	{
 	    private Asn1SequenceParser	seq;
 	    private DerInteger			version;

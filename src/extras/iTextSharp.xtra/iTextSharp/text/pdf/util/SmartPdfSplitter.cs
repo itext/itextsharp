@@ -52,6 +52,7 @@ namespace iTextSharp.text.pdf.util {
     /**
      * Splits a PDF based on a given file size.
      */
+    [Obsolete("For internal use only. If you want to use iText, please use a dependency on iText 7. ")]
     public class SmartPdfSplitter {
 
         private readonly ILogger LOGGER = LoggerFactory.GetLogger(typeof (SmartPdfSplitter));

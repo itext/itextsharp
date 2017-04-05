@@ -8,7 +8,8 @@ namespace Org.BouncyCastle.Bcpg.Sig
 	* Class provided a NotationData object according to
 	* RFC2440, Chapter 5.2.3.15. Notation Data
 	*/
-	public class NotationData
+	[Obsolete("For internal use only. If you want to use iText, please use a dependency on iText 7. ")]
+    public class NotationData
 		: SignatureSubpacket
 	{
 		public const int HeaderFlagLength = 4;

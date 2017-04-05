@@ -3,7 +3,8 @@ using System.IO;
 
 namespace Org.BouncyCastle.Crypto.Tls
 {
-	public class TlsFatalAlert
+	[Obsolete("For internal use only. If you want to use iText, please use a dependency on iText 7. ")]
+    public class TlsFatalAlert
 		: IOException
 	{
 		private readonly AlertDescription alertDescription;

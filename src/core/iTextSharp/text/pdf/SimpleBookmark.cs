@@ -91,6 +91,7 @@ namespace iTextSharp.text.pdf {
     * </ul>
     * @author Paulo Soares
     */
+    [Obsolete("For internal use only. If you want to use iText, please use a dependency on iText 7. ")]
     public sealed class SimpleBookmark : ISimpleXMLDocHandler {
         
         private List<Dictionary<String, Object>> topList;

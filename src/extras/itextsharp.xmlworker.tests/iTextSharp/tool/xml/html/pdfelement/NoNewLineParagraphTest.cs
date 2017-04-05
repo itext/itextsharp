@@ -4,6 +4,7 @@ using iTextSharp.text;
 using NUnit.Framework;
 
 namespace itextsharp.xmlworker.tests.iTextSharp.tool.xml.html.pdfelement {
+    [Obsolete("For internal use only. If you want to use iText, please use a dependency on iText 7. ")]
     public class NoNewLineParagraphTest {
         private static String IMAGE = @"..\..\resources\images.jpg";
         private NoNewLineParagraph paragraph;

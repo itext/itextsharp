@@ -62,6 +62,7 @@ namespace iTextSharp.text {
     /// </remarks>
     /// <seealso cref="T:iTextSharp.text.Element"/>
     /// <seealso cref="T:iTextSharp.text.Header"/>
+    [Obsolete("For internal use only. If you want to use iText, please use a dependency on iText 7. ")]
     public class Meta : IElement {
     
         // membervariables

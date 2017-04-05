@@ -11,7 +11,8 @@ using Org.BouncyCastle.Crypto.Parameters;
 
 namespace Org.BouncyCastle.Crypto.Tls
 {
-	public abstract class DefaultTlsClient
+	[Obsolete("For internal use only. If you want to use iText, please use a dependency on iText 7. ")]
+    public abstract class DefaultTlsClient
 		: TlsClient
 	{
 		protected TlsCipherFactory cipherFactory;

@@ -54,7 +54,8 @@ using Org.BouncyCastle.X509;
  * method will be called.
  */
 namespace iTextSharp.text.pdf.security {
-	public class CertificateVerifier {
+	[Obsolete("For internal use only. If you want to use iText, please use a dependency on iText 7. ")]
+    public class CertificateVerifier {
         /** The previous CertificateVerifier in the chain of verifiers. */
 	    protected CertificateVerifier verifier;
     	

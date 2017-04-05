@@ -44,12 +44,15 @@
  * address: sales@itextpdf.com
  */
 
+using System;
+
 namespace iTextSharp.text.pdf {
 
     /** Each colorSpace in the document will have an instance of this class
      *
      * @author Phillip Pan (phillip@formstar.com)
      */
+    [Obsolete("For internal use only. If you want to use iText, please use a dependency on iText 7. ")]
     public class ColorDetails {
 
         /** The indirect reference to this color

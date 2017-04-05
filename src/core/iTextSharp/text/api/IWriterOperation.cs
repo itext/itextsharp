@@ -51,6 +51,7 @@ namespace iTextSharp.text.api {
      * @author itextpdf.com
      *
      */
+    [Obsolete("For internal use only. If you want to use iText, please use a dependency on iText 7. ")]
     public interface IWriterOperation {
         /**
          * Receive a writer and the document to do certain operations on them.

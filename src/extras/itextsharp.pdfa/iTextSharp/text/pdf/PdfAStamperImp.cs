@@ -58,6 +58,7 @@ namespace iTextSharp.text.pdf {
      * Extension to PdfStamperImp that will attempt to keep a file
      * in conformance with the PDF/A standard.
      */
+    [Obsolete("For internal use only. If you want to use iText, please use a dependency on iText 7. ")]
     public class PdfAStamperImp : PdfStamperImp {
 
         protected ICounter COUNTER = CounterFactory.GetCounter(typeof(PdfAStamper));

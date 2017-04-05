@@ -42,6 +42,9 @@
  * For more information, please contact iText Software Corp. at this
  * address: sales@itextpdf.com
  */
+
+using System;
+
 namespace iTextSharp.text.pdf.parser {
 
     /**
@@ -52,6 +55,7 @@ namespace iTextSharp.text.pdf.parser {
      * to allow for adding additional render calls as the content stream processor is enhanced
      * @since 5.0
      */
+    [Obsolete("For internal use only. If you want to use iText, please use a dependency on iText 7. ")]
     public interface IRenderListener {
 
         /**

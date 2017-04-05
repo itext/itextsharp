@@ -5,7 +5,8 @@ using Org.BouncyCastle.Utilities;
 
 namespace Org.BouncyCastle.Crypto.Modes.Gcm
 {
-	public class Tables1kGcmExponentiator
+	[Obsolete("For internal use only. If you want to use iText, please use a dependency on iText 7. ")]
+    public class Tables1kGcmExponentiator
 		: IGcmExponentiator
 	{
         // A lookup table of the power-of-two powers of 'x'

@@ -1,3 +1,5 @@
+using System;
+
 namespace Org.BouncyCastle.Crypto.Engines
 {
 	/// <remarks>
@@ -5,7 +7,8 @@ namespace Org.BouncyCastle.Crypto.Engines
 	/// <p/>
 	/// For further details see: <a href="http://www.ietf.org/rfc/rfc4010.txt">http://www.ietf.org/rfc/rfc4010.txt</a>.
 	/// </remarks>
-	public class SeedWrapEngine
+	[Obsolete("For internal use only. If you want to use iText, please use a dependency on iText 7. ")]
+    public class SeedWrapEngine
 		: Rfc3394WrapEngine
 	{
 		public SeedWrapEngine()

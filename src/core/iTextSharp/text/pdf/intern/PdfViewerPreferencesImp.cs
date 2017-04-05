@@ -53,6 +53,7 @@ namespace iTextSharp.text.pdf.intern {
     * Stores the information concerning viewer preferences,
     * and contains the business logic that allows you to set viewer preferences.
     */
+    [Obsolete("For internal use only. If you want to use iText, please use a dependency on iText 7. ")]
     public class PdfViewerPreferencesImp : IPdfViewerPreferences {
 
         public static readonly PdfName[] VIEWER_PREFERENCES = {

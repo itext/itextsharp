@@ -48,6 +48,7 @@ namespace iTextSharp.text.pdf {
      * 
      * @since 5.0.6
      */
+    [Obsolete("For internal use only. If you want to use iText, please use a dependency on iText 7. ")]
     public interface IPdfPTableEventSplit : IPdfPTableEvent {
         /**
          * This method is called to indicate that table is being split. It's called

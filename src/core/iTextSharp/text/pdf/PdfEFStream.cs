@@ -55,6 +55,7 @@ namespace iTextSharp.text.pdf {
     * @since	2.1.3
     */
 
+    [Obsolete("For internal use only. If you want to use iText, please use a dependency on iText 7. ")]
     public class PdfEFStream : PdfStream {
 
 	    /**

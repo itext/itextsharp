@@ -5,6 +5,7 @@ namespace Org.BouncyCastle.Utilities.Encoders
     /// <summary>
     /// A class that allows encoding of data using a specific encoder to be processed in chunks.
     /// </summary>
+    [Obsolete("For internal use only. If you want to use iText, please use a dependency on iText 7. ")]
     public class BufferedEncoder
     {
         internal byte[]        Buffer;

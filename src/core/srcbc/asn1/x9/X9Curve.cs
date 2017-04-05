@@ -10,6 +10,7 @@ namespace Org.BouncyCastle.Asn1.X9
      * ASN.1 def for Elliptic-Curve Curve structure. See
      * X9.62, for further details.
      */
+    [Obsolete("For internal use only. If you want to use iText, please use a dependency on iText 7. ")]
     public class X9Curve
         : Asn1Encodable
     {

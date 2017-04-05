@@ -52,6 +52,7 @@ namespace iTextSharp.tool.xml.css.parser.state {
      * @author redlab_b
      *
      */
+    [Obsolete("For internal use only. If you want to use iText, please use a dependency on iText 7. ")]
     public class CommentEnd : IState {
 
         private CssStateController controller;

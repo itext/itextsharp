@@ -48,6 +48,7 @@ using iTextSharp.xmp;
 
 namespace iTextSharp.text.xml.xmp {
 
+    [Obsolete("For internal use only. If you want to use iText, please use a dependency on iText 7. ")]
     public class PdfAProperties {
         /**
          * Part, always 1.

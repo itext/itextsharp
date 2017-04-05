@@ -56,6 +56,7 @@ namespace iTextSharp.text {
     * @since   iText 2.0.8
     */
 
+    [Obsolete("For internal use only. If you want to use iText, please use a dependency on iText 7. ")]
     public interface ILargeElement : IElement {
         
         /**

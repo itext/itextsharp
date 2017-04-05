@@ -28,6 +28,8 @@
 //
 //        http://www.adobe.com/devnet/xmp/library/eula-xmp-library-java.html
 
+using System;
+
 namespace iTextSharp.xmp
 {
 
@@ -40,6 +42,7 @@ namespace iTextSharp.xmp
     /// 
     /// @since 23.01.2006
     /// </summary>
+    [Obsolete("For internal use only. If you want to use iText, please use a dependency on iText 7. ")]
     public interface IXmpVersionInfo
     {
         /// <returns> Returns the primary release number, the "1" in version "1.2.3". </returns>

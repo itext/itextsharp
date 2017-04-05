@@ -55,7 +55,8 @@ using iTextSharp.text.log;
  * Verifies the signatures in an LTV document.
  */
 namespace iTextSharp.text.pdf.security {
-	public class LtvVerifier : RootStoreVerifier {
+	[Obsolete("For internal use only. If you want to use iText, please use a dependency on iText 7. ")]
+    public class LtvVerifier : RootStoreVerifier {
         /** The Logger instance */
 	    private static ILogger LOGGER = LoggerFactory.GetLogger(typeof(LtvVerifier));
     	

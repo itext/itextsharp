@@ -47,6 +47,7 @@ namespace iTextSharp.text.log {
      * @author redlab_be
      *
      */
+    [Obsolete("For internal use only. If you want to use iText, please use a dependency on iText 7. ")]
     public class SysoLogger : ILogger {
 
         private String name;

@@ -57,6 +57,7 @@ namespace iTextSharp.text.pdf.events {
     * the PdfPCell.
     */
 
+    [Obsolete("For internal use only. If you want to use iText, please use a dependency on iText 7. ")]
     public class PdfPCellEventForwarder : IPdfPCellEvent {
 
         /** ArrayList containing all the PageEvents that have to be executed. */

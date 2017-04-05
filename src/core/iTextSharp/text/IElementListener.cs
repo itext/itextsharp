@@ -50,6 +50,7 @@ namespace iTextSharp.text {
     /// A class that implements ElementListener will perform some
     /// actions when an Element is added.
     /// </summary>
+    [Obsolete("For internal use only. If you want to use iText, please use a dependency on iText 7. ")]
     public interface IElementListener {
         /// <summary>
         /// Signals that an Element was added to the Document.

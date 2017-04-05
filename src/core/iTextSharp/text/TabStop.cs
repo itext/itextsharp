@@ -48,7 +48,8 @@ using iTextSharp.text.pdf.draw;
 
 namespace iTextSharp.text
 {
-	public class TabStop
+	[Obsolete("For internal use only. If you want to use iText, please use a dependency on iText 7. ")]
+    public class TabStop
 	{
         public static TabStop NewInstance(float currentPosition, float tabInterval)
         {

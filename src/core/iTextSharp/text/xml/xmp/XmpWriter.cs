@@ -59,6 +59,7 @@ namespace iTextSharp.text.xml.xmp {
      * complete XMP specification.
      */
 
+    [Obsolete("For internal use only. If you want to use iText, please use a dependency on iText 7. ")]
     public class XmpWriter {
 
         /** A possible charset for the XMP. */

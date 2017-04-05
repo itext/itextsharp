@@ -43,12 +43,15 @@
  * address: sales@itextpdf.com
  */
 
+using System;
+
 namespace iTextSharp.text.pdf.parser {
 
     /**
      * Keeps all the parameters of the graphics state.
      * @since   2.1.4
      */
+    [Obsolete("For internal use only. If you want to use iText, please use a dependency on iText 7. ")]
     public class GraphicsState {
         /** The current transformation matrix. */
         internal Matrix ctm;

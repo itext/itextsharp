@@ -49,7 +49,8 @@ using System.Text;
 
 namespace iTextSharp.text.pdf.interfaces
 {
-	public interface IPdfStructureElement {
+	[Obsolete("For internal use only. If you want to use iText, please use a dependency on iText 7. ")]
+    public interface IPdfStructureElement {
         PdfObject GetAttribute(PdfName name);
         void SetAttribute(PdfName name, PdfObject obj);
 	}

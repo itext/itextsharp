@@ -52,7 +52,8 @@ using NUnit.Framework;
 using List = iTextSharp.text.List;
 
 namespace itextsharp.tests.iTextSharp.text.pdf {
-public class NestedListInColumnTextTest {
+[Obsolete("For internal use only. If you want to use iText, please use a dependency on iText 7. ")]
+    public class NestedListInColumnTextTest {
     public const String DEST_FOLDER = @"NestedListInColumnTextTest\";
     public const String SOURCE_FOLDER = @"..\..\resources\text\pdf\NestedListInColumnTextTest\"; 
 

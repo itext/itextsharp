@@ -49,6 +49,7 @@ namespace iTextSharp.text {
     /// <summary>
     /// Interface for customizing the split character.
     /// </summary>
+    [Obsolete("For internal use only. If you want to use iText, please use a dependency on iText 7. ")]
     public interface ISplitCharacter {
         /**
         * Returns <CODE>true</CODE> if the character can split a line. The splitting implementation

@@ -1,3 +1,4 @@
+using System;
 using System.Collections.Generic;
 
 /*
@@ -66,6 +67,7 @@ namespace iTextSharp.text {
     /// <seealso cref="T:iTextSharp.text.Row"/>
     /// <seealso cref="T:iTextSharp.text.Section"/>
     /// <seealso cref="T:iTextSharp.text.Table"/>
+    [Obsolete("For internal use only. If you want to use iText, please use a dependency on iText 7. ")]
     public interface IElement {
 
         // methods

@@ -43,6 +43,7 @@
  * address: sales@itextpdf.com
  */
 
+using System;
 using iTextSharp.text.pdf.languages;
 
 namespace com.itextpdf.text.pdf.languages
@@ -54,6 +55,7 @@ namespace com.itextpdf.text.pdf.languages
  * Warning: this is an incomplete and experimental implementation of Devanagari. This implementation should not be used in production.
  */
 
+    [Obsolete("For internal use only. If you want to use iText, please use a dependency on iText 7. ")]
     public class DevanagariLigaturizer : IndicLigaturizer
     {
 

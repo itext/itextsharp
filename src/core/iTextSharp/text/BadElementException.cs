@@ -54,7 +54,8 @@ namespace iTextSharp.text
     /// <seealso cref="T:iTextSharp.text.Cell"/>
     /// <seealso cref="T:iTextSharp.text.Table"/>
 	[Serializable]
-    public class BadElementException : DocumentException 
+    [Obsolete("For internal use only. If you want to use iText, please use a dependency on iText 7. ")]
+    public class BadElementException : DocumentException
     {
         public BadElementException() : base() {}
 

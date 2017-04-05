@@ -52,6 +52,7 @@ using iTextSharp.text.pdf.parser;
 using NUnit.Framework;
 
 namespace itextsharp.tests.iTextSharp.text.pdf.fonts {
+    [Obsolete("For internal use only. If you want to use iText, please use a dependency on iText 7. ")]
     public class SymbolTest {
         private const string TEST_RESOURCES_PATH = @"..\..\resources\text\pdf\fonts\SymbolFontTest\";
         [SetUp]

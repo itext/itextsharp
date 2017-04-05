@@ -56,6 +56,7 @@ namespace iTextSharp.text.pdf.mc {
      * - This class won't work with pages in which the CTM is changed
      * - This class may not work for form fields with more than one widget annotation
      */
+    [Obsolete("For internal use only. If you want to use iText, please use a dependency on iText 7. ")]
     public class MCFieldFlattener {
         /**
          * Processes a properly tagged PDF form.

@@ -11,7 +11,8 @@ namespace Org.BouncyCastle.Crypto.Signers
 	/// Note: the usual value for the salt length is the number of
 	/// bytes in the hash function.</p>
 	/// </summary>
-	public class PssSigner
+	[Obsolete("For internal use only. If you want to use iText, please use a dependency on iText 7. ")]
+    public class PssSigner
 		: ISigner
 	{
 		public const byte TrailerImplicit = (byte)0xBC;

@@ -13,7 +13,8 @@ namespace Org.BouncyCastle.Crypto.Macs
 	* This could as well be derived from CBCBlockCipherMac, but then the property mac in the base
 	* class must be changed to protected
 	*/
-	public class ISO9797Alg3Mac : IMac
+	[Obsolete("For internal use only. If you want to use iText, please use a dependency on iText 7. ")]
+    public class ISO9797Alg3Mac : IMac
 	{
 		private byte[] mac;
 		private byte[] buf;

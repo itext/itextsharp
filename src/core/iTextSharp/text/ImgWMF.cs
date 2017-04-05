@@ -66,6 +66,7 @@ namespace iTextSharp.text {
     /// An ImgWMF is the representation of a windows metafile
     /// that has to be inserted into the document
     /// </summary>
+    [Obsolete("For internal use only. If you want to use iText, please use a dependency on iText 7. ")]
     public class ImgWMF : Image {
     
         // Constructors

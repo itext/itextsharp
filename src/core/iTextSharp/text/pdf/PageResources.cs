@@ -1,3 +1,4 @@
+using System;
 using System.Collections.Generic;
 
 /*
@@ -46,6 +47,7 @@ using System.Collections.Generic;
  */
 
 namespace iTextSharp.text.pdf {
+    [Obsolete("For internal use only. If you want to use iText, please use a dependency on iText 7. ")]
     public class PageResources {
         
         protected PdfDictionary fontDictionary = new PdfDictionary();

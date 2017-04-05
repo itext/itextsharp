@@ -52,6 +52,7 @@ using iTextSharp.text.pdf.interfaces;
 
 namespace iTextSharp.text.pdf {
 
+    [Obsolete("For internal use only. If you want to use iText, please use a dependency on iText 7. ")]
     public class PdfDiv : IElement, ISpaceable, IAccessibleElement
     {
         public enum FloatType

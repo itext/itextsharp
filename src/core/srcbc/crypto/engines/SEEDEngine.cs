@@ -6,7 +6,8 @@ namespace Org.BouncyCastle.Crypto.Engines
 	/**
 	* Implementation of the SEED algorithm as described in RFC 4009
 	*/
-	public class SeedEngine
+	[Obsolete("For internal use only. If you want to use iText, please use a dependency on iText 7. ")]
+    public class SeedEngine
 		: IBlockCipher
 	{
 		private const int BlockSize = 16;

@@ -53,7 +53,8 @@ using Org.BouncyCastle.X509;
  * reason.
  */
 namespace iTextSharp.text.pdf.security {
-	public class VerificationOK {
+	[Obsolete("For internal use only. If you want to use iText, please use a dependency on iText 7. ")]
+    public class VerificationOK {
 
         /** The certificate that was verified successfully. */
 	    protected X509Certificate certificate;

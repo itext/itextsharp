@@ -54,6 +54,7 @@ namespace iTextSharp.text.pdf.draw {
     * It is also used to define what has to be drawn by a separator chunk.
     * @since 2.1.2
     */
+    [Obsolete("For internal use only. If you want to use iText, please use a dependency on iText 7. ")]
     public interface IDrawInterface {
         /**
         * Implement this method if you want to draw something at the current Y position

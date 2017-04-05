@@ -69,6 +69,7 @@ namespace iTextSharp.text {
     /// document.Add(chunk);
     /// </code>
     /// </example>
+    [Obsolete("For internal use only. If you want to use iText, please use a dependency on iText 7. ")]
     public class Chunk : IElement, IAccessibleElement {
 
         // public static membervariables

@@ -53,6 +53,7 @@ namespace iTextSharp.text.pdf
      * in conformance with the PDF/A standard.
      * @see PdfStamper
      */
+    [Obsolete("For internal use only. If you want to use iText, please use a dependency on iText 7. ")]
     public class PdfAStamper : PdfStamper {
 
         /**

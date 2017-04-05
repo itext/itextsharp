@@ -51,6 +51,7 @@ using iTextSharp.text.pdf;
 namespace iTextSharp.sandbox.images
 {
     [WrapToTest]
+    [Obsolete("For internal use only. If you want to use iText, please use a dependency on iText 7. ")]
     public class RepeatImage
     {
         public static readonly string SRC = "../../resources/pdfs/chinese.pdf";

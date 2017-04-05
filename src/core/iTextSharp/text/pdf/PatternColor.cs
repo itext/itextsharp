@@ -46,6 +46,7 @@ namespace iTextSharp.text.pdf {
 
     /** Represents a pattern. Can be used in high-level constructs (Paragraph, Cell, etc.).
      */
+    [Obsolete("For internal use only. If you want to use iText, please use a dependency on iText 7. ")]
     public class PatternColor : ExtendedColor {
         /** The actual pattern.
                                    */    

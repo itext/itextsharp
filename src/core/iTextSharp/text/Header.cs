@@ -57,6 +57,7 @@ namespace iTextSharp.text {
     /// <strong>Header header = new Header("inspired by", "William Shakespeare");</strong>
     /// </code>
     /// </example>
+    [Obsolete("For internal use only. If you want to use iText, please use a dependency on iText 7. ")]
     public class Header : Meta {
     
         // membervariables

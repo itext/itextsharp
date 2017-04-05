@@ -55,6 +55,7 @@ namespace iTextSharp.tool.xml.css.parser {
      * @author redlab_b
      *
      */
+    [Obsolete("For internal use only. If you want to use iText, please use a dependency on iText 7. ")]
     public class CssStateController {
 
         private IState current;
@@ -123,7 +124,7 @@ namespace iTextSharp.tool.xml.css.parser {
             }
             if (currentSelector.Contains(",")) {
                 String[] selectors = currentSelector.Split(',');
-                //check for rules like p, {…}
+                //check for rules like p, {ï¿½}
                 for (int i = 0; i < selectors.Length; i++) {
                     selectors[i] = utils.StripDoubleSpacesAndTrim(selectors[i]);
                     if (selectors[i].Length == 0)

@@ -8,6 +8,7 @@ namespace Org.BouncyCastle.Asn1
     /**
      * Der NumericString object - this is an ascii string of characters {0,1,2,3,4,5,6,7,8,9, }.
      */
+    [Obsolete("For internal use only. If you want to use iText, please use a dependency on iText 7. ")]
     public class DerNumericString
         : DerStringBase
     {

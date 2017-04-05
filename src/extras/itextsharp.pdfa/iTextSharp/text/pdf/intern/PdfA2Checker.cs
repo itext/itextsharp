@@ -52,6 +52,7 @@ using iTextSharp.text.log;
 
 namespace iTextSharp.text.pdf.intern
 {
+    [Obsolete("For internal use only. If you want to use iText, please use a dependency on iText 7. ")]
     public class PdfA2Checker : PdfAChecker {
         public static readonly HashSet2<PdfName> allowedBlendModes = new HashSet2<PdfName>(new PdfName[] {PdfGState.BM_NORMAL,
             PdfGState.BM_COMPATIBLE, PdfGState.BM_MULTIPLY, PdfGState.BM_SCREEN, PdfGState.BM_OVERLAY,

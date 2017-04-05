@@ -49,6 +49,7 @@ namespace iTextSharp.text.pdf.security {
     /**
      * Class that contains a map with the different encryption algorithms.
      */
+    [Obsolete("For internal use only. If you want to use iText, please use a dependency on iText 7. ")]
     public static class EncryptionAlgorithms {
 
         /** Maps IDs of encryption algorithms with its human-readable name. */

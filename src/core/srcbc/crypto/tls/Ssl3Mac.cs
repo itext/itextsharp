@@ -13,7 +13,8 @@ namespace Org.BouncyCastle.Crypto.Tls
 	 * 
 	 * H(K + opad, H(K + ipad, text))
 	 */
-	public class Ssl3Mac
+	[Obsolete("For internal use only. If you want to use iText, please use a dependency on iText 7. ")]
+    public class Ssl3Mac
 		: IMac
 	{
 		private const byte IPAD = 0x36;

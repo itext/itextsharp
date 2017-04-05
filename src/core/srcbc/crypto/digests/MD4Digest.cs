@@ -9,6 +9,7 @@ namespace Org.BouncyCastle.Crypto.Digests
     * <b>NOTE</b>: This algorithm is only included for backwards compatibility
     * with legacy applications, it's not secure, don't use it for anything new!</p>
     */
+    [Obsolete("For internal use only. If you want to use iText, please use a dependency on iText 7. ")]
     public class MD4Digest
 		: GeneralDigest
     {

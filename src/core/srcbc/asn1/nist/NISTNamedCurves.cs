@@ -12,6 +12,7 @@ namespace Org.BouncyCastle.Asn1.Nist
     /**
     * Utility class for fetching curves using their NIST names as published in FIPS-PUB 186-3
     */
+    [Obsolete("For internal use only. If you want to use iText, please use a dependency on iText 7. ")]
     public sealed class NistNamedCurves
     {
         private NistNamedCurves()

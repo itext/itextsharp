@@ -70,6 +70,7 @@ namespace iTextSharp.text.pdf.parser {
      *
      * @since   5.0.2
      */
+    [Obsolete("For internal use only. If you want to use iText, please use a dependency on iText 7. ")]
     public class LocationTextExtractionStrategy : ITextExtractionStrategy {
 
         /** set to true for debugging */

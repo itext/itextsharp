@@ -60,6 +60,7 @@ namespace iTextSharp.text.pdf {
      */
     // Dev note:  we eventually want to refactor PdfReader so all of the existing filter functionality is moved into this class
     // it may also be better to split the sub-classes out into a separate package 
+    [Obsolete("For internal use only. If you want to use iText, please use a dependency on iText 7. ")]
     public sealed class FilterHandlers {
         
         /**

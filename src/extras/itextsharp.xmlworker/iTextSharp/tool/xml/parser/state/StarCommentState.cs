@@ -50,6 +50,7 @@ using iTextSharp.tool.xml.parser;
 
 namespace iTextSharp.tool.xml.parser.state {
 
+    [Obsolete("For internal use only. If you want to use iText, please use a dependency on iText 7. ")]
     public class StarCommentState : IState
     {
         private XMLParser parser;

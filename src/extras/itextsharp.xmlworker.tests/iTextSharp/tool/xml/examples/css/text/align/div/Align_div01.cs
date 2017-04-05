@@ -44,6 +44,7 @@
  */
 
 namespace itextsharp.xmlworker.tests.iTextSharp.tool.xml.examples.css.text.align.div {
+    [Obsolete("For internal use only. If you want to use iText, please use a dependency on iText 7. ")]
     public class Align_div01 : SampleTest {
         protected override string GetTestName() {
             return "align_div01";

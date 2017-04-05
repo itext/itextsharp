@@ -51,6 +51,7 @@ using iTextSharp.text.pdf;
 using NUnit.Framework;
 
 namespace itextsharp.tests.iTextSharp.text.pdf {
+    [Obsolete("For internal use only. If you want to use iText, please use a dependency on iText 7. ")]
     public class DocumentLayoutTest {
         private const string TEST_RESOURCES_PATH = @"..\..\resources\text\pdf\DocumentLayoutTest\";
         private const string OUTPUT_FOLDER = @"DocumentLayoutTest\";

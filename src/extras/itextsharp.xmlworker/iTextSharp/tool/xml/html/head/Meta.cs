@@ -62,6 +62,7 @@ namespace iTextSharp.tool.xml.html.head {
      *
      */
 
+    [Obsolete("For internal use only. If you want to use iText, please use a dependency on iText 7. ")]
     public class Meta : AbstractTagProcessor {
 
         private static ILogger LOGGER = LoggerFactory.GetLogger(typeof(Meta));

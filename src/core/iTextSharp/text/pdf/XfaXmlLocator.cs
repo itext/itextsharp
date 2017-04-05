@@ -1,3 +1,4 @@
+using System;
 using System.Xml;
 using iTextSharp.text.pdf.security;
 /*
@@ -49,6 +50,7 @@ namespace iTextSharp.text.pdf
     /**
      * Helps to locate xml stream inside PDF document with Xfa form.
      */
+    [Obsolete("For internal use only. If you want to use iText, please use a dependency on iText 7. ")]
     public class XfaXmlLocator : IXmlLocator
     {
         public XfaXmlLocator(PdfStamper stamper) {

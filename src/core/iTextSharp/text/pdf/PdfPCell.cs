@@ -52,6 +52,7 @@ namespace iTextSharp.text.pdf {
     /** A cell in a PdfPTable.
     */
 
+    [Obsolete("For internal use only. If you want to use iText, please use a dependency on iText 7. ")]
     public class PdfPCell : Rectangle, IAccessibleElement {
         
         private ColumnText column = new ColumnText(null);

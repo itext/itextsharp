@@ -56,6 +56,7 @@ namespace iTextSharp.text {
     /// <seealso cref="T:iTextSharp.text.DocWriter"/>
     /// <seealso cref="T:iTextSharp.text.IDocListener"/>
 	[Serializable]
+    [Obsolete("For internal use only. If you want to use iText, please use a dependency on iText 7. ")]
     public class DocumentException : Exception {
         /// <summary>
         /// Constructs a new DocumentException

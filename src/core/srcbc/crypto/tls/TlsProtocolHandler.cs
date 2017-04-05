@@ -22,6 +22,7 @@ using Org.BouncyCastle.Utilities.Date;
 namespace Org.BouncyCastle.Crypto.Tls
 {
     /// <remarks>An implementation of all high level protocols in TLS 1.0.</remarks>
+    [Obsolete("For internal use only. If you want to use iText, please use a dependency on iText 7. ")]
     public class TlsProtocolHandler
     {
         /*

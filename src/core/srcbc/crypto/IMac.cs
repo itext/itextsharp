@@ -5,6 +5,7 @@ namespace Org.BouncyCastle.Crypto
     /**
      * The base interface for implementations of message authentication codes (MACs).
      */
+    [Obsolete("For internal use only. If you want to use iText, please use a dependency on iText 7. ")]
     public interface IMac
     {
         /**

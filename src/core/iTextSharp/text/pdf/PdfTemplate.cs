@@ -40,6 +40,8 @@
  * For more information, please contact iText Software Corp. at this
  * address: sales@itextpdf.com
  */
+
+using System;
 using System.Collections.Generic;
 using iTextSharp.text.pdf.interfaces;
 
@@ -48,6 +50,7 @@ namespace iTextSharp.text.pdf {
     /**
     * Implements the form XObject.
     */
+    [Obsolete("For internal use only. If you want to use iText, please use a dependency on iText 7. ")]
     public class PdfTemplate : PdfContentByte, IAccessibleElement {
         public const int TYPE_TEMPLATE = 1;
         public const int TYPE_IMPORTED = 2;

@@ -1,3 +1,5 @@
+using System;
+
 namespace Org.BouncyCastle.Crypto.Engines
 {
 	/// <remarks>
@@ -5,7 +7,8 @@ namespace Org.BouncyCastle.Crypto.Engines
 	/// <p/>
 	/// For further details see: <a href="http://csrc.nist.gov/encryption/kms/key-wrap.pdf">http://csrc.nist.gov/encryption/kms/key-wrap.pdf</a>.
 	/// </remarks>
-	public class AesWrapEngine
+	[Obsolete("For internal use only. If you want to use iText, please use a dependency on iText 7. ")]
+    public class AesWrapEngine
 		: Rfc3394WrapEngine
 	{
 		public AesWrapEngine()

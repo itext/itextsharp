@@ -67,6 +67,7 @@ namespace iTextSharp.text.pdf.richmedia {
      * video commenting. Finally, actions can be linked to video chapter points.
      * @since   5.0.0
      */
+    [Obsolete("For internal use only. If you want to use iText, please use a dependency on iText 7. ")]
     public class RichMediaAnnotation {
         /** The PdfWriter to which the annotation will be added. */
         protected PdfWriter writer;

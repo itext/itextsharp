@@ -62,6 +62,7 @@ namespace iTextSharp.text {
     /// </summary>
     /// <seealso cref="T:iTextSharp.text.Element"/>
     /// <seealso cref="T:iTextSharp.text.Image"/>
+    [Obsolete("For internal use only. If you want to use iText, please use a dependency on iText 7. ")]
     public class ImgCCITT : Image {
         public ImgCCITT(Image image) : base(image) {}
 

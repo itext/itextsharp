@@ -52,6 +52,7 @@ using iTextSharp.text.pdf;
 using iTextSharp.tool.xml;
 
 namespace itextsharp.xmlworker.tests.iTextSharp.tool.xml.examples.css.at_rule {
+    [Obsolete("For internal use only. If you want to use iText, please use a dependency on iText 7. ")]
     public class AtMedia_Rule_IgnoringTest : SampleTest {
 
         protected override String GetTestName() {

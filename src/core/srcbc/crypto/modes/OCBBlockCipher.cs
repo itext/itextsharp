@@ -20,6 +20,7 @@ namespace Org.BouncyCastle.Crypto.Modes
      * This is a non-binding summary of a legal document (the link above). The parameters of the license
      * are specified in the license document and that document is controlling.</p></blockquote>
      */
+    [Obsolete("For internal use only. If you want to use iText, please use a dependency on iText 7. ")]
     public class OcbBlockCipher
         : IAeadBlockCipher
     {

@@ -21,6 +21,7 @@ namespace Org.BouncyCastle.X509
     /// An Object representing an X509 Certificate.
     /// Has static methods for loading Certificates encoded in many forms that return X509Certificate Objects.
     /// </summary>
+    [Obsolete("For internal use only. If you want to use iText, please use a dependency on iText 7. ")]
     public class X509Certificate
 		:	X509ExtensionBase
 //		, PKCS12BagAttributeCarrier

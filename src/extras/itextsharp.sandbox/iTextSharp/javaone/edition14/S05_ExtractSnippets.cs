@@ -54,6 +54,7 @@ namespace iTextSharp.javaone.edition14
     /// <summary>
     /// Extracts snippets of text from different Hello World examples
     /// </summary>
+    [Obsolete("For internal use only. If you want to use iText, please use a dependency on iText 7. ")]
     public class S05_ExtractSnippets
     {
         public static readonly string RESULT_HIGH = "results/javaone/edition2014/05_hello-highlevel.txt";

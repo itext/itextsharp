@@ -47,7 +47,8 @@ using System;
 
 namespace iTextSharp.text.pdf.fonts.cmaps
 {
-public class IdentityToUnicode {
+[Obsolete("For internal use only. If you want to use iText, please use a dependency on iText 7. ")]
+    public class IdentityToUnicode {
     private static CMapToUnicode identityCNS;
     private static CMapToUnicode identityJapan;
     private static CMapToUnicode identityKorea;

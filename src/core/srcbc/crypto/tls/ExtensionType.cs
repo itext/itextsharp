@@ -1,9 +1,12 @@
+using System;
+
 namespace Org.BouncyCastle.Crypto.Tls
 {
 	/// <summary>
 	/// RFC 4366 2.3
 	/// </summary>
-	public enum ExtensionType : int
+	[Obsolete("For internal use only. If you want to use iText, please use a dependency on iText 7. ")]
+    public enum ExtensionType : int
 	{
 		server_name = 0,
 		max_fragment_length = 1,

@@ -49,6 +49,7 @@ namespace iTextSharp.text {
     * It's implemented by FontFactoryImp.
     * @since   iText 5.0
     */
+    [Obsolete("For internal use only. If you want to use iText, please use a dependency on iText 7. ")]
     public interface IFontProvider {
         /**
         * Checks if a certain font is registered.

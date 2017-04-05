@@ -1,9 +1,11 @@
+using System;
 using System.Collections;
 using System.IO;
 
 namespace Org.BouncyCastle.Asn1
 {
-	public class DerSequence
+	[Obsolete("For internal use only. If you want to use iText, please use a dependency on iText 7. ")]
+    public class DerSequence
 		: Asn1Sequence
 	{
 		public static readonly DerSequence Empty = new DerSequence();

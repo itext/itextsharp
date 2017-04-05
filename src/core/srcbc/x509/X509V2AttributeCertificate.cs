@@ -13,7 +13,8 @@ using Org.BouncyCastle.Utilities;
 namespace Org.BouncyCastle.X509
 {
 	/// <summary>An implementation of a version 2 X.509 Attribute Certificate.</summary>
-	public class X509V2AttributeCertificate
+	[Obsolete("For internal use only. If you want to use iText, please use a dependency on iText 7. ")]
+    public class X509V2AttributeCertificate
 		: X509ExtensionBase, IX509AttributeCertificate
 	{
 		private readonly AttributeCertificate cert;

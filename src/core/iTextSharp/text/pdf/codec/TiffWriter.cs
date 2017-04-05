@@ -51,6 +51,7 @@ namespace iTextSharp.text.pdf.codec {
      *
      * @author psoares
      */
+    [Obsolete("For internal use only. If you want to use iText, please use a dependency on iText 7. ")]
     public class TiffWriter {
         private SortedDictionary<int,FieldBase> ifd = new SortedDictionary<int,FieldBase>();
 

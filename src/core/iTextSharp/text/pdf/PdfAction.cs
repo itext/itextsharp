@@ -58,6 +58,7 @@ namespace iTextSharp.text.pdf {
      * @see     PdfDictionary
      */
 
+    [Obsolete("For internal use only. If you want to use iText, please use a dependency on iText 7. ")]
     public class PdfAction : PdfDictionary {
     
         /** A named action to go to the first page.

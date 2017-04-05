@@ -55,7 +55,7 @@ namespace iTextSharp.text.html.simpleparser {
      * @since 5.0.6 (renamed)
      * @deprecated since 5.5.2
      */
-    [Obsolete]
+    [Obsolete("For internal use only. If you want to use iText, please use a dependency on iText 7. ")]
     public interface IImageProcessor {
         /**
          * Allows you to (pre)process the image before (or instead of)

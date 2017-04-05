@@ -48,6 +48,7 @@ using System;
 
 namespace iTextSharp.text.pdf.codec.wmf
 {
+    [Obsolete("For internal use only. If you want to use iText, please use a dependency on iText 7. ")]
     public class MetaObject
     {
         public const int META_NOT_SUPPORTED = 0;

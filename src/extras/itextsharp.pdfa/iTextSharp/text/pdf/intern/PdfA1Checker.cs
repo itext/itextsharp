@@ -50,6 +50,7 @@ using iTextSharp.text.log;
  */
 namespace iTextSharp.text.pdf.intern
 {
+    [Obsolete("For internal use only. If you want to use iText, please use a dependency on iText 7. ")]
     public class PdfA1Checker : PdfAChecker {
     
         public static readonly PdfName setState = new PdfName("SetState");

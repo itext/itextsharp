@@ -23,7 +23,8 @@ namespace Org.BouncyCastle.X509
 	 *         decipherOnly            (8) }
 	 * </pre>
 	 */
-	public class X509KeyUsage
+	[Obsolete("For internal use only. If you want to use iText, please use a dependency on iText 7. ")]
+    public class X509KeyUsage
 		: Asn1Encodable
 	{
 		public const int DigitalSignature = 1 << 7;

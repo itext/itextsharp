@@ -70,6 +70,7 @@ namespace iTextSharp.text.pdf.security {
     * </p>
     * @since	2.1.6
     */
+    [Obsolete("For internal use only. If you want to use iText, please use a dependency on iText 7. ")]
     public class TSAClientBouncyCastle : ITSAClient {
 
         /** The Logger instance. */

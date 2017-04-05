@@ -62,6 +62,7 @@ namespace iTextSharp.text.pdf {
     * @author Paulo Soares, Kevin Day
     */
 
+    [Obsolete("For internal use only. If you want to use iText, please use a dependency on iText 7. ")]
     public class RandomAccessFileOrArray
     {
 

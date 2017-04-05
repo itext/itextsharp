@@ -57,6 +57,7 @@ namespace iTextSharp.text.pdf {
      * page visually on the screen or in print.
      * @author  Paulo Soares
      */
+    [Obsolete("For internal use only. If you want to use iText, please use a dependency on iText 7. ")]
     public class PdfPageLabels {
 
         /** Logical pages will have the form 1,2,3,...

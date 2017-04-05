@@ -48,6 +48,7 @@ using NUnit.Framework;
 
 namespace itextsharp.tests {
     [SetUpFixture]
+    [Obsolete("For internal use only. If you want to use iText, please use a dependency on iText 7. ")]
     public class GlobalSetUp {
         [SetUp]
         public virtual void SetUp() {

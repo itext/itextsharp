@@ -57,6 +57,7 @@ namespace iTextSharp.text.pdf {
     * The CID synthetic creation was written by Sivan Toledo <sivan@math.tau.ac.il> 
     * @author Oren Manor <manorore@post.tau.ac.il> & Ygal Blum <blumygal@post.tau.ac.il>
     */
+    [Obsolete("For internal use only. If you want to use iText, please use a dependency on iText 7. ")]
     public class CFFFontSubset : CFFFont {
         
         /**

@@ -64,6 +64,7 @@ namespace iTextSharp.tool.xml.css.apply {
      * @author itextpdf.com
      *
      */
+    [Obsolete("For internal use only. If you want to use iText, please use a dependency on iText 7. ")]
     public class ListStyleTypeCssApplier : CssApplier<List> {
 
         private CssUtils utils = CssUtils.GetInstance();

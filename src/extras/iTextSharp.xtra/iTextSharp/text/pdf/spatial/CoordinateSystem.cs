@@ -51,6 +51,7 @@ namespace iTextSharp.text.pdf.spatial {
      * Can be a GeographicCoordinateSystem or a ProjectedCoordinateSystem.
      * @since 5.1.0
      */
+    [Obsolete("For internal use only. If you want to use iText, please use a dependency on iText 7. ")]
     public abstract class CoordinateSystem : PdfDictionary {
 
         /**

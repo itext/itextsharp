@@ -44,6 +44,8 @@
  * address: sales@itextpdf.com
  */
 
+using System;
+
 namespace iTextSharp.text {
 
     /**
@@ -51,6 +53,7 @@ namespace iTextSharp.text {
     * depend on the RTF jar. This interface offers a temporary solution
     * until we find a more elegant way to solve this.
     */
+    [Obsolete("For internal use only. If you want to use iText, please use a dependency on iText 7. ")]
     public interface IRtfElementInterface {
     }
 }

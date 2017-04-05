@@ -2,7 +2,8 @@ using System;
 
 namespace Org.BouncyCastle.Asn1.Cms
 {
-	public class TimeStampedData
+	[Obsolete("For internal use only. If you want to use iText, please use a dependency on iText 7. ")]
+    public class TimeStampedData
 		: Asn1Encodable
 	{
 		private DerInteger version;

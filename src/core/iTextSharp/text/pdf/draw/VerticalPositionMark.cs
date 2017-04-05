@@ -58,6 +58,7 @@ namespace iTextSharp.text.pdf.draw {
     * @since   2.1.2
     */
 
+    [Obsolete("For internal use only. If you want to use iText, please use a dependency on iText 7. ")]
     public class VerticalPositionMark : IDrawInterface, IElement {
 
         /** Another implementation of the DrawInterface; its draw method will overrule LineSeparator.Draw(). */
