@@ -43,6 +43,8 @@
  * address: sales@itextpdf.com
  */
 
+using System;
+
 namespace itextsharp.xmlworker.tests.iTextSharp.tool.xml.examples.css.padding.padding_right.list {
     [Obsolete("For internal use only. If you want to use iText, please use a dependency on iText 7. ")]
     public class Padding_right_list01 : SampleTest {

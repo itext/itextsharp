@@ -10,12 +10,13 @@
     <AppDesignerFolder>Properties</AppDesignerFolder>
     <RootNamespace>itextsharp.tests</RootNamespace>
     <AssemblyName>itextsharp.tests</AssemblyName>
-    <TargetFrameworkVersion>v2.0</TargetFrameworkVersion>
+    <TargetFrameworkVersion>v4.0</TargetFrameworkVersion>
     <FileUpgradeFlags>
     </FileUpgradeFlags>
     <UpgradeBackupLocation>
     </UpgradeBackupLocation>
     <OldToolsVersion>2.0</OldToolsVersion>
+    <TargetFrameworkProfile />
   </PropertyGroup>
   <PropertyGroup Condition=" '$(Configuration)|$(Platform)' == 'Debug|AnyCPU' ">
     <DebugSymbols>true</DebugSymbols>
@@ -68,8 +69,8 @@
     <Reference Include="System" />
     <Reference Include="System.Security" />
     <Reference Include="System.Xml" />
-    <Reference Include="XmlDiffPatch, Version=1.0.8.28, Culture=neutral, PublicKeyToken=b03f5f7f11d50a3a" >
-        <HintPath>lib\XmlDiffPatch.dll</HintPath>
+    <Reference Include="XmlDiffPatch, Version=1.0.8.28, Culture=neutral, PublicKeyToken=b03f5f7f11d50a3a">
+      <HintPath>lib\XmlDiffPatch.dll</HintPath>
     </Reference>
   </ItemGroup>
   <ItemGroup Condition=" '$(Configuration)|$(Platform)' == 'Debug|AnyCPU' Or '$(Configuration)|$(Platform)' == 'Release|AnyCPU' ">
@@ -103,7 +104,7 @@
     <Compile Include="iTextSharp\text\pdf\fonts\FontEmbeddingTest.cs" />
     <Compile Include="iTextSharp\text\pdf\fonts\FontFamilyTest.cs" />
     <Compile Include="iTextSharp\text\pdf\fonts\SymbolTest.cs" />
-	<Compile Include="iTextSharp\text\pdf\fonts\EncodingTest.cs" />
+    <Compile Include="iTextSharp\text\pdf\fonts\EncodingTest.cs" />
     <Compile Include="iTextSharp\text\pdf\IndicLigatures.cs" />
     <Compile Include="iTextSharp\text\pdf\mc\AcroFieldsFlattenTest.cs" />
     <Compile Include="iTextSharp\text\pdf\MetaDataTest.cs" />
@@ -422,7 +423,7 @@
     <Content Include="resources\text\pdf\TaggedPdfCopyTest\pdf\source53.pdf" />
   </ItemGroup>
   <ItemGroup>
-    <ProjectReference Include="..\..\core\itextsharp%28VS2010%29.csproj">
+    <ProjectReference Include="..\..\core\xfaitextsharp%28VS2010%29.csproj">
       <Project>{84C4FDD9-3ED7-453B-B9DA-B3ED52CB071C}</Project>
       <Name>itextsharp%28VS2010%29</Name>
     </ProjectReference>

@@ -43,6 +43,7 @@
  * address: sales@itextpdf.com
  */
 
+using System;
 using iTextSharp.text.error_messages;
 using NUnit.Framework;
 
