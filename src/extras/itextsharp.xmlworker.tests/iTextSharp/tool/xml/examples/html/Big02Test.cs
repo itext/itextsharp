@@ -40,6 +40,8 @@
     For more information, please contact iText Software Corp. at this
     address: sales@itextpdf.com
  */
+using System;
+ 
 namespace itextsharp.xmlworker.tests.iTextSharp.tool.xml.examples.html {
     [Obsolete("For internal use only. If you want to use iText, please use a dependency on iText 7. ")]
     public class Big02Test : SampleTest {

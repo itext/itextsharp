@@ -40,6 +40,9 @@
     For more information, please contact iText Software Corp. at this
     address: sales@itextpdf.com
  */
+
+using System;
+
 namespace iTextSharp.text.pdf.mc {
 
     /**
