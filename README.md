@@ -24,7 +24,7 @@ iText is licensed as [AGPL][agpl] software.
 
 AGPL is a free / open source software license.
 
-This doesn't mean the software is gratis!
+This doesn't mean the software is free to use!
 
 Buying a license is mandatory as soon as you develop commercial activities
 distributing the iText software inside your product or deploying it on a network
