@@ -903,6 +903,8 @@ namespace iTextSharp.text.pdf {
                         if (as_n == null)
                             as_n = appDic.GetAsDict(PdfName.N);
                     }
+                    //The rotation can be already applied if the appearance stream was written to document during setField method
+                    bool applyRotation = false;
                     if (acroFields.GenerateAppearances) {
                         if (appDic == null || as_n == null) {
                             try {
@@ -917,6 +919,7 @@ namespace iTextSharp.text.pdf {
                             PdfArray bbox = stream.GetAsArray(PdfName.BBOX);
                             PdfArray rect = merged.GetAsArray(PdfName.RECT);
                             if (bbox != null && rect != null) {
+                                applyRotation = true;
                                 float rectWidth = rect.GetAsNumber(2).FloatValue - rect.GetAsNumber(0).FloatValue;
                                 float bboxWidth = bbox.GetAsNumber(2).FloatValue - bbox.GetAsNumber(0).FloatValue;
                                 float rectHeight = rect.GetAsNumber(3).FloatValue - rect.GetAsNumber(1).FloatValue;
@@ -1002,27 +1005,28 @@ namespace iTextSharp.text.pdf {
                         if (app != null) {
                             Rectangle box = PdfReader.GetNormalizedRectangle(merged.GetAsArray(PdfName.RECT));
                             PdfContentByte cb = GetOverContent(page);
-
                             cb.SetLiteral("Q ");
-                            /*
-                             * Apply field rotation
-                             */
-                            AffineTransform tf = new AffineTransform();
-                            double fieldRotation = 0;
-                            if (merged.GetAsDict(PdfName.MK) != null)
-                            {
-                                if (merged.GetAsDict(PdfName.MK).Get(PdfName.R) != null)
-                                {
-                                    fieldRotation = merged.GetAsDict(PdfName.MK).GetAsNumber(PdfName.R).DoubleValue;
+                            if (applyRotation) {
+                                /*
+                                 * Apply field rotation
+                                 */
+                                AffineTransform tf = new AffineTransform();
+                                double fieldRotation = 0;
+                                if (merged.GetAsDict(PdfName.MK) != null) {
+                                    if (merged.GetAsDict(PdfName.MK).Get(PdfName.R) != null) {
+                                        fieldRotation = merged.GetAsDict(PdfName.MK).GetAsNumber(PdfName.R).DoubleValue;
+                                    }
                                 }
+                                //Cast to radians
+                                fieldRotation = fieldRotation*Math.PI/180;
+                                //Clamp to [-2*Pi, 2*Pi]
+                                fieldRotation = fieldRotation%(2*Math.PI);
+                                //Calculate transformation matrix
+                                tf = CalculateTemplateTransformationMatrix(tf, fieldRotation, box);
+                                cb.AddTemplate(app, tf);
+                            } else {
+                                cb.AddTemplate(app, box.Left, box.Bottom);  
                             }
-                            //Cast to radians
-                            fieldRotation = fieldRotation * Math.PI / 180;
-                            //Clamp to [-2*Pi, 2*Pi]
-                            fieldRotation = fieldRotation % (2 * Math.PI);
-                            //Calculate transformation matrix
-                            tf = CalculateTemplateTransformationMatrix(tf, fieldRotation, box);
-                            cb.AddTemplate(app, tf);
                             cb.SetLiteral("q ");
                         }
                     }
