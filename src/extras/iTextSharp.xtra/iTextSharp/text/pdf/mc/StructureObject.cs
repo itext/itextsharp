@@ -40,6 +40,7 @@
     For more information, please contact iText Software Corp. at this
     address: sales@itextpdf.com
  */
+using iTextSharp.text.exceptions;
 using System;
 
 namespace iTextSharp.text.pdf.mc
@@ -68,7 +69,10 @@ namespace iTextSharp.text.pdf.mc
             this.refa = refa;
             this.obj = dict.GetDirectObject(PdfName.OBJ);
             this.objref = dict.GetAsIndirectObject(PdfName.OBJ);
-            this.structParent = ((PdfDictionary) obj).GetAsNumber(PdfName.STRUCTPARENT).IntValue;
+            PdfNumber sp = ((PdfDictionary)obj).GetAsNumber(PdfName.STRUCTPARENT);
+            if (sp == null)
+                throw new InvalidPdfException("structparentid.not.found");
+            this.structParent = sp.IntValue;
             PdfIndirectReference pg = dict.GetAsIndirectObject(PdfName.PG);
             if (pg == null)
                 pg = structElem.GetAsIndirectObject(PdfName.PG);
