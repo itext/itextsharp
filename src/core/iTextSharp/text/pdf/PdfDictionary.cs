@@ -221,6 +221,9 @@ namespace iTextSharp.text.pdf {
          * @return        the previous </CODE>PdfObject</CODE> corresponding with the <VAR>key</VAR>
          */
         virtual public PdfObject Get(PdfName key) {
+            if (key == null)
+              return null;
+
             PdfObject obj;
             if (hashMap.TryGetValue(key, out obj))
                 return obj;
@@ -320,7 +323,7 @@ namespace iTextSharp.text.pdf {
         }
     
         virtual public bool Contains(PdfName key) {
-            return hashMap.ContainsKey(key);
+            return key != null && hashMap.ContainsKey(key);
         }
 
         public virtual Dictionary<PdfName,PdfObject>.Enumerator GetEnumerator() {
