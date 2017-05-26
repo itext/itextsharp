@@ -71,6 +71,7 @@ namespace iTextSharp.tool.xml.parser.state
         public override void Process(char character)
         {
             String tag = parser.BufferToString();
+            this.parser.Memory().ProcessingInstruction().Append(character);
             if (name == null && Char.IsWhiteSpace(character)) {
                 if (Char.IsWhiteSpace(character))
                 {

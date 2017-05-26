@@ -58,6 +58,7 @@ namespace iTextSharp.tool.xml.parser {
         private StringBuilder currentEntity = new StringBuilder();
         private StringBuilder comment = new StringBuilder();
         private StringBuilder baos = new StringBuilder();
+        private StringBuilder processingInstruction = new StringBuilder();
         private IDictionary<String, String> attr;
         private String wsTag = "";
         private String currentNameSpace = "";
@@ -98,6 +99,7 @@ namespace iTextSharp.tool.xml.parser {
         virtual public bool HasCurrentAttribute() {
             return null != this.currentAttr;
         }
+        
         /**
          * Sets the current attribute value and adds the attribute (if it's not
          * null) to the attribute map.
@@ -155,6 +157,14 @@ namespace iTextSharp.tool.xml.parser {
          */
         virtual public StringBuilder Comment() {
             return this.comment;
+        }
+
+        /**
+         * Returns the xml processing instruction buffer
+         * @return processing instruction buffer
+         */
+        virtual public StringBuilder ProcessingInstruction() {
+            return processingInstruction;
         }
 
         /**

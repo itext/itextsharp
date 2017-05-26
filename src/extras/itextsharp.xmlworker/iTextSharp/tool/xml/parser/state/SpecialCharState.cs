@@ -58,7 +58,7 @@ namespace iTextSharp.tool.xml.parser.state {
          * @param parser the XMLParser
          */
         public SpecialCharState(XMLParser parser) {
-            this.parser =parser;
+            this.parser = parser;
         }
 
         /* (non-Javadoc)
@@ -70,7 +70,7 @@ namespace iTextSharp.tool.xml.parser.state {
     //          if ("nbsp".Equals(entity.ToString())) {
     //              parser.Append(' '); // TODO check yes or no if it's good idea to transform &nbsp into a space ?
     //          } else {
-                    char decoded = EntitiesToUnicode.DecodeEntity(entity.ToString());
+                    char decoded = parser.IsDecodeSpecialChars() ? EntitiesToUnicode.DecodeEntity(entity.ToString()) : (char)0;
                     if (decoded == '\0') {
                         parser.Append('&').Append(entity.ToString()).Append(';');
                         parser.Memory().LastChar = ';';

@@ -65,6 +65,7 @@ namespace iTextSharp.tool.xml.parser {
         private string text = null;
         private TagState tagState;
         private Encoding charset;
+        private bool decodeSpecialChars = true;
 
         /**
          * Constructs a default XMLParser ready for HTML/XHTML processing.
@@ -343,9 +344,14 @@ namespace iTextSharp.tool.xml.parser {
          */
         virtual public void StartElement() {
             CurrentTagState(TagState.OPEN);
+            String tagName = this.memory.GetCurrentTag();
+            IDictionary<String, String> attributes = this.memory.GetAttributes();
+            if (tagName.StartsWith("?")) {
+                Memory().ProcessingInstruction().Length = 0;
+            }
             CallText();
             foreach (IXMLParserListener l in listeners) {
-                l.StartElement(this.memory.GetCurrentTag(), this.memory.GetAttributes(), this.memory.GetNameSpace());
+                l.StartElement(tagName, attributes, this.memory.GetNameSpace());
             }
             this.memory.FlushNameSpace();
         }
@@ -432,6 +438,19 @@ namespace iTextSharp.tool.xml.parser {
         virtual public void SetMonitor(IParserMonitor monitor) {
             this.monitor = monitor;
         }
+
+        /**
+         * Determines whether special chars like &gt; will be decoded
+         * @param decodeSpecialChars true to decode, false to not decode
+         */
+        virtual public void SetDecodeSpecialChars(bool decodeSpecialChars) {
+            this.decodeSpecialChars = decodeSpecialChars;
+        }
+
+        virtual public bool IsDecodeSpecialChars() {
+            return decodeSpecialChars;
+        }
+        
         /**
          * @return the current buffer as a String
          */
