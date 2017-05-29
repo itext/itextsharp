@@ -98,7 +98,7 @@ namespace iTextSharp.text {
                 version = new Version();
                 lock (version) {
                     try {
-                        Type type = Type.GetType("iTextSharp.license.XfaLicenseKey, itextsharp.XfaLicenseKey");
+                        Type type = Type.GetType("iText.License.LicenseKey, itext.licensekey");
                         MethodInfo m = type.GetMethod("GetLicenseeInfo");
                         String[] info = (String[]) m.Invoke(Activator.CreateInstance(type), null);
                         if (info[3] != null && info[3].Trim().Length > 0) {
