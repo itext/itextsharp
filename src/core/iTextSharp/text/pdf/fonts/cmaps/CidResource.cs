@@ -55,7 +55,7 @@ namespace iTextSharp.text.pdf.fonts.cmaps {
     public class CidResource : ICidLocation{
 
         public virtual PRTokeniser GetLocation(String location) {
-            String fullName = BaseFont.RESOURCE_PATH + "cmaps." + location;
+            String fullName = BaseFont.ITEXT_7_RESOURCE_PATH + "Cmap." + location;
             Stream inp = StreamUtil.GetResourceStream(fullName);
             if (inp == null)
                 throw new IOException(MessageLocalization.GetComposedMessage("the.cmap.1.was.not.found", fullName));

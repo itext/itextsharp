@@ -37,8 +37,8 @@ namespace iTextSharp.text.pdf.hyphenation {
         private HyphenationTree hyphenTree = null;
         private int remainCharCount = 2;
         private int pushCharCount = 2;
-        private const String defaultHyphLocation = "iTextSharp.text.pdf.hyphenation.hyph.";
-       
+        private const String defaultHyphLocation = "iText.Hyph.";
+
         /**
         * @param lang
         * @param country

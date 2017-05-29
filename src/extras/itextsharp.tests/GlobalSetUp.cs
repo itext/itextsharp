@@ -50,7 +50,7 @@ namespace itextsharp.tests {
     public class GlobalSetUp {
         [SetUp]
         public virtual void SetUp() {
-            StreamUtil.AddToResourceSearch(@"iTextAsian.dll");
+            StreamUtil.AddToResourceSearch(@"itext.font_asian.dll");
         }
     }
 }

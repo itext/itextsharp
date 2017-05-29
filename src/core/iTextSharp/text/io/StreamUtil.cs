@@ -62,6 +62,11 @@ namespace iTextSharp.text.io {
          * @throws IOException if there is a problem reading from the input stream
          */
 
+        static StreamUtil() {
+            StreamUtil.AddToResourceSearch("itext.font_asian.dll");
+            StreamUtil.AddToResourceSearch("itext.hyph.dll");
+        }
+
         public static byte[] InputStreamToArray(Stream inp) {
             byte[] b = new byte[8192];
             MemoryStream outp = new MemoryStream();

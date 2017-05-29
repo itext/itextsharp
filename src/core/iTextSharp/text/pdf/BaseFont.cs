@@ -245,7 +245,9 @@ namespace iTextSharp.text.pdf {
     
         /** The path to the font resources. */    
         public const string RESOURCE_PATH = "iTextSharp.text.pdf.fonts.";
-        /** The fake CID code that represents a newline. */    
+        /** The itext7 fonts-asian path to the font resources. */
+        public const string ITEXT_7_RESOURCE_PATH = "iText.IO.Font.";
+        /** The fake CID code that represents a newline. */
         public const char CID_NEWLINE = '\u7fff';
 
        	/**
