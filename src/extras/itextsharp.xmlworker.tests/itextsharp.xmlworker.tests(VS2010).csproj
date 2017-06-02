@@ -1523,11 +1523,11 @@
   <ItemGroup>
     <ProjectReference Include="..\..\core\xfaitextsharp%28VS2010%29.csproj">
       <Project>{84C4FDD9-3ED7-453B-B9DA-B3ED52CB071C}</Project>
-      <Name>itextsharp%28VS2010%29</Name>
+      <Name>xfaitextsharp%28VS2010%29</Name>
     </ProjectReference>
-    <ProjectReference Include="..\itextsharp.xmlworker\itextsharp.xmlworker%28VS2010%29.csproj">
+    <ProjectReference Include="..\itextsharp.xmlworker\xfaitextsharp.xmlworker%28VS2010%29.csproj">
       <Project>{96647204-4A3E-41D7-BC74-B1608D6D1857}</Project>
-      <Name>itextsharp.xmlworker%28VS2010%29</Name>
+      <Name>xfaitextsharp.xmlworker%28VS2010%29</Name>
     </ProjectReference>
   </ItemGroup>
   <ItemGroup>

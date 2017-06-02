@@ -2,11 +2,11 @@ using System.Reflection;
 using System.Runtime.CompilerServices;
 using System.Runtime.InteropServices;
 
-[assembly: AssemblyTitle("iTextSharp XML Worker")]
+[assembly: AssemblyTitle("Xfa-iTextSharp XML Worker")]
 [assembly: AssemblyDescription("Parses XML to PDF, with CSS support, using iTextSharp")]
 [assembly: AssemblyConfiguration("")]
 [assembly: AssemblyCompany("iText Group NV")]
-[assembly: AssemblyProduct("itextsharp.xmlworker")]
+[assembly: AssemblyProduct("xfa-itextsharp.xmlworker")]
 [assembly: AssemblyCopyright("Copyright (C) 1999-2017 by iText Group NV")]
 [assembly: AssemblyTrademark("")]
 [assembly: AssemblyCulture("")]
