@@ -67,13 +67,13 @@ namespace iTextSharp.text {
 	     * iText is a registered trademark by iText Group NV.
 	     * Please don't change this constant.
 	     */
-	    static private String iText = "iTextSharp\u2122 pdfXfa";
+	    static private String iText = "iText\u2122 pdfXFA";
     	
 	    /**
 	     * This String contains the version number of this iText release.
 	     * For debugging purposes, we request you NOT to change this constant.
 	     */
-        static private String release = "5.5.12-SNAPSHOT";
+        static private String release = "1.0.1-SNAPSHOT";
 
 	    /**
 	     * This String contains the iText version as shown in the producer line.
