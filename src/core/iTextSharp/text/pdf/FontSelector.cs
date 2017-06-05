@@ -45,6 +45,7 @@ using System.Collections.Generic;
 using System.Globalization;
 using System.Text;
 using iTextSharp.text.error_messages;
+using iTextSharp.text.log;
 
 namespace iTextSharp.text.pdf {
     /** Selects the appropriate fonts that contain the glyphs needed to
@@ -56,8 +57,11 @@ namespace iTextSharp.text.pdf {
     * @author Paulo Soares
     */
     public class FontSelector {
+
+        private static readonly ILogger LOGGER = LoggerFactory.GetLogger(typeof(PdfSmartCopy));
         
         protected List<Font> fonts = new List<Font>();
+        protected List<Font> unsupportedFonts = new List<Font>();
         protected Font currentFont = null;
 
         /**
@@ -65,6 +69,10 @@ namespace iTextSharp.text.pdf {
         * @param font the <CODE>Font</CODE>
         */    
         virtual public void AddFont(Font font) {
+            if (!IsSupported(font)) {
+                unsupportedFonts.Add(font);
+                return;
+            }
             if (font.BaseFont != null) {
                 fonts.Add(font);
                 return;
@@ -81,7 +89,7 @@ namespace iTextSharp.text.pdf {
         * @return a <CODE>Phrase</CODE> with one or more chunks
         */
         public virtual Phrase Process(String text) {
-            if (fonts.Count == 0)
+            if (GetSize() == 0)
                 throw new ArgumentOutOfRangeException(MessageLocalization.GetComposedMessage("no.font.is.defined"));
             char[] cc = text.ToCharArray();
             int len = cc.Length;
@@ -95,7 +103,7 @@ namespace iTextSharp.text.pdf {
                 }
             }
             if (sb.Length > 0) {
-                Chunk ck = new Chunk(sb.ToString(), currentFont ?? fonts[0]);
+                Chunk ck = new Chunk(sb.ToString(), currentFont ?? GetFont(0));
                 ret.Add(ck);
             }
             return ret;
@@ -111,8 +119,8 @@ namespace iTextSharp.text.pdf {
                 Font font = null;
                 if(Utilities.IsSurrogatePair(cc, k)) {
                     int u = Utilities.ConvertToUtf32(cc, k);
-                    for(int f = 0; f < fonts.Count; ++f) {
-                        font = fonts[f];
+                    for(int f = 0; f < GetSize(); ++f) {
+                        font = GetFont(f);
                         if (font.BaseFont.CharExists(u) ||
                             CharUnicodeInfo.GetUnicodeCategory(char.ConvertFromUtf32(u), 0) == UnicodeCategory.Format) {
                             if (currentFont != font) {
@@ -129,8 +137,8 @@ namespace iTextSharp.text.pdf {
                     }
                 }
                 else {
-                    for(int f = 0; f < fonts.Count; ++f) {
-                        font = fonts[f];
+                    for(int f = 0; f < GetSize(); ++f) {
+                        font = GetFont(f);
                         if(font.BaseFont.CharExists(c) || char.GetUnicodeCategory(c) == UnicodeCategory.Format) {
                             if(currentFont != font) {
                                 if(sb.Length > 0 && currentFont != null) {
@@ -146,6 +154,23 @@ namespace iTextSharp.text.pdf {
                 }
             }
             return newChunk;
+        }
+
+        protected int GetSize() {
+            return fonts.Count + unsupportedFonts.Count;
+        }
+
+        protected Font GetFont(int i) {
+            return i < fonts.Count ? fonts[i] : unsupportedFonts[i];
+        }
+
+        private bool IsSupported(Font font) {
+            BaseFont bf = font.BaseFont;
+            if (bf is TrueTypeFont && BaseFont.WINANSI.Equals(bf.Encoding) && !((TrueTypeFont)bf).IsWinAnsiSupported()) {
+                LOGGER.Warn(String.Format("cmap(1, 0) not found for TrueType Font {0}, it is required for WinAnsi encoding.", font));
+                return false;
+            }
+            return true;
         }
     }
 }

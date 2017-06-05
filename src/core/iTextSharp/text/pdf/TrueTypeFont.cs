@@ -1636,6 +1636,15 @@ namespace iTextSharp.text.pdf {
             return bboxes[metric[0]];
         }
 
+        /**
+         * Checks whether this font may be used with winansi encoding.
+         *
+         * @return <CODE>true</CODE> if the font can be correctly used with winansi encodings
+         */
+        internal bool IsWinAnsiSupported() {
+            return cmap10 != null;
+        }
+
         public int MaxGlyphId {
             get { return maxGlyphId; }
         }
