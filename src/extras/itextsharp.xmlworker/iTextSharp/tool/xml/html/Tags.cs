@@ -75,6 +75,8 @@ namespace iTextSharp.tool.xml.html {
             factory.AddProcessor(HTML.Tag.DIV, defaultpackage + "Div");
             factory.AddProcessor(HTML.Tag.A, defaultpackage + "Anchor");
             factory.AddProcessor(HTML.Tag.TABLE, defaultpackage + "table.Table");
+            factory.AddProcessor(HTML.Tag.THEAD, dummyTagProcessor);
+            factory.AddProcessor(HTML.Tag.TFOOT, dummyTagProcessor);
             factory.AddProcessor(HTML.Tag.TR, defaultpackage + "table.TableRow");
             factory.AddProcessor(HTML.Tag.TD, defaultpackage + "table.TableData");
             factory.AddProcessor(HTML.Tag.TH, defaultpackage + "table.TableData");
