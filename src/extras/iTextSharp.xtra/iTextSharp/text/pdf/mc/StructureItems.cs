@@ -104,7 +104,9 @@ namespace iTextSharp.text.pdf.mc {
          */
 
         protected virtual void ProcessStructElems(PdfDictionary structElem, PdfIndirectReference refa) {
-            LOGGER.Info(String.Format("addStructureItems({0}, {1})", structElem, refa));
+            if (LOGGER.IsLogging(Level.INFO)) {
+                LOGGER.Info(String.Format("addStructureItems({0}, {1})", structElem, refa));
+            }
             if (structElem == null)
                 return;
             ProcessStructElemKids(structElem, refa, structElem.GetDirectObject(PdfName.K));
@@ -120,7 +122,9 @@ namespace iTextSharp.text.pdf.mc {
          */
 
         protected virtual void ProcessStructElemKids(PdfDictionary structElem, PdfIndirectReference refa, PdfObject objecta) {
-            LOGGER.Info(String.Format("addStructureItem({0}, {1}, {2})", structElem, refa, objecta));
+            if (LOGGER.IsLogging(Level.INFO)) {
+                LOGGER.Info(String.Format("addStructureItem({0}, {1}, {2})", structElem, refa, objecta));
+            }
             if (objecta == null)
                 return;
             StructureItem item;

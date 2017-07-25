@@ -88,7 +88,10 @@ namespace iTextSharp.text.pdf.security {
 		    signatureName = names[names.Count - 1];
 		    signDate = DateTime.Now;
 		    pkcs7 = CoversWholeDocument();
-		    LOGGER.Info(String.Format("Checking {0}signature {1}", pkcs7.IsTsp ? "document-level timestamp " : "", signatureName));
+	        if (LOGGER.IsLogging(Level.INFO)) {
+	            LOGGER.Info(String.Format("Checking {0}signature {1}", pkcs7.IsTsp ? "document-level timestamp " : "",
+	                signatureName));
+	        }
 	    }
     	
 	    /**
@@ -265,7 +268,10 @@ namespace iTextSharp.text.pdf.security {
 			    names = fields.GetSignatureNames();
 			    signatureName = names[names.Count - 1];
 			    pkcs7 = CoversWholeDocument();
-			    LOGGER.Info(String.Format("Checking {0}signature {1}", pkcs7.IsTsp ? "document-level timestamp " : "", signatureName));
+		        if (LOGGER.IsLogging(Level.INFO)) {
+		            LOGGER.Info(String.Format("Checking {0}signature {1}", pkcs7.IsTsp ? "document-level timestamp " : "",
+		                signatureName));
+		        }
 		    }
 		    else {
 			    LOGGER.Info("No signatures in revision");

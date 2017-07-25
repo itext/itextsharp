@@ -154,7 +154,9 @@ namespace iTextSharp.text.pdf.security {
                 else
                     nextUpdateDate = nextUpdate.Value;
                 if (signDate > nextUpdateDate) {
-                    LOGGER.Info(String.Format("OCSP no longer valid: {0} after {1}", signDate, nextUpdateDate));
+                    if (LOGGER.IsLogging(Level.INFO)) {
+                        LOGGER.Info(String.Format("OCSP no longer valid: {0} after {1}", signDate, nextUpdateDate));
+                    }
                     continue;
                 }
 			    // check the status of the certificate
