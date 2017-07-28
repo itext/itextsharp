@@ -86,8 +86,11 @@ namespace iTextSharp.text.xml.xmp {
             bout.Write(bytes, 0, bytes.Length);
             bout.Seek(0, SeekOrigin.Begin);
             XmlTextReader xtr = new XmlTextReader(bout);
+	        xtr.XmlResolver = null;
+	        xtr.ProhibitDtd = false;
             domDocument = new XmlDocument();
             domDocument.PreserveWhitespace = true;
+	        domDocument.XmlResolver = null;
             domDocument.Load(xtr);
 	    }
     	
