@@ -65,6 +65,7 @@ namespace itextsharp.xmlworker.tests.iTextSharp.tool.xml {
             list.Add("3353957.html");
             list.Add("ol-test.html");
             list.Add("processing-instructions.html");
+            list.Add("starcomments.html");
 
             Directory.CreateDirectory(TARGET + "bugs/");
         }
