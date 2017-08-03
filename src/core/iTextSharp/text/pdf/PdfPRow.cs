@@ -649,7 +649,10 @@ namespace iTextSharp.text.pdf {
         * an empty row would result
         */
         virtual public PdfPRow SplitRow(PdfPTable table, int rowIndex, float new_height) {
-            LOGGER.Info("Splitting " + rowIndex + " " + new_height);
+            if (LOGGER.IsLogging(Level.INFO))
+            {
+                LOGGER.Info(String.Format("Splitting row {0} available height: {1}", rowIndex, new_height));
+            }
             // second part of the row
             PdfPCell[] newCells = new PdfPCell[cells.Length];
             float[] calHs = new float[cells.Length];
