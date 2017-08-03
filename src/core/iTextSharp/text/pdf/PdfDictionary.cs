@@ -44,6 +44,7 @@ using System;
 using System.IO;
 using System.Collections.Generic;
 using iTextSharp.text.pdf.intern;
+using iTextSharp.text.error_messages;
 
 namespace iTextSharp.text.pdf {
     /**
@@ -154,6 +155,8 @@ namespace iTextSharp.text.pdf {
          * @param        value    value of the entry (a <CODE>PdfObject</CODE>)
          */
         virtual public void Put(PdfName key, PdfObject value) {
+            if (key == null)
+                throw new ArgumentNullException(MessageLocalization.GetComposedMessage("key.is.null"));
             if (value == null || value.IsNull())
                 hashMap.Remove(key);
             else
@@ -168,6 +171,8 @@ namespace iTextSharp.text.pdf {
          * @param        value    value of the entry (a <CODE>PdfObject</CODE>)
          */
         virtual public void PutEx(PdfName key, PdfObject value) {
+            if (key == null)
+                throw new ArgumentNullException(MessageLocalization.GetComposedMessage("key.is.null"));
             if (value == null)
                 return;
             Put(key, value);
@@ -202,7 +207,8 @@ namespace iTextSharp.text.pdf {
          * @param        key        key of the entry (a <CODE>PdfName</CODE>)
          */
         virtual public void Remove(PdfName key) {
-            hashMap.Remove(key);
+            if (key != null)
+                hashMap.Remove(key);
         }
     
         /**

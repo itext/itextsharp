@@ -67,5 +67,37 @@ namespace itextsharp.tests.iTextSharp.text.pdf
 
             Assert.False(contained);
         }
+
+        [Test]
+        public void PdfDictionaryRemoveDoesNothingIfKeyIsNull()
+        {
+            PdfDictionary dictionary = new PdfDictionary();
+
+            dictionary.Remove(null);
+        }
+
+        [Test]
+        public void PdfDictionaryPutThrowsExceptionIfKeyIsNull()
+        {
+            PdfDictionary dictionary = new PdfDictionary();
+
+            ArgumentNullException ex = Assert.Throws<ArgumentNullException>(delegate {
+                dictionary.Put(null, new PdfName("null"));
+            });
+
+            Assert.AreEqual(ex.ParamName, "key is null.");
+        }
+
+        [Test]
+        public void PdfDictionaryPutExThrowsExceptionIfKeyIsNull()
+        {
+            PdfDictionary dictionary = new PdfDictionary();
+
+            ArgumentNullException ex = Assert.Throws<ArgumentNullException>(delegate {
+                dictionary.PutEx(null, new PdfName("null"));
+            });
+
+            Assert.AreEqual(ex.ParamName, "key is null.");
+        }
     }
 }
