@@ -160,8 +160,6 @@ namespace iTextSharp.xtra.iTextSharp.text.pdf.pdfcleanup {
                         disableOutput = true;
                     }
                 }
-            } else if (lineStyleOperators.Contains(operatorStr)) {
-                disableOutput = true;
             } else if (textShowingOperators.Contains(operatorStr) && !AllChunksAreVisible(cleanUpStrategy.Chunks)) {
                 disableOutput = true;
 
