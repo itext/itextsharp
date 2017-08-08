@@ -439,16 +439,19 @@ namespace iTextSharp.tool.xml.css {
          */
         virtual public void AddCss(String content, bool isPersistent) {
             CssFileProcessor proc = new CssFileProcessor();
-            IFileRetrieve retrieve = new FileRetrieveImpl();
             try {
-                retrieve.ProcessFromStream(new MemoryStream(Encoding.GetEncoding(1252).GetBytes(content)), proc);
+                if (content != null) {
+                    foreach (char item in content) {
+                        proc.Process(item);
+                    }
+                }
+
                 ICssFile css = proc.GetCss();
                 css.IsPersistent(isPersistent);
                 this.cssFiles.Add(css);
             } catch (IOException e) {
                 throw new CssResolverException(e);
             }
-
         }
 
         /**
