@@ -87,6 +87,12 @@ namespace iTextSharp.text.pdf {
         /**
         * X21 encodation.
         */
+        public const int DM_X12 = 5;
+        /**
+         * X12 encodation.
+         *
+         * @deprecated Use {@link BarcodeDataMatrix#DM_X12} instead.
+         */
         public const int DM_X21 = 5;
         /**
         * EDIFACT encodation.
@@ -105,6 +111,28 @@ namespace iTextSharp.text.pdf {
         * Doesn't generate the image but returns all the other information.
         */
         public const int DM_TEST = 64;
+
+        private const byte LATCH_B256 = (byte)231;
+
+        private const byte LATCH_EDIFACT = (byte)240;
+
+        private const byte LATCH_X12 = (byte)238;
+
+        private const byte LATCH_TEXT = (byte)239;
+
+        private const byte LATCH_C40 = (byte)230;
+
+        private const byte UNLATCH = (byte)254;
+
+        private const byte EXTENDED_ASCII = (byte)235;
+
+        private const byte PADDING = (byte)129;
+
+        private string encoding;
+
+        public const String DEFAULT_DATA_MATRIX_ENCODING = "iso-8859-1";
+
+
 
         private static readonly DmParams[] dmSizes = {
             new DmParams(10, 10, 10, 10, 3, 3, 5),
@@ -138,7 +166,7 @@ namespace iTextSharp.text.pdf {
             new DmParams(132, 132, 22, 22, 1304, 163, 62),
             new DmParams(144, 144, 24, 24, 1558, 156, 62)};
 
-        private const String x12 = "\r*> 0123456789ABCDEFGHIJKLMNOPQRSTUVWXYZ";
+        private const String X12 = "\r*> 0123456789ABCDEFGHIJKLMNOPQRSTUVWXYZ";
         private int extOut;
         private short[] place;
         private byte[] image;
@@ -148,12 +176,27 @@ namespace iTextSharp.text.pdf {
         private int options;
         private bool forceSquareSize = false;
 
+        // value f[i][j] is the optimal amount of bytes required to encode substring(0, j)
+        private static int[][] f;
+        // switchMode[i][j] = k means that when encoding j-th symbol with mode = i + 1,
+        // we have to encode the previous symbol with mode = k in order to get optimal f[i][j] value
+        private static int[][] switchMode;
+
         /**
         * Creates an instance of this class.
         */
         public BarcodeDatamatrix() {
+            encoding = DEFAULT_DATA_MATRIX_ENCODING;
         }
 
+        public BarcodeDatamatrix(String code) {
+            encoding = DEFAULT_DATA_MATRIX_ENCODING;
+            Generate(code);
+        }
+        public BarcodeDatamatrix(String code, String encoding) {
+            this.encoding = encoding;
+            Generate(code);
+        }
         private void SetBit(int x, int y, int xByte) {
             image[y * xByte + x / 8] |= (byte)(128 >> (x & 7));
         }
@@ -194,7 +237,7 @@ namespace iTextSharp.text.pdf {
                     for (xs = 0; xs < dm.width; xs += dm.widthSection) {
                         for (x = 1; x < dm.widthSection - 1; ++x) {
                             z = place[p++];
-                            if (z == 1 || (z > 1 && ((data[z/8-1] & 0xff) & (128 >> (z%8))) != 0))
+                            if (z == 1 || (z > 1 && ((data[z / 8 - 1] & 0xff) & (128 >> (z % 8))) != 0))
                                 SetBit(x + xs + ws, y + ys + ws, xByte);
                         }
                     }
@@ -206,7 +249,7 @@ namespace iTextSharp.text.pdf {
             //already in ascii mode
             if (count <= 0)
                 return;
-            data[position++] = (byte)129;
+            data[position++] = PADDING;
             while (--count > 0) {
                 int t = 129 + (((position + 1) * 149) % 253) + 1;
                 if (t > 254)
@@ -218,67 +261,104 @@ namespace iTextSharp.text.pdf {
         private static bool IsDigit(int c) {
             return c >= '0' && c <= '9';
         }
-        
-        private static int AsciiEncodation(byte[] text, int textOffset, int textLength, byte[] data, int dataOffset, int dataLength) {
+
+        // when symbolIndex is non-negative, textLength should equal 1. All other encodations behave the same way.
+        private static int AsciiEncodation(byte[] text, int textOffset, int textLength, byte[] data, int dataOffset, int dataLength, int symbolIndex, int prevEnc, int origDataOffset) {
             int ptrIn, ptrOut, c;
             ptrIn = textOffset;
             ptrOut = dataOffset;
             textLength += textOffset;
             dataLength += dataOffset;
             while (ptrIn < textLength) {
+                c = text[ptrIn++] & 0xff;
+                if (IsDigit(c) && symbolIndex > 0 && prevEnc == DM_ASCII && IsDigit(text[ptrIn - 2] & 0xff)
+                        && data[dataOffset - 1] > 48 && data[dataOffset - 1] < 59) {
+                    data[ptrOut - 1] = (byte)(((text[ptrIn - 2] & 0xff) - '0') * 10 + c - '0' + 130);
+                    return ptrOut - origDataOffset;
+                }
                 if (ptrOut >= dataLength)
                     return -1;
-                c = text[ptrIn++] & 0xff;
-                if (IsDigit(c) && ptrIn < textLength && IsDigit(text[ptrIn] & 0xff)) {
+
+                if (IsDigit(c) && symbolIndex < 0 && ptrIn < textLength && IsDigit(text[ptrIn] & 0xff)) {
                     data[ptrOut++] = (byte)((c - '0') * 10 + (text[ptrIn++] & 0xff) - '0' + 130);
                 }
                 else if (c > 127) {
                     if (ptrOut + 1 >= dataLength)
                         return -1;
-                    data[ptrOut++] = (byte)235;
+                    data[ptrOut++] = EXTENDED_ASCII;
                     data[ptrOut++] = (byte)(c - 128 + 1);
                 }
                 else {
                     data[ptrOut++] = (byte)(c + 1);
                 }
             }
-            return ptrOut - dataOffset;
+            return ptrOut - origDataOffset;
         }
 
-        private static int B256Encodation(byte[] text, int textOffset, int textLength, byte[] data, int dataOffset, int dataLength) {
-            int k, j, prn, tv, c;
+        private static int B256Encodation(byte[] text, int textOffset, int textLength, byte[] data, int dataOffset, int dataLength, int symbolIndex, int prevEnc, int origDataOffset) {
+            int minRequiredDataIncrement;
             if (textLength == 0)
                 return 0;
-            if (textLength < 250 && textLength + 2 > dataLength)
-                return -1;
-            if (textLength >= 250 && textLength + 3 > dataLength)
-                return -1;
-            data[dataOffset] = (byte)231;
-            if (textLength < 250) {
-                data[dataOffset + 1] = (byte)textLength;
-                k = 2;
+            int simulatedDataOffset = dataOffset;
+            if (prevEnc != DM_B256) {
+                if (textLength < 250 && textLength + 2 > dataLength)
+                    return -1;
+                if (textLength >= 250 && textLength + 3 > dataLength)
+                    return -1;
+                data[dataOffset] = LATCH_B256;
             }
             else {
-                data[dataOffset + 1] = (byte)(textLength / 250 + 249);
-                data[dataOffset + 2] = (byte)(textLength % 250);
-                k = 3;
+                int latestModeEntry = symbolIndex - 1;
+                while (latestModeEntry > 0 && switchMode[DM_B256 - 1][latestModeEntry] == DM_B256) {
+                    latestModeEntry--;
+                }
+                textLength = symbolIndex - latestModeEntry + 1;
+                if (textLength != 250 && 1 > dataLength)
+                    return -1;
+                if (textLength == 250 && 2 > dataLength)
+                    return -1;
+                simulatedDataOffset -= (textLength - 1) + (textLength < 250 ? 2 : 3);
             }
-            System.Array.Copy(text, textOffset, data, k + dataOffset, textLength);
-            k += textLength + dataOffset;
-            for (j = dataOffset + 1; j < k; ++j) {
-                c = data[j] & 0xff;
-                prn = ((149 * (j + 1)) % 255) + 1;
-                tv = c + prn;
-                if (tv > 255)
-                    tv -= 256;
-                data[j] = (byte)tv;
-
+            if (textLength < 250) {
+                data[simulatedDataOffset + 1] = (byte)textLength;
+                minRequiredDataIncrement = prevEnc != DM_B256 ? 2 : 0;
             }
-            return k - dataOffset;
+            else if (textLength == 250 && prevEnc == DM_B256) {
+                data[simulatedDataOffset + 1] = (byte)(textLength / 250 + 249);
+                for (int i = dataOffset + 1; i > simulatedDataOffset + 2; i--)
+                    data[i] = data[i - 1];
+                data[simulatedDataOffset + 2] = (byte)(textLength % 250);
+                minRequiredDataIncrement = 1;
+            }
+            else {
+                data[simulatedDataOffset + 1] = (byte)(textLength / 250 + 249);
+                data[simulatedDataOffset + 2] = (byte)(textLength % 250);
+                minRequiredDataIncrement = prevEnc != DM_B256 ? 3 : 0;
+            }
+            if (prevEnc == DM_B256)
+                textLength = 1;
+            System.Array.Copy(text, textOffset, data, minRequiredDataIncrement + dataOffset, textLength);
+            for (int j = prevEnc != DM_B256 ? dataOffset + 1 : dataOffset; j < minRequiredDataIncrement + textLength + dataOffset; ++j) {
+                RandomizationAlgorithm255(data, j);
+            }
+            if (prevEnc == DM_B256)
+                RandomizationAlgorithm255(data, simulatedDataOffset + 1);
+            return textLength + dataOffset + minRequiredDataIncrement - origDataOffset;
         }
 
-        private static int X12Encodation(byte[] text, int textOffset, int textLength, byte[] data, int dataOffset, int dataLength) {
-            int ptrIn, ptrOut, count, k, n, ci;
+        private static void RandomizationAlgorithm255(byte[] data, int j) {
+            int c = data[j] & 0xff;
+            int prn = 149 * (j + 1) % 255 + 1;
+            int tv = c + prn;
+            if (tv > 255)
+                tv -= 256;
+            data[j] = (byte)tv;
+        }
+
+
+        private static int X12Encodation(byte[] text, int textOffset, int textLength, byte[] data, int dataOffset, int dataLength, int symbolIndex, int prevEnc, int origDataOffset) {
+            int ptrIn, ptrOut, count, k, n;
+            Boolean latch = true;
             byte c;
             if (textLength == 0)
                 return 0;
@@ -287,7 +367,7 @@ namespace iTextSharp.text.pdf {
             byte[] x = new byte[textLength];
             count = 0;
             for (; ptrIn < textLength; ++ptrIn) {
-                int i = x12.IndexOf((char)text[ptrIn + textOffset]);
+                int i = X12.IndexOf((char)text[ptrIn + textOffset]);
                 if (i >= 0) {
                     x[ptrIn] = (byte)i;
                     ++count;
@@ -295,25 +375,25 @@ namespace iTextSharp.text.pdf {
                 else {
                     x[ptrIn] = 100;
                     if (count >= 6)
-                        count -= (count / 3) * 3;
+                        count -= count / 3 * 3;
                     for (k = 0; k < count; ++k)
                         x[ptrIn - k - 1] = 100;
                     count = 0;
                 }
             }
             if (count >= 6)
-                count -= (count / 3) * 3;
+                count -= count / 3 * 3;
             for (k = 0; k < count; ++k)
                 x[ptrIn - k - 1] = 100;
             ptrIn = 0;
             c = 0;
             for (; ptrIn < textLength; ++ptrIn) {
                 c = x[ptrIn];
-                if (ptrOut >= dataLength)
+                if (ptrOut > dataLength)
                     break;
                 if (c < 40) {
-                    if (ptrIn == 0 || (ptrIn > 0 && x[ptrIn - 1] > 40))
-                        data[dataOffset + ptrOut++] = (byte)238;
+                    if (ptrIn == 0 && latch || ptrIn > 0 && x[ptrIn - 1] > 40)
+                        data[dataOffset + ptrOut++] = LATCH_X12;
                     if (ptrOut + 2 > dataLength)
                         break;
                     n = 1600 * x[ptrIn] + 40 * x[ptrIn + 1] + x[ptrIn + 2] + 1;
@@ -322,29 +402,68 @@ namespace iTextSharp.text.pdf {
                     ptrIn += 2;
                 }
                 else {
-                    if (ptrIn > 0 && x[ptrIn - 1] < 40)
-                        data[dataOffset + ptrOut++] = (byte)254;
-                    ci = text[ptrIn + textOffset] & 0xff;
-                    if (ci > 127) {
-                        data[dataOffset + ptrOut++] = (byte)235;
-                        ci -= 128;
+                    Boolean enterASCII = true;
+                    if (symbolIndex <= 0) {
+                        if (ptrIn > 0 && x[ptrIn - 1] < 40)
+                            data[dataOffset + ptrOut++] = UNLATCH;
                     }
-                    if (ptrOut >= dataLength)
-                        break;
-                    data[dataOffset + ptrOut++] = (byte)(ci + 1);
+                    else if (symbolIndex > 4 && prevEnc == DM_X12 && X12.IndexOf((char)text[textOffset]) >= 0 && X12.IndexOf((char)text[textOffset - 1]) >= 0) {
+                        int latestModeEntry = symbolIndex - 1;
+                        while (latestModeEntry > 0 && switchMode[DM_X12 - 1][latestModeEntry] == DM_X12
+                                && (X12.IndexOf((char)text[textOffset - (symbolIndex - latestModeEntry + 1)])) >= 0) {
+                            latestModeEntry--;
+                        }
+                        int unlatch = -1;
+                        if (symbolIndex - latestModeEntry >= 5) {
+                            for (int i = 1; i <= symbolIndex - latestModeEntry; i++) {
+                                if (data[dataOffset - i] == UNLATCH) {
+                                    unlatch = dataOffset - i;
+                                    break;
+                                }
+                            }
+                            int amountOfEncodedWithASCII = unlatch >= 0 ? dataOffset - unlatch - 1 : symbolIndex - latestModeEntry;
+                            if (amountOfEncodedWithASCII % 3 == 2) {
+                                enterASCII = false;
+                                textLength = amountOfEncodedWithASCII + 1;
+                                textOffset -= amountOfEncodedWithASCII;
+                                dataLength += unlatch < 0 ? amountOfEncodedWithASCII : amountOfEncodedWithASCII + 1;
+                                dataOffset -= unlatch < 0 ? amountOfEncodedWithASCII : amountOfEncodedWithASCII + 1;
+                                ptrIn = -1;
+                                latch = unlatch != dataOffset;
+                                x = new byte[amountOfEncodedWithASCII + 1];
+                                for (int i = 0; i <= amountOfEncodedWithASCII; i++) {
+                                    x[i] = (byte)X12.IndexOf((char)text[textOffset + i]);
+                                }
+                            }
+                            else {
+                                x = new byte[1];
+                                x[0] = 100;
+                            }
+                        }
+                    }
+                    if (enterASCII) {
+                        int i = AsciiEncodation(text, textOffset + ptrIn, 1, data, dataOffset + ptrOut, dataLength, -1, -1, origDataOffset);
+                        if (i < 0)
+                            return -1;
+                        if (data[dataOffset + ptrOut] == EXTENDED_ASCII)
+                            ptrOut++;
+                        ptrOut++;
+                    }
                 }
             }
             c = 100;
             if (textLength > 0)
                 c = x[textLength - 1];
-            if (ptrIn != textLength || (c < 40 && ptrOut >= dataLength))
+            if (ptrIn != textLength)
                 return -1;
             if (c < 40)
-                data[dataOffset + ptrOut++] = (byte)(254);
-            return ptrOut;
+                data[dataOffset + ptrOut++] = UNLATCH;
+            if (ptrOut > dataLength)
+                return -1;
+            return ptrOut + dataOffset - origDataOffset;
         }
 
-        private static int EdifactEncodation(byte[] text, int textOffset, int textLength, byte[] data, int dataOffset, int dataLength) {
+        private static int EdifactEncodation(byte[] text, int textOffset, int textLength, byte[] data, int dataOffset, int dataLength, int symbolIndex, int prevEnc, int origDataOffset, Boolean sizeFixed) {
             int ptrIn, ptrOut, edi, pedi, c;
             if (textLength == 0)
                 return 0;
@@ -352,14 +471,144 @@ namespace iTextSharp.text.pdf {
             ptrOut = 0;
             edi = 0;
             pedi = 18;
-            bool ascii = true;
+            Boolean ascii = true;
+            int latestModeEntryActual = -1, latestModeEntryC40orX12 = -1, prevMode = -1;
+            if (prevEnc == DM_EDIFACT && ((text[textOffset] & 0xff & 0xe0) == 0x40 || (text[textOffset] & 0xff & 0xe0) == 0x20) && (text[textOffset] & 0xff) != '_'
+                    && ((text[textOffset - 1] & 0xff & 0xe0) == 0x40 || (text[textOffset - 1] & 0xff & 0xe0) == 0x20) && (text[textOffset - 1] & 0xff) != '_') {
+                latestModeEntryActual = symbolIndex - 1;
+                while (latestModeEntryActual > 0 && switchMode[DM_EDIFACT - 1][latestModeEntryActual] == DM_EDIFACT) {
+                    c = text[textOffset - (symbolIndex - latestModeEntryActual + 1)] & 0xff;
+                    if (((c & 0xe0) == 0x40 || (c & 0xe0) == 0x20) && c != '_') {
+                        latestModeEntryActual--;
+                    }
+                    else
+                        break;
+                }
+                prevMode = switchMode[DM_EDIFACT - 1][latestModeEntryActual] == DM_C40
+                        || switchMode[DM_EDIFACT - 1][latestModeEntryActual] == DM_X12 ? switchMode[DM_EDIFACT - 1][latestModeEntryActual] : -1;
+                if (prevMode > 0)
+                    latestModeEntryC40orX12 = latestModeEntryActual;
+                while (prevMode > 0 && latestModeEntryC40orX12 > 0 && switchMode[prevMode - 1][latestModeEntryC40orX12] == prevMode) {
+                    c = text[textOffset - (symbolIndex - latestModeEntryC40orX12 + 1)] & 0xff;
+                    if (((c & 0xe0) == 0x40 || (c & 0xe0) == 0x20) && c != '_') {
+                        latestModeEntryC40orX12--;
+                    }
+                    else {
+                        latestModeEntryC40orX12 = -1;
+                        break;
+                    }
+                }
+            }
+            int dataSize = dataOffset + dataLength;
+            Boolean asciiOneSymbol = false;
+            if (symbolIndex != -1)
+                asciiOneSymbol = true;
+            int dataTaken = 0, dataRequired = 0;
+            if (latestModeEntryC40orX12 >= 0 && symbolIndex - latestModeEntryC40orX12 + 1 > 9) {
+                textLength = symbolIndex - latestModeEntryC40orX12 + 1;
+                dataTaken = 0;
+                dataRequired = 0;
+                dataRequired += 1 + (textLength / 4 * 3);
+                if (!sizeFixed && (symbolIndex == text.Length - 1 || symbolIndex < 0) && textLength % 4 < 3) {
+                    dataSize = Int32.MaxValue;
+                    for (int i = 0; i < dmSizes.Length; ++i) {
+                        if (dmSizes[i].dataSize >= dataRequired + textLength % 4) {
+                            dataSize = dmSizes[i].dataSize;
+                            break;
+                        }
+                    }
+                }
+                if (dataSize - dataOffset - dataRequired <= 2 && textLength % 4 <= 2)
+                    dataRequired += (textLength % 4);
+                else {
+                    dataRequired += (textLength % 4) + 1;
+                    if (textLength % 4 == 3)
+                        dataRequired--;
+                }
+                for (int i = dataOffset - 1; i >= 0; i--) {
+                    dataTaken++;
+                    if (data[i] == (prevMode == DM_C40 ? LATCH_C40 : LATCH_X12)) {
+                        break;
+                    }
+                }
+                if (dataRequired <= dataTaken) {
+                    asciiOneSymbol = false;
+                    textOffset -= textLength - 1;
+                    dataOffset -= dataTaken;
+                    dataLength += dataTaken;
+                }
+            }
+            else if (latestModeEntryActual >= 0 && symbolIndex - latestModeEntryActual + 1 > 9) {
+                textLength = symbolIndex - latestModeEntryActual + 1;
+                dataRequired += 1 + (textLength / 4 * 3);
+                if (dataSize - dataOffset - dataRequired <= 2 && textLength % 4 <= 2)
+                    dataRequired += (textLength % 4);
+                else {
+                    dataRequired += (textLength % 4) + 1;
+                    if (textLength % 4 == 3)
+                        dataRequired--;
+                }
+                int dataNewOffset = 0;
+                int latchEdi = -1;
+                for (int i = origDataOffset; i < dataOffset; i++)
+                    if (data[i] == LATCH_EDIFACT && dataOffset - i <= dataRequired) {
+                        latchEdi = i;
+                        break;
+                    }
+                if (latchEdi != -1) {
+                    dataTaken += dataOffset - latchEdi;
+                    if ((text[textOffset] & 0xff) > 127)
+                        dataTaken += 2;
+                    else {
+                        if (IsDigit(text[textOffset] & 0xff) && IsDigit(text[textOffset - 1] & 0xff) &&
+                                data[dataOffset - 1] >= 49 && data[dataOffset - 1] <= 58) {
+                            dataTaken--;
+                        }
+                        dataTaken++;
+                    }
+                    dataNewOffset = dataOffset - latchEdi;
+                }
+                else {
+                    for (int j = symbolIndex - latestModeEntryActual; j >= 0; j--) {
+                        if ((text[textOffset - j] & 0xff) > 127)
+                            dataTaken += 2;
+                        else {
+                            if (j > 0 && IsDigit(text[textOffset - j] & 0xff) && IsDigit(text[textOffset - j + 1] & 0xff)) {
+                                if (j == 1)
+                                    dataNewOffset = dataTaken;
+                                j--;
+                            }
+                            dataTaken++;
+                        }
+                        if (j == 1)
+                            dataNewOffset = dataTaken;
+                    }
+                }
+                if (dataRequired <= dataTaken) {
+                    asciiOneSymbol = false;
+                    textOffset -= textLength - 1;
+                    dataOffset -= dataNewOffset;
+                    dataLength += dataNewOffset;
+                }
+            }
+            if (asciiOneSymbol) {
+                c = text[textOffset] & 0xff;
+                if (IsDigit(c) && textOffset + ptrIn > 0 && IsDigit(text[textOffset - 1] & 0xff)
+                        && prevEnc == DM_EDIFACT && data[dataOffset - 1] >= 49 && data[dataOffset - 1] <= 58) {
+                    data[dataOffset + ptrOut - 1] = (byte)(((text[textOffset - 1] & 0xff) - '0') * 10 + c - '0' + 130);
+                    return dataOffset - origDataOffset;
+                }
+                else {
+                    return AsciiEncodation(text, textOffset + ptrIn, 1, data, dataOffset + ptrOut, dataLength, -1, -1, origDataOffset);
+                }
+            }
             for (; ptrIn < textLength; ++ptrIn) {
                 c = text[ptrIn + textOffset] & 0xff;
                 if (((c & 0xe0) == 0x40 || (c & 0xe0) == 0x20) && c != '_') {
                     if (ascii) {
                         if (ptrOut + 1 > dataLength)
                             break;
-                        data[dataOffset + ptrOut++] = (byte)240;
+                        data[dataOffset + ptrOut++] = LATCH_EDIFACT;
                         ascii = false;
                     }
                     c &= 0x3f;
@@ -369,37 +618,17 @@ namespace iTextSharp.text.pdf {
                             break;
                         data[dataOffset + ptrOut++] = (byte)(edi >> 16);
                         data[dataOffset + ptrOut++] = (byte)(edi >> 8);
-                        data[dataOffset + ptrOut++] = (byte) edi;
+                        data[dataOffset + ptrOut++] = (byte)edi;
                         edi = 0;
                         pedi = 18;
-                    } else
-                        pedi -= 6;
-                } else {
-                    int dataSize = int.MaxValue;
-                    for (int i = 0; i < dmSizes.Length; ++i) {
-                        if (dmSizes[i].dataSize >= dataOffset + ptrOut + (3 - pedi/6)) {
-                            dataSize = dmSizes[i].dataSize;
-                            break;
-                        }
                     }
-
-                    if (dataSize - dataOffset - ptrOut <= 2 && pedi >= 6) {
-                        //have to write up to 2 bytes and up to 2 symbols
-                        if (pedi <= 12) {
-                            byte val = (byte) ((edi >> 18) & 0x3F);
-                            if ((val & 0x20) == 0)
-                                val |= 0x40;
-                            data[dataOffset + ptrOut++] = (byte) (val + 1);
-                        }
-                        if (pedi <= 6) {
-                            byte val = (byte) ((edi >> 12) & 0x3F);
-                            if ((val & 0x20) == 0)
-                                val |= 0x40;
-                            data[dataOffset + ptrOut++] = (byte) (val + 1);
-                        }
-                    } else if (!ascii) {
+                    else
+                        pedi -= 6;
+                }
+                else {
+                    if (!ascii) {
                         edi |= ('_' & 0x3f) << pedi;
-                        if (ptrOut + (3 - pedi/8) > dataLength)
+                        if (ptrOut + 3 - pedi / 8 > dataLength)
                             break;
                         data[dataOffset + ptrOut++] = (byte)(edi >> 16);
                         if (pedi <= 12)
@@ -410,22 +639,51 @@ namespace iTextSharp.text.pdf {
                         pedi = 18;
                         edi = 0;
                     }
-                    if (c > 127) {
-                        if (ptrOut >= dataLength)
-                            break;
-                        data[dataOffset + ptrOut++] = (byte)235;
-                        c -= 128;
+                    if (IsDigit(c) && textOffset + ptrIn > 0 && IsDigit(text[textOffset + ptrIn - 1] & 0xff) &&
+                            prevEnc == DM_EDIFACT && data[dataOffset - 1] >= 49 && data[dataOffset - 1] <= 58) {
+                        data[dataOffset + ptrOut - 1] = (byte)(((text[textOffset - 1] & 0xff) - '0') * 10 + c - '0' + 130);
+                        ptrOut--;
                     }
-                    if (ptrOut >= dataLength)
-                        break;
-                    data[dataOffset + ptrOut++] = (byte)(c + 1);
+                    else {
+                        int i = AsciiEncodation(text, textOffset + ptrIn, 1, data, dataOffset + ptrOut, dataLength, -1, -1, origDataOffset);
+                        if (i < 0)
+                            return -1;
+                        if (data[dataOffset + ptrOut] == EXTENDED_ASCII)
+                            ptrOut++;
+                        ptrOut++;
+                    }
                 }
             }
             if (ptrIn != textLength)
                 return -1;
-            if (!ascii) {
+            if (!sizeFixed && (symbolIndex == text.Length - 1 || symbolIndex < 0)) {
+                dataSize = Int32.MaxValue;
+                for (int i = 0; i < dmSizes.Length; ++i) {
+                    if (dmSizes[i].dataSize >= dataOffset + ptrOut + (3 - pedi / 6)) {
+                        dataSize = dmSizes[i].dataSize;
+                        break;
+                    }
+                }
+            }
+            if (dataSize - dataOffset - ptrOut <= 2 && pedi >= 6) {
+                if (pedi != 18 && ptrOut + 2 - pedi / 8 > dataLength)
+                    return -1;
+                if (pedi <= 12) {
+                    byte val = (byte)((edi >> 18) & 0x3F);
+                    if ((val & 0x20) == 0)
+                        val |= 0x40;
+                    data[dataOffset + ptrOut++] = (byte)(val + 1);
+                }
+                if (pedi <= 6) {
+                    byte val = (byte)((edi >> 12) & 0x3F);
+                    if ((val & 0x20) == 0)
+                        val |= 0x40;
+                    data[dataOffset + ptrOut++] = (byte)(val + 1);
+                }
+            }
+            else if (!ascii) {
                 edi |= ('_' & 0x3f) << pedi;
-                if (ptrOut + (3 - pedi / 8) > dataLength)
+                if (ptrOut + 3 - pedi / 8 > dataLength)
                     return -1;
                 data[dataOffset + ptrOut++] = (byte)(edi >> 16);
                 if (pedi <= 12)
@@ -433,35 +691,118 @@ namespace iTextSharp.text.pdf {
                 if (pedi <= 6)
                     data[dataOffset + ptrOut++] = (byte)edi;
             }
-            return ptrOut;
+            return ptrOut + dataOffset - origDataOffset;
         }
 
-        private static int C40OrTextEncodation(byte[] text, int textOffset, int textLength, byte[] data, int dataOffset, int dataLength, bool c40) {
+        private static int C40OrTextEncodation(byte[] text, int textOffset, int textLength, byte[] data, int dataOffset, int dataLength, bool c40, int symbolIndex, int prevEnc, int origDataOffset) {
             int ptrIn, ptrOut, encPtr, last0, last1, i, a, c;
             String basic, shift2, shift3;
             if (textLength == 0)
                 return 0;
             ptrIn = 0;
             ptrOut = 0;
-            if (c40)
-                data[dataOffset + ptrOut++] = (byte)230;
-            else
-                data[dataOffset + ptrOut++] = (byte)239;
             shift2 = "!\"#$%&'()*+,-./:;<=>?@[\\]^_";
             if (c40) {
                 basic = " 0123456789ABCDEFGHIJKLMNOPQRSTUVWXYZ";
-                shift3 = "`abcdefghijklmnopqrstuvwxyz{|}~\u007f";
+                shift3 = "`abcdefghijklmnopqrstuvwxyz{|}~\\177";
             }
             else {
                 basic = " 0123456789abcdefghijklmnopqrstuvwxyz";
-                shift3 = "`ABCDEFGHIJKLMNOPQRSTUVWXYZ{|}~\u007f";
+                shift3 = "`ABCDEFGHIJKLMNOPQRSTUVWXYZ{|}~\\177";
+            }
+            Boolean addLatch = true, usingASCII = false;
+            int mode = c40 ? DM_C40 : DM_TEXT;
+            if (prevEnc == mode) {
+                usingASCII = true;
+                int latestModeEntry = symbolIndex - 1;
+                while (latestModeEntry > 0 && switchMode[mode - 1][latestModeEntry] == mode) {
+                    latestModeEntry--;
+                }
+                int unlatch = -1;
+                int dataAmountOfEncodedWithASCII = 0;
+                if (symbolIndex - latestModeEntry >= 5) {
+                    for (i = symbolIndex - latestModeEntry; i > 0; i--) {
+                        c = text[textOffset - i] & 0xff;
+                        if (c > 127) {
+                            dataAmountOfEncodedWithASCII += 2;
+                        }
+                        else
+                            dataAmountOfEncodedWithASCII++;
+                    }
+                    for (i = 1; i <= dataAmountOfEncodedWithASCII; i++) {
+                        if (i > dataOffset)
+                            break;
+                        if (data[dataOffset - i] == UNLATCH) {
+                            unlatch = dataOffset - i;
+                            break;
+                        }
+                    }
+                    int amountOfEncodedWithASCII = 0;
+                    if (unlatch >= 0)
+                        for (i = unlatch + 1; i < dataOffset; i++) {
+                            if (data[i] == EXTENDED_ASCII)
+                                i++;
+                            if (data[i] >= -127 && data[i] <= -27)
+                                amountOfEncodedWithASCII++;
+                            amountOfEncodedWithASCII++;
+                        }
+                    else
+                        amountOfEncodedWithASCII = symbolIndex - latestModeEntry;
+                    int dataOffsetNew = 0;
+                    for (i = amountOfEncodedWithASCII; i > 0; i--) {
+                        int requiredCapacityForASCII = 0;
+                        int requiredCapacityForC40orText = 0;
+                        for (int j = i; j >= 0; j--) {
+                            c = text[textOffset - j] & 0xff;
+                            if (c > 127) {
+                                c -= 128;
+                                requiredCapacityForC40orText += 2;
+                            }
+                            requiredCapacityForC40orText += basic.IndexOf((char)c) >= 0 ? 1 : 2;
+                            if (c > 127)
+                                requiredCapacityForASCII += 2;
+                            else {
+                                if (j > 0 && IsDigit(c) && IsDigit(text[textOffset - j + 1] & 0xff)) {
+                                    requiredCapacityForC40orText += basic.IndexOf((char)text[textOffset - j + 1]) >= 0 ? 1 : 2;
+                                    j--;
+                                    dataOffsetNew = requiredCapacityForASCII + 1;
+                                }
+                                requiredCapacityForASCII++;
+                            }
+                            if (j == 1)
+                                dataOffsetNew = requiredCapacityForASCII;
+                        }
+                        addLatch = unlatch < 0 ? true : (dataOffset - requiredCapacityForASCII != unlatch);
+                        if (requiredCapacityForC40orText % 3 == 0 &&
+                                requiredCapacityForC40orText / 3 * 2 + (addLatch ? 2 : 0) < requiredCapacityForASCII) {
+                            usingASCII = false;
+                            textLength = i + 1;
+                            textOffset -= i;
+                            dataOffset -= addLatch ? dataOffsetNew : dataOffsetNew + 1;
+                            dataLength += addLatch ? dataOffsetNew : dataOffsetNew + 1;
+                            break;
+                        }
+                        if (IsDigit(text[textOffset - i] & 0xff) && IsDigit(text[textOffset - i + 1] & 0xff))
+                            i--;
+                    }
+                }
+            }
+            else if (symbolIndex != -1)
+                usingASCII = true;
+            if (usingASCII)
+                return AsciiEncodation(text, textOffset, 1, data, dataOffset, dataLength, prevEnc == mode ? 1 : -1, DM_ASCII, origDataOffset);
+            if (addLatch) {
+                if (c40)
+                    data[dataOffset + ptrOut++] = LATCH_C40;
+                else
+                    data[dataOffset + ptrOut++] = LATCH_TEXT;
             }
             int[] enc = new int[textLength * 4 + 10];
             encPtr = 0;
             last0 = 0;
             last1 = 0;
             while (ptrIn < textLength) {
-                if ((encPtr % 3) == 0) {
+                if (encPtr % 3 == 0) {
                     last0 = ptrIn;
                     last1 = encPtr;
                 }
@@ -488,7 +829,7 @@ namespace iTextSharp.text.pdf {
                     enc[encPtr++] = idx;
                 }
             }
-            if ((encPtr % 3) != 0) {
+            if (encPtr % 3 != 0) {
                 ptrIn = last0;
                 encPtr = last1;
             }
@@ -501,80 +842,131 @@ namespace iTextSharp.text.pdf {
                 data[dataOffset + ptrOut++] = (byte)(a / 256);
                 data[dataOffset + ptrOut++] = (byte)a;
             }
-            data[ptrOut++] = (byte)254;
-            i = AsciiEncodation(text, ptrIn, textLength - ptrIn, data, ptrOut, dataLength - ptrOut);
-            if (i < 0)
+            if (dataLength - ptrOut > 2)
+                data[dataOffset + ptrOut++] = UNLATCH;
+            if (symbolIndex < 0 && textLength > ptrIn) {
+                i = AsciiEncodation(text, textOffset + ptrIn, textLength - ptrIn, data, dataOffset + ptrOut, dataLength - ptrOut, -1, -1, origDataOffset);
                 return i;
-            return ptrOut + i;
+            }
+            return ptrOut + dataOffset - origDataOffset;
         }
 
-        private static int GetEncodation(byte[] text, int textOffset, int textSize, byte[] data, int dataOffset, int dataSize, int options, bool firstMatch) {
-            int e, j, k;
-            int[] e1 = new int[6];
+        private static int MinValueInColumn(int[][] array, int column) {
+            int min = Int32.MaxValue;
+            for (int i = 0; i < 6; i++)
+                if (array[i][column] < min && array[i][column] >= 0)
+                    min = array[i][column];
+            return min != Int32.MaxValue ? min : -1;
+        }
+
+        private static int ValuePositionInColumn(int[][] array, int column, int value) {
+            for (int i = 0; i < 6; i++)
+                if (array[i][column] == value)
+                    return i;
+            return -1;
+        }
+
+        private static void SolveFAndSwitchMode(int[] forMin, int mode, int currIndex) {
+            if (forMin[mode] >= 0 && f[mode][currIndex - 1] >= 0) {
+                f[mode][currIndex] = forMin[mode];
+                switchMode[mode][currIndex] = mode + 1;
+            }
+            else {
+                f[mode][currIndex] = Int32.MaxValue;
+            }
+            for (int i = 0; i < 6; i++) {
+                if (forMin[i] < f[mode][currIndex] && forMin[i] >= 0 && f[i][currIndex - 1] >= 0) {
+                    f[mode][currIndex] = forMin[i];
+                    switchMode[mode][currIndex] = i + 1;
+                }
+            }
+            if (f[mode][currIndex] == Int32.MaxValue) {
+                f[mode][currIndex] = -1;
+            }
+        }
+
+
+        private static int GetEncodation(byte[] text, int textOffset, int textSize, byte[] data, int dataOffset, int dataSize, int options, Boolean sizeFixed) {
+            int e;
             if (dataSize < 0)
                 return -1;
-            e = -1;
             options &= 7;
             if (options == 0) {
-                e1[0] = AsciiEncodation(text, textOffset, textSize, data, dataOffset, dataSize);
-                if (firstMatch && e1[0] >= 0)
-                    return e1[0];
-                e1[1] = C40OrTextEncodation(text, textOffset, textSize, data, dataOffset, dataSize, false);
-                if (firstMatch && e1[1] >= 0)
-                    return e1[1];
-                e1[2] = C40OrTextEncodation(text, textOffset, textSize, data, dataOffset, dataSize, true);
-                if (firstMatch && e1[2] >= 0)
-                    return e1[2];
-                e1[3] = B256Encodation(text, textOffset, textSize, data, dataOffset, dataSize);
-                if (firstMatch && e1[3] >= 0)
-                    return e1[3];
-                e1[4] = X12Encodation(text, textOffset, textSize, data, dataOffset, dataSize);
-                if (firstMatch && e1[4] >= 0)
-                    return e1[4];
-                e1[5] = EdifactEncodation(text, textOffset, textSize, data, dataOffset, dataSize);
-                if (firstMatch && e1[5] >= 0)
-                    return e1[5];
-                if (e1[0] < 0 && e1[1] < 0 && e1[2] < 0 && e1[3] < 0 && e1[4] < 0 && e1[5] < 0) {
-                    return -1;
+                if (textSize == 0)
+                    return 0;
+                int length = data.Length;
+                byte[][] dataDynamic = new byte[6][];
+                for (int i = 0; i < dataDynamic.Length; i++) {
+                    dataDynamic[i] = new byte[length];
                 }
-                j = 0;
-                e = 99999;
-                for (k = 0; k < 6; ++k) {
-                    if (e1[k] >= 0 && e1[k] < e) {
-                        e = e1[k];
-                        j = k;
+                for (int i = 0; i < 6; i++) {
+                    System.Array.Copy(data, 0, dataDynamic[i], 0, data.Length);
+                    switchMode[i][0] = i + 1;
+                }
+                f[0][0] = AsciiEncodation(text, textOffset, 1, dataDynamic[0], dataOffset, dataSize, 0, -1, dataOffset);
+                f[1][0] = C40OrTextEncodation(text, textOffset, 1, dataDynamic[1], dataOffset, dataSize, true, 0, -1, dataOffset);
+                f[2][0] = C40OrTextEncodation(text, textOffset, 1, dataDynamic[2], dataOffset, dataSize, false, 0, -1, dataOffset);
+                f[3][0] = B256Encodation(text, textOffset, 1, dataDynamic[3], dataOffset, dataSize, 0, -1, dataOffset);
+                f[4][0] = X12Encodation(text, textOffset, 1, dataDynamic[4], dataOffset, dataSize, 0, -1, dataOffset);
+                f[5][0] = EdifactEncodation(text, textOffset, 1, dataDynamic[5], dataOffset, dataSize, 0, -1, dataOffset, sizeFixed);
+                int[] dataNewOffset = new int[6];
+                for (int i = 1; i < textSize; i++) {
+                    int[] tempForMin = new int[6];
+                    for (int k = 0; k < 6; k++) {
+                        dataNewOffset[k] = f[k][i - 1] >= 0 ? f[k][i - 1] : Int32.MaxValue;
+                    }
+                    for (int currEnc = 0; currEnc < 6; currEnc++) {
+
+                        byte[][] dataDynamicInner = new byte[6][];
+                        for (int l = 0; l < dataDynamicInner.Length; l++) {
+                            dataDynamicInner[l] = new byte[length];
+                        }
+                        for (int prevEnc = 0; prevEnc < 6; prevEnc++) {
+                            System.Array.Copy(dataDynamic[prevEnc], 0, dataDynamicInner[prevEnc], 0, data.Length);
+                            if (currEnc == 0)
+                                tempForMin[prevEnc] = AsciiEncodation(text, textOffset + i, 1, dataDynamicInner[prevEnc], dataNewOffset[prevEnc] + dataOffset, dataSize - dataNewOffset[prevEnc], i, prevEnc + 1, dataOffset);
+                            if (currEnc == 1)
+                                tempForMin[prevEnc] = C40OrTextEncodation(text, textOffset + i, 1, dataDynamicInner[prevEnc], dataNewOffset[prevEnc] + dataOffset, dataSize - dataNewOffset[prevEnc], true, i, prevEnc + 1, dataOffset);
+                            if (currEnc == 2)
+                                tempForMin[prevEnc] = C40OrTextEncodation(text, textOffset + i, 1, dataDynamicInner[prevEnc], dataNewOffset[prevEnc] + dataOffset, dataSize - dataNewOffset[prevEnc], false, i, prevEnc + 1, dataOffset);
+                            if (currEnc == 3)
+                                tempForMin[prevEnc] = B256Encodation(text, textOffset + i, 1, dataDynamicInner[prevEnc], dataNewOffset[prevEnc] + dataOffset, dataSize - dataNewOffset[prevEnc], i, prevEnc + 1, dataOffset);
+                            if (currEnc == 4)
+                                tempForMin[prevEnc] = X12Encodation(text, textOffset + i, 1, dataDynamicInner[prevEnc], dataNewOffset[prevEnc] + dataOffset, dataSize - dataNewOffset[prevEnc], i, prevEnc + 1, dataOffset);
+                            if (currEnc == 5)
+                                tempForMin[prevEnc] = EdifactEncodation(text, textOffset + i, 1, dataDynamicInner[prevEnc], dataNewOffset[prevEnc] + dataOffset, dataSize - dataNewOffset[prevEnc], i, prevEnc + 1, dataOffset, sizeFixed);
+
+                        }
+                        SolveFAndSwitchMode(tempForMin, currEnc, i);
+                        if (switchMode[currEnc][i] != 0)
+                            System.Array.Copy(dataDynamicInner[switchMode[currEnc][i] - 1], 0, dataDynamic[currEnc], 0, data.Length);
                     }
                 }
-                if (j == 0)
-                    e = AsciiEncodation(text, textOffset, textSize, data, dataOffset, dataSize);
-                else if (j == 1)
-                    e = C40OrTextEncodation(text, textOffset, textSize, data, dataOffset, dataSize, false);
-                else if (j == 2)
-                    e = C40OrTextEncodation(text, textOffset, textSize, data, dataOffset, dataSize, true);
-                else if (j == 3)
-                    e = B256Encodation(text, textOffset, textSize, data, dataOffset, dataSize);
-                else if (j == 4)
-                    e = X12Encodation(text, textOffset, textSize, data, dataOffset, dataSize);
+                e = MinValueInColumn(f, textSize - 1);
+                if (e > dataSize || e < 0)
+                    return -1;
+                int bestDataDynamicResultIndex = ValuePositionInColumn(f, textSize - 1, e);
+                System.Array.Copy(dataDynamic[bestDataDynamicResultIndex], 0, data, 0, data.Length);
                 return e;
             }
             switch (options) {
-            case DM_ASCII:
-                return AsciiEncodation(text, textOffset, textSize, data, dataOffset, dataSize);
-            case DM_C40:
-                return C40OrTextEncodation(text, textOffset, textSize, data, dataOffset, dataSize, true);
-            case DM_TEXT:
-                return C40OrTextEncodation(text, textOffset, textSize, data, dataOffset, dataSize, false);
-            case DM_B256:
-                return B256Encodation(text, textOffset, textSize, data, dataOffset, dataSize);
-            case DM_X21:
-                return X12Encodation(text, textOffset, textSize, data, dataOffset, dataSize);
-            case DM_EDIFACT:
-                return EdifactEncodation(text, textOffset, textSize, data, dataOffset, dataSize);
-            case DM_RAW:
-                if (textSize > dataSize)
-                    return -1;
-                System.Array.Copy(text, textOffset, data, dataOffset, textSize);
-                return textSize;
+                case DM_ASCII:
+                    return AsciiEncodation(text, textOffset, textSize, data, dataOffset, dataSize, -1, -1, dataOffset);
+                case DM_C40:
+                    return C40OrTextEncodation(text, textOffset, textSize, data, dataOffset, dataSize, true, -1, -1, dataOffset);
+                case DM_TEXT:
+                    return C40OrTextEncodation(text, textOffset, textSize, data, dataOffset, dataSize, false, -1, -1, dataOffset);
+                case DM_B256:
+                    return B256Encodation(text, textOffset, textSize, data, dataOffset, dataSize, -1, -1, dataOffset);
+                case DM_X12:
+                    return X12Encodation(text, textOffset, textSize, data, dataOffset, dataSize, -1, -1, dataOffset);
+                case DM_EDIFACT:
+                    return EdifactEncodation(text, textOffset, textSize, data, dataOffset, dataSize, -1, -1, dataOffset, sizeFixed);
+                case DM_RAW:
+                    if (textSize > dataSize)
+                        return -1;
+                    System.Array.Copy(text, textOffset, data, dataOffset, textSize);
+                    return textSize;
             }
             return -1;
         }
@@ -583,7 +975,7 @@ namespace iTextSharp.text.pdf {
             int v, j, c;
             v = 0;
             for (j = 0; j < n; ++j) {
-                c = text[ptrIn++] &0xff;
+                c = text[ptrIn++] & 0xff;
                 if (c < '0' || c > '9')
                     return -1;
                 v = v * 10 + c - '0';
@@ -601,75 +993,75 @@ namespace iTextSharp.text.pdf {
             while (ptrIn < textSize) {
                 if (order > 20)
                     return -1;
-                c = text[textOffset + ptrIn++] &0xff;
+                c = text[textOffset + ptrIn++] & 0xff;
                 ++order;
                 switch (c) {
-                case '.':
-                    extOut = ptrIn;
-                    return ptrOut;
-                case 'e':
-                    if (ptrIn + 6 > textSize)
-                        return -1;
-                    eci = GetNumber(text, textOffset + ptrIn, 6);
-                    if (eci < 0)
-                        return -1;
-                    ptrIn += 6;
-                    data[ptrOut++] = (byte)241;
-                    if (eci < 127)
-                        data[ptrOut++] = (byte)(eci + 1);
-                    else if (eci < 16383) {
-                        data[ptrOut++] = (byte)((eci - 127) / 254 + 128);
-                        data[ptrOut++] = (byte)(((eci - 127) % 254) + 1);
-                    }
-                    else {
-                        data[ptrOut++] = (byte)((eci - 16383) / 64516 + 192);
-                        data[ptrOut++] = (byte)((((eci - 16383) / 254) % 254) + 1);
-                        data[ptrOut++] = (byte)(((eci - 16383) % 254) + 1);
-                    }
-                    break;
-                case 's': 
-                    if (order != 1)
-                        return -1;
-                    if (ptrIn + 9 > textSize)
-                        return -1;
-                    fn = GetNumber(text, textOffset + ptrIn, 2);
-                    if (fn <= 0 || fn > 16)
-                        return -1;
-                    ptrIn += 2;
-                    ft = GetNumber(text, textOffset + ptrIn, 2);
-                    if (ft <= 1 || ft > 16)
-                        return -1;
-                    ptrIn += 2;
-                    fi = GetNumber(text, textOffset + ptrIn, 5);
-                    if (fi < 0 || fn >= 64516)
-                        return -1;
-                    ptrIn += 5;
-                    data[ptrOut++] = (byte)(233);
-                    data[ptrOut++] = (byte)(((fn - 1) << 4) | (17 - ft));
-                    data[ptrOut++] = (byte)(fi / 254 + 1);
-                    data[ptrOut++] = (byte)((fi % 254) + 1);
-                    break;
-                case 'p':
-                    if (order != 1)
-                        return -1;
-                    data[ptrOut++] = (byte)(234);
-                    break;
-                case 'm':
-                    if (order != 1)
-                        return -1;
-                    if (ptrIn + 1 > textSize)
-                        return -1;
-                    c = text[textOffset + ptrIn++] &0xff;
-                    if (c != '5' && c != '5')
-                        return -1;
-                    data[ptrOut++] = (byte)(234);
-                    data[ptrOut++] = (byte)(c == '5' ? 236 : 237);
-                    break;
-                case 'f':
-                    if (order != 1 && (order != 2 || (text[textOffset] != 's' && text[textOffset] != 'm')))
-                        return -1;
-                    data[ptrOut++] = (byte)(232);
-                    break;
+                    case '.':
+                        extOut = ptrIn;
+                        return ptrOut;
+                    case 'e':
+                        if (ptrIn + 6 > textSize)
+                            return -1;
+                        eci = GetNumber(text, textOffset + ptrIn, 6);
+                        if (eci < 0)
+                            return -1;
+                        ptrIn += 6;
+                        data[ptrOut++] = (byte)241;
+                        if (eci < 127)
+                            data[ptrOut++] = (byte)(eci + 1);
+                        else if (eci < 16383) {
+                            data[ptrOut++] = (byte)((eci - 127) / 254 + 128);
+                            data[ptrOut++] = (byte)(((eci - 127) % 254) + 1);
+                        }
+                        else {
+                            data[ptrOut++] = (byte)((eci - 16383) / 64516 + 192);
+                            data[ptrOut++] = (byte)((((eci - 16383) / 254) % 254) + 1);
+                            data[ptrOut++] = (byte)(((eci - 16383) % 254) + 1);
+                        }
+                        break;
+                    case 's':
+                        if (order != 1)
+                            return -1;
+                        if (ptrIn + 9 > textSize)
+                            return -1;
+                        fn = GetNumber(text, textOffset + ptrIn, 2);
+                        if (fn <= 0 || fn > 16)
+                            return -1;
+                        ptrIn += 2;
+                        ft = GetNumber(text, textOffset + ptrIn, 2);
+                        if (ft <= 1 || ft > 16)
+                            return -1;
+                        ptrIn += 2;
+                        fi = GetNumber(text, textOffset + ptrIn, 5);
+                        if (fi < 0 || fn >= 64516)
+                            return -1;
+                        ptrIn += 5;
+                        data[ptrOut++] = (byte)(233);
+                        data[ptrOut++] = (byte)(((fn - 1) << 4) | (17 - ft));
+                        data[ptrOut++] = (byte)(fi / 254 + 1);
+                        data[ptrOut++] = (byte)((fi % 254) + 1);
+                        break;
+                    case 'p':
+                        if (order != 1)
+                            return -1;
+                        data[ptrOut++] = (byte)(234);
+                        break;
+                    case 'm':
+                        if (order != 1)
+                            return -1;
+                        if (ptrIn + 1 > textSize)
+                            return -1;
+                        c = text[textOffset + ptrIn++] & 0xff;
+                        if (c != '5' && c != '5')
+                            return -1;
+                        data[ptrOut++] = (byte)(234);
+                        data[ptrOut++] = (byte)(c == '5' ? 236 : 237);
+                        break;
+                    case 'f':
+                        if (order != 1 && (order != 2 || (text[textOffset] != 's' && text[textOffset] != 'm')))
+                            return -1;
+                        data[ptrOut++] = (byte)(232);
+                        break;
                 }
             }
             return -1;
@@ -687,10 +1079,29 @@ namespace iTextSharp.text.pdf {
         * @throws java.io.UnsupportedEncodingException on error
         */
         virtual public int Generate(String text) {
-            byte[] t = System.Text.Encoding.GetEncoding(1252).GetBytes(text);
+            byte[] t = System.Text.Encoding.GetEncoding(encoding).GetBytes(text);
+
             return Generate(t, 0, t.Length);
         }
-        
+
+        /**
+        * Creates a barcode. The <CODE>String</CODE> is interpreted with the ISO-8859-1 encoding
+        * @param text the text to encode into 
+        * @param
+        * @return the status of the generation. It can be one of this values:
+        * <p>
+        * <CODE>DM_NO_ERROR</CODE> - no error.<br>
+        * <CODE>DM_ERROR_TEXT_TOO_BIG</CODE> - the text is too big for the symbology capabilities.<br>
+        * <CODE>DM_ERROR_INVALID_SQUARE</CODE> - the dimensions given for the symbol are illegal.<br>
+        * <CODE>DM_ERROR_EXTENSION</CODE> - an error was while parsing an extension.
+        * @throws java.io.UnsupportedEncodingException on error
+        */
+        virtual public int Generate(String text, String encoding) {
+            byte[] t = System.Text.Encoding.GetEncoding(encoding).GetBytes(text);
+
+            return Generate(t, 0, t.Length);
+        }
+
         /**
         * Creates a barcode.
         * @param text the text
@@ -713,6 +1124,15 @@ namespace iTextSharp.text.pdf {
                 return DM_ERROR_EXTENSION;
             }
             e = -1;
+
+            int innerSize = textSize - extOut;
+            f = new int[6][];
+            switchMode = new int[6][];
+            for (int i = 0; i < f.Length; i++) {
+                f[i] = new int[innerSize];
+                switchMode[i] = new int[innerSize];
+            }
+
             if (height == 0 || width == 0) {
                 last = dmSizes[dmSizes.Length - 1];
                 e = GetEncodation(text, textOffset + extOut, textSize - extOut, data, extCount, last.dataSize - extCount, options, false);
@@ -721,7 +1141,7 @@ namespace iTextSharp.text.pdf {
                 }
                 e += extCount;
                 for (k = 0; k < dmSizes.Length; ++k) {
-                    if (dmSizes[k].dataSize >= e && (!forceSquareSize || dmSizes[k].width == dmSizes[k].height))
+                    if (dmSizes[k].dataSize >= e)
                         break;
                 }
                 dm = dmSizes[k];
@@ -756,29 +1176,29 @@ namespace iTextSharp.text.pdf {
         }
 
         virtual public void PlaceBarcode(PdfContentByte cb, BaseColor foreground, float moduleHeight, float moduleWidth) {
-            int w = width + 2*ws;
-            int h = height + 2*ws;
-            int stride = (w + 7)/8;
+            int w = width + 2 * ws;
+            int h = height + 2 * ws;
+            int stride = (w + 7) / 8;
             int ptr = 0;
             cb.SetColorFill(foreground);
             for (int k = 0; k < h; ++k) {
-                int p = k*stride;
+                int p = k * stride;
                 for (int j = 0; j < w; ++j) {
-                    int b = image[p + j/8] & 0xff;
-                    b <<= j%8;
+                    int b = image[p + j / 8] & 0xff;
+                    b <<= j % 8;
                     if ((b & 0x80) != 0) {
-                        cb.Rectangle(j*moduleWidth, (h - k - 1)*moduleHeight, moduleWidth, moduleHeight);
+                        cb.Rectangle(j * moduleWidth, (h - k - 1) * moduleHeight, moduleWidth, moduleHeight);
                     }
                 }
             }
             cb.Fill();
         }
-        
+
         /** Gets an <CODE>Image</CODE> with the barcode. A successful call to the method <CODE>generate()</CODE>
         * before calling this method is required.
         * @return the barcode <CODE>Image</CODE>
         * @throws BadElementException on error
-        */    
+        */
         virtual public Image CreateImage() {
             if (image == null)
                 return null;
@@ -793,7 +1213,7 @@ namespace iTextSharp.text.pdf {
         * @param foreground the color of the bars
         * @param background the color of the background
         * @return the image
-        */    
+        */
         public virtual System.Drawing.Image CreateDrawingImage(System.Drawing.Color foreground, System.Drawing.Color background) {
             if (image == null)
                 return null;
@@ -994,11 +1414,11 @@ namespace iTextSharp.text.pdf {
             private int nrow;
             private int ncol;
             private short[] array;
-			private static Dictionary<int, short[]> cache = new Dictionary<int,short[]>();
+            private static Dictionary<int, short[]> cache = new Dictionary<int, short[]>();
 
-			private Placement() {
+            private Placement() {
             }
-            
+
             internal static short[] DoPlacement(int nrow, int ncol) {
                 int key = nrow * 1000 + ncol;
                 lock (cache) {
@@ -1019,64 +1439,64 @@ namespace iTextSharp.text.pdf {
 
             /* "module" places "chr+bit" with appropriate wrapping within array[] */
             private void Module(int row, int col, int chr, int bit) {
-                if (row < 0) { row += nrow; col += 4 - ((nrow+4)%8); }
-                if (col < 0) { col += ncol; row += 4 - ((ncol+4)%8); }
-                array[row*ncol+col] = (short)(8*chr + bit);
+                if (row < 0) { row += nrow; col += 4 - ((nrow + 4) % 8); }
+                if (col < 0) { col += ncol; row += 4 - ((ncol + 4) % 8); }
+                array[row * ncol + col] = (short)(8 * chr + bit);
             }
             /* "utah" places the 8 bits of a utah-shaped symbol character in ECC200 */
-            private void Utah(int row, int col, int chr) { 
-                Module(row-2,col-2,chr,0);
-                Module(row-2,col-1,chr,1);
-                Module(row-1,col-2,chr,2);
-                Module(row-1,col-1,chr,3);
-                Module(row-1,col,chr,4);
-                Module(row,col-2,chr,5);
-                Module(row,col-1,chr,6);
-                Module(row,col,chr,7);
+            private void Utah(int row, int col, int chr) {
+                Module(row - 2, col - 2, chr, 0);
+                Module(row - 2, col - 1, chr, 1);
+                Module(row - 1, col - 2, chr, 2);
+                Module(row - 1, col - 1, chr, 3);
+                Module(row - 1, col, chr, 4);
+                Module(row, col - 2, chr, 5);
+                Module(row, col - 1, chr, 6);
+                Module(row, col, chr, 7);
             }
             /* "cornerN" places 8 bits of the four special corner cases in ECC200 */
-            private void Corner1(int chr) { 
-                Module(nrow-1,0,chr,0);
-                Module(nrow-1,1,chr,1);
-                Module(nrow-1,2,chr,2);
-                Module(0,ncol-2,chr,3);
-                Module(0,ncol-1,chr,4);
-                Module(1,ncol-1,chr,5);
-                Module(2,ncol-1,chr,6);
-                Module(3,ncol-1,chr,7);
+            private void Corner1(int chr) {
+                Module(nrow - 1, 0, chr, 0);
+                Module(nrow - 1, 1, chr, 1);
+                Module(nrow - 1, 2, chr, 2);
+                Module(0, ncol - 2, chr, 3);
+                Module(0, ncol - 1, chr, 4);
+                Module(1, ncol - 1, chr, 5);
+                Module(2, ncol - 1, chr, 6);
+                Module(3, ncol - 1, chr, 7);
             }
-            private void Corner2(int chr){
-                Module(nrow-3,0,chr,0);
-                Module(nrow-2,0,chr,1);
-                Module(nrow-1,0,chr,2);
-                Module(0,ncol-4,chr,3);
-                Module(0,ncol-3,chr,4);
-                Module(0,ncol-2,chr,5);
-                Module(0,ncol-1,chr,6);
-                Module(1,ncol-1,chr,7);
+            private void Corner2(int chr) {
+                Module(nrow - 3, 0, chr, 0);
+                Module(nrow - 2, 0, chr, 1);
+                Module(nrow - 1, 0, chr, 2);
+                Module(0, ncol - 4, chr, 3);
+                Module(0, ncol - 3, chr, 4);
+                Module(0, ncol - 2, chr, 5);
+                Module(0, ncol - 1, chr, 6);
+                Module(1, ncol - 1, chr, 7);
             }
-            private void Corner3(int chr){ 
-                Module(nrow-3,0,chr,0);
-                Module(nrow-2,0,chr,1);
-                Module(nrow-1,0,chr,2);
-                Module(0,ncol-2,chr,3);
-                Module(0,ncol-1,chr,4);
-                Module(1,ncol-1,chr,5);
-                Module(2,ncol-1,chr,6);
-                Module(3,ncol-1,chr,7);
+            private void Corner3(int chr) {
+                Module(nrow - 3, 0, chr, 0);
+                Module(nrow - 2, 0, chr, 1);
+                Module(nrow - 1, 0, chr, 2);
+                Module(0, ncol - 2, chr, 3);
+                Module(0, ncol - 1, chr, 4);
+                Module(1, ncol - 1, chr, 5);
+                Module(2, ncol - 1, chr, 6);
+                Module(3, ncol - 1, chr, 7);
             }
-            private void Corner4(int chr){
-                Module(nrow-1,0,chr,0);
-                Module(nrow-1,ncol-1,chr,1);
-                Module(0,ncol-3,chr,2);
-                Module(0,ncol-2,chr,3);
-                Module(0,ncol-1,chr,4);
-                Module(1,ncol-3,chr,5);
-                Module(1,ncol-2,chr,6);
-                Module(1,ncol-1,chr,7);
+            private void Corner4(int chr) {
+                Module(nrow - 1, 0, chr, 0);
+                Module(nrow - 1, ncol - 1, chr, 1);
+                Module(0, ncol - 3, chr, 2);
+                Module(0, ncol - 2, chr, 3);
+                Module(0, ncol - 1, chr, 4);
+                Module(1, ncol - 3, chr, 5);
+                Module(1, ncol - 2, chr, 6);
+                Module(1, ncol - 1, chr, 7);
             }
             /* "ECC200" fills an nrow x ncol array with appropriate values for ECC200 */
-            private void Ecc200(){
+            private void Ecc200() {
                 int row, col, chr;
                 /* First, fill the array[] with invalid entries */
                 for (int k = 0; k < array.Length; ++k)
@@ -1086,35 +1506,35 @@ namespace iTextSharp.text.pdf {
                 do {
                     /* repeatedly first check for one of the special corner cases, then... */
                     if ((row == nrow) && (col == 0)) Corner1(chr++);
-                    if ((row == nrow-2) && (col == 0) && (ncol%4 != 0)) Corner2(chr++);
-                    if ((row == nrow-2) && (col == 0) && (ncol%8 == 4)) Corner3(chr++);
-                    if ((row == nrow+4) && (col == 2) && (ncol%8 == 0)) Corner4(chr++);
+                    if ((row == nrow - 2) && (col == 0) && (ncol % 4 != 0)) Corner2(chr++);
+                    if ((row == nrow - 2) && (col == 0) && (ncol % 8 == 4)) Corner3(chr++);
+                    if ((row == nrow + 4) && (col == 2) && (ncol % 8 == 0)) Corner4(chr++);
                     /* sweep upward diagonally, inserting successive characters,... */
                     do {
-                        if ((row < nrow) && (col >= 0) && array[row*ncol+col] == 0)
-                            Utah(row,col,chr++);
+                        if ((row < nrow) && (col >= 0) && array[row * ncol + col] == 0)
+                            Utah(row, col, chr++);
                         row -= 2; col += 2;
                     } while ((row >= 0) && (col < ncol));
                     row += 1; col += 3;
                     /* & then sweep downward diagonally, inserting successive characters,... */
 
                     do {
-                        if ((row >= 0) && (col < ncol) && array[row*ncol+col] == 0)
-                            Utah(row,col,chr++);
+                        if ((row >= 0) && (col < ncol) && array[row * ncol + col] == 0)
+                            Utah(row, col, chr++);
                         row += 2; col -= 2;
                     } while ((row < nrow) && (col >= 0));
                     row += 3; col += 1;
                     /* ... until the entire array is scanned */
                 } while ((row < nrow) || (col < ncol));
                 /* Lastly, if the lower righthand corner is untouched, fill in fixed pattern */
-                if (array[nrow*ncol-1] == 0) {
-                    array[nrow*ncol-1] = array[nrow*ncol-ncol-2] = 1;
+                if (array[nrow * ncol - 1] == 0) {
+                    array[nrow * ncol - 1] = array[nrow * ncol - ncol - 2] = 1;
                 }
             }
         }
 
         internal class ReedSolomon {
-            
+
             private static readonly int[] log = {
                 0, 255,   1, 240,   2, 225, 241,  53,   3,  38, 226, 133, 242,  43,  54, 210,
                 4, 195,  39, 114, 227, 106, 134,  28, 243, 140,  44,  23,  55, 118, 211, 234,
@@ -1236,41 +1656,41 @@ namespace iTextSharp.text.pdf {
                 181, 241,  59,  52, 172,  25,  49, 232, 211, 189,  64,  54, 108, 153, 132,  63,
                 96, 103,  82, 186
             };
-            
+
             private static int[] GetPoly(int nc) {
                 switch (nc) {
-                case 5:
-                    return poly5;
-                case 7:
-                    return poly7;
-                case 10:
-                    return poly10;
-                case 11:
-                    return poly11;
-                case 12:
-                    return poly12;
-                case 14:
-                    return poly14;
-                case 18:
-                    return poly18;
-                case 20:
-                    return poly20;
-                case 24:
-                    return poly24;
-                case 28:
-                    return poly28;
-                case 36:
-                    return poly36;
-                case 42:
-                    return poly42;
-                case 48:
-                    return poly48;
-                case 56:
-                    return poly56;
-                case 62:
-                    return poly62;
-                case 68:
-                    return poly68;
+                    case 5:
+                        return poly5;
+                    case 7:
+                        return poly7;
+                    case 10:
+                        return poly10;
+                    case 11:
+                        return poly11;
+                    case 12:
+                        return poly12;
+                    case 14:
+                        return poly14;
+                    case 18:
+                        return poly18;
+                    case 20:
+                        return poly20;
+                    case 24:
+                        return poly24;
+                    case 28:
+                        return poly28;
+                    case 36:
+                        return poly36;
+                    case 42:
+                        return poly42;
+                    case 48:
+                        return poly48;
+                    case 56:
+                        return poly56;
+                    case 62:
+                        return poly62;
+                    case 68:
+                        return poly68;
                 }
                 return null;
             }
@@ -1278,11 +1698,11 @@ namespace iTextSharp.text.pdf {
             private static void ReedSolomonBlock(byte[] wd, int nd, byte[] ncout, int nc, int[] c) {
                 int i, j, k;
 
-                for (i=0; i<=nc; i++) ncout[i] = 0;
-                for (i=0; i<nd; i++) {
+                for (i = 0; i <= nc; i++) ncout[i] = 0;
+                for (i = 0; i < nd; i++) {
                     k = (ncout[0] ^ wd[i]) & 0xff;
-                    for (j=0; j<nc; j++) {
-                        ncout[j] = (byte)(ncout[j+1] ^ (k == 0 ? (byte)0 : (byte)alog[(log[k] + log[c[nc-j-1]]) % (255)]));
+                    for (j = 0; j < nc; j++) {
+                        ncout[j] = (byte)(ncout[j + 1] ^ (k == 0 ? (byte)0 : (byte)alog[(log[k] + log[c[nc - j - 1]]) % (255)]));
                     }
                 }
             }
@@ -1293,8 +1713,7 @@ namespace iTextSharp.text.pdf {
                 byte[] buf = new byte[256];
                 byte[] ecc = new byte[256];
                 int[] c = GetPoly(nc);
-                for (b = 0; b < blocks; b++)
-                {
+                for (b = 0; b < blocks; b++) {
                     int n, p = 0;
                     for (n = b; n < nd; n += blocks)
                         buf[p++] = wd[n];
