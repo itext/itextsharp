@@ -1512,6 +1512,25 @@ namespace iTextSharp.text.pdf {
             return fonts;
         }
         
+        internal static PdfDictionary createBuiltInFontDictionary(String name) {
+            PdfName fontName;
+            if (BuiltinFonts14.TryGetValue(name, out fontName)) {
+                return createBuiltInFontDictionary(fontName);
+            }
+            return null;
+        }
+
+        private static PdfDictionary createBuiltInFontDictionary(PdfName name) {
+            if (name == null) {
+                return null;
+            }
+            PdfDictionary dictionary = new PdfDictionary();
+            dictionary.Put(PdfName.TYPE, PdfName.FONT);
+            dictionary.Put(PdfName.BASEFONT, name);
+            dictionary.Put(PdfName.SUBTYPE, PdfName.TYPE1);
+            return dictionary;
+        }
+        
         /**
         * Gets the smallest box enclosing the character contours. It will return
         * <CODE>null</CODE> if the font has not the information or the character has no

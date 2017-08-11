@@ -54,6 +54,7 @@ using iTextSharp.text.pdf.intern;
 using iTextSharp.text.pdf.collection;
 using iTextSharp.text.xml.xmp;
 using iTextSharp.text.error_messages;
+using iTextSharp.text.io;
 using iTextSharp.xmp;
 using iTextSharp.xmp.options;
 
@@ -85,6 +86,10 @@ namespace iTextSharp.text.pdf {
         protected int initialXrefSize;
         protected PdfAction openAction;
 
+        //Hash map of standard fonts used in flattening of annotations to prevent fonts duplication
+        private Dictionary<String, PdfIndirectReference> builtInAnnotationFonts = new Dictionary<String, PdfIndirectReference>();
+        private static Dictionary<String, String> fromShortToFullAnnotationFontNames = new Dictionary<String, String>();
+        
         private double[] DEFAULT_MATRIX = { 1, 0, 0, 1, 0, 0 };
 
         protected ICounter COUNTER = CounterFactory.GetCounter(typeof(PdfStamper));
@@ -92,10 +97,29 @@ namespace iTextSharp.text.pdf {
     	    return COUNTER;
         }
 
+        private ILogger logger;
+
         /* Flag which defines if PdfLayer objects from existing pdf have been already read.
          * If no new layers were registered and user didn't fetched layers explicitly via getPdfLayers() method
          * then original layers are never read - they are simply copied to the new document with whole original catalog. */
         private bool originalLayersAreRead = false;
+
+        static PdfStamperImp() {
+            fromShortToFullAnnotationFontNames["CoBO"] = BaseFont.COURIER_BOLDOBLIQUE;
+            fromShortToFullAnnotationFontNames["CoBo"] = BaseFont.COURIER_BOLD;
+            fromShortToFullAnnotationFontNames["CoOb"] = BaseFont.COURIER_OBLIQUE;
+            fromShortToFullAnnotationFontNames["Cour"] = BaseFont.COURIER;
+            fromShortToFullAnnotationFontNames["HeBO"] = BaseFont.HELVETICA_BOLDOBLIQUE;
+            fromShortToFullAnnotationFontNames["HeBo"] = BaseFont.HELVETICA_BOLD;
+            fromShortToFullAnnotationFontNames["HeOb"] = BaseFont.HELVETICA_OBLIQUE;
+            fromShortToFullAnnotationFontNames["Helv"] = BaseFont.HELVETICA;
+            fromShortToFullAnnotationFontNames["Symb"] = BaseFont.SYMBOL;
+            fromShortToFullAnnotationFontNames["TiBI"] = BaseFont.TIMES_BOLDITALIC;
+            fromShortToFullAnnotationFontNames["TiBo"] = BaseFont.TIMES_BOLD;
+            fromShortToFullAnnotationFontNames["TiIt"] = BaseFont.TIMES_ITALIC;
+            fromShortToFullAnnotationFontNames["TiRo"] = BaseFont.TIMES_ROMAN;
+            fromShortToFullAnnotationFontNames["ZaDb"] = BaseFont.ZAPFDINGBATS;
+        }
 
         /** Creates new PdfStamperImp.
         * @param reader the read PDF
@@ -107,6 +131,7 @@ namespace iTextSharp.text.pdf {
         * @throws IOException
         */
         internal protected PdfStamperImp(PdfReader reader, Stream os, char pdfVersion, bool append) : base(new PdfDocument(), os) {
+            this.logger = LoggerFactory.GetLogger(typeof(PdfStamper));
             if (!reader.IsOpenedWithFullPermissions)
                 throw new BadPasswordException(MessageLocalization.GetComposedMessage("pdfreader.not.opened.with.owner.password"));
             if (reader.Tampered)
@@ -1203,12 +1228,13 @@ namespace iTextSharp.text.pdf {
                         continue;
 
                     PdfDictionary annDic = (PdfDictionary) annoto;
+                    PdfObject subType = annDic.Get(PdfName.SUBTYPE);
                     if (flattenFreeTextAnnotations) {
-                        if (!(annDic.Get(PdfName.SUBTYPE)).Equals(PdfName.FREETEXT)) {
+                        if (!PdfName.FREETEXT.Equals(subType)) {
                             continue;
                         }
                     } else {
-                        if ((annDic.Get(PdfName.SUBTYPE)).Equals(PdfName.WIDGET)) {
+                        if (PdfName.WIDGET.Equals(subType)) {
                             // skip widgets
                             continue;
                         }
@@ -1235,26 +1261,95 @@ namespace iTextSharp.text.pdf {
                             ((PdfDictionary) objReal).Put(PdfName.SUBTYPE, PdfName.FORM);
                             app = new PdfAppearance((PdfIndirectReference) obj);
                         } else {
-                            if (objReal.IsDictionary()) {
-                                PdfName as_p = appDic.GetAsName(PdfName.AS);
-                                if (as_p != null) {
-                                    PdfIndirectReference iref = (PdfIndirectReference) ((PdfDictionary) objReal).Get(as_p);
-                                    if (iref != null) {
-                                        app = new PdfAppearance(iref);
-                                        if (iref.IsIndirect()) {
-                                            objReal = PdfReader.GetPdfObject(iref);
-                                            ((PdfDictionary) objReal).Put(PdfName.SUBTYPE, PdfName.FORM);
+                            if (objReal != null) {
+                                if (objReal.IsDictionary()) {
+                                    PdfName as_p = appDic.GetAsName(PdfName.AS);
+                                    if (as_p != null) {
+                                        PdfIndirectReference iref =
+                                            (PdfIndirectReference) ((PdfDictionary) objReal).Get(as_p);
+                                        if (iref != null) {
+                                            app = new PdfAppearance(iref);
+                                            if (iref.IsIndirect()) {
+                                                objReal = PdfReader.GetPdfObject(iref);
+                                                ((PdfDictionary) objReal).Put(PdfName.SUBTYPE, PdfName.FORM);
+                                            }
                                         }
                                     }
+                                }
+                            } else {
+                                if ( PdfName.FREETEXT.Equals(subType) ) {
+                                    PdfString defaultAppearancePdfString = annDic.GetAsString(PdfName.DA);
+                                    if (defaultAppearancePdfString != null) {
+                                        PdfString freeTextContent = annDic.GetAsString(PdfName.CONTENTS);
+                                        String defaultAppearanceString = defaultAppearancePdfString.ToString();
+
+                                        //It is not stated in spec, but acrobat seems to support standard font names in DA
+                                        //So we need to check if the font is built-in and specify it explicitly.
+                                        PdfIndirectReference fontReference = null;
+                                        PdfName pdfFontName = null;
+                                        try {
+                                            IRandomAccessSource source = new RandomAccessSourceFactory().CreateSource(defaultAppearancePdfString.GetBytes());
+                                            PdfContentParser ps = new PdfContentParser(new PRTokeniser(new RandomAccessFileOrArray(source)));
+                                            List<PdfObject> operands = new List<PdfObject>();
+                                            while (ps.Parse(operands).Count > 0) {
+                                                PdfLiteral op = (PdfLiteral) operands[operands.Count - 1];
+                                                if (op.ToString().Equals("Tf")) {
+                                                    pdfFontName = (PdfName) operands[0];
+                                                    String fontName = pdfFontName.ToString().Substring(1);
+                                                    String fullName;
+                                                    if (!fromShortToFullAnnotationFontNames.TryGetValue(fontName, out fullName)) {
+                                                        fullName = fontName;
+                                                    }
+                                                    if (!builtInAnnotationFonts.TryGetValue(fullName, out fontReference)) {
+                                                        PdfDictionary dic = BaseFont.createBuiltInFontDictionary(fullName);
+                                                        if (dic != null) {
+                                                            fontReference = AddToBody(dic).IndirectReference;
+                                                            builtInAnnotationFonts[fullName] = fontReference;
+                                                        }
+                                                    }
+                                                }
+                                            }
+                                        } catch (Exception any) {
+                                            logger.Warn(MessageLocalization.GetComposedMessage("error.resolving.freetext.font"));
+                                            break;
+                                        }
+                                        
+                                        app = new PdfAppearance(this);
+                                        // it is unclear from spec were referenced from DA font should be (since annotations doesn't have DR), so in case it not built-in
+                                        // quickly and naively flattening the freetext annotation
+                                        if (fontReference != null) {
+                                            app.PageResources.AddFont(pdfFontName, fontReference);
+                                        }
+                                        app.SaveState();
+                                        app.BeginText();
+                                        app.SetLiteral(defaultAppearanceString);
+                                        app.SetLiteral("(" + freeTextContent.ToString() + ") Tj\n");
+                                        app.EndText();
+                                        app.RestoreState();
+                                    } else {
+                                        // The DA entry is required for free text annotations
+                                        // Not throwing an exception as we don't want to stop the flow, result is that this annotation won't be flattened.
+                                        this.logger.Warn(MessageLocalization.GetComposedMessage("freetext.annotation.doesnt.contain.da"));
+                                    }
+                                } else {
+                                    this.logger.Warn(MessageLocalization.GetComposedMessage("annotation.type.not.supported.flattening"));
                                 }
                             }
                         }
                         if (app != null) {
                             Rectangle rect = PdfReader.GetNormalizedRectangle(annDic.GetAsArray(PdfName.RECT));
-                            Rectangle bbox = PdfReader.GetNormalizedRectangle(objDict.GetAsArray(PdfName.BBOX));
+                            Rectangle bbox = null;
+
+                            if (objDict != null) {
+                                bbox = PdfReader.GetNormalizedRectangle(objDict.GetAsArray(PdfName.BBOX));
+                            } else {
+                                bbox = new Rectangle(0, STANDARD_ENCRYPTION_40, rect.Width, rect.Height);
+                                app.BoundingBox = bbox;
+                            }
+                            
                             PdfContentByte cb = GetOverContent(page);
                             cb.SetLiteral("Q ");
-                            if (objDict.GetAsArray(PdfName.MATRIX) != null &&
+                            if (objDict != null && objDict.GetAsArray(PdfName.MATRIX) != null &&
                                 !Util.ArraysAreEqual(DEFAULT_MATRIX, objDict.GetAsArray(PdfName.MATRIX).AsDoubleArray()))
                             {
                                 double[] matrix = objDict.GetAsArray(PdfName.MATRIX).AsDoubleArray();
