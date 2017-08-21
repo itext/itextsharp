@@ -70,6 +70,8 @@ namespace iTextSharp.tool.xml.parser.state {
                 this.parser.Flush();
                 this.parser.Memory().FlushNameSpace();
                 this.parser.SelectState().InTag();
+            }  else if (this.parser.SelectState().GetPreviousState() is ProcessingInstructionEncounteredState) {
+                this.parser.Memory().ProcessingInstruction().Append(character);
             }
         }
     }

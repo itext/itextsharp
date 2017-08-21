@@ -95,7 +95,7 @@ namespace iTextSharp.tool.xml.parser.state {
             } else if (character == '&') {
                 this.parser.SelectState().SpecialChar();
             } else  {
-                if (character == '*' && this.parser.Memory().LastChar == '/')
+                if (this.parser.CurrentTag() == HTML.Tag.STYLE && character == '*' && this.parser.Memory().LastChar == '/' && parser.Memory().Current().Length > 0)
                 {
                     this.parser.SelectState().StarComment();
                     this.parser.Memory()

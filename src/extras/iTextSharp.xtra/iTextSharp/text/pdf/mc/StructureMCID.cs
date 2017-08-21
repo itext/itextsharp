@@ -58,7 +58,7 @@ namespace iTextSharp.text.pdf.mc
          * @param obj	an MCID
          */
         public StructureMCID(PdfIndirectReference pg, PdfNumber mcid) {
-            this.pageref = pg.Number;
+            this.pageref = pg == null ? -1 : pg.Number;
             this.mcid = mcid.IntValue;
         }
 

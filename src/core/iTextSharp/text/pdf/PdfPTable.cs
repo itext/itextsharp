@@ -787,9 +787,10 @@ namespace iTextSharp.text.pdf {
                 colEnd = totalCols;
             else
                 colEnd = Math.Min(colEnd, totalCols);
-
-            LOGGER.Info(String.Format("Writing row {0} to {1}; column {2} to {3}", rowStart, rowEnd, colStart, colEnd));
-
+            if (LOGGER.IsLogging(Level.INFO)) {
+                LOGGER.Info(String.Format("Writing row {0} to {1}; column {2} to {3}", rowStart, rowEnd, colStart,
+                    colEnd));
+            }
             float yPosStart = yPos;
 
             PdfPTableBody currentBlock = null;
@@ -1920,7 +1921,9 @@ namespace iTextSharp.text.pdf {
          * @since iText 5.4.3
          */
         virtual public FittingRows GetFittingRows(float availableHeight, int startIdx) {
-            LOGGER.Info(String.Format("GetFittingRows({0}, {1})", availableHeight, startIdx));
+            if (LOGGER.IsLogging(Level.INFO)) {
+                LOGGER.Info(String.Format("GetFittingRows({0}, {1})", availableHeight, startIdx));
+            }
             if (startIdx > 0 && startIdx < rows.Count) {
                 System.Diagnostics.Debug.Assert(GetRow(startIdx).GetCells()[0] != null); // top left cell of current page may not be null
             }
@@ -1946,8 +1949,9 @@ namespace iTextSharp.text.pdf {
                         state.ConsumeRowspan(completedRowsHeight, rowHeight);
                     } else {
                         state.BeginCell(cell, completedRowsHeight, rowHeight);
-                        LOGGER.Info(String.Format("Height after BeginCell: {0} (cell: {1})", state.height, cell.CachedMaxHeight));
-                
+                        if (LOGGER.IsLogging(Level.INFO)) {
+                            LOGGER.Info(String.Format("Height after BeginCell: {0} (cell: {1})", state.height, cell.CachedMaxHeight));
+                        } 
                     }
                     if (state.CellEnds() && state.height > maxCompletedRowsHeight) {
                         maxCompletedRowsHeight = state.height;

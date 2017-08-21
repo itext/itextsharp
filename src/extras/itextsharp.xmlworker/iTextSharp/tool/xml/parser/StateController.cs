@@ -269,7 +269,7 @@ namespace iTextSharp.tool.xml.parser {
 	     * set Parser state to {@link StarCommentState}.
 	     * @return Parser
 	     */
-        public XMLParser StarComment()
+        virtual public XMLParser StarComment()
         {
             return SetState(this.starComment);
         }
@@ -278,9 +278,13 @@ namespace iTextSharp.tool.xml.parser {
          * set Parser state to {@link CloseStarCommentState}.
          * @return Parser
          */
-        public XMLParser CloseStarComment()
+        virtual public XMLParser CloseStarComment()
         {
             return SetState(this.closeStarComment);
+        }
+
+        virtual public IState GetPreviousState() {
+            return previousState;
         }
     }
 }

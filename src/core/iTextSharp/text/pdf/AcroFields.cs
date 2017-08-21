@@ -1760,7 +1760,7 @@ namespace iTextSharp.text.pdf {
                 PdfIndirectReference kid = refi;
                 while ((refi = wd.GetAsIndirectObject(PdfName.PARENT)) != null) {
                     wd = wd.GetAsDict( PdfName.PARENT );
-                    //if (wd == null) break; //avoid null-reference exceptions in case of removing fields with kids (see SUP-1846)
+                    if (wd == null) break; //avoid null-reference exceptions in case of removing fields with kids (see SUP-1846)
                     PdfArray kids = wd.GetAsArray(PdfName.KIDS);
                     if (RemoveRefFromArray(kids, kid) != 0)
                         break;

@@ -124,7 +124,7 @@ namespace iTextSharp.tool.xml.pipeline.end {
                     if (writable is WritableElement) {
                         foreach (IElement e in ((WritableElement) writable).Elements()) {
                             try {
-                                if (!doc.Add(e)) {
+                                if (!doc.Add(e) && LOG.IsLogging(Level.TRACE)) {
                                     LOG.Trace(String.Format(
                                             LocaleMessages.GetInstance().GetMessage(LocaleMessages.ELEMENT_NOT_ADDED),
                                             e.ToString()));

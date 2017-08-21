@@ -573,6 +573,7 @@
     <Content Include="resources\bugs\3353957.html" />
     <Content Include="resources\bugs\colored_lists_snippet.html" />
     <Content Include="resources\bugs\ol-test.html" />
+    <Content Include="resources\bugs\starcomments.html" />
     <Content Include="resources\bugs\processing-instructions.html" />
     <Content Include="resources\com\itextpdf\tool\xml\examples\css\background\background_color\cell\background_color_cell01\background_color_cell01.html" />
     <Content Include="resources\com\itextpdf\tool\xml\examples\css\background\background_color\cell\background_color_cell02\background_color_cell02.html" />

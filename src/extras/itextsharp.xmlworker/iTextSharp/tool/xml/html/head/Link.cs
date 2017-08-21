@@ -71,9 +71,16 @@ namespace iTextSharp.tool.xml.html.head {
                     try {
                         GetCSSResolver(ctx).AddCssFile(href, false);
                     } catch (CssResolverException e) {
-                        LOG.Error(String.Format(LocaleMessages.GetInstance().GetMessage(LocaleMessages.LINK_404), href), e);
+                        if (LOG.IsLogging(Level.ERROR)) {
+                            LOG.Error(String.Format(LocaleMessages.GetInstance().GetMessage(LocaleMessages.LINK_404), href), e);
+                        }
+                     
                     } catch (NoCustomContextException) {
-                        LOG.Warn(String.Format(LocaleMessages.GetInstance().GetMessage(LocaleMessages.CUSTOMCONTEXT_404_CONTINUE), typeof(CssResolverPipeline).FullName));
+                        if (LOG.IsLogging(Level.WARN)) {
+                            LOG.Warn(String.Format(
+                                LocaleMessages.GetInstance().GetMessage(LocaleMessages.CUSTOMCONTEXT_404_CONTINUE),
+                                typeof(CssResolverPipeline).FullName));
+                        }
                     }
                 }
             }

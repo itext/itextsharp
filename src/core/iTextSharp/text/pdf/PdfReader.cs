@@ -909,7 +909,8 @@ namespace iTextSharp.text.pdf {
                     else
                         ownerPasswordUsed = true;
                 }
-            } else if (filter.Equals(PdfName.PUBSEC)) {   
+            } else if (filter.Equals(PdfName.PUBSEC)) {
+                decrypt.documentID = documentID;
                 if ((cryptoMode & PdfWriter.ENCRYPTION_MASK) == PdfWriter.ENCRYPTION_AES_256)
                     decrypt.SetKey(encryptionKey);
                 else

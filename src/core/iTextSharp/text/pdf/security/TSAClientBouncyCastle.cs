@@ -92,6 +92,10 @@ namespace iTextSharp.text.pdf.security {
         
         /** Hash algorithm */
         protected internal String digestAlgorithm;
+
+        /** TSA request policy */
+        private string tsaReqPolicy = null;
+
         /**
         * Creates an instance of a TSAClient that will use BouncyCastle.
         * @param url String - Time Stamp Authority URL (i.e. "http://tsatest1.digistamp.com/TSA")
@@ -135,6 +139,14 @@ namespace iTextSharp.text.pdf.security {
             this.tsaInfo = tsaInfo;
         }
 
+        public virtual String GetTSAReqPolicy() {
+            return tsaReqPolicy;
+        }
+
+        public virtual void SetTSAReqPolicy(String tsaReqPolicy) {
+            this.tsaReqPolicy = tsaReqPolicy;
+        }
+
         /**
         * Get the token size estimate.
         * Returned value reflects the result of the last succesfull call, padded
@@ -163,6 +175,9 @@ namespace iTextSharp.text.pdf.security {
             // Setup the time stamp request
             TimeStampRequestGenerator tsqGenerator = new TimeStampRequestGenerator();
             tsqGenerator.SetCertReq(true);
+            if (!string.IsNullOrEmpty(tsaReqPolicy)) {
+                tsqGenerator.SetReqPolicy(tsaReqPolicy);
+            }
             // tsqGenerator.setReqPolicy("1.3.6.1.4.1.601.10.3.1");
             BigInteger nonce = BigInteger.ValueOf(DateTime.Now.Ticks + Environment.TickCount);
             TimeStampRequest request = tsqGenerator.Generate(DigestAlgorithms.GetAllowedDigests(digestAlgorithm), imprint, nonce);
