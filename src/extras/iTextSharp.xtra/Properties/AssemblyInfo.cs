@@ -6,7 +6,7 @@ using System.Runtime.InteropServices;
 [assembly: AssemblyDescription("Extra functionality for iTextSharp, a free PDF library ported from Java iText.")]
 
 [assembly: AssemblyConfiguration("")]
-[assembly: AssemblyCompany("")]
+[assembly: AssemblyCompany("iText Group NV")]
 [assembly: AssemblyProduct("iTextSharp.xtra")]
 [assembly: AssemblyCopyright("Copyright (C) 1999-2017 by iText Group NV")]
 [assembly: AssemblyTrademark("")]
