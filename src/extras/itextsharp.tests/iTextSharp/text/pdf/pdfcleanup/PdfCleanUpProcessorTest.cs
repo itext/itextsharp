@@ -85,6 +85,9 @@ namespace itextsharp.tests.iTextSharp.text.pdf.pdfcleanup {
             List<PdfCleanUpLocation> cleanUpLocations4 = new List<PdfCleanUpLocation>();
             cleanUpLocations4.Add(new PdfCleanUpLocation(1, new Rectangle(212, 394, 212 + 186, 394 + 170), null));
 
+            List<PdfCleanUpLocation> cleanUpLocations5 = new List<PdfCleanUpLocation>();
+            cleanUpLocations5.Add(new PdfCleanUpLocation(1, new Rectangle(0f, 0f, 595f, 680f), BaseColor.GRAY));
+
             return new object[] {
                 new object[] {"page229.pdf", "page229_01.pdf", "cmp_page229_01.pdf", cleanUpLocations1},
                 new object[] {"page229-modified-Tc-Tw.pdf", "page229-modified-Tc-Tw.pdf", "cmp_page229-modified-Tc-Tw.pdf", cleanUpLocations1},
@@ -114,6 +117,8 @@ namespace itextsharp.tests.iTextSharp.text.pdf.pdfcleanup {
                 new object[] {"absentICentry.pdf", "absentICentry.pdf", "cmp_absentICentry.pdf", null},
                 new object[] {"lotOfDashes.pdf", "lotOfDashes.pdf", "cmp_lotOfDashes.pdf", null},
                 new object[] {"clipPathReduction.pdf", "clipPathReduction.pdf", "cmp_clipPathReduction.pdf", cleanUpLocations4},
+                new object[] {"helloHelvetica.pdf", "helloHelvetica.pdf", "cmp_helloHelvetica.pdf", cleanUpLocations5},
+
             };
         }
 

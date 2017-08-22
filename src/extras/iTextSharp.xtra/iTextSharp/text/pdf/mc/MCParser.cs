@@ -216,7 +216,9 @@ namespace iTextSharp.text.pdf.mc {
             baos.Close();
             stream.SetData(baos.ToArray());
             // showing how many items are left
-            LOGGER.Info(String.Format("There are {0} items left for processing", items.Count));
+            if (LOGGER.IsLogging(Level.INFO)) {
+                LOGGER.Info(String.Format("There are {0} items left for processing", items.Count));
+            }
         }
 
         /**
@@ -227,7 +229,9 @@ namespace iTextSharp.text.pdf.mc {
         virtual protected void DealWithXObj(PdfName xobj) {
             PdfDictionary dict = xobjects.GetAsStream(xobj);
             PdfNumber structParent = dict.GetAsNumber(PdfName.STRUCTPARENT);
-            LOGGER.Info(String.Format("Encountered StructParent {0} in content", structParent));
+            if (LOGGER.IsLogging(Level.INFO)) {
+                LOGGER.Info(String.Format("Encountered StructParent {0} in content", structParent));
+            }
             if(structParent == null)
                 return;
             StructureItem item = items[0];
@@ -248,7 +252,9 @@ namespace iTextSharp.text.pdf.mc {
             if (mcid == null)
                 return;
             StructureItem item = items[0];
-            LOGGER.Info(String.Format("Encountered MCID {0} in content, comparing with {1}", mcid, item));
+            if (LOGGER.IsLogging(Level.INFO)) {
+                LOGGER.Info(String.Format("Encountered MCID {0} in content, comparing with {1}", mcid, item));
+            }
             switch (item.CheckMCID(pageref.Number, mcid.IntValue))
             {
                 case 0:

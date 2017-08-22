@@ -121,8 +121,11 @@ namespace iTextSharp.text.pdf {
             }
             bout.Seek(0, SeekOrigin.Begin);
             XmlTextReader xtr = new XmlTextReader(bout);
+            xtr.XmlResolver = null;
+            xtr.ProhibitDtd = false;
             domDocument = new XmlDocument();
             domDocument.PreserveWhitespace = true;
+            domDocument.XmlResolver = null;
             domDocument.Load(xtr);
             ExtractNodes();
         }
@@ -1106,6 +1109,7 @@ namespace iTextSharp.text.pdf {
         virtual public void FillXfaForm(XmlReader reader, bool readOnly) {
             XmlDocument doc = new XmlDocument();
             doc.PreserveWhitespace = true;
+            doc.XmlResolver = null;
             doc.Load(reader);
     	    FillXfaForm(doc.DocumentElement);
         }

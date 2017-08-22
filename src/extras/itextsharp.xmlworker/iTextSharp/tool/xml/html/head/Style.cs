@@ -79,7 +79,9 @@ namespace iTextSharp.tool.xml.html.head {
                     LOG.Trace(content);
                 }
             } catch (NoCustomContextException) {
-                LOG.Warn(String.Format(LocaleMessages.GetInstance().GetMessage(LocaleMessages.CUSTOMCONTEXT_404_CONTINUE), typeof(CssResolverPipeline).FullName));
+                if (LOG.IsLogging(Level.WARN)) {
+                    LOG.Warn(String.Format(LocaleMessages.GetInstance().GetMessage(LocaleMessages.CUSTOMCONTEXT_404_CONTINUE), typeof(CssResolverPipeline).FullName));
+                }
             }
             return new List<IElement>(0);
         }

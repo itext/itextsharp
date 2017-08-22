@@ -63,7 +63,9 @@ namespace iTextSharp.text.pdf.util {
             this.reader = reader;
             reader.Appendable = true;
             numberOfPages = reader.NumberOfPages;
-            LOGGER.Info(String.Format("Creating a splitter for a document with {0} pages", numberOfPages));
+            if (LOGGER.IsLogging(Level.INFO)) {
+                LOGGER.Info(String.Format("Creating a splitter for a document with {0} pages", numberOfPages));
+            }
         }
 
         public bool HasMorePages() {
@@ -94,13 +96,17 @@ namespace iTextSharp.text.pdf.util {
                 page = counter.GetLength(resources);
                 resources = counter.Resources;
                 length += page + trailer + XrefLength(resources.Count);
-                LOGGER.Info(String.Format("Page {0}: Comparing {1} with {2}", currentPage, length, sizeInBytes));
-                LOGGER.Info(String.Format("   page {0} trailer {1} xref {2}", page, trailer, XrefLength(resources.Count)));
+                if (LOGGER.IsLogging(Level.INFO)) {
+                    LOGGER.Info(String.Format("Page {0}: Comparing {1} with {2}", currentPage, length, sizeInBytes));
+                    LOGGER.Info(String.Format("   page {0} trailer {1} xref {2}", page, trailer, XrefLength(resources.Count)));
+                }
                 if (!hasPage || length < sizeInBytes) {
                     hasPage = true;
                     copy.AddPage(copy.GetImportedPage(reader, currentPage));
                     length = copy.Os.Counter;
-                    LOGGER.Info(String.Format("Size after adding page: {0}", length));
+                    if (LOGGER.IsLogging(Level.INFO)) {
+                        LOGGER.Info(String.Format("Size after adding page: {0}", length));
+                    }
                     if (length > sizeInBytes) overSized = true;
                     currentPage++;
                 } else {
