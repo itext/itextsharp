@@ -420,7 +420,7 @@
       <Project>{C892FA61-C495-4F30-8799-A198F89F23F4}</Project>
       <Name>itextsharp.pdfa</Name>
     </ProjectReference>
-    <ProjectReference Include="..\itextsharp.xtra\itextsharp.xtra.csproj">
+    <ProjectReference Include="..\iTextSharp.xtra\iTextSharp.xtra.csproj">
       <Project>{BE1934CF-90A9-43D3-A794-7E540874EDBB}</Project>
       <Name>itextsharp.xtra</Name>
     </ProjectReference>

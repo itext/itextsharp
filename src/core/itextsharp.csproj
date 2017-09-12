@@ -1087,40 +1087,40 @@
     <Compile Include="iTextSharp\text\ZapfDingbatsNumberList.cs">
       <SubType>Code</SubType>
     </Compile>
-    <Compile Include="srcbc\asn1\ASN1Encodable.cs">
+    <Compile Include="srcbc\asn1\Asn1Encodable.cs">
       <SubType>Code</SubType>
     </Compile>
-    <Compile Include="srcbc\asn1\ASN1EncodableVector.cs">
+    <Compile Include="srcbc\asn1\Asn1EncodableVector.cs">
       <SubType>Code</SubType>
     </Compile>
     <Compile Include="srcbc\asn1\ASN1Generator.cs">
       <SubType>Code</SubType>
     </Compile>
-    <Compile Include="srcbc\asn1\ASN1InputStream.cs">
+    <Compile Include="srcbc\asn1\Asn1InputStream.cs">
       <SubType>Code</SubType>
     </Compile>
-    <Compile Include="srcbc\asn1\ASN1Null.cs">
+    <Compile Include="srcbc\asn1\Asn1Null.cs">
       <SubType>Code</SubType>
     </Compile>
-    <Compile Include="srcbc\asn1\ASN1Object.cs">
+    <Compile Include="srcbc\asn1\Asn1Object.cs">
       <SubType>Code</SubType>
     </Compile>
-    <Compile Include="srcbc\asn1\ASN1OctetString.cs">
+    <Compile Include="srcbc\asn1\Asn1OctetString.cs">
       <SubType>Code</SubType>
     </Compile>
     <Compile Include="srcbc\asn1\ASN1OctetStringParser.cs">
       <SubType>Code</SubType>
     </Compile>
-    <Compile Include="srcbc\asn1\ASN1OutputStream.cs">
+    <Compile Include="srcbc\asn1\Asn1OutputStream.cs">
       <SubType>Code</SubType>
     </Compile>
-    <Compile Include="srcbc\asn1\ASN1Sequence.cs">
+    <Compile Include="srcbc\asn1\Asn1Sequence.cs">
       <SubType>Code</SubType>
     </Compile>
     <Compile Include="srcbc\asn1\ASN1SequenceParser.cs">
       <SubType>Code</SubType>
     </Compile>
-    <Compile Include="srcbc\asn1\ASN1Set.cs">
+    <Compile Include="srcbc\asn1\Asn1Set.cs">
       <SubType>Code</SubType>
     </Compile>
     <Compile Include="srcbc\asn1\ASN1SetParser.cs">
@@ -1129,13 +1129,13 @@
     <Compile Include="srcbc\asn1\ASN1StreamParser.cs">
       <SubType>Code</SubType>
     </Compile>
-    <Compile Include="srcbc\asn1\ASN1TaggedObject.cs">
+    <Compile Include="srcbc\asn1\Asn1TaggedObject.cs">
       <SubType>Code</SubType>
     </Compile>
     <Compile Include="srcbc\asn1\ASN1TaggedObjectParser.cs">
       <SubType>Code</SubType>
     </Compile>
-    <Compile Include="srcbc\asn1\ASN1Tags.cs">
+    <Compile Include="srcbc\asn1\Asn1Tags.cs">
       <SubType>Code</SubType>
     </Compile>
     <Compile Include="srcbc\asn1\bc\BCObjectIdentifiers.cs" />
@@ -1148,10 +1148,10 @@
     <Compile Include="srcbc\asn1\BERGenerator.cs">
       <SubType>Code</SubType>
     </Compile>
-    <Compile Include="srcbc\asn1\BERNull.cs">
+    <Compile Include="srcbc\asn1\BerNull.cs">
       <SubType>Code</SubType>
     </Compile>
-    <Compile Include="srcbc\asn1\BEROctetString.cs">
+    <Compile Include="srcbc\asn1\BerOctetString.cs">
       <SubType>Code</SubType>
     </Compile>
     <Compile Include="srcbc\asn1\BEROctetStringGenerator.cs">
@@ -1160,10 +1160,10 @@
     <Compile Include="srcbc\asn1\BEROctetStringParser.cs">
       <SubType>Code</SubType>
     </Compile>
-    <Compile Include="srcbc\asn1\BEROutputStream.cs">
+    <Compile Include="srcbc\asn1\BerOutputStream.cs">
       <SubType>Code</SubType>
     </Compile>
-    <Compile Include="srcbc\asn1\BERSequence.cs">
+    <Compile Include="srcbc\asn1\BerSequence.cs">
       <SubType>Code</SubType>
     </Compile>
     <Compile Include="srcbc\asn1\BERSequenceGenerator.cs">
@@ -1172,7 +1172,7 @@
     <Compile Include="srcbc\asn1\BERSequenceParser.cs">
       <SubType>Code</SubType>
     </Compile>
-    <Compile Include="srcbc\asn1\BERSet.cs">
+    <Compile Include="srcbc\asn1\BerSet.cs">
       <SubType>Code</SubType>
     </Compile>
     <Compile Include="srcbc\asn1\BERSetGenerator.cs">
@@ -1181,7 +1181,7 @@
     <Compile Include="srcbc\asn1\BERSetParser.cs">
       <SubType>Code</SubType>
     </Compile>
-    <Compile Include="srcbc\asn1\BERTaggedObject.cs">
+    <Compile Include="srcbc\asn1\BerTaggedObject.cs">
       <SubType>Code</SubType>
     </Compile>
     <Compile Include="srcbc\asn1\BERTaggedObjectParser.cs">
@@ -1343,19 +1343,19 @@
     <Compile Include="srcbc\asn1\DefiniteLengthInputStream.cs">
       <SubType>Code</SubType>
     </Compile>
-    <Compile Include="srcbc\asn1\DERApplicationSpecific.cs">
+    <Compile Include="srcbc\asn1\DerApplicationSpecific.cs">
       <SubType>Code</SubType>
     </Compile>
-    <Compile Include="srcbc\asn1\DERBitString.cs">
+    <Compile Include="srcbc\asn1\DerBitString.cs">
       <SubType>Code</SubType>
     </Compile>
-    <Compile Include="srcbc\asn1\DERBMPString.cs">
+    <Compile Include="srcbc\asn1\DerBMPString.cs">
       <SubType>Code</SubType>
     </Compile>
-    <Compile Include="srcbc\asn1\DERBoolean.cs">
+    <Compile Include="srcbc\asn1\DerBoolean.cs">
       <SubType>Code</SubType>
     </Compile>
-    <Compile Include="srcbc\asn1\DEREnumerated.cs">
+    <Compile Include="srcbc\asn1\DerEnumerated.cs">
       <SubType>Code</SubType>
     </Compile>
     <Compile Include="srcbc\asn1\DERExternal.cs">
@@ -1364,43 +1364,43 @@
     <Compile Include="srcbc\asn1\DERExternalParser.cs">
       <SubType>Code</SubType>
     </Compile>
-    <Compile Include="srcbc\asn1\DERGeneralizedTime.cs">
+    <Compile Include="srcbc\asn1\DerGeneralizedTime.cs">
       <SubType>Code</SubType>
     </Compile>
-    <Compile Include="srcbc\asn1\DERGeneralString.cs">
+    <Compile Include="srcbc\asn1\DerGeneralString.cs">
       <SubType>Code</SubType>
     </Compile>
     <Compile Include="srcbc\asn1\DERGenerator.cs">
       <SubType>Code</SubType>
     </Compile>
-    <Compile Include="srcbc\asn1\DERIA5String.cs">
+    <Compile Include="srcbc\asn1\DerIA5String.cs">
       <SubType>Code</SubType>
     </Compile>
-    <Compile Include="srcbc\asn1\DERInteger.cs">
+    <Compile Include="srcbc\asn1\DerInteger.cs">
       <SubType>Code</SubType>
     </Compile>
-    <Compile Include="srcbc\asn1\DERNull.cs">
+    <Compile Include="srcbc\asn1\DerNull.cs">
       <SubType>Code</SubType>
     </Compile>
-    <Compile Include="srcbc\asn1\DERNumericString.cs">
+    <Compile Include="srcbc\asn1\DerNumericString.cs">
       <SubType>Code</SubType>
     </Compile>
-    <Compile Include="srcbc\asn1\DERObjectIdentifier.cs">
+    <Compile Include="srcbc\asn1\DerObjectIdentifier.cs">
       <SubType>Code</SubType>
     </Compile>
-    <Compile Include="srcbc\asn1\DEROctetString.cs">
+    <Compile Include="srcbc\asn1\DerOctetString.cs">
       <SubType>Code</SubType>
     </Compile>
     <Compile Include="srcbc\asn1\DEROctetStringParser.cs">
       <SubType>Code</SubType>
     </Compile>
-    <Compile Include="srcbc\asn1\DEROutputStream.cs">
+    <Compile Include="srcbc\asn1\DerOutputStream.cs">
       <SubType>Code</SubType>
     </Compile>
-    <Compile Include="srcbc\asn1\DERPrintableString.cs">
+    <Compile Include="srcbc\asn1\DerPrintableString.cs">
       <SubType>Code</SubType>
     </Compile>
-    <Compile Include="srcbc\asn1\DERSequence.cs">
+    <Compile Include="srcbc\asn1\DerSequence.cs">
       <SubType>Code</SubType>
     </Compile>
     <Compile Include="srcbc\asn1\DERSequenceGenerator.cs">
@@ -1409,7 +1409,7 @@
     <Compile Include="srcbc\asn1\DERSequenceParser.cs">
       <SubType>Code</SubType>
     </Compile>
-    <Compile Include="srcbc\asn1\DERSet.cs">
+    <Compile Include="srcbc\asn1\DerSet.cs">
       <SubType>Code</SubType>
     </Compile>
     <Compile Include="srcbc\asn1\DERSetGenerator.cs">
@@ -1421,25 +1421,25 @@
     <Compile Include="srcbc\asn1\DerStringBase.cs">
       <SubType>Code</SubType>
     </Compile>
-    <Compile Include="srcbc\asn1\DERT61String.cs">
+    <Compile Include="srcbc\asn1\DerT61String.cs">
       <SubType>Code</SubType>
     </Compile>
-    <Compile Include="srcbc\asn1\DERTaggedObject.cs">
+    <Compile Include="srcbc\asn1\DerTaggedObject.cs">
       <SubType>Code</SubType>
     </Compile>
-    <Compile Include="srcbc\asn1\DERUniversalString.cs">
+    <Compile Include="srcbc\asn1\DerUniversalString.cs">
       <SubType>Code</SubType>
     </Compile>
-    <Compile Include="srcbc\asn1\DERUnknownTag.cs">
+    <Compile Include="srcbc\asn1\DerUnknownTag.cs">
       <SubType>Code</SubType>
     </Compile>
-    <Compile Include="srcbc\asn1\DERUTCTime.cs">
+    <Compile Include="srcbc\asn1\DerUTCTime.cs">
       <SubType>Code</SubType>
     </Compile>
-    <Compile Include="srcbc\asn1\DERUTF8String.cs">
+    <Compile Include="srcbc\asn1\DerUTF8String.cs">
       <SubType>Code</SubType>
     </Compile>
-    <Compile Include="srcbc\asn1\DERVisibleString.cs">
+    <Compile Include="srcbc\asn1\DerVisibleString.cs">
       <SubType>Code</SubType>
     </Compile>
     <Compile Include="srcbc\asn1\eac\EACObjectIdentifiers.cs">
@@ -1712,7 +1712,7 @@
     <Compile Include="srcbc\asn1\ocsp\TBSRequest.cs">
       <SubType>Code</SubType>
     </Compile>
-    <Compile Include="srcbc\asn1\OIDTokenizer.cs">
+    <Compile Include="srcbc\asn1\OidTokenizer.cs">
       <SubType>Code</SubType>
     </Compile>
     <Compile Include="srcbc\asn1\oiw\ElGamalParameter.cs">
@@ -1850,7 +1850,7 @@
     <Compile Include="srcbc\asn1\tsp\TSTInfo.cs">
       <SubType>Code</SubType>
     </Compile>
-    <Compile Include="srcbc\asn1\util\ASN1Dump.cs">
+    <Compile Include="srcbc\asn1\util\Asn1Dump.cs">
       <SubType>Code</SubType>
     </Compile>
     <Compile Include="srcbc\asn1\util\Dump.cs">
@@ -2599,31 +2599,31 @@
     <Compile Include="srcbc\crypto\digests\NullDigest.cs">
       <SubType>Code</SubType>
     </Compile>
-    <Compile Include="srcbc\crypto\digests\RIPEMD128Digest.cs">
+    <Compile Include="srcbc\crypto\digests\RipeMD128Digest.cs">
       <SubType>Code</SubType>
     </Compile>
-    <Compile Include="srcbc\crypto\digests\RIPEMD160Digest.cs">
+    <Compile Include="srcbc\crypto\digests\RipeMD160Digest.cs">
       <SubType>Code</SubType>
     </Compile>
-    <Compile Include="srcbc\crypto\digests\RIPEMD256Digest.cs">
+    <Compile Include="srcbc\crypto\digests\RipeMD256Digest.cs">
       <SubType>Code</SubType>
     </Compile>
-    <Compile Include="srcbc\crypto\digests\RIPEMD320Digest.cs">
+    <Compile Include="srcbc\crypto\digests\RipeMD320Digest.cs">
       <SubType>Code</SubType>
     </Compile>
-    <Compile Include="srcbc\crypto\digests\SHA1Digest.cs">
+    <Compile Include="srcbc\crypto\digests\Sha1Digest.cs">
       <SubType>Code</SubType>
     </Compile>
-    <Compile Include="srcbc\crypto\digests\SHA224Digest.cs">
+    <Compile Include="srcbc\crypto\digests\Sha224Digest.cs">
       <SubType>Code</SubType>
     </Compile>
-    <Compile Include="srcbc\crypto\digests\SHA256Digest.cs">
+    <Compile Include="srcbc\crypto\digests\Sha256Digest.cs">
       <SubType>Code</SubType>
     </Compile>
-    <Compile Include="srcbc\crypto\digests\SHA384Digest.cs">
+    <Compile Include="srcbc\crypto\digests\Sha384Digest.cs">
       <SubType>Code</SubType>
     </Compile>
-    <Compile Include="srcbc\crypto\digests\SHA512Digest.cs">
+    <Compile Include="srcbc\crypto\digests\Sha512Digest.cs">
       <SubType>Code</SubType>
     </Compile>
     <Compile Include="srcbc\crypto\digests\ShortenedDigest.cs">
@@ -2638,22 +2638,22 @@
     <Compile Include="srcbc\crypto\encodings\ISO9796d1Encoding.cs">
       <SubType>Code</SubType>
     </Compile>
-    <Compile Include="srcbc\crypto\encodings\OAEPEncoding.cs">
+    <Compile Include="srcbc\crypto\encodings\OaepEncoding.cs">
       <SubType>Code</SubType>
     </Compile>
-    <Compile Include="srcbc\crypto\encodings\PKCS1Encoding.cs">
+    <Compile Include="srcbc\crypto\encodings\Pkcs1Encoding.cs">
       <SubType>Code</SubType>
     </Compile>
-    <Compile Include="srcbc\crypto\engines\AESEngine.cs">
+    <Compile Include="srcbc\crypto\engines\AesEngine.cs">
       <SubType>Code</SubType>
     </Compile>
-    <Compile Include="srcbc\crypto\engines\AESFastEngine.cs">
+    <Compile Include="srcbc\crypto\engines\AesFastEngine.cs">
       <SubType>Code</SubType>
     </Compile>
-    <Compile Include="srcbc\crypto\engines\AESLightEngine.cs">
+    <Compile Include="srcbc\crypto\engines\AesLightEngine.cs">
       <SubType>Code</SubType>
     </Compile>
-    <Compile Include="srcbc\crypto\engines\AESWrapEngine.cs">
+    <Compile Include="srcbc\crypto\engines\AesWrapEngine.cs">
       <SubType>Code</SubType>
     </Compile>
     <Compile Include="srcbc\crypto\engines\BlowfishEngine.cs">
@@ -2668,19 +2668,19 @@
     <Compile Include="srcbc\crypto\engines\CamelliaWrapEngine.cs">
       <SubType>Code</SubType>
     </Compile>
-    <Compile Include="srcbc\crypto\engines\CAST5Engine.cs">
+    <Compile Include="srcbc\crypto\engines\Cast5Engine.cs">
       <SubType>Code</SubType>
     </Compile>
-    <Compile Include="srcbc\crypto\engines\CAST6Engine.cs">
+    <Compile Include="srcbc\crypto\engines\Cast6Engine.cs">
       <SubType>Code</SubType>
     </Compile>
-    <Compile Include="srcbc\crypto\engines\DESedeEngine.cs">
+    <Compile Include="srcbc\crypto\engines\DesEdeEngine.cs">
       <SubType>Code</SubType>
     </Compile>
-    <Compile Include="srcbc\crypto\engines\DESedeWrapEngine.cs">
+    <Compile Include="srcbc\crypto\engines\DesEdeWrapEngine.cs">
       <SubType>Code</SubType>
     </Compile>
-    <Compile Include="srcbc\crypto\engines\DESEngine.cs">
+    <Compile Include="srcbc\crypto\engines\DesEngine.cs">
       <SubType>Code</SubType>
     </Compile>
     <Compile Include="srcbc\crypto\engines\ElGamalEngine.cs">
@@ -2695,10 +2695,10 @@
     <Compile Include="srcbc\crypto\engines\HC256Engine.cs">
       <SubType>Code</SubType>
     </Compile>
-    <Compile Include="srcbc\crypto\engines\IDEAEngine.cs">
+    <Compile Include="srcbc\crypto\engines\IdeaEngine.cs">
       <SubType>Code</SubType>
     </Compile>
-    <Compile Include="srcbc\crypto\engines\IESEngine.cs">
+    <Compile Include="srcbc\crypto\engines\IesEngine.cs">
       <SubType>Code</SubType>
     </Compile>
     <Compile Include="srcbc\crypto\engines\ISAACEngine.cs">
@@ -2749,7 +2749,7 @@
     <Compile Include="srcbc\crypto\engines\RSACoreEngine.cs">
       <SubType>Code</SubType>
     </Compile>
-    <Compile Include="srcbc\crypto\engines\RSAEngine.cs">
+    <Compile Include="srcbc\crypto\engines\RsaEngine.cs">
       <SubType>Code</SubType>
     </Compile>
     <Compile Include="srcbc\crypto\engines\Salsa20Engine.cs">
@@ -2785,10 +2785,10 @@
     <Compile Include="srcbc\crypto\generators\BaseKdfBytesGenerator.cs">
       <SubType>Code</SubType>
     </Compile>
-    <Compile Include="srcbc\crypto\generators\DESedeKeyGenerator.cs">
+    <Compile Include="srcbc\crypto\generators\DesEdeKeyGenerator.cs">
       <SubType>Code</SubType>
     </Compile>
-    <Compile Include="srcbc\crypto\generators\DESKeyGenerator.cs">
+    <Compile Include="srcbc\crypto\generators\DesKeyGenerator.cs">
       <SubType>Code</SubType>
     </Compile>
     <Compile Include="srcbc\crypto\generators\DHBasicKeyPairGenerator.cs">
@@ -2806,10 +2806,10 @@
     <Compile Include="srcbc\crypto\generators\DHParametersHelper.cs">
       <SubType>Code</SubType>
     </Compile>
-    <Compile Include="srcbc\crypto\generators\DSAKeyPairGenerator.cs">
+    <Compile Include="srcbc\crypto\generators\DsaKeyPairGenerator.cs">
       <SubType>Code</SubType>
     </Compile>
-    <Compile Include="srcbc\crypto\generators\DSAParametersGenerator.cs">
+    <Compile Include="srcbc\crypto\generators\DsaParametersGenerator.cs">
       <SubType>Code</SubType>
     </Compile>
     <Compile Include="srcbc\crypto\generators\ECKeyPairGenerator.cs">
@@ -2830,10 +2830,10 @@
     <Compile Include="srcbc\crypto\generators\Kdf1BytesGenerator.cs">
       <SubType>Code</SubType>
     </Compile>
-    <Compile Include="srcbc\crypto\generators\KDF2BytesGenerator.cs">
+    <Compile Include="srcbc\crypto\generators\Kdf2BytesGenerator.cs">
       <SubType>Code</SubType>
     </Compile>
-    <Compile Include="srcbc\crypto\generators\MGF1BytesGenerator.cs">
+    <Compile Include="srcbc\crypto\generators\Mgf1BytesGenerator.cs">
       <SubType>Code</SubType>
     </Compile>
     <Compile Include="srcbc\crypto\generators\NaccacheSternKeyPairGenerator.cs">
@@ -2842,19 +2842,19 @@
     <Compile Include="srcbc\crypto\generators\OpenSSLPBEParametersGenerator.cs">
       <SubType>Code</SubType>
     </Compile>
-    <Compile Include="srcbc\crypto\generators\PKCS12ParametersGenerator.cs">
+    <Compile Include="srcbc\crypto\generators\Pkcs12ParametersGenerator.cs">
       <SubType>Code</SubType>
     </Compile>
-    <Compile Include="srcbc\crypto\generators\PKCS5S1ParametersGenerator.cs">
+    <Compile Include="srcbc\crypto\generators\Pkcs5S1ParametersGenerator.cs">
       <SubType>Code</SubType>
     </Compile>
-    <Compile Include="srcbc\crypto\generators\PKCS5S2ParametersGenerator.cs">
+    <Compile Include="srcbc\crypto\generators\Pkcs5S2ParametersGenerator.cs">
       <SubType>Code</SubType>
     </Compile>
     <Compile Include="srcbc\crypto\generators\RSABlindingFactorGenerator.cs">
       <SubType>Code</SubType>
     </Compile>
-    <Compile Include="srcbc\crypto\generators\RSAKeyPairGenerator.cs">
+    <Compile Include="srcbc\crypto\generators\RsaKeyPairGenerator.cs">
       <SubType>Code</SubType>
     </Compile>
     <Compile Include="srcbc\crypto\IAsymmetricBlockCipher.cs">
@@ -2920,10 +2920,10 @@
     <Compile Include="srcbc\crypto\KeyGenerationParameters.cs">
       <SubType>Code</SubType>
     </Compile>
-    <Compile Include="srcbc\crypto\macs\CBCBlockCipherMac.cs">
+    <Compile Include="srcbc\crypto\macs\CbcBlockCipherMac.cs">
       <SubType>Code</SubType>
     </Compile>
-    <Compile Include="srcbc\crypto\macs\CFBBlockCipherMac.cs">
+    <Compile Include="srcbc\crypto\macs\CfbBlockCipherMac.cs">
       <SubType>Code</SubType>
     </Compile>
     <Compile Include="srcbc\crypto\macs\CMac.cs">
@@ -2944,16 +2944,16 @@
     <Compile Include="srcbc\crypto\MaxBytesExceededException.cs">
       <SubType>Code</SubType>
     </Compile>
-    <Compile Include="srcbc\crypto\modes\CBCBlockCipher.cs">
+    <Compile Include="srcbc\crypto\modes\CbcBlockCipher.cs">
       <SubType>Code</SubType>
     </Compile>
     <Compile Include="srcbc\crypto\modes\CcmBlockCipher.cs">
       <SubType>Code</SubType>
     </Compile>
-    <Compile Include="srcbc\crypto\modes\CFBBlockCipher.cs">
+    <Compile Include="srcbc\crypto\modes\CfbBlockCipher.cs">
       <SubType>Code</SubType>
     </Compile>
-    <Compile Include="srcbc\crypto\modes\CTSBlockCipher.cs">
+    <Compile Include="srcbc\crypto\modes\CtsBlockCipher.cs">
       <SubType>Code</SubType>
     </Compile>
     <Compile Include="srcbc\crypto\modes\EAXBlockCipher.cs">
@@ -2983,13 +2983,13 @@
     <Compile Include="srcbc\crypto\modes\IAeadBlockCipher.cs">
       <SubType>Code</SubType>
     </Compile>
-    <Compile Include="srcbc\crypto\modes\OFBBlockCipher.cs">
+    <Compile Include="srcbc\crypto\modes\OfbBlockCipher.cs">
       <SubType>Code</SubType>
     </Compile>
     <Compile Include="srcbc\crypto\modes\OpenPgpCfbBlockCipher.cs">
       <SubType>Code</SubType>
     </Compile>
-    <Compile Include="srcbc\crypto\modes\SICBlockCipher.cs">
+    <Compile Include="srcbc\crypto\modes\SicBlockCipher.cs">
       <SubType>Code</SubType>
     </Compile>
     <Compile Include="srcbc\crypto\paddings\BlockCipherPadding.cs">
@@ -3004,10 +3004,10 @@
     <Compile Include="srcbc\crypto\paddings\PaddedBufferedBlockCipher.cs">
       <SubType>Code</SubType>
     </Compile>
-    <Compile Include="srcbc\crypto\paddings\PKCS7Padding.cs">
+    <Compile Include="srcbc\crypto\paddings\Pkcs7Padding.cs">
       <SubType>Code</SubType>
     </Compile>
-    <Compile Include="srcbc\crypto\paddings\TBCPadding.cs">
+    <Compile Include="srcbc\crypto\paddings\TbcPadding.cs">
       <SubType>Code</SubType>
     </Compile>
     <Compile Include="srcbc\crypto\paddings\X923Padding.cs">
@@ -3022,10 +3022,10 @@
     <Compile Include="srcbc\crypto\parameters\CcmParameters.cs">
       <SubType>Code</SubType>
     </Compile>
-    <Compile Include="srcbc\crypto\parameters\DESedeParameters.cs">
+    <Compile Include="srcbc\crypto\parameters\DesEdeParameters.cs">
       <SubType>Code</SubType>
     </Compile>
-    <Compile Include="srcbc\crypto\parameters\DESParameters.cs">
+    <Compile Include="srcbc\crypto\parameters\DesParameters.cs">
       <SubType>Code</SubType>
     </Compile>
     <Compile Include="srcbc\crypto\parameters\DHKeyGenerationParameters.cs">
@@ -3046,22 +3046,22 @@
     <Compile Include="srcbc\crypto\parameters\DHValidationParameters.cs">
       <SubType>Code</SubType>
     </Compile>
-    <Compile Include="srcbc\crypto\parameters\DSAKeyGenerationParameters.cs">
+    <Compile Include="srcbc\crypto\parameters\DsaKeyGenerationParameters.cs">
       <SubType>Code</SubType>
     </Compile>
-    <Compile Include="srcbc\crypto\parameters\DSAKeyParameters.cs">
+    <Compile Include="srcbc\crypto\parameters\DsaKeyParameters.cs">
       <SubType>Code</SubType>
     </Compile>
-    <Compile Include="srcbc\crypto\parameters\DSAParameters.cs">
+    <Compile Include="srcbc\crypto\parameters\DsaParameters.cs">
       <SubType>Code</SubType>
     </Compile>
-    <Compile Include="srcbc\crypto\parameters\DSAPrivateKeyParameters.cs">
+    <Compile Include="srcbc\crypto\parameters\DsaPrivateKeyParameters.cs">
       <SubType>Code</SubType>
     </Compile>
-    <Compile Include="srcbc\crypto\parameters\DSAPublicKeyParameters.cs">
+    <Compile Include="srcbc\crypto\parameters\DsaPublicKeyParameters.cs">
       <SubType>Code</SubType>
     </Compile>
-    <Compile Include="srcbc\crypto\parameters\DSAValidationParameters.cs">
+    <Compile Include="srcbc\crypto\parameters\DsaValidationParameters.cs">
       <SubType>Code</SubType>
     </Compile>
     <Compile Include="srcbc\crypto\parameters\ECDomainParameters.cs">
@@ -3112,22 +3112,22 @@
     <Compile Include="srcbc\crypto\parameters\GOST3410ValidationParameters.cs">
       <SubType>Code</SubType>
     </Compile>
-    <Compile Include="srcbc\crypto\parameters\IESParameters.cs">
+    <Compile Include="srcbc\crypto\parameters\IesParameters.cs">
       <SubType>Code</SubType>
     </Compile>
-    <Compile Include="srcbc\crypto\parameters\IESWithCipherParameters.cs">
+    <Compile Include="srcbc\crypto\parameters\IesWithCipherParameters.cs">
       <SubType>Code</SubType>
     </Compile>
     <Compile Include="srcbc\crypto\parameters\ISO18033KDFParameters.cs">
       <SubType>Code</SubType>
     </Compile>
-    <Compile Include="srcbc\crypto\parameters\KDFParameters.cs">
+    <Compile Include="srcbc\crypto\parameters\KdfParameters.cs">
       <SubType>Code</SubType>
     </Compile>
     <Compile Include="srcbc\crypto\parameters\KeyParameter.cs">
       <SubType>Code</SubType>
     </Compile>
-    <Compile Include="srcbc\crypto\parameters\MGFParameters.cs">
+    <Compile Include="srcbc\crypto\parameters\MgfParameters.cs">
       <SubType>Code</SubType>
     </Compile>
     <Compile Include="srcbc\crypto\parameters\MqvPrivateParameters.cs">
@@ -3166,16 +3166,16 @@
     <Compile Include="srcbc\crypto\parameters\RSABlindingParameters.cs">
       <SubType>Code</SubType>
     </Compile>
-    <Compile Include="srcbc\crypto\parameters\RSAKeyGenerationParameters.cs">
+    <Compile Include="srcbc\crypto\parameters\RsaKeyGenerationParameters.cs">
       <SubType>Code</SubType>
     </Compile>
-    <Compile Include="srcbc\crypto\parameters\RSAKeyParameters.cs">
+    <Compile Include="srcbc\crypto\parameters\RsaKeyParameters.cs">
       <SubType>Code</SubType>
     </Compile>
-    <Compile Include="srcbc\crypto\parameters\RSAPrivateCrtKeyParameters.cs">
+    <Compile Include="srcbc\crypto\parameters\RsaPrivateCrtKeyParameters.cs">
       <SubType>Code</SubType>
     </Compile>
-    <Compile Include="srcbc\crypto\PBEParametersGenerator.cs">
+    <Compile Include="srcbc\crypto\PbeParametersGenerator.cs">
       <SubType>Code</SubType>
     </Compile>
     <Compile Include="srcbc\crypto\prng\CryptoApiRandomGenerator.cs">
@@ -3196,13 +3196,13 @@
     <Compile Include="srcbc\crypto\prng\VMPCRandomGenerator.cs">
       <SubType>Code</SubType>
     </Compile>
-    <Compile Include="srcbc\crypto\signers\DSADigestSigner.cs">
+    <Compile Include="srcbc\crypto\signers\DsaDigestSigner.cs">
       <SubType>Code</SubType>
     </Compile>
-    <Compile Include="srcbc\crypto\signers\DSASigner.cs">
+    <Compile Include="srcbc\crypto\signers\DsaSigner.cs">
       <SubType>Code</SubType>
     </Compile>
-    <Compile Include="srcbc\crypto\signers\ECDSASigner.cs">
+    <Compile Include="srcbc\crypto\signers\ECDsaSigner.cs">
       <SubType>Code</SubType>
     </Compile>
     <Compile Include="srcbc\crypto\signers\ECGOST3410Signer.cs">
@@ -3220,16 +3220,16 @@
     <Compile Include="srcbc\crypto\signers\GOST3410Signer.cs">
       <SubType>Code</SubType>
     </Compile>
-    <Compile Include="srcbc\crypto\signers\ISO9796d2PSSSigner.cs">
+    <Compile Include="srcbc\crypto\signers\Iso9796d2PssSigner.cs">
       <SubType>Code</SubType>
     </Compile>
-    <Compile Include="srcbc\crypto\signers\ISO9796d2Signer.cs">
+    <Compile Include="srcbc\crypto\signers\Iso9796d2Signer.cs">
       <SubType>Code</SubType>
     </Compile>
-    <Compile Include="srcbc\crypto\signers\PSSSigner.cs">
+    <Compile Include="srcbc\crypto\signers\PssSigner.cs">
       <SubType>Code</SubType>
     </Compile>
-    <Compile Include="srcbc\crypto\signers\RSADigestSigner.cs">
+    <Compile Include="srcbc\crypto\signers\RsaDigestSigner.cs">
       <SubType>Code</SubType>
     </Compile>
     <Compile Include="srcbc\crypto\StreamBlockCipher.cs">
@@ -3534,14 +3534,14 @@
     <Compile Include="srcbc\pkcs\EncryptedPrivateKeyInfoFactory.cs">
       <SubType>Code</SubType>
     </Compile>
-    <Compile Include="srcbc\pkcs\PKCS10CertificationRequest.cs">
+    <Compile Include="srcbc\pkcs\Pkcs10CertificationRequest.cs">
       <SubType>Code</SubType>
     </Compile>
     <Compile Include="srcbc\pkcs\Pkcs10CertificationRequestDelaySigned.cs" />
-    <Compile Include="srcbc\pkcs\PKCS12Entry.cs">
+    <Compile Include="srcbc\pkcs\Pkcs12Entry.cs">
       <SubType>Code</SubType>
     </Compile>
-    <Compile Include="srcbc\pkcs\PKCS12Store.cs">
+    <Compile Include="srcbc\pkcs\Pkcs12Store.cs">
       <SubType>Code</SubType>
     </Compile>
     <Compile Include="srcbc\pkcs\PKCS12StoreBuilder.cs">
