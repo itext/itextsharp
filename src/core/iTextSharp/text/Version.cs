@@ -97,40 +97,45 @@ namespace iTextSharp.text {
                 version = new Version();
                 lock (version) {
                     try {
-                        Type type = Type.GetType("iTextSharp.license.LicenseKey, itextsharp.LicenseKey");
-                        MethodInfo m = type.GetMethod("GetLicenseeInfo");
-                        String[] info = (String[]) m.Invoke(Activator.CreateInstance(type), null);
-                        if (info[3] != null && info[3].Trim().Length > 0) {
-                            version.key = info[3];
-                        } else {
-                            version.key = "Trial version ";
-                            if (info[5] == null) {
-                                version.key += "unauthorised";
-                            } else {
-                                version.key += info[5];
-                            }
-                        }
-                        if (info[4] != null && info[4].Trim().Length > 0) {
-                            version.iTextVersion = info[4];
-                        } else if (info[2] != null && info[2].Trim().Length > 0) {
-                            version.iTextVersion += " (" + info[2];
-                            if (!version.key.ToLower().StartsWith("trial")) {
-                                version.iTextVersion += "; licensed version)";
-                            } else {
-                                version.iTextVersion += "; " + version.key + ")";
-                            }
-                        } else if (info[0] != null && info[0].Trim().Length > 0) {
-                            // fall back to contact name, if company name is unavailable
-                            version.iTextVersion += " (" + info[0];
-                            if (!version.key.ToLower().StartsWith("trial")) {
-                                // we shouldn't have a licensed version without company name,
-                                // but let's account for it anyway
-                                version.iTextVersion += "; licensed version)";
-                            } else {
-                                version.iTextVersion += "; " + version.key + ")";
-                            }
-                        } else {
-                            throw new Exception();
+                        Type type = Type.GetType("iText.License.LicenseKey, itext.licensekey");
+                        if (type != null) {
+                            Type[] cArg = new Type[] {typeof(String)};
+                            MethodInfo m = type.GetMethod("GetLicenseeInfoForVersion", cArg);
+	                        String coreVersion = release;
+	                        Object[] args = new Object[] {coreVersion};
+	                        String[] info = (String[]) m.Invoke(Activator.CreateInstance(type), args);
+	                        if (info[3] != null && info[3].Trim().Length > 0) {
+		                        version.key = info[3];
+	                        } else {
+		                        version.key = "Trial version ";
+		                        if (info[5] == null) {
+			                        version.key += "unauthorised";
+		                        } else {
+			                        version.key += info[5];
+		                        }
+	                        }
+	                        if (info[4] != null && info[4].Trim().Length > 0) {
+		                        version.iTextVersion = info[4];
+	                        } else if (info[2] != null && info[2].Trim().Length > 0) {
+		                        version.iTextVersion += " (" + info[2];
+		                        if (!version.key.ToLower().StartsWith("trial")) {
+			                        version.iTextVersion += "; licensed version)";
+		                        } else {
+			                        version.iTextVersion += "; " + version.key + ")";
+		                        }
+	                        } else if (info[0] != null && info[0].Trim().Length > 0) {
+		                        // fall back to contact name, if company name is unavailable
+		                        version.iTextVersion += " (" + info[0];
+		                        if (!version.key.ToLower().StartsWith("trial")) {
+			                        // we shouldn't have a licensed version without company name,
+			                        // but let's account for it anyway
+			                        version.iTextVersion += "; licensed version)";
+		                        } else {
+			                        version.iTextVersion += "; " + version.key + ")";
+		                        }
+	                        } else {
+		                        throw new Exception();
+	                        }
                         }
                     } catch (Exception) {
                         version.iTextVersion += AGPL;
