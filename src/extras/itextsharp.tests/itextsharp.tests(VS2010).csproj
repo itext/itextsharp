@@ -130,6 +130,7 @@
     <Compile Include="iTextSharp\text\pdf\parser\VectorTest.cs" />
     <Compile Include="iTextSharp\text\pdf\pdfcleanup\PdfCleanUpProcessorTest.cs" />
     <Compile Include="iTextSharp\text\pdf\PdfCopyTest.cs" />
+    <Compile Include="iTextSharp\text\pdf\PdfImageTest.cs" />
     <Compile Include="iTextSharp\text\pdf\PdfReaderSelectPagesTest.cs" />
     <Compile Include="iTextSharp\text\pdf\PdfReaderTest.cs" />
     <Compile Include="iTextSharp\text\pdf\PRTokeniserTest.cs" />
