@@ -78,7 +78,7 @@ namespace iTextSharp.text {
 	     * This String contains the version number of this iText release.
 	     * For debugging purposes, we request you NOT to change this constant.
 	     */
-        private const String release = "1.0.4-SNAPSHOT";
+        private const String release = "2.0.1-SNAPSHOT";
 
 	    /**
 	     * This String contains the iText version as shown in the producer line.
@@ -149,7 +149,7 @@ namespace iTextSharp.text {
                 MethodInfo m = type.GetMethod("GetLicenseeInfoForVersion", cArg);
                 String coreVersion = release;
                 //Actual iText version should be used here to get correct license info
-                Object[] args = new Object[] { "7.0" };
+                Object[] args = new Object[] { "7.1" };
                 String[] info = (String[])m.Invoke(Activator.CreateInstance(type), args);
                 if (info[3] != null && info[3].Trim().Length > 0) {
                     localVersion.key = info[3];
