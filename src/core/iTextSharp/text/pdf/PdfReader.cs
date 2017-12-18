@@ -169,7 +169,7 @@ namespace iTextSharp.text.pdf {
             {
                 if (closeSourceOnConstructorError)
                     byteSource.Close();
-                throw e;
+                throw;
             }
             GetCounter().Read(fileLength);
         }
@@ -1172,7 +1172,7 @@ namespace iTextSharp.text.pdf {
                     obj = null;
                 }
                 else
-                    throw e;
+                    throw;
             }
             if (xref[k2 + 1] > 0) {
                 obj = ReadOneObjStm((PRStream)obj, (int)xref[k2]);
@@ -1273,7 +1273,7 @@ namespace iTextSharp.text.pdf {
                         obj = null;
                     }
                     else
-                        throw e;
+                        throw;
                 }
                 xrefObj[k / 2] = obj;
             }
@@ -1542,7 +1542,7 @@ namespace iTextSharp.text.pdf {
                 }
                 catch (IOException e) {
                     xref = null;
-                    throw e;
+                    throw;
                 }
             }
             return trailer;
