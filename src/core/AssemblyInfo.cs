@@ -1,6 +1,7 @@
 using System.Reflection;
 using System.Runtime.CompilerServices;
 using System.Runtime.InteropServices;
+using Versions.Attributes;
 
 [assembly: AssemblyTitle("iTextSharp")]
 [assembly: AssemblyDescription("A free PDF library ported from Java iText.")]
@@ -16,5 +17,6 @@ using System.Runtime.InteropServices;
 
 [assembly: ComVisibleAttribute(false)]
 
+[assembly: KeyVersion("3.0.1.0")]
 [assembly: AssemblyVersion("5.5.13")]
 [assembly: AssemblyInformationalVersion("5.5.13-SNAPSHOT")]

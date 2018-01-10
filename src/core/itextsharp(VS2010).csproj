@@ -146,6 +146,9 @@
     <Compile Include="AssemblyInfo.cs">
       <SubType>Code</SubType>
     </Compile>
+    <Compile Include="KeyVersionAttribute.cs">
+      <SubType>Code</SubType>
+    </Compile>
     <Compile Include="iTextSharp\awt\geom\AffineTransform.cs" />
     <Compile Include="iTextSharp\awt\geom\Point.cs" />
     <Compile Include="iTextSharp\awt\geom\Point2D.cs" />
