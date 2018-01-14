@@ -1,4 +1,4 @@
-/*
+﻿/*
     This file is part of the iText (R) project.
     Copyright (c) 1998-2017 iText Group NV
     Authors: iText Software.
@@ -55,11 +55,11 @@ namespace itextsharp.xmlworker.tests.iTextSharp.tool.xml.pipeline {
         [SetUp]
         virtual public void SetUp() {
             StyleAttrCSSResolver css = new StyleAttrCSSResolver();
-            css.AddCss("dummy { key1: value1; key2: value2 } .aklass { key3: value3;} #dumid { key4: value4}", true);
+            css.AddCss("dummy { key1: value1; key2: value2 } .aklass { key3: value3;} #dumid { key4: value4} .cjk { key5: \"宋体\", Helvetica ; key6:value6}", true);
             CssResolverPipeline p = new CssResolverPipeline(css, null);
             Tag t = new Tag("dummy");
             t.Attributes["id"] = "dumid";
-            t.Attributes["class"] = "aklass";
+            t.Attributes["class"] = "aklass cjk";
             WorkerContextImpl context = new WorkerContextImpl();
             p.Init(context);
             IPipeline open = p.Open(context, t, null);
@@ -100,6 +100,8 @@ namespace itextsharp.xmlworker.tests.iTextSharp.tool.xml.pipeline {
         [Test]
         virtual public void VerifyCssResolvedClass() {
             Assert.AreEqual("value3", css2["key3"]);
+            Assert.AreEqual("\"宋体\", Helvetica", css2["key5"]);
+            Assert.AreEqual("value6", css2["key6"]);
         }
 
         /**
