@@ -93,6 +93,32 @@ namespace itextsharp.tests.iTextSharp.text.pdf {
         }
 
         [Test]
+        public virtual void FlattenGenerateAppearanceFalse01() {
+            String outFile = OUTPUT_FOLDER + "flattenGenerateAppearanceFalse01.pdf";
+            FileStream @out = new FileStream(outFile, FileMode.Create);
+            PdfReader reader = new PdfReader(RESOURCES_FOLDER + "not_filled_form.pdf");
+            PdfStamper stamper = new PdfStamper(reader, @out);
+
+            AcroFields form = stamper.AcroFields;
+
+            // Fill out the form with arbitrary data
+            int x = 1;
+            foreach (KeyValuePair<String, AcroFields.Item> e in form.Fields) {
+                form.SetField(e.Key, "Test " + x++);
+            }
+
+            form.GenerateAppearances = false;
+            stamper.FormFlattening = true;
+            stamper.Close();
+
+            CompareTool compareTool = new CompareTool();
+            String errorMessage = compareTool.CompareByContent(outFile, RESOURCES_FOLDER + "cmp_flattenGenerateAppearanceFalse01.pdf", OUTPUT_FOLDER, "diff");
+            if (errorMessage != null) {
+                Assert.Fail(errorMessage);
+            }
+        }
+
+        [Test]
         public virtual void TestFlattening() {
             const string INPUT_FOLDER = RESOURCES_FOLDER + "input/";
             const string CMP_FOLDER = RESOURCES_FOLDER + "cmp/";

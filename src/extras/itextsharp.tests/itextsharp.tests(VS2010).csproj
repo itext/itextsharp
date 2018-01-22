@@ -89,6 +89,7 @@
     <Compile Include="iTextSharp\text\io\GroupedRandomAccessSourceTest.cs" />
     <Compile Include="iTextSharp\text\io\WindowRandomAccessSourceTest.cs" />
     <Compile Include="iTextSharp\text\pdf\AcroFieldsTest.cs" />
+    <Compile Include="iTextSharp\text\pdf\BarcodeMacroPDF417Test.cs" />
     <Compile Include="iTextSharp\text\pdf\BarcodeUnicodeTest.cs" />
     <Compile Include="iTextSharp\text\pdf\BookmarksTest.cs" />
     <Compile Include="iTextSharp\text\pdf\FreeTextFlatteningTest.cs" />
@@ -129,6 +130,7 @@
     <Compile Include="iTextSharp\text\pdf\parser\VectorTest.cs" />
     <Compile Include="iTextSharp\text\pdf\pdfcleanup\PdfCleanUpProcessorTest.cs" />
     <Compile Include="iTextSharp\text\pdf\PdfCopyTest.cs" />
+    <Compile Include="iTextSharp\text\pdf\PdfImageTest.cs" />
     <Compile Include="iTextSharp\text\pdf\PdfReaderSelectPagesTest.cs" />
     <Compile Include="iTextSharp\text\pdf\PdfReaderTest.cs" />
     <Compile Include="iTextSharp\text\pdf\PRTokeniserTest.cs" />
@@ -437,7 +439,7 @@
       <Project>{C892FA61-C495-4F30-8799-A198F89F23F4}</Project>
       <Name>itextsharp.pdfa%28VS2010%29</Name>
     </ProjectReference>
-    <ProjectReference Include="..\iTextSharp.xtra\itextsharp.xtra%28VS2010%29.csproj">
+    <ProjectReference Include="..\iTextSharp.xtra\iTextSharp.xtra%28VS2010%29.csproj">
       <Project>{BE1934CF-90A9-43D3-A794-7E540874EDBB}</Project>
       <Name>itextsharp.xtra%28VS2010%29</Name>
     </ProjectReference>
