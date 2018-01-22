@@ -1,6 +1,6 @@
 /*
     This file is part of the iText (R) project.
-    Copyright (c) 1998-2017 iText Group NV
+    Copyright (c) 1998-2018 iText Group NV
     Authors: iText Software.
 
     This program is free software; you can redistribute it and/or modify
@@ -75,7 +75,7 @@ namespace iTextSharp.text {
 	     * This String contains the version number of this iText release.
 	     * For debugging purposes, we request you NOT to change this constant.
 	     */
-        static private String release = "5.5.13-SNAPSHOT";
+        static private String release = "5.5.14-SNAPSHOT";
 
 	    /**
 	     * This String contains the iText version as shown in the producer line.
@@ -83,7 +83,7 @@ namespace iTextSharp.text {
 	     * iText Group requests that you retain the iText producer line
 	     * in every PDF that is created or manipulated using iText.
 	     */
-	    private String iTextVersion = iText + " " + release + " \u00a92000-2017 iText Group NV";
+	    private String iTextVersion = iText + " " + release + " \u00a92000-2018 iText Group NV";
 
         /**
          * The license key.
