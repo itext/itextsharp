@@ -9,7 +9,7 @@ Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "itext-hyph-xml(VS2010)", "e
 EndProject
 Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "itextsharp.xmlworker(VS2010)", "extras\itextsharp.xmlworker\itextsharp.xmlworker(VS2010).csproj", "{96647204-4A3E-41D7-BC74-B1608D6D1857}"
 EndProject
-Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "itextsharp.xtra(VS2010)", "extras\itextsharp.xtra\itextsharp.xtra(VS2010).csproj", "{BE1934CF-90A9-43D3-A794-7E540874EDBB}"
+Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "iTextSharp.xtra(VS2010)", "extras\iTextSharp.xtra\iTextSharp.xtra(VS2010).csproj", "{BE1934CF-90A9-43D3-A794-7E540874EDBB}"
 EndProject
 Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "iTextAsian(VS2010)", "extras\iTextAsian\iTextAsian(VS2010).csproj", "{2F467830-A94B-4C44-B17B-0A81CBDB8CB2}"
 EndProject

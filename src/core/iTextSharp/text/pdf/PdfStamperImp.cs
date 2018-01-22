@@ -980,7 +980,7 @@ namespace iTextSharp.text.pdf {
                             }
                         }
                     }
-                    else if (appDic != null && as_n != null) {
+                    else if (appDic != null && as_n != null && (as_n.IsStream() || as_n.IsDictionary())) {
                         PdfArray bbox = ((PdfDictionary)as_n).GetAsArray(PdfName.BBOX);
                         PdfArray rect = merged.GetAsArray(PdfName.RECT);
                         if (bbox != null && rect != null) {
