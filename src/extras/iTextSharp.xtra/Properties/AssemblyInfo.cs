@@ -8,7 +8,7 @@ using System.Runtime.InteropServices;
 [assembly: AssemblyConfiguration("")]
 [assembly: AssemblyCompany("iText Group NV")]
 [assembly: AssemblyProduct("iTextSharp.xtra")]
-[assembly: AssemblyCopyright("Copyright (C) 1999-2017 by iText Group NV")]
+[assembly: AssemblyCopyright("Copyright (C) 1999-2018 by iText Group NV")]
 [assembly: AssemblyTrademark("")]
 [assembly: AssemblyCulture("")]
 
