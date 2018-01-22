@@ -5,8 +5,8 @@ using System.Runtime.CompilerServices;
 [assembly: AssemblyDescription("Hyphenation patterns for iTextSharp.")]
 [assembly: AssemblyConfiguration("")]
 [assembly: AssemblyCompany("iText Group NV")]
-[assembly: AssemblyProduct("")]
-[assembly: AssemblyCopyright("Copyright (C) 1999-2017 by iText Group NV")]
+[assembly: AssemblyProduct("itext-hyph-xml")]
+[assembly: AssemblyCopyright("Copyright (C) 1999-2018 by iText Group NV")]
 [assembly: AssemblyTrademark("")]
 [assembly: AssemblyCulture("")]        
 

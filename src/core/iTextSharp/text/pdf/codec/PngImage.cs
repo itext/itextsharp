@@ -457,6 +457,7 @@ namespace iTextSharp.text.pdf.codec {
         
         Image GetImage() {
             ReadPng();
+            CheckIccProfile();
             int pal0 = 0;
             int palIdx = 0;
             palShades = false;
@@ -813,6 +814,22 @@ namespace iTextSharp.text.pdf.codec {
                 }
             }
         }
+        
+        private int GetExpectedIccNumberOfComponents() {
+            if (colorType == 0 || colorType == 4) {
+                return 1;
+            } else {
+                return 3;
+            }
+        }
+
+        private void CheckIccProfile() {
+            if (icc_profile != null && icc_profile.NumComponents != GetExpectedIccNumberOfComponents()) {
+                LoggerFactory.GetLogger(typeof(PngImage)).Warn(MessageLocalization.GetComposedMessage("unexpected.color.space.in.embedded.icc.profile"));
+                icc_profile = null;
+            }
+        }
+
         
         private static void DecodeSubFilter(byte[] curr, int count, int bpp) {
             for (int i = bpp; i < count; i++) {

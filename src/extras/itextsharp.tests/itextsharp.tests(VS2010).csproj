@@ -63,8 +63,8 @@
     <CodeAnalysisRuleSet>AllRules.ruleset</CodeAnalysisRuleSet>
   </PropertyGroup>
   <ItemGroup>
-    <Reference Include="itext.font_asian, Version=7.0.2.0, Culture=neutral, PublicKeyToken=8354ae6d2174ddca, processorArchitecture=MSIL">
-      <HintPath>$(SolutionDir)\packages\itext7.font-asian.7.0.2\lib\net40\itext.font_asian.dll</HintPath>
+    <Reference Include="itext.font_asian, Version=7.1.1.0, Culture=neutral, PublicKeyToken=8354ae6d2174ddca, processorArchitecture=MSIL">
+      <HintPath>$(SolutionDir)\packages\itext7.font-asian.7.1.1\lib\net40\itext.font_asian.dll</HintPath>
     </Reference>
     <Reference Include="nunit.framework, Version=2.6.4.14350, Culture=neutral, PublicKeyToken=96d09a1eb7f44a77, processorArchitecture=MSIL">
       <HintPath>$(SolutionDir)\packages\NUnit.2.6.4\lib\nunit.framework.dll</HintPath>
@@ -93,6 +93,7 @@
     <Compile Include="iTextSharp\text\io\GroupedRandomAccessSourceTest.cs" />
     <Compile Include="iTextSharp\text\io\WindowRandomAccessSourceTest.cs" />
     <Compile Include="iTextSharp\text\pdf\AcroFieldsTest.cs" />
+    <Compile Include="iTextSharp\text\pdf\BarcodeMacroPDF417Test.cs" />
     <Compile Include="iTextSharp\text\pdf\BarcodeUnicodeTest.cs" />
     <Compile Include="iTextSharp\text\pdf\BookmarksTest.cs" />
     <Compile Include="iTextSharp\text\pdf\FreeTextFlatteningTest.cs" />
@@ -133,6 +134,7 @@
     <Compile Include="iTextSharp\text\pdf\parser\VectorTest.cs" />
     <Compile Include="iTextSharp\text\pdf\pdfcleanup\PdfCleanUpProcessorTest.cs" />
     <Compile Include="iTextSharp\text\pdf\PdfCopyTest.cs" />
+    <Compile Include="iTextSharp\text\pdf\PdfImageTest.cs" />
     <Compile Include="iTextSharp\text\pdf\PdfReaderSelectPagesTest.cs" />
     <Compile Include="iTextSharp\text\pdf\PdfReaderTest.cs" />
     <Compile Include="iTextSharp\text\pdf\PRTokeniserTest.cs" />
