@@ -112,7 +112,7 @@ namespace iTextSharp.text {
 				    fileLoadExceptionMessage = fileLoadException.Message;
 			    }
 
-			    if (fileLoadExceptionMessage != null) {
+			    if (type == null) {
 				    ILogger logger = LoggerFactory.GetLogger(typeof(Version));
 				    try {
 					    type = System.Type.GetType(licenseKeyClassPartialName);
@@ -120,7 +120,7 @@ namespace iTextSharp.text {
 				    catch {
 					    // ignore
 				    }
-				    if (type == null) {
+				    if (type == null && fileLoadExceptionMessage != null) {
 					    logger.Error(fileLoadExceptionMessage);
 				    }
 			    }
