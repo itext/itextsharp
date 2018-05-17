@@ -181,14 +181,13 @@ namespace iTextSharp.text.pdf.parser {
          * @throws IOException
          */
         public static void ListContentStream(string pdfFile, TextWriter outp) {
-            PdfReader reader = new PdfReader(pdfFile);
+            using(PdfReader reader = new PdfReader(pdfFile)){
+                int maxPageNum = reader.NumberOfPages;
 
-            int maxPageNum = reader.NumberOfPages;
-
-            for (int pageNum = 1; pageNum <= maxPageNum; pageNum++){
-                ListContentStreamForPage(reader, pageNum, outp);
+                for (int pageNum = 1; pageNum <= maxPageNum; pageNum++){
+                    ListContentStreamForPage(reader, pageNum, outp);
+                }
             }
-
         }
 
         /**
@@ -200,9 +199,9 @@ namespace iTextSharp.text.pdf.parser {
          * @throws IOException
          */
         public static void ListContentStream(string pdfFile, int pageNum, TextWriter outp) {
-            PdfReader reader = new PdfReader(pdfFile);
-
-            ListContentStreamForPage(reader, pageNum, outp);
+            using (PdfReader reader = new PdfReader(pdfFile)){
+                ListContentStreamForPage(reader, pageNum, outp);
+            }
         }
 
         /**
