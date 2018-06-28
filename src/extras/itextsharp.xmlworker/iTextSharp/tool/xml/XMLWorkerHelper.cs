@@ -210,16 +210,25 @@ namespace iTextSharp.tool.xml {
             ParseXHtml(writer, doc, inp, inCssFile, null, fontProvider);
         }
 
+        virtual public void ParseXHtml(IElementHandler d, Stream inp, Encoding charset) {
+            ParseXHtml(d, inp, charset, null);
+        }
+
         /**
          * @param d the ElementHandler
          * @param inp the Stream
          * @throws IOException if something went seriously wrong with IO.
          */
-        virtual public void ParseXHtml(IElementHandler d, Stream inp, Encoding charset) {
+        virtual public void ParseXHtml(IElementHandler d, Stream inp, Encoding charset, IFontProvider fontProvider) {
+            CssAppliersImpl cssAppliers = null;
+            if (fontProvider != null) {
+                cssAppliers = new CssAppliersImpl(fontProvider);
+            }
+
             CssFilesImpl cssFiles = new CssFilesImpl();
             cssFiles.Add(GetDefaultCSS());
             StyleAttrCSSResolver cssResolver = new StyleAttrCSSResolver(cssFiles);
-            HtmlPipelineContext hpc = new HtmlPipelineContext(null);
+            HtmlPipelineContext hpc = new HtmlPipelineContext(cssAppliers);
             hpc.SetAcceptUnknown(true).AutoBookmark(true).SetTagFactory(GetDefaultTagProcessorFactory());
             IPipeline pipeline = new CssResolverPipeline(cssResolver, new HtmlPipeline(hpc, new ElementHandlerPipeline(d,
                     null)));
