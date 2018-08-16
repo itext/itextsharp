@@ -765,10 +765,10 @@ namespace iTextSharp.text.pdf.parser {
             virtual public void Invoke(PdfContentStreamProcessor processor, PdfLiteral oper, List<PdfObject> operands) {
                 float a = ((PdfNumber)operands[0]).FloatValue;
                 float b = ((PdfNumber)operands[1]).FloatValue;
-                float c = ((PdfNumber)operands[2]).FloatValue;
-                float d = ((PdfNumber)operands[3]).FloatValue;
-                float e = ((PdfNumber)operands[4]).FloatValue;
-                float f = ((PdfNumber)operands[5]).FloatValue;
+                float c = (operands.Count > 2 && !(operands[2] is PdfLiteral)) ? ((PdfNumber)operands[2]).FloatValue : 0;
+                float d = (operands.Count > 3 && !(operands[3] is PdfLiteral)) ? ((PdfNumber)operands[3]).FloatValue : 0;
+                float e = (operands.Count > 4 && !(operands[4] is PdfLiteral)) ? ((PdfNumber)operands[4]).FloatValue : 0;
+                float f = (operands.Count > 5 && !(operands[5] is PdfLiteral)) ? ((PdfNumber)operands[5]).FloatValue : 0;
                 Matrix matrix = new Matrix(a, b, c, d, e, f);
                 GraphicsState gs = processor.gsStack.Peek();
                 gs.ctm = matrix.Multiply(gs.ctm);
