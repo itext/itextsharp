@@ -2266,9 +2266,18 @@ namespace iTextSharp.text.pdf {
             name = GetTranslatedFieldName(name);
             if (!sigNames.ContainsKey(name))
                 return false;
-            return sigNames[name][0] == reader.FileLength;
+            try {
+                ContentsChecker signatureReader = new ContentsChecker(reader.SafeFile);
+                return signatureReader.CheckWhetherSignatureCoversWholeDocument(reader.AcroFields.GetFieldItem(name));
+            }
+            catch (IOException e)
+            {
+                // That's not expected because if the signature is invalid, it should have already failed
+                return false;
+            }
+
         }
-        
+
         /**
         * Verifies a signature. An example usage is:
         * <p>
@@ -2295,7 +2304,7 @@ namespace iTextSharp.text.pdf {
         * </pre>
         * @param name the signature field name
         * @return a <CODE>PdfPKCS7</CODE> class to continue the verification
-        */    
+        */
         virtual public PdfPKCS7 VerifySignature(String name) {
             PdfDictionary v = GetSignatureDictionary(name);
             if (v == null)
@@ -2490,6 +2499,108 @@ namespace iTextSharp.text.pdf {
                 return n1 - n2;
             }        
         }
+
+        private class ContentsChecker : PdfReader {
+            private long contentsStart;
+            private long contentsEnd;
+
+            private int currentLevel = 0;
+            private int contentsLevel = 1;
+            private bool searchInV = true;
+
+            private bool rangeIsCorrect = false;
+
+            public ContentsChecker(RandomAccessFileOrArray raf) : base(raf, null) {
+
+            }
+            public bool CheckWhetherSignatureCoversWholeDocument(Item signatureField) {
+                rangeIsCorrect = false;
+                PdfDictionary signature;
+                int objNum;
+                if (signatureField.GetValue(0).Get(PdfName.V) is PRIndirectReference) {
+                    objNum = ((PdfIndirectReference)signatureField.GetValue(0).Get(PdfName.V)).Number;
+                    signature = (PdfDictionary)GetPdfObject(objNum);
+                    searchInV = true;
+                } else {
+                    signature = (PdfDictionary)signatureField.GetValue(0).Get(PdfName.V);
+                    objNum = signatureField.GetWidgetRef(0).Number;
+                    searchInV = false;
+                    contentsLevel++;
+                }
+
+                long[] byteRange = ((PdfArray)signature.Get(PdfName.BYTERANGE)).AsLongArray();
+                if (4 != byteRange.Length || 0 != byteRange[0] || FileLength != byteRange[2] + byteRange[3])
+                {
+                    return false;
+                }
+
+                contentsStart = byteRange[1];
+                contentsEnd = byteRange[2];
+
+                long signatureOffset = xref[2 * objNum];
+                try
+                {
+                    tokens.Seek(signatureOffset);
+                    tokens.NextValidToken(); // number
+                    tokens.NextValidToken(); // revision
+                    tokens.NextValidToken(); // obj
+                    ReadPRObject();
+                }
+                catch (Exception e)
+                {
+                    // That's not expected because if the signature is invalid, it should have already failed
+                    return false;
+                }
+                return rangeIsCorrect;
+            }
+
+            protected override internal PdfDictionary ReadDictionary()   {
+                currentLevel++;
+                PdfDictionary dic = new PdfDictionary();
+                while (!rangeIsCorrect) {
+                    tokens.NextValidToken();
+                    if (tokens.TokenType == PRTokeniser.TokType.END_DIC) {
+                        currentLevel--;
+                        break;
+                    }
+                    if (tokens.TokenType != PRTokeniser.TokType.NAME) {
+                        tokens.ThrowError(MessageLocalization.GetComposedMessage("dictionary.key.1.is.not.a.name", tokens.StringValue));
+                    }
+                    PdfName name = new PdfName(tokens.StringValue, false);
+                    PdfObject obj;
+                    if (PdfName.CONTENTS.Equals(name) && searchInV && contentsLevel == currentLevel) {
+                        long startPosition = tokens.FilePointer;
+                        int ch;
+                        int whiteSpacesCount = -1;
+                        do {
+                            ch = tokens.Read();
+                            whiteSpacesCount++;
+                        } while (ch != -1 && PRTokeniser.IsWhitespace(ch));
+                        tokens.Seek(startPosition);
+                        obj = ReadPRObject();
+                        long endPosition = tokens.FilePointer;
+                        if (endPosition == contentsEnd && startPosition + whiteSpacesCount == contentsStart) {
+                            rangeIsCorrect = true;
+                        }
+                    } else if (PdfName.V.Equals(name) && !searchInV && 1 == currentLevel) {
+                        searchInV = true;
+                        obj = ReadPRObject();
+                        searchInV = false;
+                    } else {
+                        obj = ReadPRObject();
+                    }
+                    int type = obj.Type;
+                    if (-type == (int)PRTokeniser.TokType.END_DIC)
+                        tokens.ThrowError(MessageLocalization.GetComposedMessage("unexpected.gt.gt"));
+                    if (-type == (int)PRTokeniser.TokType.END_ARRAY)
+                        tokens.ThrowError(MessageLocalization.GetComposedMessage("unexpected.close.bracket"));
+                    dic.Put(name, obj);
+                }
+                return dic;
+            }
+        }
+    
+
 
         /**
         * Sets a list of substitution fonts. The list is composed of <CODE>BaseFont</CODE> and can also be <CODE>null</CODE>. The fonts in this list will be used if the original
