@@ -381,5 +381,27 @@ namespace itextsharp.tests.iTextSharp.text.pdf {
                 Assert.Fail(errorMessage);
             }
         }
+
+        [Test]
+        public void TestFreeTextRecangleBBoxInteraction()
+        {
+            String file = "freeTextRectangleBBoxInteraction.pdf";
+
+            PdfReader pdfReader = new PdfReader(RESOURCES_FOLDER + file);
+            PdfStamper pdfStamper = new PdfStamper(pdfReader, new FileStream(OUTPUT_FOLDER + file, FileMode.Create));
+
+            pdfStamper.FormFlattening = true;
+            pdfStamper.FreeTextFlattening = true;
+            pdfStamper.Close();
+            pdfReader.Close();
+            // compare
+            CompareTool compareTool = new CompareTool();
+            String errorMessage = compareTool.CompareByContent(OUTPUT_FOLDER + file, RESOURCES_FOLDER + "cmp_" + file,
+                OUTPUT_FOLDER, "diff");
+            if (errorMessage != null)
+            {
+                Assert.Fail(errorMessage);
+            }
+        }
     }
 }

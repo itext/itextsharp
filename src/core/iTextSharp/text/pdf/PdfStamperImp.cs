@@ -1358,10 +1358,13 @@ namespace iTextSharp.text.pdf {
                                     (rect.Height/transformBBox.Height), rect.Left, rect.Bottom);
                             }
                             else {
+                                //Correct for offset origins in the BBox, similar to how Adobe will flatten.
+                                float heightCorrection = -bbox.Bottom;
+                                float widthCorrection = -bbox.Left;
                                 //Changed so that when the annotation has a difference scale than the xObject in the appearance dictionary, the image is consistent between
                                 //the input and the flattened document.  When the annotation is rotated or skewed, it will still be flattened incorrectly.  
-                                cb.AddTemplate(app, (rect.Width/bbox.Width), 0, 0, (rect.Height/bbox.Height), rect.Left,
-                                    rect.Bottom);
+                                cb.AddTemplate(app, (rect.Width/bbox.Width), 0, 0, (rect.Height/bbox.Height), rect.Left + widthCorrection,
+                                    rect.Bottom+heightCorrection);
                                 //cb.AddTemplate(app, box.Left, box.Bottom);
                             }
                             cb.SetLiteral("q ");
