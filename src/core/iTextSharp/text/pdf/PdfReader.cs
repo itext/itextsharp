@@ -1818,10 +1818,17 @@ namespace iTextSharp.text.pdf {
                         return new PdfName(tokens.StringValue, false);
                     }
                 }
-                case PRTokeniser.TokType.REF:
+                case PRTokeniser.TokType.REF: {
                     int num = tokens.Reference;
-                    PRIndirectReference refi = new PRIndirectReference(this, num, tokens.Generation);
-                    return refi;
+                    if (num >= 0) {
+                        return new PRIndirectReference(this, num, tokens.Generation);
+                    } else {
+                        if (LOGGER.IsLogging(Level.ERROR)) {
+                            LOGGER.Error(MessageLocalization.GetComposedMessage("invalid.reference.number.skip"));
+                        }
+                        return PdfNull.PDFNULL;
+                    }
+                }
                 case PRTokeniser.TokType.ENDOFFILE:
                     throw new IOException(MessageLocalization.GetComposedMessage("unexpected.end.of.file"));
                 default:

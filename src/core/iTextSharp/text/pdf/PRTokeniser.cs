@@ -177,6 +177,9 @@ namespace iTextSharp.text.pdf {
             }
         }
     
+        /**
+         * Gets current reference number. If parsing was failed with NumberFormatException -1 will be return.
+         */
         virtual public int Reference {
             get {
                 return reference;
@@ -287,8 +290,10 @@ namespace iTextSharp.text.pdf {
                             return;
                         }
                         type = TokType.REF;
-                        reference = int.Parse(n1);
-                        generation = int.Parse(n2);
+                        if (!int.TryParse(n1, out reference) || !int.TryParse(n2, out generation)) {
+                            reference = -1;
+                            generation = 0;
+                        }  
                         return;
                     }
                 }

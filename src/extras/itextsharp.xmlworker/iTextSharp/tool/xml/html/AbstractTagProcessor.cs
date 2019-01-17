@@ -474,7 +474,8 @@ namespace iTextSharp.tool.xml.html {
             }
             float pFontSize = p.Font != null ? p.Font.Size : Font.DEFAULTSIZE;
             if (childFont != null && childFont.Size > pFontSize) {
-                p.Font = childFont;
+                //Create a copy with size only.
+                p.Font = new Font(Font.FontFamily.UNDEFINED, childFont.Size);
             }
         }
     }
