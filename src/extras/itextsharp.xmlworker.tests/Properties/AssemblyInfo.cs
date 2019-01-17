@@ -7,7 +7,7 @@ using System.Runtime.InteropServices;
 [assembly: AssemblyConfiguration("")]
 [assembly: AssemblyCompany("iText Group NV")]
 [assembly: AssemblyProduct("xfa-itextsharp.xmlworker.tests")]
-[assembly: AssemblyCopyright("Copyright (C) 1999-2018 by iText Group NV")]
+[assembly: AssemblyCopyright("Copyright (C) 1999-2019 by iText Group NV")]
 [assembly: AssemblyTrademark("")]
 [assembly: AssemblyCulture("")]
 
@@ -17,4 +17,4 @@ using System.Runtime.InteropServices;
 
 [assembly: AssemblyVersion("2.0.1.0")]
 [assembly: AssemblyFileVersion("2.0.1.0")]
-[assembly: AssemblyInformationalVersion("2.0.1-SNAPSHOT")]
+[assembly: AssemblyInformationalVersion("2.0.1")]
