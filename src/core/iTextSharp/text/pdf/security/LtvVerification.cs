@@ -323,6 +323,9 @@ namespace iTextSharp.text.pdf.security {
                 crls = new PdfArray();
             if (certs == null)
                 certs = new PdfArray();
+            if (vrim == null) {
+                vrim = new PdfDictionary();
+            }
             OutputDss(dss, vrim, ocsps, crls, certs);
         }
         
