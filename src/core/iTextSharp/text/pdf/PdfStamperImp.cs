@@ -1003,8 +1003,8 @@ namespace iTextSharp.text.pdf {
                     if (appDic != null && (flags & PdfFormField.FLAGS_PRINT) != 0 && (flags & PdfFormField.FLAGS_HIDDEN) == 0) {
                         PdfObject obj = appDic.Get(PdfName.N);
                         PdfAppearance app = null;
+                        PdfObject objReal = PdfReader.GetPdfObject(obj);
                         if (obj != null) {
-                            PdfObject objReal = PdfReader.GetPdfObject(obj);
                             if (obj is PdfIndirectReference && !obj.IsIndirect())
                                 app = new PdfAppearance((PdfIndirectReference)obj);
                             else if (objReal is PdfStream) {
@@ -1050,7 +1050,16 @@ namespace iTextSharp.text.pdf {
                                 tf = CalculateTemplateTransformationMatrix(tf, fieldRotation, box);
                                 cb.AddTemplate(app, tf);
                             } else {
-                                cb.AddTemplate(app, box.Left, box.Bottom);  
+                                if (objReal is PdfDictionary &&
+                                    ((PdfDictionary) objReal).GetAsArray(PdfName.BBOX) != null)
+                                {
+                                    Rectangle bBox = PdfReader.GetNormalizedRectangle((((PdfDictionary)objReal).GetAsArray(PdfName.BBOX)));
+                                    cb.AddTemplate(app, (box.Width / bBox.Width), 0, 0, (box.Height / bBox.Height), box.Left, box.Bottom);
+                                }
+                                else
+                                {
+                                    cb.AddTemplate(app, box.Left, box.Bottom);   
+                                }
                             }
                             cb.SetLiteral("q ");
                         }

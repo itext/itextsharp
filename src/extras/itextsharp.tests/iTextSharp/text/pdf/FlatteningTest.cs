@@ -229,6 +229,20 @@ namespace itextsharp.tests.iTextSharp.text.pdf {
                 Assert.Fail(errorMessage);
             }
         }
+        
+        [Test]
+        public virtual void TestFlatteningGenerateAppearances7() {
+            const string OUT = "test01.pdf";
+            TestFlatteningGenerateAppearance(RESOURCES_FOLDER + "test01.pdf", OUTPUT_FOLDER + OUT,
+                true);
+            CompareTool compareTool = new CompareTool();
+            String errorMessage = compareTool.Compare(OUTPUT_FOLDER + OUT, RESOURCES_FOLDER + "cmp_" + OUT,
+                OUTPUT_FOLDER, "diff");
+            if (errorMessage != null) {
+                Assert.Fail(errorMessage);
+            }
+        }
+
 
         public virtual void TestFlatteningGenerateAppearance(string input, string output, bool? gen) {
             PdfReader reader = new PdfReader(input);
