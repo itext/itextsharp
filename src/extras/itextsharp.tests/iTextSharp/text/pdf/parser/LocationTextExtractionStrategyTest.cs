@@ -169,6 +169,24 @@ namespace itextsharp.tests.iTextSharp.text.pdf.parser
 
 
         }
+        
+        [Test]
+        public void TestFontSpacingEqualsCharSpacing()
+        {
+            byte[] content = CreatePdfWithFontSpacingEqualsCharSpacing();
+            PdfReader r= new PdfReader(content);
+            String text = PdfTextExtractor.GetTextFromPage(r, 1, CreateRenderListenerForTest());
+            Assert.AreEqual("Preface", text);
+        }
+
+        [Test]
+        public void TestLittleFontSize()
+        {
+            byte[] content = CreatePdfWithLittleFontSize();
+            PdfReader r= new PdfReader(content);
+            String text = PdfTextExtractor.GetTextFromPage(r, 1, CreateRenderListenerForTest());
+            Assert.AreEqual("Preface Preface ", text);
+        }
 
         private byte[] CreatePdfWithNegativeCharSpacing(String str1, float charSpacing, String str2)
         {
@@ -348,6 +366,84 @@ namespace itextsharp.tests.iTextSharp.text.pdf.parser
 
             byte[] pdfBytes = byteStream.ToArray();
 
+            return pdfBytes;
+        }
+        
+        private byte[] CreatePdfWithFontSpacingEqualsCharSpacing()
+        {
+            MemoryStream baos = new MemoryStream();
+            Document doc = new Document();
+            PdfWriter writer = PdfWriter.GetInstance(doc, baos);
+            doc.Open();
+
+            BaseFont font = BaseFont.CreateFont();
+            int fontSize = 12;
+            float charSpace = font.GetWidth(' ') / 1000.0f;
+
+            PdfContentByte canvas = writer.DirectContent;
+            canvas.BeginText();
+            canvas.SetFontAndSize(font, fontSize);
+            canvas.MoveText(45, doc.PageSize.Height - 45);
+            canvas.SetCharacterSpacing(-charSpace * fontSize);
+
+            PdfTextArray textArray = new PdfTextArray();
+            textArray.Add("P");
+            textArray.Add(-226.2f);
+            textArray.Add("r");
+            textArray.Add(-231.8f);
+            textArray.Add("e");
+            textArray.Add(-230.8f);
+            textArray.Add("f");
+            textArray.Add(-238);
+            textArray.Add("a");
+            textArray.Add(-238.9f);
+            textArray.Add("c");
+            textArray.Add(-228.9f);
+            textArray.Add("e");
+
+            canvas.ShowText(textArray);
+            canvas.EndText();
+
+            doc.Close();
+        
+            byte[] pdfBytes = baos.ToArray();
+        
+            return pdfBytes;
+        }
+
+        private byte[] CreatePdfWithLittleFontSize()
+        {
+            MemoryStream baos = new MemoryStream();
+            Document doc = new Document();
+            PdfWriter writer = PdfWriter.GetInstance(doc, baos);
+            doc.Open();
+
+            BaseFont font = BaseFont.CreateFont();
+            PdfContentByte canvas = writer.DirectContent;
+            canvas.BeginText();
+            canvas.SetFontAndSize(font, 0.2f);
+            canvas.MoveText(45, doc.PageSize.Height - 45);
+
+            PdfTextArray textArray = new PdfTextArray();
+            textArray.Add("P");
+            textArray.Add("r");
+            textArray.Add("e");
+            textArray.Add("f");
+            textArray.Add("a");
+            textArray.Add("c");
+            textArray.Add("e");
+            textArray.Add(" ");
+
+            canvas.ShowText(textArray);
+            canvas.SetFontAndSize(font, 10);
+            canvas.ShowText(textArray);
+
+            canvas.EndText();
+
+            doc.Close();
+
+            byte[] pdfBytes = baos.ToArray();
+        
             return pdfBytes;
         }
     }
