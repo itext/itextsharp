@@ -10,32 +10,31 @@
     <projectUrl>http://itextpdf.com/</projectUrl>
     <iconUrl>http://itextpdf.com/sites/default/files/ITSC-avatar.png</iconUrl>
     <requireLicenseAcceptance>true</requireLicenseAcceptance>
-    <description>iText is a PDF library that allows you to CREATE, ADAPT, INSPECT and MAINTAIN documents in the Portable Document Format (PDF), allowing you to add PDF functionality to your software projects with ease.  We even have documentation to help you get coding.
+    <description>PLEASE NOTE: iTextSharp is EOL, and has been replaced by iText7
 
-We have two currently supported versions: iText 5 and iText 7. Both are available under AGPL and Commercial license.
-* iText 5 AGPL
-* iText 7 community: https://www.nuget.org/packages/itext7/
+We HIGHLY recommend customers use iText7 for new projects, and to consider moving existing projects from iTextSharp to iText 7 to benefit from the many improvements such as:
 
-iText 5 is a one solution library that is complex, but well documented to help you create your solutions.
+* HTML to PDF (PDF/UA) conversion
+* PDF Redaction
+* SVG support
+* Better language support (Indic, Thai, Khmer, Arabic, Hebrew)
+* PDF Debugging for your IDE
+* Data Extraction
+* Better continued support and bugfixes
+* More modular, extensible handling of your document workflow
+* Extra practical add-ons
+* Encryption, hashing and digital signatures
+
+iText is a PDF library that allows you to CREATE, ADAPT, INSPECT and MAINTAIN documents in the Portable Document Format (PDF), allowing you to add PDF functionality to your software projects with ease.  We even have documentation to help you get coding.
+
+iText 7 is available under AGPL and Commercial license. iText 7 community: https://www.nuget.org/packages/itext7/
 
 iText 7 is a complete re-write of iText 5, allowing you to choose your adventure with add-ons, all based on a simple, modular code structure that is easy to use and well documented.
 
-Both versions allow you to:
-- Generate documents and reports based on data from an XML file or a database
-- Create maps and books, exploiting numerous interactive features available in PDF
-- Add bookmarks, page numbers, watermarks, and other features to existing PDF documents
-- Split or concatenate pages from existing PDF files
-- Fill out interactive forms
-- Serve dynamically generated or manipulated PDF documents to a web browser
-
 iText 7 includes pdfDebug, the first debugging tool that gives you a clear overview of your content streams and document structure as well as pdfCalligraph, allowing you to leverage advanced typography.
 
-iText is available for Java, .NET in both versions, and Android and GAE for iText 5 only.
-
-iTextSharp is the .NET port of iText 5.
-
 Several iText engineers are actively supporting the project on StackOverflow: http://stackoverflow.com/questions/tagged/itext</description>
-    <summary>iTextSharp is a port of the iText open source java library for PDF generation written entirely in C# for the .NET platform.
+    <summary>iTextSharp is a DEPRECATED library for PDF generation written entirely in C# for the .NET platform. Please use itext7 instead.
 iText 7 Community: https://www.nuget.org/packages/itext7/</summary>
     <copyright>Copyright (c) 1998-2019 iText Group NV</copyright>
     <language>en-US</language>
