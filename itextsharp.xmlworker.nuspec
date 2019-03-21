@@ -1,0 +1,31 @@
+﻿<?xml version="1.0" encoding="utf-8"?>
+<package xmlns="http://schemas.microsoft.com/packaging/2011/08/nuspec.xsd">
+  <metadata>
+    <id>itextsharp.xmlworker</id>
+    <version>5.5.14-SNAPSHOT</version>
+    <title>iTextSharp XML Worker</title>
+    <authors>Bruno Lowagie, Paulo Soares, et al.</authors>
+    <owners>Bruno Lowagie,Paulo Soares,et al.</owners>
+    <licenseUrl>http://www.gnu.org/licenses/agpl.html</licenseUrl>
+    <projectUrl>http://itextpdf.com/</projectUrl>
+    <iconUrl>http://itextpdf.com/sites/default/files/ITSC-avatar.png</iconUrl>
+    <requireLicenseAcceptance>true</requireLicenseAcceptance>
+    <description>This tool parses (X)HTML snippets and the associated CSS and converts them to PDF.
+
+XMLWorker is an extra component for iText®. The first XML to PDF implementation, is a new version of the old HTMLWorker that used to be shipped with iText.</description>
+    <summary>This tool parses (X)HTML snippets and the associated CSS and converts them to PDF.</summary>
+    <releaseNotes>http://itextpdf.com/blog/release-notes-itext-5514</releaseNotes>
+    <copyright>Copyright (c) 1998-2019 iText Group NV</copyright>
+    <language>en-US</language>
+    <tags>itext itextsharp c# csharp xml worker pdf html xhtml css</tags>
+    <dependencies>
+      <dependency id="iTextSharp" version="5.5.14-SNAPSHOT" />
+    </dependencies>
+  </metadata>
+
+  <files>
+    <file src="src\extras\itextsharp.xmlworker\bin\Release\itextsharp.xmlworker.dll" target="lib\" />
+    <file src="gnu-agpl-v3.0.md" target="" />
+    <file src="LICENSE.md" target="" />
+  </files>
+</package>
