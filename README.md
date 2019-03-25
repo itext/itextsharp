@@ -1,4 +1,20 @@
-iTextSharp consists of several dlls.
+### **PLEASE NOTE: iTextSharp is EOL, and has been replaced by [iText7][itext7]**
+ 
+We HIGHLY recommend customers use iText7 for new projects, and to consider moving existing projects from iTextSharp to iText7 to benefit from the many improvements such as:
+ 
+- HTML to PDF (PDF/UA) conversion
+- PDF Redaction
+- SVG support
+- Better language support: Indic, Thai, Khmer, Arabic, Hebrew. (Close-source addon)
+- PDF Debugging for your IDE
+- Data Extraction
+- Better continued support and bugfixes
+- More modular, extensible handling of your document workflow
+- Extra practical add-ons
+- Encryption, hashing & digital signatures
+
+
+### [iTextSharp][itext] consists of several dlls.
 
 The main iTextSharp release contains:
 - ```itextsharp.dll```: the core library
@@ -40,3 +56,5 @@ Contact sales for more info: http://itextpdf.com/sales
 [building]: BUILDING.md
 [contributing]: CONTRIBUTING.md
 [gratis]: https://en.wikipedia.org/wiki/Gratis_versus_libre
+[itext]: http://itextpdf.com/
+[itext7]: https://github.com/itext/itext7
