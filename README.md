@@ -57,4 +57,4 @@ Contact sales for more info: http://itextpdf.com/sales
 [contributing]: CONTRIBUTING.md
 [gratis]: https://en.wikipedia.org/wiki/Gratis_versus_libre
 [itext]: http://itextpdf.com/
-[itext7]: https://github.com/itext/itext7
+[itext7]: https://github.com/itext/itext7-dotnet
