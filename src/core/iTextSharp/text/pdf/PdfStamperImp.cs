@@ -307,7 +307,7 @@ namespace iTextSharp.text.pdf {
             PdfDictionary newInfo = new PdfDictionary();
             if (oldInfo != null) {
                 foreach (PdfName key in oldInfo.Keys) {
-                    PdfObject value = PdfReader.GetPdfObject(oldInfo.Get(key));
+                    PdfObject value = oldInfo.Get(key);
                     newInfo.Put(key, value);
                 }
             }
