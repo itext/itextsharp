@@ -161,7 +161,9 @@ namespace iTextSharp.text.pdf {
         }
 
         protected Font GetFont(int i) {
-            return i < fonts.Count ? fonts[i] : unsupportedFonts[i];
+            return i < fonts.Count
+                ? fonts[i]
+                : unsupportedFonts[i - fonts.Count];
         }
 
         private bool IsSupported(Font font) {
