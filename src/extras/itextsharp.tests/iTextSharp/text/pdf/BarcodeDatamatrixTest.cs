@@ -283,7 +283,26 @@ namespace itextsharp.tests.iTextSharp.text.pdf {
             CompareDocuments(filename);
         }
 
+        [Test]
+        public void Barcode14Test() {
+            String filename = "barcodeDataMatrix14.pdf";
+            String code = "999999DILLERT XANG LIMITON 18               000";
 
+            Document document = new Document(PageSize.A4);
+            PdfWriter writer = PdfWriter.GetInstance(document,
+                new FileStream(outFolder + filename, FileMode.Create));
+            document.Open();
+            document.Add(new Paragraph("Datamatrix test 14"));
+            PdfContentByte cb = writer.DirectContent;
+            cb.ConcatCTM(AffineTransform.GetTranslateInstance(PageSize.A4.Width / 2 - 100,
+                PageSize.A4.Height / 2 - 100));
+            BarcodeDatamatrix barcode = new BarcodeDatamatrix();
+            barcode.Generate(code);
+            barcode.PlaceBarcode(cb, BaseColor.BLACK, 5, 5);
+            document.Close();
+
+            CompareDocuments(filename);
+        }
 
         /**
         * Utility method that checks the created file against the cmp file
