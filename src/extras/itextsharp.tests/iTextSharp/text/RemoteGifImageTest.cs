@@ -48,6 +48,7 @@ using System.IO;
 
 namespace itextsharp.tests.iTextSharp.text
 {
+    [Ignore("This test can be flaky depending on remote resources availability.")]
     class RemoteGifImageTest
     {
         private String[] GIF_LOCATION = {
