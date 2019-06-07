@@ -182,9 +182,20 @@ namespace iTextSharp.text {
                     throw new Exception();
                 }
             } catch (Exception) {
+	            if (DependsOnTheOldLicense()) {
+		            throw new Exception("iText License Library 1.0.* has been deprecated. Please, update to the latest version.");
+	            }
                 localVersion.iTextVersion += AGPL;
             }
             return localVersion;
+        }
+
+        private static bool DependsOnTheOldLicense() {
+	        try {
+		        return Type.GetType("iTextSharp.license.LicenseKey, itextsharp.LicenseKey") != null;
+	        } catch (Exception e) {
+		        return false;
+	        }
         }
     	
 	    /**
