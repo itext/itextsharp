@@ -10,9 +10,9 @@
     <projectUrl>http://itextpdf.com/</projectUrl>
     <iconUrl>http://itextpdf.com/sites/default/files/ITSC-avatar.png</iconUrl>
     <requireLicenseAcceptance>true</requireLicenseAcceptance>
-    <description>PLEASE NOTE: iTextSharp is EOL, and has been replaced by iText7
+    <description>PLEASE NOTE: iTextSharp is EOL, and has been replaced by iText 7. Only security fixes will be added
 
-We HIGHLY recommend customers use iText7 for new projects, and to consider moving existing projects from iTextSharp to iText 7 to benefit from the many improvements such as:
+We HIGHLY recommend customers use iText 7 for new projects, and to consider moving existing projects from iTextSharp to iText 7 to benefit from the many improvements such as:
 
 * HTML to PDF (PDF/UA) conversion
 * PDF Redaction
@@ -25,9 +25,9 @@ We HIGHLY recommend customers use iText7 for new projects, and to consider movin
 * Extra practical add-ons
 * Encryption, hashing and digital signatures
 
-This DEPRECATED library adds extra functionality for iTextSharp. Please use iText7 instead: iText 7 community: https://www.nuget.org/packages/itext7/ and iText7 pdfSweep addon: https://www.nuget.org/packages/itext7.pdfsweep/</description>
-    <summary>Extra functionality for DEPRECACTED iTextSharp PDF generation library written entirely in C# for the .NET platform. Please use itext7 instead.
-iText 7 Community: https://www.nuget.org/packages/itext7/</summary>
+This DEPRECATED library adds extra functionality for iTextSharp. Please use iText 7 instead. iText 7 Community: https://www.nuget.org/packages/itext7/ and iText 7 pdfSweep addon: https://www.nuget.org/packages/itext7.pdfsweep/</description>
+    <summary>Extra functionality for DEPRECACTED iTextSharp PDF generation library written entirely in C# for the .NET platform. Please use iText 7 instead.
+iText 7 Community: https://www.nuget.org/packages/itext7/</summary>
     <releaseNotes>http://itextpdf.com/blog/release-notes-itext-5514</releaseNotes>
     <copyright>Copyright (c) 1998-2019 iText Group NV</copyright>
     <language>en-US</language>

@@ -10,9 +10,9 @@
     <projectUrl>http://itextpdf.com/</projectUrl>
     <iconUrl>http://itextpdf.com/sites/default/files/ITSC-avatar.png</iconUrl>
     <requireLicenseAcceptance>true</requireLicenseAcceptance>
-    <description>PLEASE NOTE: iTextSharp is EOL, and has been replaced by iText7
+    <description>PLEASE NOTE: iTextSharp is EOL, and has been replaced by iText 7. Only security fixes will be added
 
-We HIGHLY recommend customers use iText7 for new projects, and to consider moving existing projects from iTextSharp to iText 7 to benefit from the many improvements such as:
+We HIGHLY recommend customers use iText 7 for new projects, and to consider moving existing projects from iTextSharp to iText 7 to benefit from the many improvements such as:
 
 * HTML to PDF (PDF/UA) conversion
 * PDF Redaction
@@ -25,10 +25,10 @@ We HIGHLY recommend customers use iText7 for new projects, and to consider movin
 * Extra practical add-ons
 * Encryption, hashing and digital signatures
 
-This DEPRECATED tool parses (X)HTML snippets and the associated CSS and converts them to PDF. It is replaced by iText7 pdfHTML addon https://www.nuget.org/packages/itext7.pdfhtml/ and iText 7 Community: https://www.nuget.org/packages/itext7/
+This DEPRECATED tool parses (X)HTML snippets and the associated CSS and converts them to PDF. It is replaced by iText7 pdfHTML addon https://www.nuget.org/packages/itext7.pdfhtml/ and iText 7 Community: https://www.nuget.org/packages/itext7/
 
-XMLWorker is an extra component for iText®. The first XML to PDF implementation, is a new version of the old HTMLWorker that used to be shipped with iText.</description>
-    <summary>This DEPRECATED tool parses (X)HTML snippets and the associated CSS and converts them to PDF. It is replaced by iText7 pdfHTML addon https://www.nuget.org/packages/itext7.pdfhtml/ and iText 7 Community: https://www.nuget.org/packages/itext7/</summary>
+XMLWorker is an extra component for iTextSharp. The first XML to PDF implementation, is a new version of the old HTMLWorker that used to be shipped with iTextSharp.</description>
+    <summary>This DEPRECATED tool parses (X)HTML snippets and the associated CSS and converts them to PDF. It is replaced by iText 7 pdfHTML addon https://www.nuget.org/packages/itext7.pdfhtml/ and iText 7 Community: https://www.nuget.org/packages/itext7/</summary>
     <releaseNotes>http://itextpdf.com/blog/release-notes-itext-5514</releaseNotes>
     <copyright>Copyright (c) 1998-2019 iText Group NV</copyright>
     <language>en-US</language>
