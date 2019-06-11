@@ -64,7 +64,7 @@ namespace iTextSharp.text.pdf {
     * @author Kazuya Ujihara
     */
     public class PdfReader : IPdfViewerPreferences, IDisposable {
-        
+
         /**
          * The iText developers are not responsible if you decide to change the
          * value of this static parameter.
@@ -86,7 +86,7 @@ namespace iTextSharp.text.pdf {
         // type 0 -> -1, 0
         // type 1 -> offset, 0
         // type 2 -> index, obj num
-		protected internal long[] xref;
+        protected internal long[] xref;
         protected internal Dictionary<int, IntHashtable> objStmMark;
         protected internal LongHashtable objStmToOffset;
         protected internal bool newXrefType;
@@ -126,15 +126,24 @@ namespace iTextSharp.text.pdf {
         private bool encryptionError;
 
         /**
+        * Handler which will be used for decompression of pdf streams.
+        */
+        internal MemoryLimitsAwareHandler memoryLimitsAwareHandler = null;
+
+        /**
         * Holds value of property appendable.
         */
         private bool appendable;
 
-       	protected static ICounter COUNTER = CounterFactory.GetCounter(typeof(PdfReader));
-	    protected virtual ICounter GetCounter() {
-		    return COUNTER;
-	    }
-        
+        protected static ICounter COUNTER = CounterFactory.GetCounter(typeof(PdfReader));
+        protected virtual ICounter GetCounter() {
+            return COUNTER;
+        }
+
+        internal MemoryLimitsAwareHandler GetMemoryLimitsAwareHandler() {
+            return memoryLimitsAwareHandler;
+        }
+
         protected internal PdfReader() {
         }
 
@@ -148,26 +157,32 @@ namespace iTextSharp.text.pdf {
          * @param certificateKeyProvider the name of the key provider, or null if no key is required
          * @param closeSourceOnConstructorError if true, the byteSource will be closed if there is an error during construction of this reader
          */
-        private PdfReader(IRandomAccessSource byteSource, bool partialRead, byte[] ownerPassword, X509Certificate certificate, ICipherParameters certificateKey, bool closeSourceOnConstructorError)
-        {
-            this.certificate = certificate;
-            this.certificateKey = certificateKey;
-            this.password = ownerPassword;
-            this.partial = partialRead;
+        private PdfReader(IRandomAccessSource byteSource, bool partialRead, byte[] ownerPassword, X509Certificate certificate, ICipherParameters certificateKey, bool closeSourceOnConstructorError) :
+            this(new ReaderProperties().SetCertificate(certificate).SetCertificateKey(certificateKey).SetOwnerPassword(ownerPassword).SetPartialRead(partialRead).SetCloseSourceOnconstructorError(closeSourceOnConstructorError), byteSource) {
+        }
 
-            try
-            {
+        /**
+        * Constructs a new PdfReader.  This is the master constructor.
+        * @param byteSource source of bytes for the reader
+        * @param properties the properties which will be used to create the reader
+        */
+        private PdfReader(ReaderProperties properties, IRandomAccessSource byteSource) {
+            this.certificate = properties.certificate;
+            this.certificateKey = properties.certificateKey;
+            this.password = properties.ownerPassword;
+            this.partial = properties.partialRead;
+            this.memoryLimitsAwareHandler = properties.memoryLimitsAwareHandler;
+            try {
 
                 tokens = GetOffsetTokeniser(byteSource);
 
-                if (partialRead)
+                if (properties.partialRead)
                     ReadPdfPartial();
                 else
                     ReadPdf();
             }
-            catch (IOException e)
-            {
-                if (closeSourceOnConstructorError)
+            catch (IOException e) {
+                if (properties.closeSourceOnconstructorError)
                     byteSource.Close();
                 throw e;
             }
@@ -180,53 +195,58 @@ namespace iTextSharp.text.pdf {
         */
         public PdfReader(String filename) : this(filename, null) {
         }
-        
+
+        /**
+        * Reads and parses a PDF document.
+        * @param filename the file name of the document
+        * @param properties the properties which will be used to create the reader
+        * @throws IOException on error
+        */
+        public PdfReader(ReaderProperties properties, String filename) : this(
+            properties,
+            new RandomAccessSourceFactory()
+            .SetForceRead(false)
+            .CreateBestSource(filename)) {
+        }
+
         /** Reads and parses a PDF document.
-         * @param filename the file name of the document
-         * @param ownerPassword the password to read the document
-         * @throws IOException on error
-         */
-        public PdfReader(String filename, byte[] ownerPassword):
-            this(filename, ownerPassword, false)
-        { }
+        * @param filename the file name of the document
+        * @param ownerPassword the password to read the document
+        * @throws IOException on error
+        */
+        public PdfReader(String filename, byte[] ownerPassword) :
+            this(new ReaderProperties().SetOwnerPassword(ownerPassword), filename) {
+        }
 
         /** Reads and parses a PDF document.
          * @param filename the file name of the document
          * @param ownerPassword the password to read the document
          * @throws IOException on error
-         */    
+         */
         public PdfReader(String filename, byte[] ownerPassword, bool partial) : this(
+            new ReaderProperties().SetPartialRead(partial).SetOwnerPassword(ownerPassword),
             new RandomAccessSourceFactory()
             .SetForceRead(false)
-            .CreateBestSource(filename),                
-            partial,
-            ownerPassword,
-            null,
-            null,
-            true) {
+            .CreateBestSource(filename)) {
         }
-        
+
         /** Reads and parses a PDF document.
         * @param pdfIn the byte array with the document
         * @throws IOException on error
         */
-        public PdfReader(byte[] pdfIn) : this(pdfIn, null) {
+        public PdfReader(byte[] pdfIn) : this(new ReaderProperties(), new RandomAccessSourceFactory().CreateSource(pdfIn)) {
         }
-        
+
         /** Reads and parses a PDF document.
         * @param pdfIn the byte array with the document
         * @param ownerPassword the password to read the document
         * @throws IOException on error
         */
         public PdfReader(byte[] pdfIn, byte[] ownerPassword) : this(
-            new RandomAccessSourceFactory().CreateSource(pdfIn),
-            false,
-            ownerPassword,
-            null,
-            null,
-            true) {
+            new ReaderProperties().SetOwnerPassword(ownerPassword),
+            new RandomAccessSourceFactory().CreateSource(pdfIn)) {
         }
-        
+
         /** Reads and parses a PDF document.
         * @param filename the file name of the document
         * @param certificate the certificate to read the document
@@ -235,37 +255,29 @@ namespace iTextSharp.text.pdf {
         * @throws IOException on error
         */
         public PdfReader(String filename, X509Certificate certificate, ICipherParameters certificateKey) : this(
+            new ReaderProperties().SetCertificate(certificate).SetCertificateKey(certificateKey),
             new RandomAccessSourceFactory()
             .SetForceRead(false)
-            .CreateBestSource(filename),
-            false,
-            null,
-            certificate,
-            certificateKey,
-            true){
-        }        
-
-    /** Reads and parses a PDF document.
-        * @param url the Uri of the document
-        * @throws IOException on error
-        */
-        public PdfReader(Uri url) : this(url, null) {
+            .CreateBestSource(filename)) {
         }
-        
+
+        /** Reads and parses a PDF document.
+            * @param url the Uri of the document
+            * @throws IOException on error
+            */
+        public PdfReader(Uri url) : this(new ReaderProperties(), new RandomAccessSourceFactory().CreateSource(url)) {
+        }
+
         /** Reads and parses a PDF document.
         * @param url the Uri of the document
         * @param ownerPassword the password to read the document
         * @throws IOException on error
         */
         public PdfReader(Uri url, byte[] ownerPassword) : this(
-            new RandomAccessSourceFactory().CreateSource(url),
-            false,
-            ownerPassword,
-            null,
-            null,
-            true) {
+            new ReaderProperties().SetOwnerPassword(ownerPassword),
+            new RandomAccessSourceFactory().CreateSource(url)) {
         }
-        
+
         /**
         * Reads and parses a PDF document.
         * @param is the <CODE>InputStream</CODE> containing the document. The stream is read to the
@@ -274,55 +286,56 @@ namespace iTextSharp.text.pdf {
         * @throws IOException on error
         */
         public PdfReader(Stream isp, byte[] ownerPassword) : this(
-            new RandomAccessSourceFactory().CreateSource(isp),
-            false,
-            ownerPassword,
-            null,
-            null,
-            false) {
+            new ReaderProperties().SetOwnerPassword(ownerPassword).SetCloseSourceOnconstructorError(false),
+            new RandomAccessSourceFactory().CreateSource(isp)) {
         }
-        
+
+        /**
+        * Reads and parses a PDF document.
+        * @param properties the properties which will be used to create the reader
+        * @param isp the <CODE>InputStream</CODE> containing the document. The stream is read to the
+        * end but is not closed
+        * @throws IOException on error
+        */
+        public PdfReader(ReaderProperties properties, Stream isp) : this(properties, new RandomAccessSourceFactory().CreateSource(isp)) {
+        }
+
         /**
         * Reads and parses a PDF document.
         * @param isp the <CODE>InputStream</CODE> containing the document. The stream is read to the
         * end but is not closed
         * @throws IOException on error
         */
-        public PdfReader(Stream isp) : this(isp, null) {
+        public PdfReader(Stream isp) : this(new ReaderProperties().SetCloseSourceOnconstructorError(false), new RandomAccessSourceFactory().CreateSource(isp)) {
         }
 
-    /**
-     * Reads and parses a pdf document. Contrary to the other constructors only the xref is read
-     * into memory. The reader is said to be working in "partial" mode as only parts of the pdf
-     * are read as needed.
-     * @param raf the document location
-     * @param ownerPassword the password or <CODE>null</CODE> for no password
-     * @throws IOException on error
-     */
-    public PdfReader(RandomAccessFileOrArray raf, byte[] ownerPassword) : 
-        this(raf, ownerPassword, true) {
-    }
+        /**
+         * Reads and parses a pdf document. Contrary to the other constructors only the xref is read
+         * into memory. The reader is said to be working in "partial" mode as only parts of the pdf
+         * are read as needed.
+         * @param raf the document location
+         * @param ownerPassword the password or <CODE>null</CODE> for no password
+         * @throws IOException on error
+         */
+        public PdfReader(RandomAccessFileOrArray raf, byte[] ownerPassword) :
+            this(new ReaderProperties().SetOwnerPassword(ownerPassword).SetPartialRead(true).SetCloseSourceOnconstructorError(false), raf.GetByteSource()) {
+        }
 
-    /**
-     * Reads and parses a pdf document.
-     * @param raf the document location
-     * @param ownerPassword the password or <CODE>null</CODE> for no password
-     * @param partial indicates if the reader needs to read the document only partially. See {@link PdfReader#PdfReader(RandomAccessFileOrArray, byte[])}
-     * @throws IOException on error
-     */
-    public PdfReader(RandomAccessFileOrArray raf, byte[] ownerPassword, bool partial) : 
-        this(
-        		raf.GetByteSource(),
-    			partial,
-    			ownerPassword,
-    			null,
-                null,
-    			false) {
-    }
-        
+        /**
+         * Reads and parses a pdf document.
+         * @param raf the document location
+         * @param ownerPassword the password or <CODE>null</CODE> for no password
+         * @param partial indicates if the reader needs to read the document only partially. See {@link PdfReader#PdfReader(RandomAccessFileOrArray, byte[])}
+         * @throws IOException on error
+         */
+        public PdfReader(RandomAccessFileOrArray raf, byte[] ownerPassword, bool partial) :
+            this(new ReaderProperties().SetPartialRead(partial).SetOwnerPassword(ownerPassword).SetCloseSourceOnconstructorError(false),
+                    raf.GetByteSource()) {
+        }
+
         /** Creates an independent duplicate.
         * @param reader the <CODE>PdfReader</CODE> to duplicate
-        */    
+        */
         public PdfReader(PdfReader reader) {
             this.appendable = reader.appendable;
             this.consolidateNamedDestinations = reader.consolidateNamedDestinations;
@@ -361,8 +374,9 @@ namespace iTextSharp.text.pdf {
         // Explicit static constructor to tell C# compiler
         // not to mark type as beforefieldinit. It prevents
         // problems with Logger initialization.
-        static PdfReader() { }
-                                                                                      
+        static PdfReader() {
+        }
+
         /**
          * Utility method that checks the provided byte source to see if it has junk bytes at the beginning.  If junk bytes
          * are found, construct a tokeniser that ignores the junk.  Otherwise, construct a tokeniser for the byte source as it is
@@ -373,13 +387,13 @@ namespace iTextSharp.text.pdf {
         private static PRTokeniser GetOffsetTokeniser(IRandomAccessSource byteSource) {
             PRTokeniser tok = new PRTokeniser(new RandomAccessFileOrArray(byteSource));
             int offset = tok.GetHeaderOffset();
-            if (offset != 0){
+            if (offset != 0) {
                 IRandomAccessSource offsetSource = new WindowRandomAccessSource(byteSource, offset);
                 tok = new PRTokeniser(new RandomAccessFileOrArray(offsetSource));
             }
             return tok;
         }
-        
+
         /** Gets a new file instance of the original PDF
         * document.
         * @return a new file instance of the original PDF document
@@ -389,11 +403,11 @@ namespace iTextSharp.text.pdf {
                 return tokens.SafeFile;
             }
         }
-        
+
         virtual protected internal PdfReaderInstance GetPdfReaderInstance(PdfWriter writer) {
             return new PdfReaderInstance(this, writer);
         }
-        
+
         /** Gets the number of pages in the document.
         * @return the number of pages in the document
         */
@@ -402,7 +416,7 @@ namespace iTextSharp.text.pdf {
                 return pageRefs.Size;
             }
         }
-        
+
         /** Returns the document's catalog. This dictionary is not a copy,
         * any changes will be reflected in the catalog.
         * @return the document's catalog
@@ -412,7 +426,7 @@ namespace iTextSharp.text.pdf {
                 return catalog;
             }
         }
-        
+
         /** Returns the document's acroform, if it has one.
         * @return the document's acroform
         */
@@ -434,6 +448,7 @@ namespace iTextSharp.text.pdf {
                 return acroForm;
             }
         }
+
         /**
         * Gets the page rotation. This value can be 0, 90, 180 or 270.
         * @param index the page number. The first page is 1
@@ -442,7 +457,7 @@ namespace iTextSharp.text.pdf {
         virtual public int GetPageRotation(int index) {
             return GetPageRotation(pageRefs.GetPageNRelease(index));
         }
-        
+
         internal int GetPageRotation(PdfDictionary page) {
             PdfNumber rotate = page.GetAsNumber(PdfName.ROTATE);
             if (rotate == null)
@@ -461,12 +476,12 @@ namespace iTextSharp.text.pdf {
         virtual public Rectangle GetPageSizeWithRotation(int index) {
             return GetPageSizeWithRotation(pageRefs.GetPageNRelease(index));
         }
-        
+
         /**
         * Gets the rotated page from a page dictionary.
         * @param page the page dictionary
         * @return the rotated page
-        */    
+        */
         virtual public Rectangle GetPageSizeWithRotation(PdfDictionary page) {
             Rectangle rect = GetPageSize(page);
             int rotation = GetPageRotation(page);
@@ -476,7 +491,7 @@ namespace iTextSharp.text.pdf {
             }
             return rect;
         }
-        
+
         /** Gets the page size without taking rotation into account. This
         * is the value of the /MediaBox key.
         * @param index the page number. The first page is 1
@@ -485,17 +500,17 @@ namespace iTextSharp.text.pdf {
         virtual public Rectangle GetPageSize(int index) {
             return GetPageSize(pageRefs.GetPageNRelease(index));
         }
-        
+
         /**
         * Gets the page from a page dictionary
         * @param page the page dictionary
         * @return the page
-        */    
+        */
         virtual public Rectangle GetPageSize(PdfDictionary page) {
             PdfArray mediaBox = page.GetAsArray(PdfName.MEDIABOX);
             return GetNormalizedRectangle(mediaBox);
         }
-        
+
         /** Gets the crop box without taking rotation into account. This
         * is the value of the /CropBox key. The crop box is the part
         * of the document to be displayed or printed. It usually is the same
@@ -511,7 +526,7 @@ namespace iTextSharp.text.pdf {
                 return GetPageSize(page);
             return GetNormalizedRectangle(cropBox);
         }
-        
+
         /** Gets the box size. Allowed names are: "crop", "trim", "art", "bleed" and "media".
         * @param index the page number. The first page is 1
         * @param boxName the box name
@@ -534,14 +549,14 @@ namespace iTextSharp.text.pdf {
                 return null;
             return GetNormalizedRectangle(box);
         }
-        
+
         /** Returns the content of the document information dictionary as a <CODE>Hashtable</CODE>
         * of <CODE>String</CODE>.
         * @return content of the document information dictionary
         */
-        virtual public Dictionary<string,string> Info {
+        virtual public Dictionary<string, string> Info {
             get {
-                Dictionary<string,string> map = new Dictionary<string,string>();
+                Dictionary<string, string> map = new Dictionary<string, string>();
                 PdfDictionary info = trailer.GetAsDict(PdfName.INFO);
                 if (info == null)
                     return map;
@@ -552,24 +567,24 @@ namespace iTextSharp.text.pdf {
                     String value = obj.ToString();
                     switch (obj.Type) {
                         case PdfObject.STRING: {
-                            value = ((PdfString)obj).ToUnicodeString();
-                            break;
-                        }
+                                value = ((PdfString)obj).ToUnicodeString();
+                                break;
+                            }
                         case PdfObject.NAME: {
-                            value = PdfName.DecodeName(value);
-                            break;
-                        }
+                                value = PdfName.DecodeName(value);
+                                break;
+                            }
                     }
                     map[PdfName.DecodeName(key.ToString())] = value;
                 }
                 return map;
             }
         }
-        
+
         /** Normalizes a <CODE>Rectangle</CODE> so that llx and lly are smaller than urx and ury.
         * @param box the original rectangle
         * @return a normalized <CODE>Rectangle</CODE>
-        */    
+        */
         public static Rectangle GetNormalizedRectangle(PdfArray box) {
             float llx = ((PdfNumber)GetPdfObjectRelease(box.GetPdfObject(0))).FloatValue;
             float lly = ((PdfNumber)GetPdfObjectRelease(box.GetPdfObject(1))).FloatValue;
@@ -585,11 +600,12 @@ namespace iTextSharp.text.pdf {
          */
         virtual public bool IsTagged() {
             PdfDictionary markInfo = catalog.GetAsDict(PdfName.MARKINFO);
-            if(markInfo == null)
+            if (markInfo == null)
                 return false;
             if (PdfBoolean.PDFTRUE.Equals(markInfo.GetAsBoolean(PdfName.MARKED))) {
                 return catalog.GetAsDict(PdfName.STRUCTTREEROOT) != null;
-            } else {
+            }
+            else {
                 return false;
             }
         }
@@ -600,6 +616,9 @@ namespace iTextSharp.text.pdf {
         protected internal virtual void ReadPdf() {
             fileLength = tokens.File.Length;
             pdfVersion = tokens.CheckPdfHeader();
+            if (null == memoryLimitsAwareHandler) {
+                memoryLimitsAwareHandler = new MemoryLimitsAwareHandler(fileLength);
+            }
             try {
                 ReadXref();
             }
@@ -627,35 +646,34 @@ namespace iTextSharp.text.pdf {
                     RebuildXref();
                     lastXref = -1;
                     ReadDocObj();
-                } catch (Exception ne2){
+                }
+                catch (Exception ne2) {
                     throw new InvalidPdfException(MessageLocalization.GetComposedMessage("rebuild.failed.1.original.message.2", ne2.Message, ne.Message));
                 }
             }
-            
+
             strings.Clear();
             ReadPages();
             //EliminateSharedStreams();
             RemoveUnusedObjects();
         }
 
-        virtual protected internal void ReadPdfPartial()
-        {
+        virtual protected internal void ReadPdfPartial() {
             fileLength = tokens.File.Length;
             pdfVersion = tokens.CheckPdfHeader();
-            try
-            {
+            if (null == memoryLimitsAwareHandler) {
+                memoryLimitsAwareHandler = new MemoryLimitsAwareHandler(fileLength);
+            }
+            try {
                 ReadXref();
             }
-            catch (Exception e)
-            {
-                try
-                {
+            catch (Exception e) {
+                try {
                     rebuilt = true;
                     RebuildXref();
                     lastXref = -1;
                 }
-                catch (Exception ne)
-                {
+                catch (Exception ne) {
                     throw new InvalidPdfException(MessageLocalization.GetComposedMessage(
                             "rebuild.failed.1.original.message.2", ne.Message, e.Message), ne);
                 }
@@ -671,7 +689,7 @@ namespace iTextSharp.text.pdf {
             }
             return true;
         }
-        
+
         /**
         * @throws IOException
         */
@@ -683,7 +701,7 @@ namespace iTextSharp.text.pdf {
                 return;
             encryptionError = true;
             byte[] encryptionKey = null;
-       	
+
             encrypted = true;
             PdfDictionary enc = (PdfDictionary)GetPdfObject(encDic);
             //This string of condidions is to determine whether or not the authevent for this PDF is EFOPEN
@@ -691,25 +709,22 @@ namespace iTextSharp.text.pdf {
             //Without this check we run into a bad password exception when trying to open documents that have an
             //auth event type of EFOPEN. 
             PdfDictionary cfDict = enc.GetAsDict(PdfName.CF);
-            if (cfDict != null)
-            {
+            if (cfDict != null) {
                 PdfDictionary stdCFDict = cfDict.GetAsDict(PdfName.STDCF);
-                if (stdCFDict != null)
-                {
+                if (stdCFDict != null) {
                     PdfName authEvent = stdCFDict.GetAsName(PdfName.AUTHEVENT);
-                    if (authEvent != null)
-                    {
+                    if (authEvent != null) {
                         //Return only if the event is EFOPEN and there is no password so that 
-        			    //attachments that are encrypted can still be opened.
+                        //attachments that are encrypted can still be opened.
                         if (authEvent.CompareTo(PdfName.EFOPEN) == 0 && !this.ownerPasswordUsed)
                             return;
                     }
                 }
             }
-            
+
             String s;
             PdfObject o;
-            
+
             PdfArray documentIDs = trailer.GetAsArray(PdfName.ID);
             byte[] documentID = null;
             if (documentIDs != null) {
@@ -723,15 +738,15 @@ namespace iTextSharp.text.pdf {
             // just in case we have a broken producer
             if (documentID == null)
                 documentID = new byte[0];
-            
+
             byte[] uValue = null;
             byte[] oValue = null;
             int cryptoMode = PdfWriter.STANDARD_ENCRYPTION_40;
-            int lengthValue = 0;  
-            
+            int lengthValue = 0;
+
             PdfObject filter = GetPdfObjectRelease(enc.Get(PdfName.FILTER));
 
-            if (filter.Equals(PdfName.STANDARD)) {                   
+            if (filter.Equals(PdfName.STANDARD)) {
                 s = enc.Get(PdfName.U).ToString();
                 strings.Remove((PdfString)enc.Get(PdfName.U));
                 uValue = DocWriter.GetISOBytes(s);
@@ -744,7 +759,7 @@ namespace iTextSharp.text.pdf {
                     strings.Remove((PdfString)enc.Get(PdfName.UE));
                 if (enc.Contains(PdfName.PERMS))
                     strings.Remove((PdfString)enc.Get(PdfName.PERMS));
-                
+
                 o = enc.Get(PdfName.P);
                 if (!o.IsNumber())
                     throw new InvalidPdfException(MessageLocalization.GetComposedMessage("illegal.p.value"));
@@ -756,45 +771,46 @@ namespace iTextSharp.text.pdf {
                 rValue = ((PdfNumber)o).IntValue;
 
                 switch (rValue) {
-                case 2:
-                    cryptoMode = PdfWriter.STANDARD_ENCRYPTION_40;
-                    break;
-                case 3:
-                    o = enc.Get(PdfName.LENGTH);
-                    if (!o.IsNumber())
-                        throw new InvalidPdfException(MessageLocalization.GetComposedMessage("illegal.length.value"));
-                    lengthValue = ( (PdfNumber) o).IntValue;
-                    if (lengthValue > 128 || lengthValue < 40 || lengthValue % 8 != 0)
-                        throw new InvalidPdfException(MessageLocalization.GetComposedMessage("illegal.length.value"));
-                    cryptoMode = PdfWriter.STANDARD_ENCRYPTION_128;
-                    break;
-                case 4:
-                    PdfDictionary dic = (PdfDictionary)enc.Get(PdfName.CF);
-                    if (dic == null)
-                        throw new InvalidPdfException(MessageLocalization.GetComposedMessage("cf.not.found.encryption"));
-                    dic = (PdfDictionary)dic.Get(PdfName.STDCF);
-                    if (dic == null)
-                        throw new InvalidPdfException(MessageLocalization.GetComposedMessage("stdcf.not.found.encryption"));
-                    if (PdfName.V2.Equals(dic.Get(PdfName.CFM)))
+                    case 2:
+                        cryptoMode = PdfWriter.STANDARD_ENCRYPTION_40;
+                        break;
+                    case 3:
+                        o = enc.Get(PdfName.LENGTH);
+                        if (!o.IsNumber())
+                            throw new InvalidPdfException(MessageLocalization.GetComposedMessage("illegal.length.value"));
+                        lengthValue = ((PdfNumber)o).IntValue;
+                        if (lengthValue > 128 || lengthValue < 40 || lengthValue % 8 != 0)
+                            throw new InvalidPdfException(MessageLocalization.GetComposedMessage("illegal.length.value"));
                         cryptoMode = PdfWriter.STANDARD_ENCRYPTION_128;
-                    else if (PdfName.AESV2.Equals(dic.Get(PdfName.CFM)))
-                        cryptoMode = PdfWriter.ENCRYPTION_AES_128;
-                    else
-                        throw new UnsupportedPdfException(MessageLocalization.GetComposedMessage("no.compatible.encryption.found"));
-                    PdfObject em = enc.Get(PdfName.ENCRYPTMETADATA);
-                    if (em != null && em.ToString().Equals("false"))
-                        cryptoMode |= PdfWriter.DO_NOT_ENCRYPT_METADATA;
-                    break;
-                case 5:
-                    cryptoMode = PdfWriter.ENCRYPTION_AES_256;
-                    PdfObject em5 = enc.Get(PdfName.ENCRYPTMETADATA);
-                    if (em5 != null && em5.ToString().Equals("false"))
-                        cryptoMode |= PdfWriter.DO_NOT_ENCRYPT_METADATA;
-                    break;
-                default:
-                    throw new UnsupportedPdfException(MessageLocalization.GetComposedMessage("unknown.encryption.type.r.eq.1", rValue));
+                        break;
+                    case 4:
+                        PdfDictionary dic = (PdfDictionary)enc.Get(PdfName.CF);
+                        if (dic == null)
+                            throw new InvalidPdfException(MessageLocalization.GetComposedMessage("cf.not.found.encryption"));
+                        dic = (PdfDictionary)dic.Get(PdfName.STDCF);
+                        if (dic == null)
+                            throw new InvalidPdfException(MessageLocalization.GetComposedMessage("stdcf.not.found.encryption"));
+                        if (PdfName.V2.Equals(dic.Get(PdfName.CFM)))
+                            cryptoMode = PdfWriter.STANDARD_ENCRYPTION_128;
+                        else if (PdfName.AESV2.Equals(dic.Get(PdfName.CFM)))
+                            cryptoMode = PdfWriter.ENCRYPTION_AES_128;
+                        else
+                            throw new UnsupportedPdfException(MessageLocalization.GetComposedMessage("no.compatible.encryption.found"));
+                        PdfObject em = enc.Get(PdfName.ENCRYPTMETADATA);
+                        if (em != null && em.ToString().Equals("false"))
+                            cryptoMode |= PdfWriter.DO_NOT_ENCRYPT_METADATA;
+                        break;
+                    case 5:
+                        cryptoMode = PdfWriter.ENCRYPTION_AES_256;
+                        PdfObject em5 = enc.Get(PdfName.ENCRYPTMETADATA);
+                        if (em5 != null && em5.ToString().Equals("false"))
+                            cryptoMode |= PdfWriter.DO_NOT_ENCRYPT_METADATA;
+                        break;
+                    default:
+                        throw new UnsupportedPdfException(MessageLocalization.GetComposedMessage("unknown.encryption.type.r.eq.1", rValue));
                 }
-            } else if (filter.Equals(PdfName.PUBSEC)) {
+            }
+            else if (filter.Equals(PdfName.PUBSEC)) {
                 bool foundRecipient = false;
                 byte[] envelopedData = null;
                 PdfArray recipients = null;
@@ -803,74 +819,72 @@ namespace iTextSharp.text.pdf {
                 if (!o.IsNumber())
                     throw new InvalidPdfException(MessageLocalization.GetComposedMessage("illegal.v.value"));
                 int vValue = ((PdfNumber)o).IntValue;
-                switch(vValue) {
-                case 1:
-                    cryptoMode = PdfWriter.STANDARD_ENCRYPTION_40;
-                    lengthValue = 40;
-                    recipients = (PdfArray)enc.Get(PdfName.RECIPIENTS);
-                    break;
-                case 2:
-                    o = enc.Get(PdfName.LENGTH);
-                    if (!o.IsNumber())
-                        throw new InvalidPdfException(MessageLocalization.GetComposedMessage("illegal.length.value"));
-                    lengthValue = ( (PdfNumber) o).IntValue;
-                    if (lengthValue > 128 || lengthValue < 40 || lengthValue % 8 != 0)
-                        throw new InvalidPdfException(MessageLocalization.GetComposedMessage("illegal.length.value"));
-                    cryptoMode = PdfWriter.STANDARD_ENCRYPTION_128;
-                    recipients = (PdfArray)enc.Get(PdfName.RECIPIENTS);
-                    break;
-                case 4:
-                case 5:
-                    PdfDictionary dic = (PdfDictionary)enc.Get(PdfName.CF);
-                    if (dic == null)
-                        throw new InvalidPdfException(MessageLocalization.GetComposedMessage("cf.not.found.encryption"));
-                    dic = (PdfDictionary)dic.Get(PdfName.DEFAULTCRYPTFILTER);
-                    if (dic == null)
-                        throw new InvalidPdfException(MessageLocalization.GetComposedMessage("defaultcryptfilter.not.found.encryption"));
-                    if (PdfName.V2.Equals(dic.Get(PdfName.CFM))) {
+                switch (vValue) {
+                    case 1:
+                        cryptoMode = PdfWriter.STANDARD_ENCRYPTION_40;
+                        lengthValue = 40;
+                        recipients = (PdfArray)enc.Get(PdfName.RECIPIENTS);
+                        break;
+                    case 2:
+                        o = enc.Get(PdfName.LENGTH);
+                        if (!o.IsNumber())
+                            throw new InvalidPdfException(MessageLocalization.GetComposedMessage("illegal.length.value"));
+                        lengthValue = ((PdfNumber)o).IntValue;
+                        if (lengthValue > 128 || lengthValue < 40 || lengthValue % 8 != 0)
+                            throw new InvalidPdfException(MessageLocalization.GetComposedMessage("illegal.length.value"));
                         cryptoMode = PdfWriter.STANDARD_ENCRYPTION_128;
-                        lengthValue = 128;
-                    }
-                    else if (PdfName.AESV2.Equals(dic.Get(PdfName.CFM))) {
-                        cryptoMode = PdfWriter.ENCRYPTION_AES_128;
-                        lengthValue = 128;
-                    }
-                    else if (PdfName.AESV3.Equals(dic.Get(PdfName.CFM))) {
-                        cryptoMode = PdfWriter.ENCRYPTION_AES_256;
-                        lengthValue = 256;
-                    }
-                    else
-                        throw new UnsupportedPdfException(MessageLocalization.GetComposedMessage("no.compatible.encryption.found"));
-                    PdfObject em = dic.Get(PdfName.ENCRYPTMETADATA);
-                    if (em != null && em.ToString().Equals("false"))
-                        cryptoMode |= PdfWriter.DO_NOT_ENCRYPT_METADATA;
+                        recipients = (PdfArray)enc.Get(PdfName.RECIPIENTS);
+                        break;
+                    case 4:
+                    case 5:
+                        PdfDictionary dic = (PdfDictionary)enc.Get(PdfName.CF);
+                        if (dic == null)
+                            throw new InvalidPdfException(MessageLocalization.GetComposedMessage("cf.not.found.encryption"));
+                        dic = (PdfDictionary)dic.Get(PdfName.DEFAULTCRYPTFILTER);
+                        if (dic == null)
+                            throw new InvalidPdfException(MessageLocalization.GetComposedMessage("defaultcryptfilter.not.found.encryption"));
+                        if (PdfName.V2.Equals(dic.Get(PdfName.CFM))) {
+                            cryptoMode = PdfWriter.STANDARD_ENCRYPTION_128;
+                            lengthValue = 128;
+                        }
+                        else if (PdfName.AESV2.Equals(dic.Get(PdfName.CFM))) {
+                            cryptoMode = PdfWriter.ENCRYPTION_AES_128;
+                            lengthValue = 128;
+                        }
+                        else if (PdfName.AESV3.Equals(dic.Get(PdfName.CFM))) {
+                            cryptoMode = PdfWriter.ENCRYPTION_AES_256;
+                            lengthValue = 256;
+                        }
+                        else
+                            throw new UnsupportedPdfException(MessageLocalization.GetComposedMessage("no.compatible.encryption.found"));
+                        PdfObject em = dic.Get(PdfName.ENCRYPTMETADATA);
+                        if (em != null && em.ToString().Equals("false"))
+                            cryptoMode |= PdfWriter.DO_NOT_ENCRYPT_METADATA;
 
-                    recipients = (PdfArray)dic.Get(PdfName.RECIPIENTS);
-                    break;
-                default:
-                    throw new UnsupportedPdfException(MessageLocalization.GetComposedMessage("unknown.encryption.type.v.eq.1", vValue));
+                        recipients = (PdfArray)dic.Get(PdfName.RECIPIENTS);
+                        break;
+                    default:
+                        throw new UnsupportedPdfException(MessageLocalization.GetComposedMessage("unknown.encryption.type.v.eq.1", vValue));
                 }
-                for (int i = 0; i<recipients.Size; i++)
-                {
+                for (int i = 0; i < recipients.Size; i++) {
                     PdfObject recipient = recipients.GetPdfObject(i);
                     if (recipient is PdfString)
                         strings.Remove((PdfString)recipient);
-                    
+
                     CmsEnvelopedData data = null;
                     data = new CmsEnvelopedData(recipient.GetBytes());
-                
+
                     foreach (RecipientInformation recipientInfo in data.GetRecipientInfos().GetRecipients()) {
                         if (recipientInfo.RecipientID.Match(certificate) && !foundRecipient) {
                             envelopedData = recipientInfo.GetContent(certificateKey);
-                            foundRecipient = true;                         
+                            foundRecipient = true;
                         }
-                    }                        
+                    }
                 }
-                
-                if (!foundRecipient || envelopedData == null)
-                {
+
+                if (!foundRecipient || envelopedData == null) {
                     throw new UnsupportedPdfException(MessageLocalization.GetComposedMessage("bad.certificate.and.key"));
-                }            
+                }
 
                 IDigest sh;
                 if ((cryptoMode & PdfWriter.ENCRYPTION_MASK) == PdfWriter.ENCRYPTION_AES_256)
@@ -878,8 +892,8 @@ namespace iTextSharp.text.pdf {
                 else
                     sh = DigestUtilities.GetDigest("SHA-1");
                 sh.BlockUpdate(envelopedData, 0, 20);
-                for (int i=0; i<recipients.Size; i++) {
-                    byte[] encodedRecipient = recipients.GetPdfObject(i).GetBytes();  
+                for (int i = 0; i < recipients.Size; i++) {
+                    byte[] encodedRecipient = recipients.GetPdfObject(i).GetBytes();
                     sh.BlockUpdate(encodedRecipient, 0, encodedRecipient.Length);
                 }
                 if ((cryptoMode & PdfWriter.DO_NOT_ENCRYPT_METADATA) != 0)
@@ -889,7 +903,7 @@ namespace iTextSharp.text.pdf {
             }
             decrypt = new PdfEncryption();
             decrypt.SetCryptoMode(cryptoMode, lengthValue);
-            
+
             if (filter.Equals(PdfName.STANDARD)) {
                 if (rValue == 5) {
                     ownerPasswordUsed = decrypt.ReadKey(enc, password);
@@ -909,12 +923,13 @@ namespace iTextSharp.text.pdf {
                     else
                         ownerPasswordUsed = true;
                 }
-            } else if (filter.Equals(PdfName.PUBSEC)) {
+            }
+            else if (filter.Equals(PdfName.PUBSEC)) {
                 decrypt.documentID = documentID;
                 if ((cryptoMode & PdfWriter.ENCRYPTION_MASK) == PdfWriter.ENCRYPTION_AES_256)
                     decrypt.SetKey(encryptionKey);
                 else
-                    decrypt.SetupByEncryptionKey(encryptionKey, lengthValue); 
+                    decrypt.SetupByEncryptionKey(encryptionKey, lengthValue);
                 ownerPasswordUsed = true;
             }
             for (int k = 0; k < strings.Count; ++k) {
@@ -927,7 +942,7 @@ namespace iTextSharp.text.pdf {
             }
             encryptionError = false;
         }
-        
+
         /**
         * @param obj
         * @return a PdfObject
@@ -938,13 +953,13 @@ namespace iTextSharp.text.pdf {
             return obj2;
         }
 
-        
+
         /**
         * Reads a <CODE>PdfObject</CODE> resolving an indirect reference
         * if needed.
         * @param obj the <CODE>PdfObject</CODE> to read
         * @return the resolved <CODE>PdfObject</CODE>
-        */    
+        */
         public static PdfObject GetPdfObject(PdfObject obj) {
             if (obj == null)
                 return null;
@@ -975,7 +990,7 @@ namespace iTextSharp.text.pdf {
                 return obj;
             }
         }
-        
+
         /**
         * Reads a <CODE>PdfObject</CODE> resolving an indirect reference
         * if needed. If the reader was opened in partial mode the object will be released
@@ -983,13 +998,13 @@ namespace iTextSharp.text.pdf {
         * @param obj the <CODE>PdfObject</CODE> to read
         * @param parent
         * @return a PdfObject
-        */    
+        */
         public static PdfObject GetPdfObjectRelease(PdfObject obj, PdfObject parent) {
             PdfObject obj2 = GetPdfObject(obj, parent);
             ReleaseLastXrefPartial(obj);
             return obj2;
         }
-        
+
         /**
         * @param obj
         * @param parent
@@ -1018,7 +1033,7 @@ namespace iTextSharp.text.pdf {
             }
             return GetPdfObject(obj);
         }
-        
+
         /**
         * @param idx
         * @return a PdfObject
@@ -1028,7 +1043,7 @@ namespace iTextSharp.text.pdf {
             ReleaseLastXrefPartial();
             return obj;
         }
-        
+
         /**
         * @param idx
         * @return aPdfObject
@@ -1055,7 +1070,7 @@ namespace iTextSharp.text.pdf {
         virtual public void ResetLastXrefPartial() {
             lastXrefPartial = -1;
         }
-        
+
         /**
         * 
         */
@@ -1089,7 +1104,7 @@ namespace iTextSharp.text.pdf {
                 return;
             xrefObj[idx] = obj;
         }
-        
+
         /**
         * @param obj
         * @return an indirect reference
@@ -1098,25 +1113,26 @@ namespace iTextSharp.text.pdf {
             xrefObj.Add(obj);
             return new PRIndirectReference(this, xrefObj.Count - 1);
         }
-        
+
         virtual protected internal void ReadPages() {
             catalog = trailer.GetAsDict(PdfName.ROOT);
-            if(catalog == null)
+            if (catalog == null)
                 throw new InvalidPdfException(MessageLocalization.GetComposedMessage("the.document.has.no.catalog.object"));
             rootPages = catalog.GetAsDict(PdfName.PAGES);
-            if (rootPages == null || (!PdfName.PAGES.Equals(rootPages.Get(PdfName.TYPE)) && (!PdfName.PAGES.Equals(rootPages.Get(new PdfName("Types") ))))) {
-                if (debugmode ) {
+            if (rootPages == null || (!PdfName.PAGES.Equals(rootPages.Get(PdfName.TYPE)) && (!PdfName.PAGES.Equals(rootPages.Get(new PdfName("Types")))))) {
+                if (debugmode) {
                     if (LOGGER.IsLogging(Level.ERROR)) {
                         LOGGER.Error(MessageLocalization.GetComposedMessage("the.document.has.no.page.root"));
                     }
-                } else {
+                }
+                else {
                     throw new InvalidPdfException(MessageLocalization.GetComposedMessage("the.document.has.no.page.root"));
                 }
             }
 
             pageRefs = new PageRefs(this);
         }
-        
+
         virtual protected internal void ReadDocObjPartial() {
             xrefObj = new List<PdfObject>(xref.Length / 2);
             for (int k = 0; k < xref.Length / 2; ++k) {
@@ -1136,7 +1152,7 @@ namespace iTextSharp.text.pdf {
         virtual protected internal PdfObject ReadSingleObject(int k) {
             strings.Clear();
             int k2 = k * 2;
-			long pos = xref[k2];
+            long pos = xref[k2];
             if (pos < 0)
                 return null;
             if (xref[k2 + 1] > 0)
@@ -1165,8 +1181,9 @@ namespace iTextSharp.text.pdf {
                 if (obj.IsStream()) {
                     CheckPRStreamLength((PRStream)obj);
                 }
-            } catch(IOException e) {
-                if(debugmode) {
+            }
+            catch (IOException e) {
+                if (debugmode) {
                     if (LOGGER.IsLogging(Level.ERROR))
                         LOGGER.Error(e.Message, e);
                     obj = null;
@@ -1180,14 +1197,14 @@ namespace iTextSharp.text.pdf {
             xrefObj[k] = obj;
             return obj;
         }
-        
-		virtual protected internal PdfObject ReadOneObjStm (PRStream stream, int idx) {
+
+        virtual protected internal PdfObject ReadOneObjStm(PRStream stream, int idx) {
             int first = stream.GetAsNumber(PdfName.FIRST).IntValue;
             byte[] b = GetStreamBytes(stream, tokens.File);
             PRTokeniser saveTokens = tokens;
             tokens = new PRTokeniser(new RandomAccessFileOrArray(new RandomAccessSourceFactory().CreateSource(b)));
             try {
-				int address = 0;
+                int address = 0;
                 bool ok = true;
                 ++idx;
                 for (int k = 0; k < idx; ++k) {
@@ -1237,7 +1254,7 @@ namespace iTextSharp.text.pdf {
             }
             return (total * 100.0 / xrefObj.Count);
         }
-        
+
         virtual protected internal void ReadDocObj() {
             List<PRStream> streams = new List<PRStream>();
             xrefObj = new List<PdfObject>(xref.Length / 2);
@@ -1245,7 +1262,7 @@ namespace iTextSharp.text.pdf {
                 xrefObj.Add(null);
             }
             for (int k = 2; k < xref.Length; k += 2) {
-				long pos = xref[k];
+                long pos = xref[k];
                 if (pos <= 0 || xref[k + 1] > 0)
                     continue;
                 tokens.Seek(pos);
@@ -1266,8 +1283,9 @@ namespace iTextSharp.text.pdf {
                     if (obj.IsStream()) {
                         streams.Add((PRStream)obj);
                     }
-                } catch(IOException e) {
-                    if(debugmode) {
+                }
+                catch (IOException e) {
+                    if (debugmode) {
                         if (LOGGER.IsLogging(Level.ERROR))
                             LOGGER.Error(e.Message, e);
                         obj = null;
@@ -1282,7 +1300,7 @@ namespace iTextSharp.text.pdf {
             }
             ReadDecryptedDocObj();
             if (objStmMark != null) {
-                foreach (KeyValuePair<int,IntHashtable> entry  in objStmMark) {
+                foreach (KeyValuePair<int, IntHashtable> entry in objStmMark) {
                     int n = entry.Key;
                     IntHashtable h = entry.Value;
                     ReadObjStm((PRStream)xrefObj[n], h);
@@ -1292,12 +1310,12 @@ namespace iTextSharp.text.pdf {
             }
             xref = null;
         }
-        
+
         private void CheckPRStreamLength(PRStream stream) {
             long fileLength = tokens.Length;
-			long start = stream.Offset;
+            long start = stream.Offset;
             bool calc = false;
-			long streamLength = 0;
+            long streamLength = 0;
             PdfObject obj = GetPdfObjectRelease(stream.Get(PdfName.LENGTH));
             if (obj != null && obj.Type == PdfObject.NUMBER) {
                 streamLength = ((PdfNumber)obj).IntValue;
@@ -1338,10 +1356,10 @@ namespace iTextSharp.text.pdf {
                     }
                 }
                 tokens.Seek(pos - 2);
-                if(tokens.Read() == 13)
+                if (tokens.Read() == 13)
                     streamLength--;
                 tokens.Seek(pos - 1);
-                if(tokens.Read() == 10)
+                if (tokens.Read() == 10)
                     streamLength--;
 
                 if (streamLength < 0) {
@@ -1350,7 +1368,7 @@ namespace iTextSharp.text.pdf {
             }
             stream.Length = (int)streamLength;
         }
-        
+
         virtual protected internal void ReadObjStm(PRStream stream, IntHashtable map) {
             if (stream == null) return;
             int first = stream.GetAsNumber(PdfName.FIRST).IntValue;
@@ -1388,27 +1406,27 @@ namespace iTextSharp.text.pdf {
                         tokens.NextToken();
                         PdfObject obj;
                         if (tokens.TokenType == PRTokeniser.TokType.NUMBER) {
-                    	    obj = new PdfNumber(tokens.StringValue);
+                            obj = new PdfNumber(tokens.StringValue);
                         }
                         else {
-                    	    tokens.Seek(address[k]);
-                    	    obj = ReadPRObject();
+                            tokens.Seek(address[k]);
+                            obj = ReadPRObject();
                         }
                         xrefObj[objNumber[k]] = obj;
                     }
-                }            
+                }
             }
             finally {
                 tokens = saveTokens;
             }
         }
-        
+
         /**
         * Eliminates the reference to the object freeing the memory used by it and clearing
         * the xref entry.
         * @param obj the object. If it's an indirect reference it will be eliminated
         * @return the object or the already erased dereferenced object
-        */    
+        */
         public static PdfObject KillIndirect(PdfObject obj) {
             if (obj == null || obj.IsNull())
                 return null;
@@ -1423,21 +1441,21 @@ namespace iTextSharp.text.pdf {
             }
             return ret;
         }
-        
+
         private void EnsureXrefSize(int size) {
             if (size == 0)
                 return;
             if (xref == null)
-				xref = new long[size];
+                xref = new long[size];
             else {
                 if (xref.Length < size) {
-					long[] xref2 = new long[size];
+                    long[] xref2 = new long[size];
                     Array.Copy(xref, 0, xref2, 0, xref.Length);
                     xref = xref2;
                 }
             }
         }
-        
+
         virtual protected internal void ReadXref() {
             hybridXref = false;
             newXrefType = false;
@@ -1457,7 +1475,7 @@ namespace iTextSharp.text.pdf {
                     return;
                 }
             }
-            catch {}
+            catch { }
             xref = null;
             tokens.Seek(startxref);
             trailer = ReadXrefSection();
@@ -1474,7 +1492,7 @@ namespace iTextSharp.text.pdf {
                 trailer2 = ReadXrefSection();
             }
         }
-        
+
         virtual protected internal PdfDictionary ReadXrefSection() {
             tokens.NextValidToken();
             if (!tokens.StringValue.Equals("xref"))
@@ -1495,9 +1513,9 @@ namespace iTextSharp.text.pdf {
                     tokens.ThrowError(MessageLocalization.GetComposedMessage("number.of.entries.in.this.xref.subsection.not.found"));
                 end = tokens.IntValue + start;
                 if (start == 1) { // fix incorrect start number
-					long back = tokens.FilePointer;
+                    long back = tokens.FilePointer;
                     tokens.NextValidToken();
-					pos = tokens.LongValue;
+                    pos = tokens.LongValue;
                     tokens.NextValidToken();
                     gen = tokens.IntValue;
                     if (pos == 0 && gen == PdfWriter.GENERATION_MAX) {
@@ -1509,15 +1527,15 @@ namespace iTextSharp.text.pdf {
                 EnsureXrefSize(end * 2);
                 for (int k = start; k < end; ++k) {
                     tokens.NextValidToken();
-					pos = tokens.LongValue;
+                    pos = tokens.LongValue;
                     tokens.NextValidToken();
                     gen = tokens.IntValue;
                     tokens.NextValidToken();
                     int p = k * 2;
                     if (tokens.StringValue.Equals("n")) {
                         if (xref[p] == 0 && xref[p + 1] == 0) {
-    //                        if (pos == 0)
-    //                            tokens.ThrowError(MessageLocalization.GetComposedMessage("file.position.0.cross.reference.entry.in.this.xref.subsection"));
+                            //                        if (pos == 0)
+                            //                            tokens.ThrowError(MessageLocalization.GetComposedMessage("file.position.0.cross.reference.entry.in.this.xref.subsection"));
                             xref[p] = pos;
                         }
                     }
@@ -1547,7 +1565,7 @@ namespace iTextSharp.text.pdf {
             }
             return trailer;
         }
-        
+
         virtual protected internal bool ReadXRefStream(long ptr) {
             tokens.Seek(ptr);
             int thisStream = 0;
@@ -1579,7 +1597,7 @@ namespace iTextSharp.text.pdf {
             PdfObject obj = stm.Get(PdfName.INDEX);
             if (obj == null) {
                 index = new PdfArray();
-                index.Add(new int[]{0, size});
+                index.Add(new int[] { 0, size });
             }
             else
                 index = (PdfArray)obj;
@@ -1594,7 +1612,7 @@ namespace iTextSharp.text.pdf {
             // type 2 -> index, obj num
             EnsureXrefSize(size * 2);
             if (objStmMark == null && !partial)
-                objStmMark = new Dictionary<int,IntHashtable>();
+                objStmMark = new Dictionary<int, IntHashtable>();
             if (objStmToOffset == null && partial)
                 objStmToOffset = new LongHashtable();
             byte[] b = GetStreamBytes(stm, tokens.File);
@@ -1653,22 +1671,22 @@ namespace iTextSharp.text.pdf {
             thisStream *= 2;
             if (thisStream + 1 < xref.Length && xref[thisStream] == 0 && xref[thisStream + 1] == 0)
                 xref[thisStream] = -1;
-                
+
             if (prev == -1)
                 return true;
             return ReadXRefStream(prev);
         }
-        
+
         virtual protected internal void RebuildXref() {
             hybridXref = false;
             newXrefType = false;
             tokens.Seek(0);
-			long[][] xr = new long[1024][];
-			long top = 0;
+            long[][] xr = new long[1024][];
+            long top = 0;
             trailer = null;
             byte[] line = new byte[64];
             for (;;) {
-				long pos = tokens.FilePointer;
+                long pos = tokens.FilePointer;
                 if (!tokens.ReadLineSegment(line, true)) // added boolean because of mailing list issue (17 Feb. 2014)
                     break;
                 if (line[0] == 't') {
@@ -1692,11 +1710,11 @@ namespace iTextSharp.text.pdf {
                     long[] obj = PRTokeniser.CheckObjectStart(line);
                     if (obj == null)
                         continue;
-					long num = obj[0];
-					long gen = obj[1];
+                    long num = obj[0];
+                    long gen = obj[1];
                     if (num >= xr.Length) {
-						long newLength = num * 2;
-						long[][] xr2 = new long[newLength][];
+                        long newLength = num * 2;
+                        long[][] xr2 = new long[newLength][];
                         Array.Copy(xr, 0, xr2, 0, top);
                         xr = xr2;
                     }
@@ -1710,14 +1728,14 @@ namespace iTextSharp.text.pdf {
             }
             if (trailer == null)
                 throw new InvalidPdfException(MessageLocalization.GetComposedMessage("trailer.not.found"));
-			xref = new long[top * 2];
+            xref = new long[top * 2];
             for (int k = 0; k < top; ++k) {
-				long[] obj = xr[k];
+                long[] obj = xr[k];
                 if (obj != null)
                     xref[k * 2] = obj[0];
             }
         }
-        
+
         virtual protected internal PdfDictionary ReadDictionary() {
             PdfDictionary dic = new PdfDictionary();
             while (true) {
@@ -1737,7 +1755,7 @@ namespace iTextSharp.text.pdf {
             }
             return dic;
         }
-        
+
         virtual protected internal PdfArray ReadArray() {
             PdfArray array = new PdfArray();
             while (true) {
@@ -1751,7 +1769,7 @@ namespace iTextSharp.text.pdf {
             }
             return array;
         }
-        
+
         // Track how deeply nested the current object is, so
         // we know when to return an individual null or boolean, or
         // reuse one of the static ones.
@@ -1762,43 +1780,43 @@ namespace iTextSharp.text.pdf {
             PRTokeniser.TokType type = tokens.TokenType;
             switch (type) {
                 case PRTokeniser.TokType.START_DIC: {
-                    ++readDepth;
-                    PdfDictionary dic = ReadDictionary();
-                    --readDepth;
-					long pos = tokens.FilePointer;
-                    // be careful in the trailer. May not be a "next" token.
-                    bool hasNext;
-                    do {
-                        hasNext = tokens.NextToken();
-                    } while (hasNext && tokens.TokenType == PRTokeniser.TokType.COMMENT);
-
-                    if (hasNext && tokens.StringValue.Equals("stream")) {
-                        //skip whitespaces
-                        int ch;
+                        ++readDepth;
+                        PdfDictionary dic = ReadDictionary();
+                        --readDepth;
+                        long pos = tokens.FilePointer;
+                        // be careful in the trailer. May not be a "next" token.
+                        bool hasNext;
                         do {
-                            ch = tokens.Read();                        
-                        } while (ch == 32 || ch == 9 || ch == 0 || ch == 12);
-                        if (ch != '\n')
-                            ch = tokens.Read();
-                        if (ch != '\n')
-                            tokens.BackOnePosition(ch);
-                        PRStream stream = new PRStream(this, tokens.FilePointer);
-                        stream.Merge(dic);
-                        stream.ObjNum = objNum;
-                        stream.ObjGen = objGen;
-                        return stream;
+                            hasNext = tokens.NextToken();
+                        } while (hasNext && tokens.TokenType == PRTokeniser.TokType.COMMENT);
+
+                        if (hasNext && tokens.StringValue.Equals("stream")) {
+                            //skip whitespaces
+                            int ch;
+                            do {
+                                ch = tokens.Read();
+                            } while (ch == 32 || ch == 9 || ch == 0 || ch == 12);
+                            if (ch != '\n')
+                                ch = tokens.Read();
+                            if (ch != '\n')
+                                tokens.BackOnePosition(ch);
+                            PRStream stream = new PRStream(this, tokens.FilePointer);
+                            stream.Merge(dic);
+                            stream.ObjNum = objNum;
+                            stream.ObjGen = objGen;
+                            return stream;
+                        }
+                        else {
+                            tokens.Seek(pos);
+                            return dic;
+                        }
                     }
-                    else {
-                        tokens.Seek(pos);
-                        return dic;
-                    }
-                }
                 case PRTokeniser.TokType.START_ARRAY: {
-                    ++readDepth;
-                    PdfArray arr = ReadArray();
-                    --readDepth;
-                    return arr;
-                }
+                        ++readDepth;
+                        PdfArray arr = ReadArray();
+                        --readDepth;
+                        return arr;
+                    }
                 case PRTokeniser.TokType.NUMBER:
                     return new PdfNumber(tokens.StringValue);
                 case PRTokeniser.TokType.STRING:
@@ -1808,26 +1826,28 @@ namespace iTextSharp.text.pdf {
                         strings.Add(str);
                     return str;
                 case PRTokeniser.TokType.NAME: {
-                    PdfName cachedName;
-                    PdfName.staticNames.TryGetValue(tokens.StringValue, out cachedName);
-                    if (readDepth > 0 && cachedName != null) {
-                        return cachedName;
-                    } else {
-                        // an indirect name (how odd...), or a non-standard one
-                        return new PdfName(tokens.StringValue, false);
-                    }
-                }
-                case PRTokeniser.TokType.REF: {
-                    int num = tokens.Reference;
-                    if (num >= 0) {
-                        return new PRIndirectReference(this, num, tokens.Generation);
-                    } else {
-                        if (LOGGER.IsLogging(Level.ERROR)) {
-                            LOGGER.Error(MessageLocalization.GetComposedMessage("invalid.reference.number.skip"));
+                        PdfName cachedName;
+                        PdfName.staticNames.TryGetValue(tokens.StringValue, out cachedName);
+                        if (readDepth > 0 && cachedName != null) {
+                            return cachedName;
                         }
-                        return PdfNull.PDFNULL;
+                        else {
+                            // an indirect name (how odd...), or a non-standard one
+                            return new PdfName(tokens.StringValue, false);
+                        }
                     }
-                }
+                case PRTokeniser.TokType.REF: {
+                        int num = tokens.Reference;
+                        if (num >= 0) {
+                            return new PRIndirectReference(this, num, tokens.Generation);
+                        }
+                        else {
+                            if (LOGGER.IsLogging(Level.ERROR)) {
+                                LOGGER.Error(MessageLocalization.GetComposedMessage("invalid.reference.number.skip"));
+                            }
+                            return PdfNull.PDFNULL;
+                        }
+                    }
                 case PRTokeniser.TokType.ENDOFFILE:
                     throw new IOException(MessageLocalization.GetComposedMessage("unexpected.end.of.file"));
                 default:
@@ -1840,31 +1860,43 @@ namespace iTextSharp.text.pdf {
                     }
                     else if ("true".Equals(sv)) {
                         if (readDepth == 0) {
-                            return new PdfBoolean( true );
+                            return new PdfBoolean(true);
                         } //else
                         return PdfBoolean.PDFTRUE;
                     }
                     else if ("false".Equals(sv)) {
                         if (readDepth == 0) {
-                            return new PdfBoolean( false );
+                            return new PdfBoolean(false);
                         } //else
                         return PdfBoolean.PDFFALSE;
                     }
                     return new PdfLiteral(-(int)type, tokens.StringValue);
             }
         }
-        
+
         /** Decodes a stream that has the FlateDecode filter.
         * @param in the input data
         * @return the decoded data
-        */    
+        */
         public static byte[] FlateDecode(byte[] inp) {
             byte[] b = FlateDecode(inp, true);
             if (b == null)
                 return FlateDecode(inp, false);
             return b;
         }
-        
+
+        /** Decodes a stream that has the FlateDecode filter.
+        * @param in the input data
+        * @return the decoded data
+        */
+        internal static byte[] FlateDecode(byte[] inp, MemoryStream outS) {
+            byte[] b = FlateDecode(inp, true, outS);
+            if (b == null) {
+                return FlateDecode(inp, false, outS);
+            }
+            return b;
+        }
+
         /**
         * @param in
         * @param dicPar
@@ -1895,17 +1927,17 @@ namespace iTextSharp.text.pdf {
             MemoryStream dataStream = new MemoryStream(inp);
             MemoryStream fout = new MemoryStream(inp.Length);
             int bytesPerPixel = colors * bpc / 8;
-            int bytesPerRow = (colors*width*bpc + 7)/8;
+            int bytesPerRow = (colors * width * bpc + 7) / 8;
             byte[] curr = new byte[bytesPerRow];
             byte[] prior = new byte[bytesPerRow];
 
             if (predictor == 2) {
                 if (bpc == 8) {
-                    int numRows = inp.Length/bytesPerRow;
+                    int numRows = inp.Length / bytesPerRow;
                     for (int row = 0; row < numRows; row++) {
-                        int rowStart = row*bytesPerRow;
+                        int rowStart = row * bytesPerRow;
                         for (int col = 0 + bytesPerPixel; col < bytesPerRow; col++) {
-                            inp[rowStart + col] = (byte) (inp[rowStart + col] + inp[rowStart + col - bytesPerPixel]);
+                            inp[rowStart + col] = (byte)(inp[rowStart + col] + inp[rowStart + col - bytesPerPixel]);
                         }
                     }
                 }
@@ -1928,10 +1960,11 @@ namespace iTextSharp.text.pdf {
                             return fout.ToArray();
                         tot += n;
                     }
-                } catch {
+                }
+                catch {
                     return fout.ToArray();
                 }
-                
+
                 switch (filter) {
                     case 0: //PNG_FILTER_NONE
                         break;
@@ -1950,7 +1983,7 @@ namespace iTextSharp.text.pdf {
                             curr[i] += (byte)(prior[i] / 2);
                         }
                         for (int i = bytesPerPixel; i < bytesPerRow; i++) {
-                            curr[i] += (byte)(((curr[i - bytesPerPixel] & 0xff) + (prior[i] & 0xff))/2);
+                            curr[i] += (byte)(((curr[i - bytesPerPixel] & 0xff) + (prior[i] & 0xff)) / 2);
                         }
                         break;
                     case 4: //PNG_FILTER_PAETH
@@ -1972,9 +2005,11 @@ namespace iTextSharp.text.pdf {
 
                             if ((pa <= pb) && (pa <= pc)) {
                                 ret = a;
-                            } else if (pb <= pc) {
+                            }
+                            else if (pb <= pc) {
                                 ret = b;
-                            } else {
+                            }
+                            else {
                                 ret = c;
                             }
                             curr[i] += (byte)(ret);
@@ -1985,24 +2020,33 @@ namespace iTextSharp.text.pdf {
                         throw new Exception(MessageLocalization.GetComposedMessage("png.filter.unknown"));
                 }
                 fout.Write(curr, 0, curr.Length);
-                
+
                 // Swap curr and prior
                 byte[] tmp = prior;
                 prior = curr;
                 curr = tmp;
-            }        
+            }
         }
-        
+
         /** A helper to FlateDecode.
         * @param in the input data
         * @param strict <CODE>true</CODE> to read a correct stream. <CODE>false</CODE>
         * to try to read a corrupted stream
         * @return the decoded data
-        */    
+        */
         public static byte[] FlateDecode(byte[] inp, bool strict) {
+            return FlateDecode(inp, strict, new MemoryStream());
+        }
+
+        /** A helper to FlateDecode.
+        * @param in the input data
+        * @param strict <CODE>true</CODE> to read a correct stream. <CODE>false</CODE>
+        * to try to read a corrupted stream
+        * @return the decoded data
+        */
+        internal static byte[] FlateDecode(byte[] inp, bool strict, MemoryStream outp) {
             MemoryStream stream = new MemoryStream(inp);
             ZInflaterInputStream zip = new ZInflaterInputStream(stream);
-            MemoryStream outp = new MemoryStream();
             byte[] b = new byte[strict ? 4092 : 1];
             try {
                 int n;
@@ -2013,7 +2057,10 @@ namespace iTextSharp.text.pdf {
                 outp.Close();
                 return outp.ToArray();
             }
-            catch {
+            catch (MemoryLimitsAwareException e) {
+                throw e;
+            }
+            catch (Exception e) {
                 if (strict)
                     return null;
                 return outp.ToArray();
@@ -2021,22 +2068,31 @@ namespace iTextSharp.text.pdf {
             finally {
                 try {
                     zip.Close();
-                }catch (IOException e) {
+                }
+                catch (IOException e) {
                 }
                 try {
                     outp.Close();
-                } catch (IOException e) {
+                }
+                catch (IOException e) {
                 }
 
             }
         }
-        
+
+        /** Decodes a stream that has the ASCIIHexDecode filter.
+         * @param in the input data
+        * @return the decoded data
+        */
+        public static byte[] ASCIIHexDecode(byte[] inp) {
+            return ASCIIHexDecode(inp, new MemoryStream());
+        }
+
         /** Decodes a stream that has the ASCIIHexDecode filter.
         * @param in the input data
         * @return the decoded data
-        */    
-        public static byte[] ASCIIHexDecode(byte[] inp) {
-            MemoryStream outp = new MemoryStream();
+        */
+        internal static byte[] ASCIIHexDecode(byte[] inp, MemoryStream outp) {
             bool first = true;
             int n1 = 0;
             for (int k = 0; k < inp.Length; ++k) {
@@ -2058,13 +2114,20 @@ namespace iTextSharp.text.pdf {
                 outp.WriteByte((byte)(n1 << 4));
             return outp.ToArray();
         }
-        
+
         /** Decodes a stream that has the ASCII85Decode filter.
         * @param in the input data
         * @return the decoded data
-        */    
+        */
         public static byte[] ASCII85Decode(byte[] inp) {
-            MemoryStream outp = new MemoryStream();
+            return ASCII85Decode(inp, new MemoryStream());
+        }
+
+        /** Decodes a stream that has the ASCII85Decode filter.
+        * @param in the input data
+        * @return the decoded data
+        */
+        internal static byte[] ASCII85Decode(byte[] inp, MemoryStream outp) {
             int state = 0;
             int[] chn = new int[5];
             for (int k = 0; k < inp.Length; ++k) {
@@ -2097,37 +2160,44 @@ namespace iTextSharp.text.pdf {
             }
             int r = 0;
             // We'll ignore the next two lines for the sake of perpetuating broken PDFs
-//            if (state == 1)
-//                throw new ArgumentException(MessageLocalization.GetComposedMessage("illegal.length.in.ascii85decode"));
+            //            if (state == 1)
+            //                throw new ArgumentException(MessageLocalization.GetComposedMessage("illegal.length.in.ascii85decode"));
             if (state == 2) {
-                r = chn[0] * 85 * 85 * 85 * 85 + chn[1] * 85 * 85 * 85 + 85 * 85 * 85  + 85 * 85 + 85;
+                r = chn[0] * 85 * 85 * 85 * 85 + chn[1] * 85 * 85 * 85 + 85 * 85 * 85 + 85 * 85 + 85;
                 outp.WriteByte((byte)(r >> 24));
             }
             else if (state == 3) {
-                r = chn[0] * 85 * 85 * 85 * 85 + chn[1] * 85 * 85 * 85  + chn[2] * 85 * 85 + 85 * 85 + 85;
+                r = chn[0] * 85 * 85 * 85 * 85 + chn[1] * 85 * 85 * 85 + chn[2] * 85 * 85 + 85 * 85 + 85;
                 outp.WriteByte((byte)(r >> 24));
                 outp.WriteByte((byte)(r >> 16));
             }
             else if (state == 4) {
-                r = chn[0] * 85 * 85 * 85 * 85 + chn[1] * 85 * 85 * 85  + chn[2] * 85 * 85  + chn[3] * 85 + 85;
+                r = chn[0] * 85 * 85 * 85 * 85 + chn[1] * 85 * 85 * 85 + chn[2] * 85 * 85 + chn[3] * 85 + 85;
                 outp.WriteByte((byte)(r >> 24));
                 outp.WriteByte((byte)(r >> 16));
                 outp.WriteByte((byte)(r >> 8));
             }
             return outp.ToArray();
         }
-        
+
+        /** Decodes a stream that has the LZWDecode filter.
+        * @param in the input data
+         * @return the decoded data
+        */
+        public static byte[] LZWDecode(byte[] inp) {
+            return LZWDecode(inp, new MemoryStream());
+        }
+
         /** Decodes a stream that has the LZWDecode filter.
         * @param in the input data
         * @return the decoded data
-        */    
-        public static byte[] LZWDecode(byte[] inp) {
-            MemoryStream outp = new MemoryStream();
+        */
+        internal static byte[] LZWDecode(byte[] inp, MemoryStream outp) {
             LZWDecoder lzw = new LZWDecoder();
             lzw.Decode(inp, outp);
             return outp.ToArray();
         }
-        
+
         /** Checks if the document had errors and was rebuilt.
         * @return true if rebuilt.
         *
@@ -2135,11 +2205,11 @@ namespace iTextSharp.text.pdf {
         virtual public bool IsRebuilt() {
             return this.rebuilt;
         }
-        
+
         /** Gets the dictionary that represents a page.
         * @param pageNum the page number. 1 is the first
         * @return the page dictionary
-        */    
+        */
         virtual public PdfDictionary GetPageN(int pageNum) {
             PdfDictionary dic = pageRefs.GetPageN(pageNum);
             if (dic == null)
@@ -2148,7 +2218,7 @@ namespace iTextSharp.text.pdf {
                 dic.IndRef = pageRefs.GetPageOrigRef(pageNum);
             return dic;
         }
-        
+
         /**
         * @param pageNum
         * @return a Dictionary object
@@ -2158,14 +2228,14 @@ namespace iTextSharp.text.pdf {
             pageRefs.ReleasePage(pageNum);
             return dic;
         }
-        
+
         /**
         * @param pageNum
         */
         virtual public void ReleasePage(int pageNum) {
             pageRefs.ReleasePage(pageNum);
         }
-        
+
         /**
         * 
         */
@@ -2176,17 +2246,17 @@ namespace iTextSharp.text.pdf {
         /** Gets the page reference to this page.
         * @param pageNum the page number. 1 is the first
         * @return the page reference
-        */    
+        */
         virtual public PRIndirectReference GetPageOrigRef(int pageNum) {
             return pageRefs.GetPageOrigRef(pageNum);
         }
-        
+
         /** Gets the contents of the page.
         * @param pageNum the page number. 1 is the first
         * @param file the location of the PDF document
         * @throws IOException on error
         * @return the content
-        */    
+        */
         virtual public byte[] GetPageContent(int pageNum, RandomAccessFileOrArray file) {
             PdfDictionary page = GetPageNRelease(pageNum);
             if (page == null)
@@ -2194,18 +2264,23 @@ namespace iTextSharp.text.pdf {
             PdfObject contents = GetPdfObjectRelease(page.Get(PdfName.CONTENTS));
             if (contents == null)
                 return new byte[0];
-            MemoryStream bout = null;
+            MemoryLimitsAwareHandler handler = memoryLimitsAwareHandler;
+            long usedMemory = null == handler ? -1 : handler.GetAllMemoryUsedForDecompression();
             if (contents.IsStream()) {
                 return GetStreamBytes((PRStream)contents, file);
             }
             else if (contents.IsArray()) {
                 PdfArray array = (PdfArray)contents;
-                bout = new MemoryStream();
+                MemoryLimitsAwareOutputStream bout = new MemoryLimitsAwareOutputStream();
                 for (int k = 0; k < array.Size; ++k) {
                     PdfObject item = GetPdfObjectRelease(array.GetPdfObject(k));
                     if (item == null || !item.IsStream())
                         continue;
                     byte[] b = GetStreamBytes((PRStream)item, file);
+                    // usedMemory has changed, that means that some of currently processed pdf streams are suspicious
+                    if (null != handler && usedMemory < handler.GetAllMemoryUsedForDecompression()) {
+                        bout.SetMaxStreamSize(handler.GetMaxSizeOfSingleDecompressedPdfStream());
+                    }
                     bout.Write(b, 0, b.Length);
                     if (k != array.Size - 1)
                         bout.WriteByte((byte)'\n');
@@ -2215,7 +2290,7 @@ namespace iTextSharp.text.pdf {
             else
                 return new byte[0];
         }
-            
+
         /** Gets the content from the page dictionary.
          * @param page the page dictionary
          * @throws IOException on error
@@ -2262,7 +2337,8 @@ namespace iTextSharp.text.pdf {
                 try {
                     if (rf != null)
                         rf.Close();
-                }catch {}
+                }
+                catch { }
             }
         }
 
@@ -2275,7 +2351,7 @@ namespace iTextSharp.text.pdf {
         virtual public PdfDictionary GetPageResources(int pageNum) {
             return GetPageResources(GetPageN(pageNum));
         }
-        
+
         /**
          * Retrieve the given page's resource dictionary
          * @param pageDict the given page
@@ -2283,14 +2359,14 @@ namespace iTextSharp.text.pdf {
          * @since 5.1
          */
         virtual public PdfDictionary GetPageResources(PdfDictionary pageDict) {
-            return pageDict.GetAsDict(PdfName.RESOURCES); 
+            return pageDict.GetAsDict(PdfName.RESOURCES);
         }
 
         /** Gets the contents of the page.
         * @param pageNum the page number. 1 is the first
         * @throws IOException on error
         * @return the content
-        */    
+        */
         virtual public byte[] GetPageContent(int pageNum) {
             RandomAccessFileOrArray rf = SafeFile;
             try {
@@ -2298,10 +2374,10 @@ namespace iTextSharp.text.pdf {
                 return GetPageContent(pageNum, rf);
             }
             finally {
-                try{rf.Close();}catch{}
+                try { rf.Close(); } catch { }
             }
         }
-        
+
         virtual protected internal void KillXref(PdfObject obj) {
             if (obj == null)
                 return;
@@ -2309,37 +2385,37 @@ namespace iTextSharp.text.pdf {
                 return;
             switch (obj.Type) {
                 case PdfObject.INDIRECT: {
-                    int xr = ((PRIndirectReference)obj).Number;
-                    obj = xrefObj[xr];
-                    xrefObj[xr] = null;
-                    freeXref = xr;
-                    KillXref(obj);
-                    break;
-                }
+                        int xr = ((PRIndirectReference)obj).Number;
+                        obj = xrefObj[xr];
+                        xrefObj[xr] = null;
+                        freeXref = xr;
+                        KillXref(obj);
+                        break;
+                    }
                 case PdfObject.ARRAY: {
-                    PdfArray t = (PdfArray)obj;
-                    for (int i = 0; i < t.Size; ++i)
-                        KillXref(t.GetPdfObject(i));
-                    break;
-                }
+                        PdfArray t = (PdfArray)obj;
+                        for (int i = 0; i < t.Size; ++i)
+                            KillXref(t.GetPdfObject(i));
+                        break;
+                    }
                 case PdfObject.STREAM:
                 case PdfObject.DICTIONARY: {
-                    PdfDictionary dic = (PdfDictionary)obj;
-                    foreach (PdfName key in dic.Keys){
-                        KillXref(dic.Get(key));
+                        PdfDictionary dic = (PdfDictionary)obj;
+                        foreach (PdfName key in dic.Keys) {
+                            KillXref(dic.Get(key));
+                        }
+                        break;
                     }
-                    break;
-                }
             }
         }
-        
+
         /** Sets the contents of the page.
         * @param content the new page content
         * @param pageNum the page number. 1 is the first
         * @throws IOException on error
-        */    
+        */
         virtual public void SetPageContent(int pageNum, byte[] content) {
-    	    SetPageContent(pageNum, content, PdfStream.DEFAULT_COMPRESSION,false);
+            SetPageContent(pageNum, content, PdfStream.DEFAULT_COMPRESSION, false);
         }
 
         /** Sets the contents of the page.
@@ -2347,7 +2423,7 @@ namespace iTextSharp.text.pdf {
         * @param pageNum the page number. 1 is the first
         * @since   2.1.3   (the method already existed without param compressionLevel)
         */
-        virtual public void SetPageContent(int pageNum, byte[] content, int compressionLevel,bool killOldXRefRecursively) {
+        virtual public void SetPageContent(int pageNum, byte[] content, int compressionLevel, bool killOldXRefRecursively) {
             PdfDictionary page = GetPageN(pageNum);
             if (page == null)
                 return;
@@ -2363,7 +2439,7 @@ namespace iTextSharp.text.pdf {
             page.Put(PdfName.CONTENTS, new PRIndirectReference(this, freeXref));
             xrefObj[freeXref] = new PRStream(this, content, compressionLevel);
         }
-        
+
         /**
          * Decode a byte[] applying the filters specified in the provided dictionary using default filter handlers.
          * @param b the bytes to decode
@@ -2375,7 +2451,7 @@ namespace iTextSharp.text.pdf {
         public static byte[] DecodeBytes(byte[] b, PdfDictionary streamDictionary) {
             return DecodeBytes(b, streamDictionary, FilterHandlers.GetDefaultFilterHandlers());
         }
-        
+
         /**
          * Decode a byte[] applying the filters specified in the provided dictionary using the provided filter handlers.
          * @param b the bytes to decode
@@ -2394,6 +2470,24 @@ namespace iTextSharp.text.pdf {
                 else if (filter.IsArray())
                     filters = ((PdfArray)filter).ArrayList;
             }
+            MemoryLimitsAwareHandler memoryLimitsAwareHandler = null;
+            if (streamDictionary is PRStream && null != ((PRStream)streamDictionary).Reader) {
+                memoryLimitsAwareHandler = ((PRStream)streamDictionary).Reader.GetMemoryLimitsAwareHandler();
+            }
+            if (null != memoryLimitsAwareHandler) {
+                HashSet2<PdfName> filterSet = new HashSet2<PdfName>();
+                int index;
+                for (index = 0; index < filters.Count; index++) {
+                    PdfName filterName = (PdfName)filters[index];
+                    if (!filterSet.AddAndCheck(filterName)) {
+                        memoryLimitsAwareHandler.BeginDecompressedPdfStreamProcessing();
+                        break;
+                    }
+                }
+                if (index == filters.Count) { // The stream isn't suspicious. We shouldn't process it.
+                    memoryLimitsAwareHandler = null;
+                }
+            }
             List<PdfObject> dp = new List<PdfObject>();
             PdfObject dpo = GetPdfObjectRelease(streamDictionary.Get(PdfName.DECODEPARMS));
             if (dpo == null || (!dpo.IsDictionary() && !dpo.IsArray()))
@@ -2410,26 +2504,35 @@ namespace iTextSharp.text.pdf {
                 filterHandlers.TryGetValue(filterName, out filterHandler);
                 if (filterHandler == null)
                     throw new UnsupportedPdfException(MessageLocalization.GetComposedMessage("the.filter.1.is.not.supported", filterName));
-                
+
                 PdfDictionary decodeParams;
-                if (j < dp.Count){
+                if (j < dp.Count) {
                     PdfObject dpEntry = GetPdfObject(dp[j]);
-                    if (dpEntry is PdfDictionary){
+                    if (dpEntry is PdfDictionary) {
                         decodeParams = (PdfDictionary)dpEntry;
-                    } else if (dpEntry == null || dpEntry is PdfNull || (dpEntry is PdfLiteral && Util.ArraysAreEqual(Encoding.UTF8.GetBytes("null"), ((PdfLiteral)dpEntry).GetBytes()))) {
+                    }
+                    else if (dpEntry == null || dpEntry is PdfNull || (dpEntry is PdfLiteral && Util.ArraysAreEqual(Encoding.UTF8.GetBytes("null"), ((PdfLiteral)dpEntry).GetBytes()))) {
                         decodeParams = null;
-                    } else {
+                    }
+                    else {
                         throw new UnsupportedPdfException(MessageLocalization.GetComposedMessage("the.decode.parameter.type.1.is.not.supported", dpEntry.GetType().FullName));
                     }
-                    
-                } else {
+
+                }
+                else {
                     decodeParams = null;
                 }
                 b = filterHandler.Decode(b, filterName, decodeParams, streamDictionary);
+                if (null != memoryLimitsAwareHandler) {
+                    memoryLimitsAwareHandler.ConsiderBytesOccupiedByDecompressedPdfStream(b.Length);
+                }
+            }
+            if (null != memoryLimitsAwareHandler) {
+                memoryLimitsAwareHandler.EndDecompressedPdfStreamProcessing();
             }
             return b;
         }
-        
+
         /** Get the content from a stream applying the required filters.
          * @param stream the stream
          * @param file the location where the stream is
@@ -2440,12 +2543,12 @@ namespace iTextSharp.text.pdf {
             byte[] b = GetStreamBytesRaw(stream, file);
             return DecodeBytes(b, stream);
         }
-            
+
         /** Get the content from a stream applying the required filters.
         * @param stream the stream
         * @throws IOException on error
         * @return the stream content
-        */    
+        */
         public static byte[] GetStreamBytes(PRStream stream) {
             RandomAccessFileOrArray rf = stream.Reader.SafeFile;
             try {
@@ -2453,16 +2556,16 @@ namespace iTextSharp.text.pdf {
                 return GetStreamBytes(stream, rf);
             }
             finally {
-                try{rf.Close();}catch{}
+                try { rf.Close(); } catch { }
             }
         }
-        
+
         /** Get the content from a stream as it is without applying any filter.
         * @param stream the stream
         * @param file the location where the stream is
         * @throws IOException on error
         * @return the stream content
-        */    
+        */
         public static byte[] GetStreamBytesRaw(PRStream stream, RandomAccessFileOrArray file) {
             PdfReader reader = stream.Reader;
             byte[] b;
@@ -2498,12 +2601,12 @@ namespace iTextSharp.text.pdf {
             }
             return b;
         }
-        
+
         /** Get the content from a stream as it is without applying any filter.
         * @param stream the stream
         * @throws IOException on error
         * @return the stream content
-        */    
+        */
         public static byte[] GetStreamBytesRaw(PRStream stream) {
             RandomAccessFileOrArray rf = stream.Reader.SafeFile;
             try {
@@ -2511,11 +2614,11 @@ namespace iTextSharp.text.pdf {
                 return GetStreamBytesRaw(stream, rf);
             }
             finally {
-                try{rf.Close();}catch{}
+                try { rf.Close(); } catch { }
             }
         }
 
-        /** Eliminates shared streams if they exist. */    
+        /** Eliminates shared streams if they exist. */
         virtual public void EliminateSharedStreams() {
             if (!sharedStreams)
                 return;
@@ -2564,18 +2667,19 @@ namespace iTextSharp.text.pdf {
                 refi.SetNumber(xrefObj.Count - 1, 0);
             }
         }
-                
+
         /**
         * Sets the tampered state. A tampered PdfReader cannot be reused in PdfStamper.
         * @param tampered the tampered state
-        */            
+        */
         virtual public bool Tampered {
             get {
                 return tampered;
             }
             set {
                 tampered = value;
-                pageRefs.KeepPages();            }
+                pageRefs.KeepPages();
+            }
         }
 
         /** Gets the XML metadata.
@@ -2597,92 +2701,92 @@ namespace iTextSharp.text.pdf {
                     try {
                         rf.Close();
                     }
-                    catch{
+                    catch {
                         // empty on purpose
                     }
                 }
                 return b;
             }
         }
-        
+
         /**
         * Gets the byte address of the last xref table.
         * @return the byte address of the last xref table
-        */    
+        */
         virtual public long LastXref {
             get {
                 return lastXref;
             }
         }
-        
+
         /**
         * Gets the number of xref objects.
         * @return the number of xref objects
-        */    
+        */
         virtual public int XrefSize {
             get {
                 return xrefObj.Count;
             }
         }
-        
+
         /**
         * Gets the byte address of the %%EOF marker.
         * @return the byte address of the %%EOF marker
-        */    
-		virtual public long EofPos {
+        */
+        virtual public long EofPos {
             get {
                 return eofPos;
             }
         }
-        
+
         /**
         * Gets the PDF version. Only the last version char is returned. For example
         * version 1.4 is returned as '4'.
         * @return the PDF version
-        */    
+        */
         virtual public char PdfVersion {
             get {
                 return pdfVersion;
             }
         }
-        
+
         /**
         * Returns <CODE>true</CODE> if the PDF is encrypted.
         * @return <CODE>true</CODE> if the PDF is encrypted
-        */    
+        */
         virtual public bool IsEncrypted() {
             return encrypted;
         }
-        
+
         /**
         * Gets the encryption permissions. It can be used directly in
         * <CODE>PdfWriter.SetEncryption()</CODE>.
         * @return the encryption permissions
-        */    
+        */
         virtual public long Permissions {
             get {
                 return pValue;
             }
         }
-        
+
         /**
         * Returns <CODE>true</CODE> if the PDF has a 128 bit key encryption.
         * @return <CODE>true</CODE> if the PDF has a 128 bit key encryption
-        */    
+        */
         virtual public bool Is128Key() {
             return rValue == 3;
         }
-        
+
         /**
         * Gets the trailer dictionary
         * @return the trailer dictionary
-        */    
+        */
         virtual public PdfDictionary Trailer {
             get {
                 return trailer;
             }
         }
-        
+
         internal PdfEncryption Decrypt {
             get {
                 return decrypt;
@@ -2698,7 +2802,7 @@ namespace iTextSharp.text.pdf {
             }
             return true;
         }
-        
+
         internal static bool ExistsName(PdfDictionary dic, PdfName key, PdfName value) {
             PdfObject type = GetPdfObjectRelease(dic.Get(key));
             if (type == null || !type.IsName())
@@ -2706,7 +2810,7 @@ namespace iTextSharp.text.pdf {
             PdfName name = (PdfName)type;
             return name.Equals(value);
         }
-        
+
         internal static String GetFontName(PdfDictionary dic) {
             if (dic == null)
                 return null;
@@ -2715,7 +2819,7 @@ namespace iTextSharp.text.pdf {
                 return null;
             return PdfName.DecodeName(type.ToString());
         }
-        
+
         internal static String GetSubsetPrefix(PdfDictionary dic) {
             if (dic == null)
                 return null;
@@ -2731,11 +2835,11 @@ namespace iTextSharp.text.pdf {
             }
             return s;
         }
-        
+
         /** Finds all the font subsets and changes the prefixes to some
         * random values.
         * @return the number of font subsets altered
-        */    
+        */
         virtual public int ShuffleSubsetNames() {
             int total = 0;
             for (int k = 1; k < xrefObj.Count; ++k) {
@@ -2787,10 +2891,10 @@ namespace iTextSharp.text.pdf {
             }
             return total;
         }
-        
+
         /** Finds all the fonts not subset but embedded and marks them as subset.
         * @return the number of fonts altered
-        */    
+        */
         virtual public int CreateFakeFontSubsets() {
             int total = 0;
             for (int k = 1; k < xrefObj.Count; ++k) {
@@ -2826,7 +2930,7 @@ namespace iTextSharp.text.pdf {
             }
             return total;
         }
-        
+
         private static PdfArray GetNameArray(PdfObject obj) {
             if (obj == null)
                 return null;
@@ -2847,7 +2951,7 @@ namespace iTextSharp.text.pdf {
         * Gets all the named destinations as an <CODE>Hashtable</CODE>. The key is the name
         * and the value is the destinations array.
         * @return gets all the named destinations
-        */    
+        */
         virtual public Dictionary<Object, PdfObject> GetNamedDestination() {
             return GetNamedDestination(false);
         }
@@ -2861,24 +2965,24 @@ namespace iTextSharp.text.pdf {
         */
         virtual public Dictionary<Object, PdfObject> GetNamedDestination(bool keepNames) {
             Dictionary<Object, PdfObject> names = GetNamedDestinationFromNames(keepNames);
-            Dictionary<string, PdfObject> names2 = GetNamedDestinationFromStrings(); 
+            Dictionary<string, PdfObject> names2 = GetNamedDestinationFromStrings();
             foreach (KeyValuePair<string, PdfObject> ie in names2)
                 names[ie.Key] = ie.Value;
             return names;
         }
-        
+
         /**
         * Gets the named destinations from the /Dests key in the catalog as an <CODE>Hashtable</CODE>. The key is the name
         * and the value is the destinations array.
         * @return gets the named destinations
-        */    
+        */
         virtual public Dictionary<String, PdfObject> GetNamedDestinationFromNames() {
-            Dictionary<String, PdfObject> ret = new Dictionary<string,PdfObject>();
-            foreach (KeyValuePair<object,PdfObject> s in GetNamedDestinationFromNames(false))
+            Dictionary<String, PdfObject> ret = new Dictionary<string, PdfObject>();
+            foreach (KeyValuePair<object, PdfObject> s in GetNamedDestinationFromNames(false))
                 ret[(string)s.Key] = s.Value;
-            return ret; 
+            return ret;
         }
-        
+
         /**
         * Gets the named destinations from the /Dests key in the catalog as an <CODE>HashMap</CODE>. The key is the name
         * and the value is the destinations array.
@@ -2912,7 +3016,7 @@ namespace iTextSharp.text.pdf {
         * Gets the named destinations from the /Names key in the catalog as an <CODE>Hashtable</CODE>. The key is the name
         * and the value is the destinations array.
         * @return gets the named destinations
-        */    
+        */
         virtual public Dictionary<String, PdfObject> GetNamedDestinationFromStrings() {
             if (catalog.Get(PdfName.NAMES) != null) {
                 PdfDictionary dic = (PdfDictionary)GetPdfObjectRelease(catalog.Get(PdfName.NAMES));
@@ -2935,10 +3039,10 @@ namespace iTextSharp.text.pdf {
             }
             return new Dictionary<String, PdfObject>();
         }
-        
+
         /**
         * Removes all the fields from the document.
-        */    
+        */
         virtual public void RemoveFields() {
             pageRefs.ResetReleasePage();
             for (int k = 1; k <= pageRefs.Size; ++k) {
@@ -2964,10 +3068,10 @@ namespace iTextSharp.text.pdf {
             catalog.Remove(PdfName.ACROFORM);
             pageRefs.ResetReleasePage();
         }
-        
+
         /**
         * Removes all the annotations and fields from the document.
-        */    
+        */
         virtual public void RemoveAnnotations() {
             pageRefs.ResetReleasePage();
             for (int k = 1; k <= pageRefs.Size; ++k) {
@@ -2980,7 +3084,7 @@ namespace iTextSharp.text.pdf {
             catalog.Remove(PdfName.ACROFORM);
             pageRefs.ResetReleasePage();
         }
-        
+
         virtual public List<PdfAnnotation.PdfImportedLink> GetLinks(int page) {
             pageRefs.ResetReleasePage();
             List<PdfAnnotation.PdfImportedLink> result = new List<PdfAnnotation.PdfImportedLink>();
@@ -2989,7 +3093,7 @@ namespace iTextSharp.text.pdf {
                 PdfArray annots = pageDic.GetAsArray(PdfName.ANNOTS);
                 for (int j = 0; j < annots.Size; ++j) {
                     PdfDictionary annot = (PdfDictionary)GetPdfObjectRelease(annots.GetPdfObject(j));
-                  
+
                     if (PdfName.LINK.Equals(annot.Get(PdfName.SUBTYPE))) {
                         result.Add(new PdfAnnotation.PdfImportedLink(annot));
                     }
@@ -3011,7 +3115,7 @@ namespace iTextSharp.text.pdf {
                 outlineRef = outline.Get(PdfName.NEXT);
             }
         }
-        
+
         /**
         * Replaces remote named links with local destinations that have the same name.
         * @since   5.0
@@ -3040,12 +3144,12 @@ namespace iTextSharp.text.pdf {
                         commitAnnots = true;
                 }
                 if (commitAnnots)
-                    SetXrefPartialObject(annotIdx,  annots);
+                    SetXrefPartialObject(annotIdx, annots);
                 if (!commitAnnots || annotsRef.IsIndirect())
                     pageRefs.ReleasePage(k);
             }
         }
-        
+
         /**
         * Converts a remote named destination GoToR with a local named destination
         * if there's a corresponding name.
@@ -3090,7 +3194,7 @@ namespace iTextSharp.text.pdf {
             return false;
         }
 
-        /** Replaces all the local named links with the actual destinations. */    
+        /** Replaces all the local named links with the actual destinations. */
         virtual public void ConsolidateNamedDestinations() {
             if (consolidateNamedDestinations)
                 return;
@@ -3115,7 +3219,7 @@ namespace iTextSharp.text.pdf {
                         commitAnnots = true;
                 }
                 if (commitAnnots)
-                    SetXrefPartialObject(annotIdx,  annots);
+                    SetXrefPartialObject(annotIdx, annots);
                 if (!commitAnnots || annotsRef.IsIndirect())
                     pageRefs.ReleasePage(k);
             }
@@ -3124,7 +3228,7 @@ namespace iTextSharp.text.pdf {
                 return;
             IterateBookmarks(outlines.Get(PdfName.FIRST), names);
         }
-        
+
         private bool ReplaceNamedDestination(PdfObject obj, Dictionary<Object, PdfObject> names) {
             obj = GetPdfObject(obj);
             int objIdx = lastXrefPartial;
@@ -3177,7 +3281,7 @@ namespace iTextSharp.text.pdf {
             }
             return false;
         }
-        
+
         protected internal static PdfDictionary DuplicatePdfDictionary(PdfDictionary original, PdfDictionary copy, PdfReader newReader) {
             if (copy == null)
                 copy = new PdfDictionary(original.Size);
@@ -3186,44 +3290,44 @@ namespace iTextSharp.text.pdf {
             }
             return copy;
         }
-        
+
         protected internal static PdfObject DuplicatePdfObject(PdfObject original, PdfReader newReader) {
             if (original == null)
                 return null;
             switch (original.Type) {
                 case PdfObject.DICTIONARY: {
-                    return DuplicatePdfDictionary((PdfDictionary)original, null, newReader);
-                }
-                case PdfObject.STREAM: {
-                    PRStream org = (PRStream)original;
-                    PRStream stream = new PRStream(org, null, newReader);
-                    DuplicatePdfDictionary(org, stream, newReader);
-                    return stream;
-                }
-                case PdfObject.ARRAY: {
-                    PdfArray originalArray = (PdfArray)original;
-                    PdfArray arr = new PdfArray(originalArray.Size);
-                    for (ListIterator<PdfObject> it = originalArray.GetListIterator(); it.HasNext(); ) {
-                        arr.Add(DuplicatePdfObject((PdfObject)it.Next(), newReader));
+                        return DuplicatePdfDictionary((PdfDictionary)original, null, newReader);
                     }
-                    return arr;
-                }
+                case PdfObject.STREAM: {
+                        PRStream org = (PRStream)original;
+                        PRStream stream = new PRStream(org, null, newReader);
+                        DuplicatePdfDictionary(org, stream, newReader);
+                        return stream;
+                    }
+                case PdfObject.ARRAY: {
+                        PdfArray originalArray = (PdfArray)original;
+                        PdfArray arr = new PdfArray(originalArray.Size);
+                        for (ListIterator<PdfObject> it = originalArray.GetListIterator(); it.HasNext();) {
+                            arr.Add(DuplicatePdfObject((PdfObject)it.Next(), newReader));
+                        }
+                        return arr;
+                    }
                 case PdfObject.INDIRECT: {
-                    PRIndirectReference org = (PRIndirectReference)original;
-                    return new PRIndirectReference(newReader, org.Number, org.Generation);
-                }
+                        PRIndirectReference org = (PRIndirectReference)original;
+                        return new PRIndirectReference(newReader, org.Number, org.Generation);
+                    }
                 default:
                     return original;
             }
         }
-        
+
         /**
         * Closes the reader, and any underlying stream or data source used to create the reader
         */
         virtual public void Close() {
             tokens.Close();
         }
-        
+
         virtual protected internal void RemoveUnusedNode(PdfObject obj, bool[] hits) {
             Stack<object> state = new Stack<object>();
             state.Push(obj);
@@ -3283,7 +3387,7 @@ namespace iTextSharp.text.pdf {
                             }
                         }
                         if (objs == null)
-                            state.Push(new Object[]{ar, k + 1});
+                            state.Push(new Object[] { ar, k + 1 });
                         else {
                             objs[1] = k + 1;
                             state.Push(objs);
@@ -3304,7 +3408,7 @@ namespace iTextSharp.text.pdf {
                             }
                         }
                         if (objs == null)
-                            state.Push(new Object[]{keys, dic, k + 1});
+                            state.Push(new Object[] { keys, dic, k + 1 });
                         else {
                             objs[2] = k + 1;
                             state.Push(objs);
@@ -3318,7 +3422,7 @@ namespace iTextSharp.text.pdf {
 
         /** Removes all the unreachable objects.
         * @return the number of indirect objects removed
-        */    
+        */
         virtual public int RemoveUnusedObjects() {
             bool[] hits = new bool[xrefObj.Count];
             RemoveUnusedNode(trailer, hits);
@@ -3343,22 +3447,22 @@ namespace iTextSharp.text.pdf {
             }
             return total;
         }
-        
+
         /** Gets a read-only version of <CODE>AcroFields</CODE>.
         * @return a read-only version of <CODE>AcroFields</CODE>
-        */    
+        */
         virtual public AcroFields AcroFields {
             get {
                 return new AcroFields(this, null);
             }
         }
-        
+
         /**
         * Gets the global document JavaScript.
         * @param file the document file
         * @throws IOException on error
         * @return the global document JavaScript
-        */    
+        */
         virtual public String GetJavaScript(RandomAccessFileOrArray file) {
             PdfDictionary names = (PdfDictionary)GetPdfObjectRelease(catalog.Get(PdfName.NAMES));
             if (names == null)
@@ -3366,7 +3470,7 @@ namespace iTextSharp.text.pdf {
             PdfDictionary js = (PdfDictionary)GetPdfObjectRelease(names.Get(PdfName.JAVASCRIPT));
             if (js == null)
                 return null;
-            Dictionary<string,PdfObject> jscript = PdfNameTree.ReadTree(js);
+            Dictionary<string, PdfObject> jscript = PdfNameTree.ReadTree(js);
             String[] sortedNames = new String[jscript.Count];
             jscript.Keys.CopyTo(sortedNames, 0);
             Array.Sort(sortedNames);
@@ -3385,18 +3489,18 @@ namespace iTextSharp.text.pdf {
                             buf.Append(PdfEncodings.ConvertToString(bytes, PdfObject.TEXT_UNICODE));
                         else
                             buf.Append(PdfEncodings.ConvertToString(bytes, PdfObject.TEXT_PDFDOCENCODING));
-                        buf.Append('\n');    
+                        buf.Append('\n');
                     }
                 }
             }
             return buf.ToString();
         }
-        
+
         /**
         * Gets the global document JavaScript.
         * @throws IOException on error
         * @return the global document JavaScript
-        */    
+        */
         virtual public String JavaScript {
             get {
                 RandomAccessFileOrArray rf = SafeFile;
@@ -3405,21 +3509,21 @@ namespace iTextSharp.text.pdf {
                     return GetJavaScript(rf);
                 }
                 finally {
-                    try{rf.Close();}catch{}
+                    try { rf.Close(); } catch { }
                 }
             }
         }
-        
+
         /**
         * Selects the pages to keep in the document. The pages are described as
         * ranges. The page ordering can be changed but
         * no page repetitions are allowed. Note that it may be very slow in partial mode.
         * @param ranges the comma separated ranges as described in {@link SequenceList}
-        */    
+        */
         virtual public void SelectPages(String ranges) {
             SelectPages(SequenceList.Expand(ranges, NumberOfPages));
         }
-        
+
         /**
         * Selects the pages to keep in the document. The pages are described as a
         * <CODE>List</CODE> of <CODE>Integer</CODE>. The page ordering can be changed but
@@ -3452,7 +3556,7 @@ namespace iTextSharp.text.pdf {
                 SetViewerPreferences(this.viewerPreferences);
             }
         }
-        
+
         /** Adds a viewer preference
         * @param key a key for a viewer preference
         * @param value a value for the viewer preference
@@ -3462,7 +3566,7 @@ namespace iTextSharp.text.pdf {
             this.viewerPreferences.AddViewerPreference(key, value);
             SetViewerPreferences(this.viewerPreferences);
         }
-        
+
         public virtual void SetViewerPreferences(PdfViewerPreferencesImp vp) {
             vp.AddToCatalog(catalog);
         }
@@ -3477,7 +3581,7 @@ namespace iTextSharp.text.pdf {
                 return PdfViewerPreferencesImp.GetViewerPreferences(catalog).PageLayoutAndMode;
             }
         }
-        
+
         virtual public bool Appendable {
             set {
                 appendable = value;
@@ -3488,15 +3592,15 @@ namespace iTextSharp.text.pdf {
                 return appendable;
             }
         }
-        
+
         /**
         * Getter for property newXrefType.
         * @return Value of property newXrefType.
         */
         virtual public bool IsNewXrefType() {
             return newXrefType;
-        }    
-        
+        }
+
         /**
         * Getter for property fileLength.
         * @return Value of property fileLength.
@@ -3506,7 +3610,7 @@ namespace iTextSharp.text.pdf {
                 return fileLength;
             }
         }
-        
+
         /**
         * Getter for property hybridXref.
         * @return Value of property hybridXref.
@@ -3514,7 +3618,7 @@ namespace iTextSharp.text.pdf {
         virtual public bool IsHybridXref() {
             return hybridXref;
         }
-        
+
         public class PageRefs {
             private PdfReader reader;
             private IntHashtable refsp;
@@ -3527,7 +3631,7 @@ namespace iTextSharp.text.pdf {
             * Keeps track of all pages nodes to avoid circular references.
             */
             private HashSet2<PdfObject> pagesNodes = new HashSet2<PdfObject>();
-            
+
             internal PageRefs(PdfReader reader) {
                 this.reader = reader;
                 if (reader.partial) {
@@ -3539,7 +3643,7 @@ namespace iTextSharp.text.pdf {
                     ReadPages();
                 }
             }
-            
+
             internal PageRefs(PageRefs other, PdfReader reader) {
                 this.reader = reader;
                 this.sizep = other.sizep;
@@ -3552,7 +3656,7 @@ namespace iTextSharp.text.pdf {
                 else
                     this.refsp = (IntHashtable)other.refsp.Clone();
             }
-            
+
             internal int Size {
                 get {
                     if (refsn != null)
@@ -3561,7 +3665,7 @@ namespace iTextSharp.text.pdf {
                         return sizep;
                 }
             }
-            
+
             internal void ReadPages() {
                 if (refsn != null)
                     return;
@@ -3572,16 +3676,16 @@ namespace iTextSharp.text.pdf {
                 pageInh = null;
                 reader.rootPages.Put(PdfName.COUNT, new PdfNumber(refsn.Count));
             }
-            
+
             internal void ReReadPages() {
                 refsn = null;
                 ReadPages();
             }
-            
+
             /** Gets the dictionary that represents a page.
             * @param pageNum the page number. 1 is the first
             * @return the page dictionary
-            */    
+            */
             virtual public PdfDictionary GetPageN(int pageNum) {
                 PRIndirectReference refi = GetPageOrigRef(pageNum);
                 return (PdfDictionary)PdfReader.GetPdfObject(refi);
@@ -3606,11 +3710,11 @@ namespace iTextSharp.text.pdf {
                 ReleasePage(pageNum);
                 return refi;
             }
-            
+
             /** Gets the page reference to this page.
             * @param pageNum the page number. 1 is the first
             * @return the page reference
-            */    
+            */
             virtual public PRIndirectReference GetPageOrigRef(int pageNum) {
                 --pageNum;
                 if (pageNum < 0 || pageNum >= Size)
@@ -3640,7 +3744,7 @@ namespace iTextSharp.text.pdf {
                     }
                 }
             }
-            
+
             internal void KeepPages() {
                 if (refsp == null || keepPages)
                     return;
@@ -3664,7 +3768,7 @@ namespace iTextSharp.text.pdf {
                 reader.ReleaseLastXrefPartial();
                 refsp.Remove(pageNum);
             }
-            
+
             /**
             * 
             */
@@ -3673,7 +3777,7 @@ namespace iTextSharp.text.pdf {
                     return;
                 lastPageRead = -1;
             }
-            
+
             internal void InsertPage(int pageNum, PRIndirectReference refi) {
                 --pageNum;
                 if (refsn != null) {
@@ -3700,7 +3804,7 @@ namespace iTextSharp.text.pdf {
                     }
                 }
             }
-            
+
             private void PushPageAttributes(PdfDictionary nodePages) {
                 PdfDictionary dic = new PdfDictionary();
                 if (pageInh.Count != 0) {
@@ -3722,10 +3826,10 @@ namespace iTextSharp.text.pdf {
 
                 PdfDictionary page = (PdfDictionary)GetPdfObject(rpage);
                 if (page == null)
-                    return;              
+                    return;
                 if (!pagesNodes.AddAndCheck(page))
                     throw new InvalidPdfException(MessageLocalization.GetComposedMessage("illegal.pages.tree"));
-                
+
                 PdfArray kidsPR = page.GetAsArray(PdfName.KIDS);
                 if (kidsPR == null) {
                     page.Put(PdfName.TYPE, PdfName.PAGE);
@@ -3735,7 +3839,7 @@ namespace iTextSharp.text.pdf {
                             page.Put(key, dic.Get(key));
                     }
                     if (page.Get(PdfName.MEDIABOX) == null) {
-                        PdfArray arr = new PdfArray(new float[]{0,0,PageSize.LETTER.Right,PageSize.LETTER.Top});
+                        PdfArray arr = new PdfArray(new float[] { 0, 0, PageSize.LETTER.Right, PageSize.LETTER.Top });
                         page.Put(PdfName.MEDIABOX, arr);
                     }
                     refsn.Add(rpage);
@@ -3743,7 +3847,7 @@ namespace iTextSharp.text.pdf {
                 else {
                     page.Put(PdfName.TYPE, PdfName.PAGES);
                     PushPageAttributes(page);
-                    for (int k = 0; k < kidsPR.Size; ++k){
+                    for (int k = 0; k < kidsPR.Size; ++k) {
                         PdfObject obj = kidsPR.GetPdfObject(k);
                         if (!obj.IsIndirect()) {
                             while (k < kidsPR.Size)
@@ -3755,7 +3859,7 @@ namespace iTextSharp.text.pdf {
                     PopPageAttributes();
                 }
             }
-            
+
             virtual protected internal PRIndirectReference GetSinglePage(int n) {
                 PdfDictionary acc = new PdfDictionary();
                 PdfDictionary top = reader.rootPages;
@@ -3851,8 +3955,7 @@ namespace iTextSharp.text.pdf {
          *
          * @return <code>true</code> if usage rights are present; <code>false</code> otherwise
          */
-        virtual public bool HasUsageRights()
-        {
+        virtual public bool HasUsageRights() {
             PdfDictionary perms = catalog.GetAsDict(PdfName.PERMS);
             if (perms == null)
                 return false;
@@ -3917,20 +4020,20 @@ namespace iTextSharp.text.pdf {
             get {
                 return !encrypted || ownerPasswordUsed || unethicalreading;
             }
-        } 
+        }
 
         virtual public int GetCryptoMode() {
-    	    if (decrypt == null) 
-    		    return -1;
-    	    else 
-    		    return decrypt.GetCryptoMode();
+            if (decrypt == null)
+                return -1;
+            else
+                return decrypt.GetCryptoMode();
         }
-        
+
         virtual public bool IsMetadataEncrypted() {
-    	    if (decrypt == null) 
-    		    return false; 
-    	    else 
-    		    return decrypt.IsMetadataEncrypted();
+            if (decrypt == null)
+                return false;
+            else
+                return decrypt.IsMetadataEncrypted();
         }
 
         /**
@@ -3941,8 +4044,8 @@ namespace iTextSharp.text.pdf {
          *         or if ownerPasswordUsed wasn't use to open the document.
          */
         virtual public byte[] ComputeUserPassword() {
-    	    if (!encrypted || !ownerPasswordUsed) return null;
-    	    return decrypt.ComputeUserPassword(password);
+            if (!encrypted || !ownerPasswordUsed) return null;
+            return decrypt.ComputeUserPassword(password);
         }
 
         virtual public void Dispose() {
