@@ -2,7 +2,7 @@
 <package xmlns="http://schemas.microsoft.com/packaging/2011/08/nuspec.xsd">
   <metadata>
     <id>iTextSharp</id>
-    <version>5.5.14-SNAPSHOT</version>
+    <version>5.5.13.1</version>
     <title>iTextSharp</title>
     <authors>Bruno Lowagie, Paulo Soares, et al.</authors>
     <owners>Bruno Lowagie,Paulo Soares</owners>
@@ -39,12 +39,11 @@ iText 7 Community: https://www.nuget.org/packages/itext7/</summary>
     <copyright>Copyright (c) 1998-2019 iText Group NV</copyright>
     <language>en-US</language>
     <tags>itext itextsharp c# .net csharp pdf</tags>
-    <releaseNotes>http://itextpdf.com/blog/release-notes-itext-5514</releaseNotes>
   </metadata>
 
   <files>
     <file src="src\core\bin\Release\itextsharp.dll" target="lib\" />
-    <file src="src\core\bin\Release\iTextSharp.xml" target="lib\" />
+    <file src="src\core\bin\Release\itextsharp.xml" target="lib\" />
     <file src="src\notice.txt" target="" />
     <file src="gnu-agpl-v3.0.md" target="" />
     <file src="LICENSE.md" target="" />
