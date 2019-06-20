@@ -77,6 +77,7 @@
 	<Compile Include="iTextSharp\text\pdf\BarcodeMacroPDF417Test.cs" />
     <Compile Include="iTextSharp\text\pdf\BarcodeUnicodeTest.cs" />
     <Compile Include="iTextSharp\text\pdf\BookmarksTest.cs" />
+	<Compile Include="iTextSharp\text\pdf\CompressionTest.cs" />
     <Compile Include="iTextSharp\text\pdf\FreeTextFlatteningTest.cs" />
 	<Compile Include="iTextSharp\text\pdf\PdfDictionaryTest.cs" />
     <Compile Include="iTextSharp\text\pdf\PdfEncryptionTest.cs" />

@@ -469,6 +469,7 @@
     <Compile Include="iTextSharp\tool\xml\examples\html\Span02Test.cs" />
     <Compile Include="iTextSharp\tool\xml\examples\html\Strike01Test.cs" />
     <Compile Include="iTextSharp\tool\xml\examples\html\Strong01Test.cs" />
+    <Compile Include="iTextSharp\tool\xml\examples\html\Strong02Test.cs" />
     <Compile Include="iTextSharp\tool\xml\examples\html\Sub01Test.cs" />
     <Compile Include="iTextSharp\tool\xml\examples\html\Sup01Test.cs" />
     <Compile Include="iTextSharp\tool\xml\examples\html\Sup144Test.cs" />

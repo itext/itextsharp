@@ -1,6 +1,6 @@
 /*
     This file is part of the iText (R) project.
-    Copyright (c) 1998-2017 iText Group NV
+    Copyright (c) 1998-2019 iText Group NV
     Authors: iText Software.
 
     This program is free software; you can redistribute it and/or modify
@@ -473,7 +473,8 @@ namespace iTextSharp.tool.xml.html {
             }
             float pFontSize = p.Font != null ? p.Font.Size : Font.DEFAULTSIZE;
             if (childFont != null && childFont.Size > pFontSize) {
-                p.Font = childFont;
+                //Create a copy with size only.
+                p.Font = new Font(Font.FontFamily.UNDEFINED, childFont.Size);
             }
         }
     }

@@ -1,6 +1,6 @@
 /*
     This file is part of the iText (R) project.
-    Copyright (c) 1998-2017 iText Group NV
+    Copyright (c) 1998-2019 iText Group NV
     Authors: iText Software.
 
     This program is free software; you can redistribute it and/or modify
@@ -356,7 +356,7 @@ namespace iTextSharp.tool.xml {
          */
         private Tag RecursiveGetChild(Tag tag, String name, String ns, bool recursive) {
             foreach (Tag t in tag) {
-                if (t.tag.Equals(name) && t.ns.Equals(ns)) {
+                if (t != null && t.tag.Equals(name) && t.ns.Equals(ns)) {
                     return t;
                 } else if (recursive) {
                     Tag rT = null;

@@ -1,6 +1,6 @@
 /*
     This file is part of the iText (R) project.
-    Copyright (c) 1998-2017 iText Group NV
+    Copyright (c) 1998-2019 iText Group NV
     Authors: iText Software.
 
     This program is free software; you can redistribute it and/or modify
@@ -56,26 +56,28 @@ namespace iTextSharp.text {
      */
     public sealed class Version {
 
+        private static readonly object staticLock = new object();
+
 	    // membervariables
 
         /** String that will indicate if the AGPL version is used. */
         public static String AGPL = " (AGPL-version)";
 
         /** The iText version instance. */
-        private static Version version = null;
+        private static volatile Version version = null;
 
 	    /**
 	     * This String contains the name of the product.
 	     * iText is a registered trademark by iText Group NV.
 	     * Please don't change this constant.
 	     */
-	    static private String iText = "iTextSharp\u2122";
+	    private const String iText = "iTextSharp\u2122";
     	
 	    /**
 	     * This String contains the version number of this iText release.
 	     * For debugging purposes, we request you NOT to change this constant.
 	     */
-        static private String release = "5.5.13";
+        private const String release = "5.5.13.1";
 
 	    /**
 	     * This String contains the iText version as shown in the producer line.
@@ -83,7 +85,7 @@ namespace iTextSharp.text {
 	     * iText Group requests that you retain the iText producer line
 	     * in every PDF that is created or manipulated using iText.
 	     */
-	    private String iTextVersion = iText + " " + release + " \u00a92000-2018 iText Group NV";
+	    private String iTextVersion = iText + " " + release + " \u00a92000-2019 iText Group NV";
 
         /**
          * The license key.
@@ -112,7 +114,7 @@ namespace iTextSharp.text {
 				    fileLoadExceptionMessage = fileLoadException.Message;
 			    }
 
-			    if (fileLoadExceptionMessage != null) {
+			    if (type == null) {
 				    ILogger logger = LoggerFactory.GetLogger(typeof(Version));
 				    try {
 					    type = System.Type.GetType(licenseKeyClassPartialName);
@@ -120,7 +122,7 @@ namespace iTextSharp.text {
 				    catch {
 					    // ignore
 				    }
-				    if (type == null) {
+				    if (type == null && fileLoadExceptionMessage != null) {
 					    logger.Error(fileLoadExceptionMessage);
 				    }
 			    }
@@ -134,54 +136,66 @@ namespace iTextSharp.text {
 	     * in every PDF that is created or manipulated using iText.
 	     */
         public static Version GetInstance() {
-            if (version == null) {
-                version = new Version();
-                lock (version) {
-                    try {
-                        Type type = GetLicenseKeyClass();
-						Type[] cArg = new Type[] {typeof(String)};
-						MethodInfo m = type.GetMethod("GetLicenseeInfoForVersion", cArg);
-						String coreVersion = release;
-						Object[] args = new Object[] {coreVersion};
-						String[] info = (String[]) m.Invoke(Activator.CreateInstance(type), args);
-						if (info[3] != null && info[3].Trim().Length > 0) {
-							version.key = info[3];
-						} else {
-							version.key = "Trial version ";
-							if (info[5] == null) {
-								version.key += "unauthorised";
-							} else {
-								version.key += info[5];
-							}
-						}
-						if (info[4] != null && info[4].Trim().Length > 0) {
-							version.iTextVersion = info[4];
-						} else if (info[2] != null && info[2].Trim().Length > 0) {
-							version.iTextVersion += " (" + info[2];
-							if (!version.key.ToLower().StartsWith("trial")) {
-								version.iTextVersion += "; licensed version)";
-							} else {
-								version.iTextVersion += "; " + version.key + ")";
-							}
-						} else if (info[0] != null && info[0].Trim().Length > 0) {
-							// fall back to contact name, if company name is unavailable
-							version.iTextVersion += " (" + info[0];
-							if (!version.key.ToLower().StartsWith("trial")) {
-								// we shouldn't have a licensed version without company name,
-								// but let's account for it anyway
-								version.iTextVersion += "; licensed version)";
-							} else {
-								version.iTextVersion += "; " + version.key + ")";
-							}
-						} else {
-							throw new Exception();
-						}
-                    } catch (Exception) {
-                        version.iTextVersion += AGPL;
-                    }
+            lock (staticLock) {
+                if (version != null) {
+                    return version;
                 }
             }
-            return version;
+            Version localVersion = new Version();
+            try {
+                Type type = GetLicenseKeyClass();
+                Type[] cArg = new Type[] { typeof(String) };
+                MethodInfo m = type.GetMethod("GetLicenseeInfoForVersion", cArg);
+                String coreVersion = release;
+                Object[] args = new Object[] { coreVersion };
+                String[] info = (String[])m.Invoke(Activator.CreateInstance(type), args);
+                if (info[3] != null && info[3].Trim().Length > 0) {
+                    localVersion.key = info[3];
+                } else {
+                    localVersion.key = "Trial version ";
+                    if (info[5] == null) {
+                        localVersion.key += "unauthorised";
+                    } else {
+                        localVersion.key += info[5];
+                    }
+                }
+                if (info[4] != null && info[4].Trim().Length > 0) {
+                    localVersion.iTextVersion = info[4];
+                } else if (info[2] != null && info[2].Trim().Length > 0) {
+                    localVersion.iTextVersion += " (" + info[2];
+                    if (!localVersion.key.ToLower().StartsWith("trial")) {
+                        localVersion.iTextVersion += "; licensed version)";
+                    } else {
+                        localVersion.iTextVersion += "; " + localVersion.key + ")";
+                    }
+                } else if (info[0] != null && info[0].Trim().Length > 0) {
+                    // fall back to contact name, if company name is unavailable
+                    localVersion.iTextVersion += " (" + info[0];
+                    if (!localVersion.key.ToLower().StartsWith("trial")) {
+                        // we shouldn't have a licensed version without company name,
+                        // but let's account for it anyway
+                        localVersion.iTextVersion += "; licensed version)";
+                    } else {
+                        localVersion.iTextVersion += "; " + localVersion.key + ")";
+                    }
+                } else {
+                    throw new Exception();
+                }
+            } catch (Exception) {
+	            if (DependsOnTheOldLicense()) {
+		            throw new Exception("iText License Library 1.0.* has been deprecated. Please, update to the latest version.");
+	            }
+                localVersion.iTextVersion += AGPL;
+            }
+            return localVersion;
+        }
+
+        private static bool DependsOnTheOldLicense() {
+	        try {
+		        return Type.GetType("iTextSharp.license.LicenseKey, itextsharp.LicenseKey") != null;
+	        } catch (Exception e) {
+		        return false;
+	        }
         }
     	
 	    /**
@@ -239,5 +253,11 @@ namespace iTextSharp.text {
             get { return GetInstance().GetVersion.IndexOf(AGPL) > 0; }
         }
 
+        private static Version AtomicSetVersion(Version newVersion) {
+            lock (staticLock) {
+                version = newVersion;
+                return version;
+            }
+        }
     }
 }

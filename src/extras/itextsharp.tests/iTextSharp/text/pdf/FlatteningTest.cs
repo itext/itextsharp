@@ -1,6 +1,6 @@
 /*
     This file is part of the iText (R) project.
-    Copyright (c) 1998-2017 iText Group NV
+    Copyright (c) 1998-2019 iText Group NV
     Authors: iText Software.
 
     This program is free software; you can redistribute it and/or modify
@@ -229,6 +229,20 @@ namespace itextsharp.tests.iTextSharp.text.pdf {
                 Assert.Fail(errorMessage);
             }
         }
+        
+        [Test]
+        public virtual void TestFlatteningGenerateAppearances7() {
+            const string OUT = "test01.pdf";
+            TestFlatteningGenerateAppearance(RESOURCES_FOLDER + "test01.pdf", OUTPUT_FOLDER + OUT,
+                true);
+            CompareTool compareTool = new CompareTool();
+            String errorMessage = compareTool.Compare(OUTPUT_FOLDER + OUT, RESOURCES_FOLDER + "cmp_" + OUT,
+                OUTPUT_FOLDER, "diff");
+            if (errorMessage != null) {
+                Assert.Fail(errorMessage);
+            }
+        }
+
 
         public virtual void TestFlatteningGenerateAppearance(string input, string output, bool? gen) {
             PdfReader reader = new PdfReader(input);
@@ -370,6 +384,28 @@ namespace itextsharp.tests.iTextSharp.text.pdf {
             fields.GenerateAppearances = true;
 
             pdfStamper.FormFlattening = true;
+            pdfStamper.Close();
+            pdfReader.Close();
+            // compare
+            CompareTool compareTool = new CompareTool();
+            String errorMessage = compareTool.CompareByContent(OUTPUT_FOLDER + file, RESOURCES_FOLDER + "cmp_" + file,
+                OUTPUT_FOLDER, "diff");
+            if (errorMessage != null)
+            {
+                Assert.Fail(errorMessage);
+            }
+        }
+
+        [Test]
+        public void TestFreeTextRecangleBBoxInteraction()
+        {
+            String file = "freeTextRectangleBBoxInteraction.pdf";
+
+            PdfReader pdfReader = new PdfReader(RESOURCES_FOLDER + file);
+            PdfStamper pdfStamper = new PdfStamper(pdfReader, new FileStream(OUTPUT_FOLDER + file, FileMode.Create));
+
+            pdfStamper.FormFlattening = true;
+            pdfStamper.FreeTextFlattening = true;
             pdfStamper.Close();
             pdfReader.Close();
             // compare

@@ -1,6 +1,6 @@
 /*
     This file is part of the iText (R) project.
-    Copyright (c) 1998-2017 iText Group NV
+    Copyright (c) 1998-2019 iText Group NV
     Authors: iText Software.
 
     This program is free software; you can redistribute it and/or modify
@@ -176,6 +176,9 @@ namespace iTextSharp.text.pdf {
             }
         }
     
+        /**
+         * Gets current reference number. If parsing was failed with NumberFormatException -1 will be return.
+         */
         virtual public int Reference {
             get {
                 return reference;
@@ -286,8 +289,10 @@ namespace iTextSharp.text.pdf {
                             return;
                         }
                         type = TokType.REF;
-                        reference = int.Parse(n1);
-                        generation = int.Parse(n2);
+                        if (!int.TryParse(n1, out reference) || !int.TryParse(n2, out generation)) {
+                            reference = -1;
+                            generation = 0;
+                        }  
                         return;
                     }
                 }

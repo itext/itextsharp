@@ -1,6 +1,6 @@
 /*
     This file is part of the iText (R) project.
-    Copyright (c) 1998-2017 iText Group NV
+    Copyright (c) 1998-2019 iText Group NV
     Authors: iText Software.
 
     This program is free software; you can redistribute it and/or modify
@@ -43,6 +43,7 @@
 using System;
 using System.Collections.Generic;
 using System.IO;
+using System.Text;
 using itextsharp.tests.iTextSharp.testutils;
 using iTextSharp.text;
 using iTextSharp.text.exceptions;
@@ -68,6 +69,21 @@ namespace itextsharp.tests.iTextSharp.text.pdf
 
         string TEST_RESOURCES_PATH = @"..\..\resources\text\pdf\PdfReaderTest\";
 
+        [Test]
+        public void TestPRTokenizer() {
+            String obj = "13 0 obj\n" +
+            "<< /Type /StructElem /Pg 111117220777773888836 0 R>>\n" +
+            "endobj";
+            PRTokeniser tokens= new PRTokeniser(new RandomAccessFileOrArray(Encoding.ASCII.GetBytes(obj)));
+            for (int i = 0; i < 11; i++) {
+            tokens.NextValidToken();
+            if (tokens.TokenType == PRTokeniser.TokType.REF)
+                Assert.IsTrue(tokens.Reference < 0);
+            if (tokens.TokenType == PRTokeniser.TokType.ENDOFFILE)
+                break;
+        }
+    }
+        
         [Test, Ignore("validity of test needs to be resolved")]
         virtual public void TestGetLink()
         {

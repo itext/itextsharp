@@ -146,6 +146,10 @@
     <Compile Include="AssemblyInfo.cs">
       <SubType>Code</SubType>
     </Compile>
+    <Compile Include="iTextSharp\text\pdf\MemoryLimitsAwareException.cs" />
+    <Compile Include="iTextSharp\text\pdf\MemoryLimitsAwareHandler.cs" />
+    <Compile Include="iTextSharp\text\pdf\MemoryLimitsAwareOutputStream.cs" />
+    <Compile Include="iTextSharp\text\pdf\ReaderProperties.cs" />
     <Compile Include="KeyVersionAttribute.cs">
       <SubType>Code</SubType>
     </Compile>

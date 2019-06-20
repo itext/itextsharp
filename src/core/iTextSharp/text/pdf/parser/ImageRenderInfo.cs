@@ -1,6 +1,6 @@
 /*
     This file is part of the iText (R) project.
-    Copyright (c) 1998-2017 iText Group NV
+    Copyright (c) 1998-2019 iText Group NV
     Authors: iText Software.
 
     This program is free software; you can redistribute it and/or modify
@@ -74,7 +74,7 @@ namespace iTextSharp.text.pdf.parser {
             this.inlineImageInfo = null;
             this.colorSpaceDictionary = colorSpaceDictionary;
             this.markedContentInfos = new List<MarkedContentInfo>();
-            if (markedContentInfos.Count > 0) { // check for performance purposes, as markedContentInfo.GetEnumerator is a costly operation for some reason
+            if (markedContentInfos != null && markedContentInfos.Count > 0) { // check for performance purposes, as markedContentInfo.GetEnumerator is a costly operation for some reason
                 foreach (MarkedContentInfo m in markedContentInfos) {
                     this.markedContentInfos.Add(m);
                 }
@@ -87,7 +87,7 @@ namespace iTextSharp.text.pdf.parser {
             this.inlineImageInfo = inlineImageInfo;
             this.colorSpaceDictionary = colorSpaceDictionary;
             this.markedContentInfos = new List<MarkedContentInfo>();
-            if (markedContentInfos.Count > 0) { // check for performance purposes, as markedContentInfo.GetEnumerator is a costly operation for some reason
+            if (markedContentInfos != null && markedContentInfos.Count > 0) { // check for performance purposes, as markedContentInfo.GetEnumerator is a costly operation for some reason
                 foreach (MarkedContentInfo m in markedContentInfos) {
                     this.markedContentInfos.Add(m);
                 }

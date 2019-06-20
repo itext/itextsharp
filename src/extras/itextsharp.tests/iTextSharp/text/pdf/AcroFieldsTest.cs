@@ -1,6 +1,6 @@
 /*
     This file is part of the iText (R) project.
-    Copyright (c) 1998-2017 iText Group NV
+    Copyright (c) 1998-2019 iText Group NV
     Authors: iText Software.
 
     This program is free software; you can redistribute it and/or modify
@@ -157,6 +157,122 @@ namespace itextsharp.tests.iTextSharp.text.pdf {
             for (int i = 0; i < expected.Length; i++) {
                 Assert.AreEqual(expected[i], actual[i]);
             }
+        }
+
+        [Test]
+        public virtual void BytesAreCoveredTest01()
+        {
+            String inPdf = TEST_RESOURCES_PATH + "bytesAreCoveredTest01.pdf";
+
+            PdfReader reader = new PdfReader(inPdf);
+            AcroFields acroFields = reader.AcroFields;
+
+            Assert.True(acroFields.SignatureCoversWholeDocument("Signature1"));
+        }
+
+        [Test]
+        public virtual void FirstBytesNotCoveredTest01()
+        {
+            String inPdf = TEST_RESOURCES_PATH + "firstBytesNotCoveredTest01.pdf";
+
+            PdfReader reader = new PdfReader(inPdf);
+            AcroFields acroFields = reader.AcroFields;
+
+            Assert.False(acroFields.SignatureCoversWholeDocument("Signature1"));
+        }
+
+
+        [Test]
+        public virtual void LastBytesNotCoveredTest01()
+        {
+            String inPdf = TEST_RESOURCES_PATH + "lastBytesNotCoveredTest01.pdf";
+
+            PdfReader reader = new PdfReader(inPdf);
+            AcroFields acroFields = reader.AcroFields;
+
+            Assert.False(acroFields.SignatureCoversWholeDocument("Signature1"));
+        }
+
+
+        [Test]
+        public virtual void LastBytesNotCoveredTest02()
+        {
+            String inPdf = TEST_RESOURCES_PATH + "lastBytesNotCoveredTest02.pdf";
+
+            PdfReader reader = new PdfReader(inPdf);
+            AcroFields acroFields = reader.AcroFields;
+
+            Assert.False(acroFields.SignatureCoversWholeDocument("Signature1"));
+        }
+
+
+        [Test]
+        public virtual void BytesAreCoveredTest02()
+        {
+            String inPdf = TEST_RESOURCES_PATH + "bytesAreCoveredTest02.pdf";
+
+            PdfReader reader = new PdfReader(inPdf);
+            AcroFields acroFields = reader.AcroFields;
+
+            Assert.True(acroFields.SignatureCoversWholeDocument("sig"));
+        }
+
+        [Test]
+        public virtual void BytesAreNotCoveredTest01()
+        {
+            String inPdf = TEST_RESOURCES_PATH + "bytesAreNotCoveredTest01.pdf";
+
+            PdfReader reader = new PdfReader(inPdf);
+            AcroFields acroFields = reader.AcroFields;
+
+            Assert.False(acroFields.SignatureCoversWholeDocument("Signature1"));
+        }
+
+        [Test]
+        public virtual void TwoContentsTest01()
+        {
+            String inPdf = TEST_RESOURCES_PATH + "twoContentsTest01.pdf";
+
+            PdfReader reader = new PdfReader(inPdf);
+            AcroFields acroFields = reader.AcroFields;
+
+            Assert.True(acroFields.SignatureCoversWholeDocument("Signature1"));
+        }
+
+
+        [Test]
+        public virtual void SpacesBeforeContentsTest01()
+        {
+            String inPdf = TEST_RESOURCES_PATH + "spacesBeforeContentsTest01.pdf";
+
+            PdfReader reader = new PdfReader(inPdf);
+            AcroFields acroFields = reader.AcroFields;
+
+            Assert.False(acroFields.SignatureCoversWholeDocument("Signature1"));
+        }
+
+
+        [Test]
+        public virtual void SpacesBeforeContentsTest02()
+        {
+            String inPdf = TEST_RESOURCES_PATH + "spacesBeforeContentsTest02.pdf";
+
+            PdfReader reader = new PdfReader(inPdf);
+            AcroFields acroFields = reader.AcroFields;
+
+            Assert.True(acroFields.SignatureCoversWholeDocument("Signature1"));
+        }
+
+
+        [Test]
+        public virtual void NotIndirectSigDictionaryTest()
+        {
+            String inPdf = TEST_RESOURCES_PATH + "notIndirectSigDictionaryTest.pdf";
+
+            PdfReader reader = new PdfReader(inPdf);
+            AcroFields acroFields = reader.AcroFields;
+
+            Assert.True(acroFields.SignatureCoversWholeDocument("Signature1"));
         }
 
         [Test]
