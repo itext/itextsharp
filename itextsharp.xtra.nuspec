@@ -28,7 +28,6 @@ We HIGHLY recommend customers use iText 7 for new projects, and to consider mov
 This DEPRECATED library adds extra functionality for iTextSharp. Please use iText 7 instead. iText 7 Community: https://www.nuget.org/packages/itext7/ and iText 7 pdfSweep addon: https://www.nuget.org/packages/itext7.pdfsweep/</description>
     <summary>Extra functionality for DEPRECACTED iTextSharp PDF generation library written entirely in C# for the .NET platform. Please use iText 7 instead.
 iText 7 Community: https://www.nuget.org/packages/itext7/</summary>
-    <releaseNotes>http://itextpdf.com/blog/release-notes-itext-5514</releaseNotes>
     <copyright>Copyright (c) 1998-2019 iText Group NV</copyright>
     <language>en-US</language>
     <tags>itext itextsharp c# csharp .net pdf</tags>
@@ -38,7 +37,7 @@ iText 7 Community: https://www.nuget.org/packages/itext7/</summary>
   </metadata>
 
   <files>
-    <file src="src\extras\iTextSharp.xtra\bin\Release\itextsharp.xtra.dll" target="lib\" />
+    <file src="src\extras\itextsharp.xtra\bin\Release\itextsharp.xtra.dll" target="lib\" />
     <file src="gnu-agpl-v3.0.md" target="" />
     <file src="LICENSE.md" target="" />
   </files>

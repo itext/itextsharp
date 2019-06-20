@@ -85,7 +85,7 @@ namespace iTextSharp.text {
 	     * iText Group requests that you retain the iText producer line
 	     * in every PDF that is created or manipulated using iText.
 	     */
-	    private String iTextVersion = iText + " " + release + " \u00a92000-2018 iText Group NV";
+	    private String iTextVersion = iText + " " + release + " \u00a92000-2019 iText Group NV";
 
         /**
          * The license key.
