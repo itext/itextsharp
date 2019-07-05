@@ -1,6 +1,6 @@
 /*
     This file is part of the iText (R) project.
-    Copyright (c) 1998-2017 iText Group NV
+    Copyright (c) 1998-2019 iText Group NV
     Authors: iText Software.
 
     This program is free software; you can redistribute it and/or modify
@@ -48,6 +48,7 @@ using System.IO;
 
 namespace itextsharp.tests.iTextSharp.text
 {
+    [Ignore("This test can be flaky depending on remote resources availability.")]
     class RemoteGifImageTest
     {
         private String[] GIF_LOCATION = {

@@ -1,6 +1,6 @@
 /*
     This file is part of the iText (R) project.
-    Copyright (c) 1998-2017 iText Group NV
+    Copyright (c) 1998-2019 iText Group NV
     Authors: iText Software.
 
     This program is free software; you can redistribute it and/or modify
@@ -41,7 +41,7 @@
     address: sales@itextpdf.com
  */
 using System;
-
+using System.Text.RegularExpressions;
 namespace iTextSharp.text.pdf {
 
     /**
@@ -111,7 +111,8 @@ namespace iTextSharp.text.pdf {
          * @return <CODE>true</CODE> if the character can be used to split a string, <CODE>false</CODE> otherwise
          */
         virtual public bool IsSplitCharacter(int start, int current, int end, char[] cc, PdfChunk[] ck) {
-            char c = GetCurrentCharacter(current, cc, ck);
+            char[] ccTmp = CheckDatePattern(new string(cc));
+            char c = GetCurrentCharacter(current, ccTmp, ck);
 
             if (characters != null) {
                 for (int i = 0; i < characters.Length; i++) {
@@ -147,6 +148,16 @@ namespace iTextSharp.text.pdf {
                 return cc[current];
             }
             return (char) ck[Math.Min(current, ck.Length - 1)].GetUnicodeEquivalent(cc[current]);
+        }
+
+        internal char[] CheckDatePattern(string data) {
+            String regex = "(\\d{2,4}-\\d{2}-\\d{2,4})";
+            Match m = Regex.Match(data, regex);
+            if (m.Success) {
+                string tmpData = m.Groups[1].Value.Replace('-', '\u2011');
+                data = data.Replace(m.Groups[1].Value, tmpData);
+            }
+            return data.ToCharArray();
         }
     }
 }

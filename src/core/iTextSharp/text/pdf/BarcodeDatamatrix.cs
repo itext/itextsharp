@@ -1,6 +1,6 @@
 /*
     This file is part of the iText (R) project.
-    Copyright (c) 1998-2017 iText Group NV
+    Copyright (c) 1998-2019 iText Group NV
     Authors: iText Software.
 
     This program is free software; you can redistribute it and/or modify
@@ -743,7 +743,7 @@ namespace iTextSharp.text.pdf {
                         for (i = unlatch + 1; i < dataOffset; i++) {
                             if (data[i] == EXTENDED_ASCII)
                                 i++;
-                            if (data[i] >= -127 && data[i] <= -27)
+                            if (data[i] >= (byte) 129 && data[i] <= (byte) 229)
                                 amountOfEncodedWithASCII++;
                             amountOfEncodedWithASCII++;
                         }

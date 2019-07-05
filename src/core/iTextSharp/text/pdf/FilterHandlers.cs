@@ -1,6 +1,6 @@
 /*
     This file is part of the iText (R) project.
-    Copyright (c) 1998-2017 iText Group NV
+    Copyright (c) 1998-2019 iText Group NV
     Authors: iText Software.
 
     This program is free software; you can redistribute it and/or modify
@@ -61,19 +61,19 @@ namespace iTextSharp.text.pdf {
     // it may also be better to split the sub-classes out into a separate package 
     [Obsolete("For internal use only. If you want to use iText, please use a dependency on iText 7. ")]
     public sealed class FilterHandlers {
-        
         /**
          * The main interface for creating a new {@link IFilterHandler}
          */
-        public interface IFilterHandler{
+        public interface IFilterHandler {
             byte[] Decode(byte[] b, PdfName filterName, PdfObject decodeParams, PdfDictionary streamDictionary);
         }
-        
+
         /** The default {@link IFilterHandler}s used by iText */
         private static IDictionary<PdfName, IFilterHandler> defaults;
+
         static FilterHandlers() {
             Dictionary<PdfName, IFilterHandler> map = new Dictionary<PdfName, IFilterHandler>();
-            
+
             map[PdfName.FLATEDECODE] = new Filter_FLATEDECODE();
             map[PdfName.FL] = new Filter_FLATEDECODE();
             map[PdfName.ASCIIHEXDECODE] = new Filter_ASCIIHEXDECODE();
@@ -84,34 +84,47 @@ namespace iTextSharp.text.pdf {
             map[PdfName.CCITTFAXDECODE] = new Filter_CCITTFAXDECODE();
             map[PdfName.CRYPT] = new Filter_DoNothing();
             map[PdfName.RUNLENGTHDECODE] = new Filter_RUNLENGTHDECODE();
-            
+
             defaults = new ReadOnlyDictionary<PdfName, IFilterHandler>(map);
         }
-        
+
         /**
          * @return the default {@link IFilterHandler}s used by iText
          */
-        public static IDictionary<PdfName, IFilterHandler> GetDefaultFilterHandlers(){
+        public static IDictionary<PdfName, IFilterHandler> GetDefaultFilterHandlers() {
             return defaults;
         }
-        
+
+        /**
+        * Creates a {@link MemoryLimitsAwareOutputStream} which will be used for decompression of the passed pdf stream.
+        *
+        * @param streamDictionary the pdf stream which is going to be decompressed.
+        * @return the {@link ByteArrayOutputStream} which will be used for decompression of the passed pdf stream
+        */
+        public static MemoryStream EnableMemoryLimitsAwareHandler(PdfDictionary streamDictionary) {
+            MemoryLimitsAwareOutputStream outputStream = new MemoryLimitsAwareOutputStream();
+            MemoryLimitsAwareHandler memoryLimitsAwareHandler = null;
+            if (streamDictionary is PRStream && null != ((PRStream)streamDictionary).Reader) {
+                memoryLimitsAwareHandler = ((PRStream)streamDictionary).Reader.GetMemoryLimitsAwareHandler();
+            }
+            else {
+                // We do not reuse some static instance because one can process pdfs in different threads.
+                memoryLimitsAwareHandler = new MemoryLimitsAwareHandler();
+            }
+            if (null != memoryLimitsAwareHandler && memoryLimitsAwareHandler.ConsiderCurrentPdfStream) {
+                outputStream.SetMaxStreamSize(memoryLimitsAwareHandler.GetMaxSizeOfSingleDecompressedPdfStream());
+            }
+            return outputStream;
+        }
+
         /**
          * Handles FLATEDECODE filter
          */
-        private class Filter_FLATEDECODE : IFilterHandler{
+        private class Filter_FLATEDECODE : IFilterHandler {
             public byte[] Decode(byte[] b, PdfName filterName, PdfObject decodeParams, PdfDictionary streamDictionary) {
-                b = PdfReader.FlateDecode(b);
+                MemoryStream outS = EnableMemoryLimitsAwareHandler(streamDictionary);
+                b = PdfReader.FlateDecode(b, outS);
                 b = PdfReader.DecodePredictor(b, decodeParams);
-                return b;
-            }
-        }
-        
-        /**
-         * Handles ASCIIHEXDECODE filter
-         */
-        private class Filter_ASCIIHEXDECODE : IFilterHandler{
-            public byte[] Decode(byte[] b, PdfName filterName, PdfObject decodeParams, PdfDictionary streamDictionary) {
-                b = PdfReader.ASCIIHexDecode(b);
                 return b;
             }
         }
@@ -119,29 +132,41 @@ namespace iTextSharp.text.pdf {
         /**
          * Handles ASCIIHEXDECODE filter
          */
-        private class Filter_ASCII85DECODE : IFilterHandler{
+        private class Filter_ASCIIHEXDECODE : IFilterHandler {
             public byte[] Decode(byte[] b, PdfName filterName, PdfObject decodeParams, PdfDictionary streamDictionary) {
-                b = PdfReader.ASCII85Decode(b);
+                MemoryStream outS = EnableMemoryLimitsAwareHandler(streamDictionary);
+                b = PdfReader.ASCIIHexDecode(b, outS);
                 return b;
             }
         }
-        
+
+        /**
+         * Handles ASCIIHEXDECODE filter
+         */
+        private class Filter_ASCII85DECODE : IFilterHandler {
+            public byte[] Decode(byte[] b, PdfName filterName, PdfObject decodeParams, PdfDictionary streamDictionary) {
+                MemoryStream outS = EnableMemoryLimitsAwareHandler(streamDictionary);
+                b = PdfReader.ASCII85Decode(b, outS);
+                return b;
+            }
+        }
+
         /**
          * Handles LZWDECODE filter
          */
-        private class Filter_LZWDECODE : IFilterHandler{
+        private class Filter_LZWDECODE : IFilterHandler {
             public byte[] Decode(byte[] b, PdfName filterName, PdfObject decodeParams, PdfDictionary streamDictionary) {
-                b = PdfReader.LZWDecode(b);
+                MemoryStream outS = EnableMemoryLimitsAwareHandler(streamDictionary);
+                b = PdfReader.LZWDecode(b, outS);
                 b = PdfReader.DecodePredictor(b, decodeParams);
                 return b;
             }
         }
 
-        
         /**
          * Handles CCITTFAXDECODE filter
          */
-        private class Filter_CCITTFAXDECODE : IFilterHandler{
+        private class Filter_CCITTFAXDECODE : IFilterHandler {
             public byte[] Decode(byte[] b, PdfName filterName, PdfObject decodeParams, PdfDictionary streamDictionary) {
                 PdfNumber wn = (PdfNumber)PdfReader.GetPdfObjectRelease(streamDictionary.Get(PdfName.WIDTH));
                 PdfNumber hn = (PdfNumber)PdfReader.GetPdfObjectRelease(streamDictionary.Get(PdfName.HEIGHT));
@@ -149,7 +174,7 @@ namespace iTextSharp.text.pdf {
                     throw new UnsupportedPdfException(MessageLocalization.GetComposedMessage("filter.ccittfaxdecode.is.only.supported.for.images"));
                 int width = wn.IntValue;
                 int height = hn.IntValue;
-                
+
                 PdfDictionary param = decodeParams is PdfDictionary ? (PdfDictionary)decodeParams : null;
                 int k = 0;
                 bool blackIs1 = false;
@@ -192,15 +217,15 @@ namespace iTextSharp.text.pdf {
                         outBuf[t] ^= 0xff;
                     }
                 }
-                b = outBuf;       
+                b = outBuf;
                 return b;
             }
         }
-        
+
         /**
          * A filter that doesn't modify the stream at all
          */
-        private class Filter_DoNothing : IFilterHandler{
+        private class Filter_DoNothing : IFilterHandler {
             public byte[] Decode(byte[] b, PdfName filterName, PdfObject decodeParams, PdfDictionary streamDictionary) {
                 return b;
             }
@@ -209,24 +234,24 @@ namespace iTextSharp.text.pdf {
         /**
          * Handles RUNLENGTHDECODE filter
          */
-        private class Filter_RUNLENGTHDECODE : IFilterHandler{
-
+        private class Filter_RUNLENGTHDECODE : IFilterHandler {
             public byte[] Decode(byte[] b, PdfName filterName, PdfObject decodeParams, PdfDictionary streamDictionary) {
-             // allocate the output buffer
-                MemoryStream baos = new MemoryStream();
+                // allocate the output buffer
+                MemoryStream baos = EnableMemoryLimitsAwareHandler(streamDictionary);
                 sbyte dupCount = -1;
-                for (int i = 0; i < b.Length; i++){
+                for (int i = 0; i < b.Length; i++) {
                     dupCount = (sbyte)b[i];
                     if (dupCount == -128) break; // this is implicit end of data
-                    
-                    if (dupCount >= 0 && dupCount <= 127){
-                        int bytesToCopy = dupCount+1;
+
+                    if (dupCount >= 0 && dupCount <= 127) {
+                        int bytesToCopy = dupCount + 1;
                         baos.Write(b, i, bytesToCopy);
-                        i+=bytesToCopy;
-                    } else {
+                        i += bytesToCopy;
+                    }
+                    else {
                         // make dupcount copies of the next byte
                         i++;
-                        for (int j = 0; j < 1-(int)(dupCount);j++){ 
+                        for (int j = 0; j < 1 - (int)(dupCount); j++) {
                             baos.WriteByte(b[i]);
                         }
                     }

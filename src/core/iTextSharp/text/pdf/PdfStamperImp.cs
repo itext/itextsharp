@@ -1,6 +1,6 @@
 /*
     This file is part of the iText (R) project.
-    Copyright (c) 1998-2017 iText Group NV
+    Copyright (c) 1998-2019 iText Group NV
     Authors: iText Software.
 
     This program is free software; you can redistribute it and/or modify
@@ -308,7 +308,7 @@ namespace iTextSharp.text.pdf {
             PdfDictionary newInfo = new PdfDictionary();
             if (oldInfo != null) {
                 foreach (PdfName key in oldInfo.Keys) {
-                    PdfObject value = PdfReader.GetPdfObject(oldInfo.Get(key));
+                    PdfObject value = oldInfo.Get(key);
                     newInfo.Put(key, value);
                 }
             }
@@ -1004,8 +1004,8 @@ namespace iTextSharp.text.pdf {
                     if (appDic != null && (flags & PdfFormField.FLAGS_PRINT) != 0 && (flags & PdfFormField.FLAGS_HIDDEN) == 0) {
                         PdfObject obj = appDic.Get(PdfName.N);
                         PdfAppearance app = null;
+                        PdfObject objReal = PdfReader.GetPdfObject(obj);
                         if (obj != null) {
-                            PdfObject objReal = PdfReader.GetPdfObject(obj);
                             if (obj is PdfIndirectReference && !obj.IsIndirect())
                                 app = new PdfAppearance((PdfIndirectReference)obj);
                             else if (objReal is PdfStream) {
@@ -1051,7 +1051,16 @@ namespace iTextSharp.text.pdf {
                                 tf = CalculateTemplateTransformationMatrix(tf, fieldRotation, box);
                                 cb.AddTemplate(app, tf);
                             } else {
-                                cb.AddTemplate(app, box.Left, box.Bottom);  
+                                if (objReal is PdfDictionary &&
+                                    ((PdfDictionary) objReal).GetAsArray(PdfName.BBOX) != null)
+                                {
+                                    Rectangle bBox = PdfReader.GetNormalizedRectangle((((PdfDictionary)objReal).GetAsArray(PdfName.BBOX)));
+                                    cb.AddTemplate(app, (box.Width / bBox.Width), 0, 0, (box.Height / bBox.Height), box.Left, box.Bottom);
+                                }
+                                else
+                                {
+                                    cb.AddTemplate(app, box.Left, box.Bottom);   
+                                }
                             }
                             cb.SetLiteral("q ");
                         }
@@ -1359,10 +1368,13 @@ namespace iTextSharp.text.pdf {
                                     (rect.Height/transformBBox.Height), rect.Left, rect.Bottom);
                             }
                             else {
+                                //Correct for offset origins in the BBox, similar to how Adobe will flatten.
+                                float heightCorrection = -bbox.Bottom;
+                                float widthCorrection = -bbox.Left;
                                 //Changed so that when the annotation has a difference scale than the xObject in the appearance dictionary, the image is consistent between
                                 //the input and the flattened document.  When the annotation is rotated or skewed, it will still be flattened incorrectly.  
-                                cb.AddTemplate(app, (rect.Width/bbox.Width), 0, 0, (rect.Height/bbox.Height), rect.Left,
-                                    rect.Bottom);
+                                cb.AddTemplate(app, (rect.Width/bbox.Width), 0, 0, (rect.Height/bbox.Height), rect.Left + widthCorrection,
+                                    rect.Bottom+heightCorrection);
                                 //cb.AddTemplate(app, box.Left, box.Bottom);
                             }
                             cb.SetLiteral("q ");
