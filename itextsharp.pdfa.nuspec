@@ -6,9 +6,9 @@
     <title>iTextSharp.pdfa</title>
     <authors>Bruno Lowagie, Paulo Soares, et al.</authors>
     <owners>Bruno Lowagie,Paulo Soares,et al.</owners>
-    <licenseUrl>http://www.gnu.org/licenses/agpl.html</licenseUrl>
-    <projectUrl>http://itextpdf.com/</projectUrl>
-    <iconUrl>http://itextpdf.com/sites/default/files/ITSC-avatar.png</iconUrl>
+    <licenseUrl>https://www.gnu.org/licenses/agpl.html</licenseUrl>
+    <projectUrl>https://itextpdf.com/</projectUrl>
+    <iconUrl>https://itextpdf.com/sites/default/files/ITSC-avatar.png</iconUrl>
     <requireLicenseAcceptance>true</requireLicenseAcceptance>
     <description>PLEASE NOTE: iTextSharp is EOL, and has been replaced by iText 7. Only security fixes will be added
 
