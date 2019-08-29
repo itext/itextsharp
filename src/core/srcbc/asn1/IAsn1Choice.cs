@@ -21,8 +21,6 @@ For more information, please contact iText Software Corp. at this address: sales
 
 using System;
 
-using System;
-
 namespace Org.BouncyCastle.Asn1
 {
 	/**
