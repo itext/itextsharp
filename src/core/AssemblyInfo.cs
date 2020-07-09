@@ -18,8 +18,8 @@ using Versions.Attributes;
 
 [assembly: ComVisibleAttribute(false)]
 
-[assembly: KeyVersion("3.1.0.0")]
+[assembly: KeyVersion("3.1.1.0")]
 
 [assembly: AssemblyVersion("2.0.7.0")]
 [assembly: AssemblyFileVersion("2.0.7.0")]
-[assembly: AssemblyInformationalVersion("2.0.7-SNAPSHOT")]
+[assembly: AssemblyInformationalVersion("2.0.7")]
