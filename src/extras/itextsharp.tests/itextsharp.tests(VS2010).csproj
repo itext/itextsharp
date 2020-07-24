@@ -65,6 +65,10 @@
     <Reference Include="nunit.framework, Version=2.6.2.12296, Culture=neutral, PublicKeyToken=96d09a1eb7f44a77, processorArchitecture=MSIL">
       <SpecificVersion>False</SpecificVersion>
     </Reference>
+    <Reference Include="BouncyCastle.Crypto, Version=1.8.6.0, Culture=neutral, PublicKeyToken=0e99375e54769942">
+      <HintPath>$(SolutionDir)\packages\BouncyCastle.1.8.6.1\lib\BouncyCastle.Crypto.dll</HintPath>
+      <Private>True</Private>
+    </Reference>
     <Reference Include="System" />
     <Reference Include="System.Security" />
     <Reference Include="System.Xml" />
@@ -221,6 +225,7 @@
     <Content Include="resources\text\pdf\TaggedPdfTest\xml\test7.xml" />
     <Content Include="resources\text\pdf\TaggedPdfTest\xml\test8.xml" />
     <Content Include="resources\text\pdf\TaggedPdfTest\xml\test9.xml" />
+    <None Include="packages.config" />
     <None Include="resources\testutils\CompareToolTest\cmp_simple_pdf.pdf" />
     <None Include="resources\testutils\CompareToolTest\cmp_tagged_pdf.pdf" />
     <None Include="resources\testutils\CompareToolTest\simple_pdf.pdf" />

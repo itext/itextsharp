@@ -38,6 +38,9 @@ iText 7 Community: https://www.nuget.org/packages/itext7/</summary>
     <copyright>Copyright (c) 1998-2019 iText Group NV</copyright>
     <language>en-US</language>
     <tags>itext itextsharp c# .net csharp pdf</tags>
+	<dependencies>
+      <dependency id="BouncyCastle" version="1.8.6.1" />
+    </dependencies>
   </metadata>
 
   <files>
