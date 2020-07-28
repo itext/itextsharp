@@ -86,8 +86,8 @@ namespace iTextSharp.text.xml.xmp {
             bout.Write(bytes, 0, bytes.Length);
             bout.Seek(0, SeekOrigin.Begin);
             XmlTextReader xtr = new XmlTextReader(bout);
-	        xtr.XmlResolver = null;
-	        xtr.ProhibitDtd = false;
+            xtr.XmlResolver = null;
+            xtr.ProhibitDtd = true;
             domDocument = new XmlDocument();
             domDocument.PreserveWhitespace = true;
 	        domDocument.XmlResolver = null;
@@ -187,6 +187,8 @@ namespace iTextSharp.text.xml.xmp {
             while ((nc = n.FirstChild) != null) {
                 n.RemoveChild(nc);
             }
+
+            domDocument.XmlResolver = null;
             n.AppendChild(domDocument.CreateTextNode(value));
             return true;
         }

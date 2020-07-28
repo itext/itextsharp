@@ -143,6 +143,7 @@
     <Compile Include="iTextSharp\text\signature\XmlDSigRsaTest.cs" />
     <Compile Include="iTextSharp\text\signature\XmlDSigTest.cs" />
     <Compile Include="iTextSharp\text\xml\simpleparser\SimpleXMLParserTest.cs" />
+    <Compile Include="iTextSharp\text\xml\xmp\impl\XMPMetaParserTest.cs" />
     <Compile Include="iTextSharp\text\xml\xmp\XmpWriterTest.cs" />
     <Compile Include="Properties\AssemblyInfo.cs" />
     <Compile Include="iTextSharp\text\pdf\TaggedPdfCopyTest.cs" />
@@ -153,6 +154,7 @@
   <ItemGroup>
     <None Include="lib\XmlDiffPatch.dll">
     </None>
+    <Content Include="resources\text\xmp\impl\xxe-data.txt" />
     <Content Include="resources\text\pdf\AcroFieldsTest\barcode.jpg" />
     <Content Include="resources\text\pdf\DocumentLayoutTest\Desert.jp" />
     <Content Include="resources\text\pdf\fonts\NotoFont\LICENSE_CJK.txt" />

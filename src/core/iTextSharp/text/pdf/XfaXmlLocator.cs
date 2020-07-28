@@ -76,6 +76,7 @@ namespace iTextSharp.text.pdf
          * @throws DocumentException
          */
         virtual public void SetDocument(XmlDocument document) {
+            document.XmlResolver = null;
             byte[] outerXml = System.Text.Encoding.UTF8.GetBytes(document.OuterXml);
             //Create PdfStream
             PdfIndirectReference iref = stamper.Writer.

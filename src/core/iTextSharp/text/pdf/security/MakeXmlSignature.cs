@@ -96,6 +96,7 @@ namespace iTextSharp.text.pdf.security
             String signatureId = SecurityConstants.Signature_ + GetRandomId();
 
             XmlDocument doc = sap.GetXmlLocator().GetDocument();
+            doc.XmlResolver = null;
             KeyInfoClause keyInfo = GenerateKeyInfo(chain, sap);
             List<XmlElement> references = new List<XmlElement>(2);
             
@@ -244,6 +245,7 @@ namespace iTextSharp.text.pdf.security
             X509Certificate cert = sap.GetCertificate();
 
             XmlDocument doc = sap.GetXmlLocator().GetDocument();
+            doc.XmlResolver = null;
 
             XmlElement dsObject = doc.CreateElement("Object", SecurityConstants.XMLDSIG_URI);
 
@@ -364,6 +366,7 @@ namespace iTextSharp.text.pdf.security
                     NormalizeNamespaces(nodelist[0].CreateNavigator(), xpathSelect.CreateNavigator());
 
                     XmlDocument digestDoc = new XmlDocument(doc.NameTable);
+                    digestDoc.XmlResolver = null;
                     digestDoc.LoadXml(xpathSelect.OuterXml);
 
                     md = CalculateC14nDigest(digestDoc, new SHA1Managed());
@@ -417,6 +420,7 @@ namespace iTextSharp.text.pdf.security
             xpathSelectNavigator.CreateAttribute("xmlns", "", SecurityConstants.XMLNS_URI, SecurityConstants.XMLDSIG_URI);
             
             XmlDocument digestDoc = new XmlDocument(doc.NameTable);
+            digestDoc.XmlResolver = null;
             digestDoc.LoadXml(xpathSelect.OuterXml);
 
             byte[] md = CalculateC14nDigest(digestDoc, new SHA1Managed());
@@ -437,6 +441,7 @@ namespace iTextSharp.text.pdf.security
                                  List<XmlElement> references, XmlElement dsObject, KeyInfoClause keyInfo) {
 
             XmlDocument originalDoc = xmlLocator.GetDocument();
+            originalDoc.XmlResolver = null;
 
             if (signature == null)
                 throw new InvalidOperationException();
@@ -464,6 +469,7 @@ namespace iTextSharp.text.pdf.security
             XmlElement signedInfoDigest = (XmlElement)signedInfo.CloneNode(true);
             NormalizeNamespaces(signedInfo.CreateNavigator(), signedInfoDigest.CreateNavigator());
             XmlDocument signedInfoDoc = new XmlDocument(originalDoc.NameTable);
+            signedInfoDoc.XmlResolver = null;
             signedInfoDoc.LoadXml(signedInfoDigest.OuterXml);
             byte[] byteRange = CalculateC14nByteRange(signedInfoDoc);
 

@@ -121,7 +121,7 @@ namespace iTextSharp.text.pdf {
             bout.Seek(0, SeekOrigin.Begin);
             XmlTextReader xtr = new XmlTextReader(bout);
             xtr.XmlResolver = null;
-            xtr.ProhibitDtd = false;
+            xtr.ProhibitDtd = true;
             domDocument = new XmlDocument();
             domDocument.PreserveWhitespace = true;
             domDocument.XmlResolver = null;
@@ -776,6 +776,7 @@ namespace iTextSharp.text.pdf {
             virtual public XmlNode InsertNode(XmlNode n, String shortName) {
                 Stack2<string> stack = SplitParts(shortName);
                 XmlDocument doc = n.OwnerDocument;
+                doc.XmlResolver = null;
                 XmlNode n2 = null;
                 n = n.FirstChild;
                 while (n.NodeType != XmlNodeType.Element)
@@ -1098,7 +1099,10 @@ namespace iTextSharp.text.pdf {
         }
         
         virtual public void FillXfaForm(Stream stream, bool readOnly) {
-    	    FillXfaForm(new XmlTextReader(stream), readOnly);
+            XmlTextReader xmlTextReader = new XmlTextReader(stream);
+            xmlTextReader.XmlResolver = null;
+            xmlTextReader.ProhibitDtd = true;
+            FillXfaForm(xmlTextReader, readOnly);
         }
 
         virtual public void FillXfaForm(XmlReader reader) {
