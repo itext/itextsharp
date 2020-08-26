@@ -35,7 +35,7 @@ iText 7 includes pdfDebug, the first debugging tool that gives you a clear over
 Several iText engineers are actively supporting the project on StackOverflow: https://stackoverflow.com/questions/tagged/itext</description>
     <summary>iTextSharp is a DEPRECATED library for PDF generation written entirely in C# for the .NET platform. Please use iText 7 instead.
 iText 7 Community: https://www.nuget.org/packages/itext7/</summary>
-    <copyright>Copyright (c) 1998-2019 iText Group NV</copyright>
+    <copyright>Copyright (c) 1998-2020 iText Group NV</copyright>
     <language>en-US</language>
     <tags>itext itextsharp c# .net csharp pdf</tags>
 	<dependencies>
