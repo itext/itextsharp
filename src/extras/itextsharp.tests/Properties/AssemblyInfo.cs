@@ -7,7 +7,7 @@ using System.Runtime.InteropServices;
 [assembly: AssemblyConfiguration("")]
 [assembly: AssemblyCompany("iText Group NV")]
 [assembly: AssemblyProduct("itextsharp.tests")]
-[assembly: AssemblyCopyright ("Copyright (c) 1998-2019 iText Group NV")]
+[assembly: AssemblyCopyright ("Copyright (c) 1998-2020 iText Group NV")]
 [assembly: AssemblyTrademark("")]
 [assembly: AssemblyCulture("")]
 
@@ -15,5 +15,5 @@ using System.Runtime.InteropServices;
 
 [assembly: Guid("6d44f434-c50b-4232-87eb-853990beef3b")]
 
-[assembly: AssemblyVersion("5.5.13.1")]
-[assembly: AssemblyInformationalVersion("5.5.13.1")]
+[assembly: AssemblyVersion("5.5.13.2")]
+[assembly: AssemblyInformationalVersion("5.5.13.2")]

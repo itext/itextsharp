@@ -6,7 +6,7 @@ using System.Runtime.CompilerServices;
 [assembly: AssemblyConfiguration("")]
 [assembly: AssemblyCompany("iText Group NV")]
 [assembly: AssemblyProduct("itext-hyph-xml")]
-[assembly: AssemblyCopyright ("Copyright (c) 1998-2019 iText Group NV")]
+[assembly: AssemblyCopyright ("Copyright (c) 1998-2020 iText Group NV")]
 [assembly: AssemblyTrademark("")]
 [assembly: AssemblyCulture("")]        
 

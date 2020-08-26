@@ -1,6 +1,6 @@
 /*
     This file is part of the iText (R) project.
-    Copyright (c) 1998-2019 iText Group NV
+    Copyright (c) 1998-2020 iText Group NV
     Authors: iText Software.
 
     This program is free software; you can redistribute it and/or modify
@@ -56,10 +56,14 @@ namespace iTextSharp.text.xml
             string xml = xDoc.OuterXml;
             StringReader stringReader = new StringReader(xml);
             XmlTextReader reader = new XmlTextReader(stringReader);
+            reader.XmlResolver = null;
+            reader.ProhibitDtd = true;
             this.Parse(reader);
         }
 
         virtual public void Parse(XmlTextReader reader) {
+            reader.XmlResolver = null;
+            reader.ProhibitDtd = true;
             try {
                 while (reader.Read()) {
                     switch (reader.NodeType) {
@@ -110,6 +114,8 @@ namespace iTextSharp.text.xml
         virtual public void Parse(string url) {
             XmlTextReader reader = null;
             reader = new XmlTextReader(url);
+            reader.XmlResolver = null;
+            reader.ProhibitDtd = true;
             this.Parse(reader);
         }
 
