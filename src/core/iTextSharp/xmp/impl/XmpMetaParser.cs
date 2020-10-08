@@ -293,26 +293,22 @@ namespace iTextSharp.xmp.impl {
         //Security stuff. Protecting against XEE attacks as described here: https://www.owasp.org/index.php/XML_External_Entity_%28XXE%29_Processing
         private static XmlReaderSettings GetSecureReaderSettings()
         {
-            XmlReaderSettings settings = new XmlReaderSettings();
-            settings.ProhibitDtd = true;
-            return settings;
+            XmlReaderSettings readerSettings = new XmlReaderSettings();
+            readerSettings.XmlResolver = null;
+            readerSettings.ProhibitDtd = true;
+            return readerSettings;
         }
 
         private static XmlReader GetSecureXmlReader(Stream stream) {
             return XmlReader.Create(stream, GetSecureReaderSettings());
         }
 
-        private static XmlReader GetSecureXmlReader(TextReader textReader)
-        {
+        private static XmlReader GetSecureXmlReader(TextReader textReader) {
             return XmlReader.Create(textReader, GetSecureReaderSettings());
         }
 
-        private static XmlReader GetSecureXmlReader(String str)
-        {
+        private static XmlReader GetSecureXmlReader(String str) {
             return XmlReader.Create(new StringReader(str), GetSecureReaderSettings());
         }
-
-        
-
     }
 }
