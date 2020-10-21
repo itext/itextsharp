@@ -64,6 +64,8 @@ namespace iTextSharp.text.pdf {
 
         protected char[] characters;
 
+        private const String DATE_PATTERN = "(\\d{2,4}-\\d{2}-\\d{2,4})";
+        
         /**
          * Default constructor, has no custom characters to check.
          */
@@ -149,13 +151,18 @@ namespace iTextSharp.text.pdf {
             return (char) ck[Math.Min(current, ck.Length - 1)].GetUnicodeEquivalent(cc[current]);
         }
 
-        internal char[] CheckDatePattern(string data) {
-            String regex = "(\\d{2,4}-\\d{2}-\\d{2,4})";
-            Match m = Regex.Match(data, regex);
-            if (m.Success) {
-                string tmpData = m.Groups[1].Value.Replace('-', '\u2011');
-                data = data.Replace(m.Groups[1].Value, tmpData);
+        internal char[] CheckDatePattern(string data)
+        {
+            if (data.Contains("-"))
+            {
+                Match m = Regex.Match(data, DATE_PATTERN);
+                if (m.Success)
+                {
+                    string tmpData = m.Groups[1].Value.Replace('-', '\u2011');
+                    data = data.Replace(m.Groups[1].Value, tmpData);
+                }
             }
+
             return data.ToCharArray();
         }
     }
