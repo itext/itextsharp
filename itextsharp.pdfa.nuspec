@@ -4,7 +4,7 @@
     <id>itextsharp.pdfa</id>
     <version>5.5.14-SNAPSHOT</version>
     <title>iTextSharp.pdfa</title>
-    <authors>Bruno Lowagie, Paulo Soares, et al.</authors>
+    <authors>iText Software</authors>
     <owners>Bruno Lowagie,Paulo Soares,et al.</owners>
     <licenseUrl>https://www.gnu.org/licenses/agpl.html</licenseUrl>
     <projectUrl>https://itextpdf.com/</projectUrl>
