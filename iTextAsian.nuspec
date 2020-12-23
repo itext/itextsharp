@@ -4,7 +4,7 @@
     <id>iTextAsian</id>
     <version>2.1-SNAPSHOT</version>
     <title>iTextSharp.xtra</title>
-    <authors>Bruno Lowagie, Paulo Soares, et al.</authors>
+    <authors>iText Software</authors>
     <owners>Bruno Lowagie,Paulo Soares,et al.</owners>
     <licenseUrl>https://www.gnu.org/licenses/agpl.html</licenseUrl>
     <projectUrl>https://itextpdf.com/</projectUrl>

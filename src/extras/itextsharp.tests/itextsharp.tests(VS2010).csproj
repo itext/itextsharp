@@ -63,14 +63,14 @@
     <CodeAnalysisRuleSet>AllRules.ruleset</CodeAnalysisRuleSet>
   </PropertyGroup>
   <ItemGroup>
-    <Reference Include="itext.font_asian, Version=7.1.13.0, Culture=neutral, PublicKeyToken=8354ae6d2174ddca, processorArchitecture=MSIL">
-      <HintPath>$(SolutionDir)\packages\itext7.font-asian.7.1.13\lib\net40\itext.font_asian.dll</HintPath>
+    <Reference Include="itext.font_asian, Version=7.1.14.0, Culture=neutral, PublicKeyToken=8354ae6d2174ddca, processorArchitecture=MSIL">
+      <HintPath>$(SolutionDir)\packages\itext7.font-asian.7.1.14\lib\net40\itext.font_asian.dll</HintPath>
     </Reference>
     <Reference Include="nunit.framework, Version=2.6.4.14350, Culture=neutral, PublicKeyToken=96d09a1eb7f44a77, processorArchitecture=MSIL">
       <HintPath>$(SolutionDir)\packages\NUnit.2.6.4\lib\nunit.framework.dll</HintPath>
     </Reference>
-    <Reference Include="BouncyCastle.Crypto, Version=1.8.5.0, Culture=neutral, PublicKeyToken=0e99375e54769942">
-      <HintPath>$(SolutionDir)\packages\Portable.BouncyCastle.1.8.5\lib\net40\BouncyCastle.Crypto.dll</HintPath>
+    <Reference Include="BouncyCastle.Crypto, Version=1.8.9.0, Culture=neutral, PublicKeyToken=0e99375e54769942">
+      <HintPath>$(SolutionDir)\packages\Portable.BouncyCastle.1.8.9\lib\net40\BouncyCastle.Crypto.dll</HintPath>
       <Private>True</Private>
     </Reference>
     <Reference Include="System" />
@@ -102,6 +102,7 @@
     <Compile Include="iTextSharp\text\pdf\BarcodeDatamatrixTest.cs" />
     <Compile Include="iTextSharp\text\pdf\BookmarksTest.cs" />
     <Compile Include="iTextSharp\text\pdf\CompressionTest.cs" />
+	<Compile Include="iTextSharp\text\pdf\DefaultSplitCharacterProfilingTest.cs" />
     <Compile Include="iTextSharp\text\pdf\FreeTextFlatteningTest.cs" />
     <Compile Include="iTextSharp\text\pdf\PdfDictionaryTest.cs" />
     <Compile Include="iTextSharp\text\pdf\PdfEncryptionTest.cs" />
@@ -179,6 +180,7 @@
     <None Include="itextsharp.snk" />
     <None Include="lib\XmlDiffPatch.dll">
     </None>
+	<Content Include="resources\text\pdf\DefaultSplitCharacterProfilingTest\profilingText.txt" />
     <Content Include="resources\text\xmp\impl\xxe-data.txt" />
     <Content Include="resources\text\ChunkTest\logo.gif" />
     <Content Include="resources\text\pdf\AcroFieldsTest\barcode.jpg" />
