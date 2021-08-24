@@ -95,15 +95,25 @@ namespace iTextSharp.text.pdf.security {
 
         /** TSA request policy */
         private string tsaReqPolicy = null;
-
+		
+        /** Implements webproxy needed when behind a proxy */
+        private WebProxy webProxy = null;
         /**
         * Creates an instance of a TSAClient that will use BouncyCastle.
         * @param url String - Time Stamp Authority URL (i.e. "http://tsatest1.digistamp.com/TSA")
         */
         public TSAClientBouncyCastle(String url) 
             : this(url, null, null, DEFAULTTOKENSIZE, DEFAULTHASHALGORITHM) {
-        }
+			}
         
+        /**
+        * Creates an instance of a TSAClient that will use BouncyCastle.
+        * @param url String - Time Stamp Authority URL (i.e. "http://tsatest1.digistamp.com/TSA")
+        * @param webproxy WebProxy - WebProxy
+        */
+        public TSAClientBouncyCastle(String url, WebProxy webproxy)
+                : this(url, null, null, DEFAULTTOKENSIZE, DEFAULTHASHALGORITHM, webproxy) { }
+				
         /**
         * Creates an instance of a TSAClient that will use BouncyCastle.
         * @param url String - Time Stamp Authority URL (i.e. "http://tsatest1.digistamp.com/TSA")
@@ -112,8 +122,19 @@ namespace iTextSharp.text.pdf.security {
         */
         public TSAClientBouncyCastle(String url, String username, String password) 
             : this(url, username, password, DEFAULTTOKENSIZE, DEFAULTHASHALGORITHM) {
-        }
-        
+			}
+
+        /**
+        * Creates an instance of a TSAClient that will use BouncyCastle.
+        * @param url String - Time Stamp Authority URL (i.e. "http://tsatest1.digistamp.com/TSA")
+        * @param username String - user(account) name
+        * @param password String - password
+        * @param webproxy WebProxy - WebProxy
+        */
+        public TSAClientBouncyCastle(String url, String username, String password, WebProxy webproxy)
+            : this(url, username, password, DEFAULTTOKENSIZE, DEFAULTHASHALGORITHM, webproxy) {
+			}
+			
         /**
         * Constructor.
         * Note the token size estimate is updated by each call, as the token
@@ -132,6 +153,33 @@ namespace iTextSharp.text.pdf.security {
             this.digestAlgorithm = digestAlgorithm;
         }
         
+        /**
+        * Constructor.
+        * Note the token size estimate is updated by each call, as the token
+        * size is not likely to change (as long as we call the same TSA using
+        * the same imprint length).
+        * @param url String - Time Stamp Authority URL (i.e. "http://tsatest1.digistamp.com/TSA")
+        * @param username String - user(account) name
+        * @param password String - password
+        * @param tokSzEstimate int - estimated size of received time stamp token (DER encoded)
+        * @param webproxy WebProxy - WebProxy
+        */
+        public TSAClientBouncyCastle(String url, String username, String password, int tokSzEstimate, String digestAlgorithm, WebProxy webproxy)
+        {
+            this.tsaURL = url;
+            this.tsaUsername = username;
+            this.tsaPassword = password;
+            this.tokenSizeEstimate = tokSzEstimate;
+            this.digestAlgorithm = digestAlgorithm;
+            this.webProxy = webproxy;
+        }
+		
+        /**
+         * Sets the webproxy needed when working behing proxy.
+         * @param proxy WebProxy
+         */
+        public void SetProxy(WebProxy proxy) => this.webProxy = proxy;
+		
         /**
          * @param tsaInfo the tsaInfo to set
          */
@@ -226,6 +274,9 @@ namespace iTextSharp.text.pdf.security {
             con.ContentLength = requestBytes.Length;
             con.ContentType = "application/timestamp-query";
             con.Method = "POST";
+            //Added support for webproxy
+            if (this.webProxy != null) con.Proxy = this.webProxy;
+			
             if ((tsaUsername != null) && !tsaUsername.Equals("") ) {
                 string authInfo = tsaUsername + ":" + tsaPassword;
                 authInfo = Convert.ToBase64String(Encoding.Default.GetBytes(authInfo), Base64FormattingOptions.None);
