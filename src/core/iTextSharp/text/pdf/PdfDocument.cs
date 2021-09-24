@@ -85,8 +85,13 @@ namespace iTextSharp.text.pdf {
             * Construct a <CODE>PdfInfo</CODE>-object.
             */
             
-            internal PdfInfo() {
-                AddProducer();
+            internal PdfInfo() : this(Version.GetInstance().GetVersion) {
+                
+            }
+
+            internal PdfInfo(string producer)
+            {
+                AddProducer(producer);
                 AddCreationDate();
             }
             
@@ -158,9 +163,9 @@ namespace iTextSharp.text.pdf {
             * Adds the name of the producer to the document.
             */
             
-            internal void AddProducer() {
+            internal void AddProducer(string producer) {
                 // This line may only be changed by Bruno Lowagie or Paulo Soares
-                Put(PdfName.PRODUCER, new PdfString(Version.GetInstance().GetVersion));
+                Put(PdfName.PRODUCER, new PdfString(producer));
                 // Do not edit the line above!
             }
             
@@ -268,7 +273,12 @@ namespace iTextSharp.text.pdf {
         * Constructs a new PDF document.
         * @throws DocumentException on error
         */
-        public PdfDocument() {
+        public PdfDocument() : this(Version.GetInstance().GetVersion) {
+            
+        }
+        
+        public PdfDocument(string producer) {
+            info = new PdfInfo(producer);
             AddProducer();
             AddCreationDate();
         }
@@ -425,7 +435,6 @@ namespace iTextSharp.text.pdf {
                         break;
                     case Element.PRODUCER:
                         // you can not change the name of the producer
-                        info.AddProducer();
                         break;
                     case Element.CREATIONDATE:
                         // you can not set the creation date, only reset it
@@ -1908,8 +1917,8 @@ namespace iTextSharp.text.pdf {
         
     //  Info Dictionary and Catalog
 
-        /** some meta information about the Document. */
-        protected internal PdfInfo info = new PdfInfo();
+    /** some meta information about the Document. */
+    protected internal PdfInfo info;
 
         /**
         * Gets the <CODE>PdfInfo</CODE>-object.

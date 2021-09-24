@@ -623,10 +623,14 @@ namespace iTextSharp.text.pdf {
         *
         * @throws   DocumentException on error
         */
-        
         public static PdfWriter GetInstance(Document document, Stream os)
         {
-            PdfDocument pdf = new PdfDocument();
+            return GetInstance(document, os, Version.GetInstance().GetVersion);
+        }
+        
+        private static PdfWriter GetInstance(Document document, Stream os, string producer)
+        {
+            PdfDocument pdf = new PdfDocument(producer);
             document.AddDocListener(pdf);
             PdfWriter writer = new PdfWriter(pdf, os);
             pdf.AddWriter(writer);
@@ -1261,7 +1265,7 @@ namespace iTextSharp.text.pdf {
                     }
                     catalog.Put(PdfName.METADATA, body.Add(xmp).IndirectReference);
                 }
-                Info.Put(PdfName.PRODUCER, new PdfString(Version.GetInstance().GetVersion));
+                Info.Put(PdfName.PRODUCER, pdf.info.GetAsString(PdfName.PRODUCER));
                 // [C10] make pdfx conformant
                 if (IsPdfX()) {
                     CompleteInfoDictionary(Info);
