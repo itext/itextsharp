@@ -2,7 +2,7 @@
 <package xmlns="http://schemas.microsoft.com/packaging/2011/08/nuspec.xsd">
   <metadata>
     <id>xfa-itextsharp.xmlworker</id>
-    <version>3.0.0-SNAPSHOT</version>
+    <version>3.0.0</version>
     <title>xfa iTextSharp XML Worker</title>
     <authors>iText Software</authors>
     <owners>Bruno Lowagie,Paulo Soares,et al.</owners>
@@ -32,7 +32,7 @@ XMLWorker is an extra component for iTextSharp. The first XML to PDF implementat
     <language>en-US</language>
     <tags>itext itextsharp c# csharp xml worker pdf html xhtml css</tags>
     <dependencies>
-      <dependency id="Xfa-iTextSharp" version="3.0.0-SNAPSHOT" />
+      <dependency id="Xfa-iTextSharp" version="3.0.0" />
     </dependencies>
   </metadata>
 
