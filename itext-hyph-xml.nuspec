@@ -1,9 +1,9 @@
 ﻿<?xml version="1.0" encoding="utf-8"?>
 <package xmlns="http://schemas.microsoft.com/packaging/2011/08/nuspec.xsd">
   <metadata>
-    <id>itext-hyph-xml</id>
+    <id>itext-hyph-xml.portable</id>
     <version>2.0.0</version>
-    <title>iTextSharp.xtra</title>
+    <title>iTextSharp.xtra Portable</title>
     <authors>iText Software</authors>
     <owners>Bruno Lowagie,Paulo Soares,et al.</owners>
     <licenseUrl>https://www.gnu.org/licenses/agpl.html</licenseUrl>

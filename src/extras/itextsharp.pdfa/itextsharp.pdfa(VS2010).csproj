@@ -1,5 +1,4 @@
-﻿<?xml version="1.0" encoding="utf-8"?>
-<Project DefaultTargets="Build" xmlns="http://schemas.microsoft.com/developer/msbuild/2003" ToolsVersion="4.0">
+﻿<Project Sdk="Microsoft.NET.Sdk">
   <PropertyGroup>
     <Configuration Condition=" '$(Configuration)' == '' ">Debug</Configuration>
     <Platform Condition=" '$(Platform)' == '' ">AnyCPU</Platform>
@@ -12,7 +11,7 @@
     <AssemblyName>itextsharp.pdfa</AssemblyName>
     <SignAssembly>true</SignAssembly>
     <AssemblyOriginatorKeyFile>itextsharp.snk</AssemblyOriginatorKeyFile>
-    <TargetFrameworkVersion>v2.0</TargetFrameworkVersion>
+    <TargetFramework>netstandard2.0</TargetFramework>
     <FileUpgradeFlags>
     </FileUpgradeFlags>
     <UpgradeBackupLocation>
@@ -33,6 +32,35 @@
     <IsWebBootstrapper>false</IsWebBootstrapper>
     <UseApplicationTrust>false</UseApplicationTrust>
     <BootstrapperEnabled>true</BootstrapperEnabled>
+    <GeneratePackageOnBuild>true</GeneratePackageOnBuild>
+    <PackageId>Portable.$(AssemblyName)</PackageId>
+    <Description>
+		PLEASE NOTE: iTextSharp is EOL, and has been replaced by iText 7. Only security fixes will be added
+
+		We HIGHLY recommend customers use iText 7 for new projects, and to consider moving existing projects from iTextSharp to iText 7 to benefit from the many improvements such as:
+		- HTML to PDF (PDF/A) conversion
+		- PDF Redaction
+		- SVG support
+		- Better language support (Indic, Thai, Khmer, Arabic, Hebrew)
+		- PDF Debugging for your IDE
+		- Data Extraction
+		- Better continued support and bugfixes
+		- More modular, extensible handling of your document workflow
+		- Extra practical add-ons
+		- Encryption, hashing and digital signatures
+
+		The iTextSharp.pdfa adds PDF/A-related functionality for iTextSharp. The same funcionality is present in pdfa module of iText 7 Community: https://www.nuget.org/packages/itext7/
+	</Description>
+    <Company>iText Group NV</Company>
+    <Product>iTextSharp.pdfa</Product>
+    <Copyright>Copyright (c) 1998-2020 iText Group NV</Copyright>
+    <Version>5.5.13.3</Version>
+    <Authors>iText Software</Authors>
+    <PackageTags>itext itextsharp c# csharp .net pdf pdfa</PackageTags>
+    <PackageProjectUrl>https://itextpdf.com/</PackageProjectUrl>
+    <IconUrl>https://itextpdf.com/sites/default/files/ITSC-avatar.png</IconUrl>
+    <LicenseUrl>https://www.gnu.org/licenses/agpl.html</LicenseUrl>
+    <RequireLicenseAcceptance>true</RequireLicenseAcceptance>
   </PropertyGroup>
   <PropertyGroup Condition=" '$(Configuration)|$(Platform)' == 'Debug|AnyCPU' ">
     <DebugSymbols>true</DebugSymbols>
@@ -73,64 +101,12 @@
     <CodeAnalysisRuleSet>AllRules.ruleset</CodeAnalysisRuleSet>
   </PropertyGroup>
   <ItemGroup>
-    <Reference Include="System" />
-    <Reference Include="System.Xml" />
-  </ItemGroup>
-  <ItemGroup>
-    <Compile Include="iTextSharp\text\pdf\AFRelationshipValue.cs" />
-    <Compile Include="iTextSharp\text\pdf\interfaces\IPdfAConformance.cs" />
-    <Compile Include="iTextSharp\text\pdf\intern\PdfA1Checker.cs" />
-    <Compile Include="iTextSharp\text\pdf\intern\PdfA2Checker.cs" />
-    <Compile Include="iTextSharp\text\pdf\intern\PdfA3Checker.cs" />
-    <Compile Include="iTextSharp\text\pdf\intern\PdfAChecker.cs" />
-    <Compile Include="iTextSharp\text\pdf\intern\PdfAConformanceImp.cs" />
-    <Compile Include="iTextSharp\text\pdf\intern\ZugferdChecker.cs" />
-    <Compile Include="iTextSharp\text\pdf\PdfAConformanceException.cs" />
-    <Compile Include="iTextSharp\text\pdf\PdfAConformanceLevel.cs" />
-    <Compile Include="iTextSharp\text\pdf\PdfACopy.cs" />
-    <Compile Include="iTextSharp\text\pdf\PdfARadioCheckField.cs" />
-    <Compile Include="iTextSharp\text\pdf\PdfASmartCopy.cs" />
-    <Compile Include="iTextSharp\text\pdf\PdfAStamper.cs" />
-    <Compile Include="iTextSharp\text\pdf\PdfAStamperImp.cs" />
-    <Compile Include="iTextSharp\text\pdf\PdfATtfUnicodeWriter.cs" />
-    <Compile Include="iTextSharp\text\pdf\PdfAWriter.cs" />
-    <Compile Include="iTextSharp\text\xml\xmp\PdfAProperties.cs" />
-    <Compile Include="iTextSharp\text\xml\xmp\PdfASchema.cs" />
-    <Compile Include="iTextSharp\text\xml\xmp\PdfAXmpWriter.cs" />
-    <Compile Include="Properties\AssemblyInfo.cs" />
-  </ItemGroup>
-  <ItemGroup>
-    <ProjectReference Include="..\..\core\itextsharp%28VS2010%29.csproj">
-      <Project>{84C4FDD9-3ED7-453B-B9DA-B3ED52CB071C}</Project>
-      <Name>itextsharp%28VS2010%29</Name>
-    </ProjectReference>
-  </ItemGroup>
-  <ItemGroup>
     <None Include="itextsharp.snk" />
   </ItemGroup>
   <ItemGroup>
-    <BootstrapperPackage Include="Microsoft.Net.Client.3.5">
-      <Visible>False</Visible>
-      <ProductName>.NET Framework 3.5 SP1 Client Profile</ProductName>
-      <Install>false</Install>
-    </BootstrapperPackage>
-    <BootstrapperPackage Include="Microsoft.Net.Framework.3.5.SP1">
-      <Visible>False</Visible>
-      <ProductName>.NET Framework 3.5 SP1</ProductName>
-      <Install>true</Install>
-    </BootstrapperPackage>
-    <BootstrapperPackage Include="Microsoft.Windows.Installer.3.1">
-      <Visible>False</Visible>
-      <ProductName>Windows Installer 3.1</ProductName>
-      <Install>true</Install>
-    </BootstrapperPackage>
+    <Folder Include="Properties\" />
   </ItemGroup>
-  <Import Project="$(MSBuildBinPath)\Microsoft.CSharp.targets" />
-  <!-- To modify your build process, add your task inside one of the targets below and uncomment it. 
-       Other similar extension points exist, see Microsoft.Common.targets.
-  <Target Name="BeforeBuild">
-  </Target>
-  <Target Name="AfterBuild">
-  </Target>
-  -->
+  <ItemGroup>
+    <ProjectReference Include="..\..\core\itextsharp(VS2010).csproj" />
+  </ItemGroup>
 </Project>

@@ -1,5 +1,4 @@
-﻿<?xml version="1.0" encoding="utf-8"?>
-<Project DefaultTargets="Build" xmlns="http://schemas.microsoft.com/developer/msbuild/2003" ToolsVersion="4.0">
+﻿<Project Sdk="Microsoft.NET.Sdk">
   <PropertyGroup>
     <Configuration Condition=" '$(Configuration)' == '' ">Debug</Configuration>
     <Platform Condition=" '$(Platform)' == '' ">AnyCPU</Platform>
@@ -10,12 +9,16 @@
     <AppDesignerFolder>Properties</AppDesignerFolder>
     <RootNamespace>itextsharp.tests</RootNamespace>
     <AssemblyName>itextsharp.tests</AssemblyName>
-    <TargetFrameworkVersion>v2.0</TargetFrameworkVersion>
+    <TargetFramework>netstandard2.0</TargetFramework>
     <FileUpgradeFlags>
     </FileUpgradeFlags>
     <UpgradeBackupLocation>
     </UpgradeBackupLocation>
     <OldToolsVersion>2.0</OldToolsVersion>
+    <PackageId>$(AssemblyName).portable</PackageId>
+    <Company>iText Group NV</Company>
+    <Copyright>Copyright (c) 1998-2020 iText Group NV</Copyright>
+    <Version>5.5.13.3</Version>
   </PropertyGroup>
   <PropertyGroup Condition=" '$(Configuration)|$(Platform)' == 'Debug|AnyCPU' ">
     <DebugSymbols>true</DebugSymbols>
@@ -62,137 +65,17 @@
     <CodeAnalysisRuleSet>AllRules.ruleset</CodeAnalysisRuleSet>
   </PropertyGroup>
   <ItemGroup>
-    <Reference Include="nunit.framework, Version=2.6.2.12296, Culture=neutral, PublicKeyToken=96d09a1eb7f44a77, processorArchitecture=MSIL">
-      <HintPath>$(SolutionDir)\packages\NUnit.2.6.2\lib\nunit.framework.dll</HintPath>
-    </Reference>
-    <Reference Include="BouncyCastle.Crypto, Version=1.8.9.0, Culture=neutral, PublicKeyToken=0e99375e54769942">
-      <HintPath>$(SolutionDir)\packages\BouncyCastle.1.8.9\lib\BouncyCastle.Crypto.dll</HintPath>
-      <Private>True</Private>
-    </Reference>
-    <Reference Include="System" />
-    <Reference Include="System.Security" />
-    <Reference Include="System.Xml" />
-    <Reference Include="XmlDiffPatch, Version=1.0.8.28, Culture=neutral, PublicKeyToken=b03f5f7f11d50a3a">
-      <HintPath>lib\XmlDiffPatch.dll</HintPath>
-    </Reference>
-  </ItemGroup>
-  <ItemGroup Condition=" '$(Configuration)|$(Platform)' == 'Debug|AnyCPU' Or '$(Configuration)|$(Platform)' == 'Release|AnyCPU' ">
-    <Reference Include="System.Drawing" />
+    <Compile Remove="lib\**" />
+    <EmbeddedResource Remove="lib\**" />
+    <None Remove="lib\**" />
   </ItemGroup>
   <ItemGroup>
-    <Compile Include="GlobalSetUp.cs" />
-    <Compile Include="iTextSharp\testutils\CompareToolTest.cs" />
-    <Compile Include="iTextSharp\testutils\TestResourceUtils.cs" />
-    <Compile Include="iTextSharp\text\ChunkTest.cs" />
-    <Compile Include="iTextSharp\text\error_messages\ErrorMessageExistenceTest.cs" />
-    <Compile Include="iTextSharp\text\error_messages\ErrorMessageTest.cs" />
-    <Compile Include="iTextSharp\text\error_messages\MessageLocalizationTest.cs" />
-    <Compile Include="iTextSharp\text\html\WebColorTest.cs" />
-    <Compile Include="iTextSharp\text\io\ArrayRandomAccessSourceTest.cs" />
-    <Compile Include="iTextSharp\text\io\GetBufferedRandomAccessSourceTest.cs" />
-    <Compile Include="iTextSharp\text\io\GroupedRandomAccessSourceTest.cs" />
-    <Compile Include="iTextSharp\text\io\WindowRandomAccessSourceTest.cs" />
-    <Compile Include="iTextSharp\text\pdf\AcroFieldsTest.cs" />
-    <Compile Include="iTextSharp\text\pdf\BarcodeMacroPDF417Test.cs" />
-    <Compile Include="iTextSharp\text\pdf\BarcodeUnicodeTest.cs" />
-    <Compile Include="iTextSharp\text\pdf\BarcodeDatamatrixTest.cs" />
-    <Compile Include="iTextSharp\text\pdf\BookmarksTest.cs" />
-    <Compile Include="iTextSharp\text\pdf\CompressionTest.cs" />
-	<Compile Include="iTextSharp\text\pdf\DefaultSplitCharacterProfilingTest.cs" />
-    <Compile Include="iTextSharp\text\pdf\FreeTextFlatteningTest.cs" />
-    <Compile Include="iTextSharp\text\pdf\PdfDictionaryTest.cs" />
-    <Compile Include="iTextSharp\text\pdf\PdfEncryptionTest.cs" />
-    <Compile Include="iTextSharp\text\pdf\CMapAwareDocumentFontTest.cs" />
-    <Compile Include="iTextSharp\text\pdf\cs\DeviceNColorSpaceTest.cs" />
-    <Compile Include="iTextSharp\text\pdf\cs\LabColorSpaceTest.cs" />
-    <Compile Include="iTextSharp\text\pdf\DocumentFontTest.cs" />
-    <Compile Include="iTextSharp\text\pdf\DocumentLayoutTest.cs" />
-    <Compile Include="iTextSharp\text\pdf\FlatteningTest.cs" />
-    <Compile Include="iTextSharp\text\pdf\fonts\cmaps\CMapParserExTest.cs" />
-    <Compile Include="iTextSharp\text\pdf\fonts\cmaps\CMapTest.cs" />
-    <Compile Include="iTextSharp\text\pdf\fonts\FontEmbeddingTest.cs" />
-    <Compile Include="iTextSharp\text\pdf\fonts\FontFamilyTest.cs" />
-    <Compile Include="iTextSharp\text\pdf\fonts\SymbolTest.cs" />
-    <Compile Include="iTextSharp\text\pdf\fonts\EncodingTest.cs" />
-    <Compile Include="iTextSharp\text\pdf\IndicLigatures.cs" />
-    <Compile Include="iTextSharp\text\pdf\mc\AcroFieldsFlattenTest.cs" />
-    <Compile Include="iTextSharp\text\pdf\MetaDataTest.cs" />
-    <Compile Include="iTextSharp\text\pdf\MultithreadedTtfTest.cs" />
-    <Compile Include="iTextSharp\text\pdf\NestedListInColumnTextTest.cs" />
-    <Compile Include="iTextSharp\text\pdf\ocg\OcgRemovalTest.cs" />
-    <Compile Include="iTextSharp\text\pdf\PageEventTest.cs" />
-    <Compile Include="iTextSharp\text\pdf\parser\FilteredTextRenderListenerTest.cs" />
-    <Compile Include="iTextSharp\text\pdf\parser\GlyphTextRenderListenerTest.cs" />
-    <Compile Include="iTextSharp\text\pdf\parser\HighlightItemsTest.cs" />
-    <Compile Include="iTextSharp\text\pdf\parser\LocationTextExtractionStrategyTest.cs" />
-    <Compile Include="iTextSharp\text\pdf\parser\MatrixTest.cs" />
-    <Compile Include="iTextSharp\text\pdf\parser\MultiFilteredRenderListenerTest.cs" />
-    <Compile Include="iTextSharp\text\pdf\parser\PdfContentStreamProcessorTest.cs" />
-    <Compile Include="iTextSharp\text\pdf\parser\PdfImageObjectTest.cs" />
-    <Compile Include="iTextSharp\text\pdf\parser\PdfTextExtractorEncodingsTest.cs" />
-    <Compile Include="iTextSharp\text\pdf\parser\PdfTextExtractorUnicodeIdentityTest.cs" />
-    <Compile Include="iTextSharp\text\pdf\parser\SimpleTextExtractionStrategyTest.cs" />
-    <Compile Include="iTextSharp\text\pdf\parser\TextMarginFinderTest.cs" />
-    <Compile Include="iTextSharp\text\pdf\parser\TextRenderInfoTest.cs" />
-    <Compile Include="iTextSharp\text\pdf\parser\VectorTest.cs" />
-    <Compile Include="iTextSharp\text\pdf\pdfcleanup\PdfCleanUpProcessorTest.cs" />
-    <Compile Include="iTextSharp\text\pdf\PdfCopyTest.cs" />
-    <Compile Include="iTextSharp\text\pdf\PdfImageTest.cs" />
-    <Compile Include="iTextSharp\text\pdf\PdfReaderSelectPagesTest.cs" />
-    <Compile Include="iTextSharp\text\pdf\PdfReaderTest.cs" />
-    <Compile Include="iTextSharp\text\pdf\PRTokeniserTest.cs" />
-    <Compile Include="iTextSharp\text\pdf\RandomAccessFileOrArrayTest.cs" />
-    <Compile Include="iTextSharp\text\pdf\StringUtilsTest.cs" />
-    <Compile Include="iTextSharp\text\pdf\table\KeepRowsTogetherTest.cs" />
-    <Compile Include="iTextSharp\text\pdf\table\KeepTogetherTest.cs" />
-    <Compile Include="iTextSharp\text\pdf\table\LargeTableTest.cs" />
-    <Compile Include="iTextSharp\text\pdf\PdfStamperTest.cs" />
-    <Compile Include="iTextSharp\text\pdf\NamedDestinationsTest.cs" />
-    <Compile Include="iTextSharp\text\pdf\table\NestedTablesTest.cs" />
-    <Compile Include="iTextSharp\text\pdf\table\RowspanTest.cs" />
-    <Compile Include="iTextSharp\text\pdf\table\ColorsInTaggedDocumentsTest.cs" />
-    <Compile Include="iTextSharp\text\pdf\table\SplitTableTest.cs" />
-    <Compile Include="iTextSharp\text\pdf\TaggedPdfOnEndPageTest.cs" />
-    <Compile Include="iTextSharp\text\pdf\TaggedPdfPageEventsTest.cs" />
-    <Compile Include="iTextSharp\text\pdf\TestPdfCopyAndStamp.cs" />
-    <Compile Include="iTextSharp\text\pdf\TextExpansionTest.cs" />
-    <Compile Include="iTextSharp\text\pdf\TextFieldTest.cs" />
-    <Compile Include="iTextSharp\text\pdf\ToUnicodeNonBreakableSpacesTest.cs" />
-    <Compile Include="iTextSharp\text\pdf\UnbalancedOperatorsTest.cs" />
-    <Compile Include="iTextSharp\text\pdf\VerticalPositionTest.cs" />
-    <Compile Include="iTextSharp\text\RemoteGifImageTest.cs" />
-    <Compile Include="iTextSharp\text\signature\XadesTest.cs" />
-    <Compile Include="iTextSharp\text\xml\simpleparser\SimpleXMLParserTest.cs" />
-    <Compile Include="iTextSharp\text\xml\xmp\impl\XMPMetaParserTest.cs" />
-    <Compile Include="iTextSharp\text\xml\xmp\XmpWriterTest.cs" />
-    <Compile Include="Properties\AssemblyInfo.cs" />
-    <Compile Include="iTextSharp\text\pdf\TaggedPdfCopyTest.cs" />
-    <Compile Include="iTextSharp\text\pdf\TaggedPdfTest.cs" />
-    <Compile Include="iTextSharp\text\signature\XmlDSigKSTest.cs" />
-    <Compile Include="iTextSharp\text\signature\XmlDSigRsaTest.cs" />
-    <Compile Include="iTextSharp\text\signature\XmlDSigTest.cs" />
+    <PackageReference Include="NUnit" Version="2.6.2" />
+    <PackageReference Include="Portable.BouncyCastle" Version="1.8.6.0" />
+    <PackageReference Include="XMLDiffPatch" Version="1.0.8.28" />
   </ItemGroup>
   <ItemGroup>
     <None Include="itextsharp.snk" />
-    <None Include="lib\XmlDiffPatch.dll">
-    </None>
-    <Content Include="resources\testutils\CompareToolTest\cmp_EqualPdfsTest.pdf" />
-    <Content Include="resources\testutils\CompareToolTest\cmp_EqualPdfsTest.xml" />
-    <Content Include="resources\testutils\CompareToolTest\cmp_report01.xml" />
-    <Content Include="resources\testutils\CompareToolTest\cmp_report02.xml" />
-    <Content Include="resources\testutils\CompareToolTest\cmp_report03.xml" />
-    <Content Include="resources\testutils\CompareToolTest\cmp_screenAnnotation.pdf" />
-    <Content Include="resources\testutils\CompareToolTest\cmp_simple_pdf.pdf" />
-    <Content Include="resources\testutils\CompareToolTest\cmp_tagged_pdf.pdf" />
-    <Content Include="resources\testutils\CompareToolTest\cmp_TestPdf.pdf" />
-    <Content Include="resources\testutils\CompareToolTest\cmp_TestPdf.xml" />
-    <Content Include="resources\testutils\CompareToolTest\EqualPdfsTest.pdf" />
-    <Content Include="resources\testutils\CompareToolTest\cmp_report01.xml" />
-    <Content Include="resources\testutils\CompareToolTest\screenAnnotation.pdf" />
-    <Content Include="resources\testutils\CompareToolTest\simple_pdf.pdf" />
-    <Content Include="resources\testutils\CompareToolTest\tagged_pdf.pdf" />
-    <Content Include="resources\testutils\CompareToolTest\TestPdf.pdf" />
-	<Content Include="resources\text\pdf\DefaultSplitCharacterProfilingTest\profilingText.txt" />
     <Content Include="resources\text\xmp\impl\xxe-data.txt" />
     <Content Include="resources\text\ChunkTest\logo.gif" />
     <Content Include="resources\text\pdf\AcroFieldsTest\barcode.jpg" />
@@ -243,7 +126,10 @@
     <Content Include="resources\text\pdf\TaggedPdfTest\xml\test7.xml" />
     <Content Include="resources\text\pdf\TaggedPdfTest\xml\test8.xml" />
     <Content Include="resources\text\pdf\TaggedPdfTest\xml\test9.xml" />
-    <None Include="packages.config" />
+    <None Include="resources\testutils\CompareToolTest\cmp_simple_pdf.pdf" />
+    <None Include="resources\testutils\CompareToolTest\cmp_tagged_pdf.pdf" />
+    <None Include="resources\testutils\CompareToolTest\simple_pdf.pdf" />
+    <None Include="resources\testutils\CompareToolTest\tagged_pdf.pdf" />
     <None Include="resources\text\pdf\AcroFieldsTest\acroform.pdf" />
     <None Include="resources\text\pdf\AcroFieldsTest\choice_field_order.pdf" />
     <None Include="resources\text\pdf\AcroFieldsTest\choice_field_order_export.pdf" />
@@ -467,12 +353,4 @@
       <Name>itextsharp.xtra%28VS2010%29</Name>
     </ProjectReference>
   </ItemGroup>
-  <Import Project="$(MSBuildBinPath)\Microsoft.CSharp.targets" />
-  <!-- To modify your build process, add your task inside one of the targets below and uncomment it.
-       Other similar extension points exist, see Microsoft.Common.targets.
-  <Target Name="BeforeBuild">
-  </Target>
-  <Target Name="AfterBuild">
-  </Target>
-  -->
 </Project>
