@@ -45,6 +45,8 @@ using System.Collections.Generic;
 using System.Diagnostics;
 using System.IO;
 using System.Text;
+using System.Text.RegularExpressions;
+using System.Threading;
 using System.util;
 using System.Xml;
 using iTextSharp.text;
@@ -333,7 +335,14 @@ public class CompareTool {
 
     private String gsExec;
     private String compareExec;
-    private const String gsParams = " -dNOPAUSE -dBATCH -sDEVICE=png16m -r150 -sOutputFile=<outputfile> <inputfile>";
+    private const String renderedImageExtension = "png";
+    private const String pageNumberPattern = "%03d";
+    private readonly Regex pageListRegexp = new Regex("^(\\d+,)*\\d+$");
+    private const String tempFilePrefix = "itext_gs_io_temp";
+
+    private const String gsParams = " -dNOPAUSE -dBATCH -dSAFER -sDEVICE=" +
+                                    renderedImageExtension + "16m -r150 -sOutputFile=<outputfile> <inputfile>";
+
     private const String compareParams = " \"<image1>\" \"<image2>\" \"<difference>\"";
 
     private const String cannotOpenTarGetDirectory = "Cannot open tarGet directory for <filename>.";
@@ -435,49 +444,23 @@ public class CompareTool {
 
                 Init(outPath + ignoredAreasPrefix + outPdfName, outPath + ignoredAreasPrefix + cmpPdfName);
             }
+            String cmpPdfTempCopy = null;
+            String replacementImagesDirectory = null;
+            String outPdfTempCopy = null;
 
-            String gsParams = CompareTool.gsParams.Replace("<outputfile>", outPath + cmpImage).Replace("<inputfile>", cmpPdf);
-            Process p = new Process();
-            p.StartInfo.FileName = @gsExec;
-            p.StartInfo.Arguments = @gsParams;
-            p.StartInfo.UseShellExecute = false;
-            p.StartInfo.RedirectStandardError = true;
-            p.StartInfo.RedirectStandardOutput = true;
-            p.StartInfo.CreateNoWindow = true;
-            p.Start();
-
+            replacementImagesDirectory = CompareToolUtil.CreateTempDirectory(tempFilePrefix);
+            cmpPdfTempCopy = CompareToolUtil.CreateTempCopy(cmpPdf, tempFilePrefix, null);
+            outPdfTempCopy = CompareToolUtil.CreateTempCopy(outPdf, tempFilePrefix, null);
+            int exitValue = RunGhostscriptAndGetExitCode(cmpPdfTempCopy, Path.Combine(replacementImagesDirectory,
+                "cmp_"+ tempFilePrefix + pageNumberPattern + "." + renderedImageExtension));
             String line;
-            while ((line = p.StandardOutput.ReadLine()) != null) {
-                Console.Out.WriteLine(line);
-            }
-            p.StandardOutput.Close();;
-            while ((line = p.StandardError.ReadLine()) != null) {
-                Console.Out.WriteLine(line);
-            }
-            p.StandardError.Close();
-            p.WaitForExit();
-            if ( p.ExitCode == 0 ) {
-                gsParams = CompareTool.gsParams.Replace("<outputfile>", outPath + outImage).Replace("<inputfile>", outPdf);
-                p = new Process();
-                p.StartInfo.FileName = @gsExec;
-                p.StartInfo.Arguments = @gsParams;
-                p.StartInfo.UseShellExecute = false;
-                p.StartInfo.RedirectStandardError = true;
-                p.StartInfo.RedirectStandardOutput = true;
-                p.StartInfo.CreateNoWindow = true;
-                p.Start();
-                while ((line = p.StandardOutput.ReadLine()) != null) {
-                    Console.Out.WriteLine(line);
-                }
-                p.StandardOutput.Close();;
-                while ((line = p.StandardError.ReadLine()) != null) {
-                    Console.Out.WriteLine(line);
-                }
-                p.StandardError.Close();
-                p.WaitForExit();
+           
+            if (exitValue == 0) {
+                exitValue = RunGhostscriptAndGetExitCode(outPdfTempCopy, Path.Combine(replacementImagesDirectory,
+                    tempFilePrefix + pageNumberPattern + "." + renderedImageExtension));
 
-                if (p.ExitCode == 0) {
-                    allImageFiles = tarGetDir.GetFileSystemInfos("*.png");
+                if (exitValue == 0) {
+                    allImageFiles = new DirectoryInfo(replacementImagesDirectory).GetFileSystemInfos("*.png");
                     imageFiles = Array.FindAll(allImageFiles, PngPredicate);
                     cmpImageFiles = Array.FindAll(allImageFiles, CmpPngPredicate);
                     bool bUnexpectedNumberOfPages = imageFiles.Length != cmpImageFiles.Length;
@@ -489,6 +472,12 @@ public class CompareTool {
                     Array.Sort(cmpImageFiles, new ImageNameComparator());
                     String differentPagesFail = null;
                     for (int i = 0; i < cnt; i++) {
+                        CompareToolUtil.Copy(imageFiles[i].FullName, System.IO.Path.Combine(
+                            tarGetDir.FullName, outPdfName + "-" + (i + 1) + "." + renderedImageExtension
+                        ).ToString());
+                        CompareToolUtil.Copy(cmpImageFiles[i].FullName, System.IO.Path.Combine(
+                            tarGetDir.FullName, "cmp_" + outPdfName + "-" + (i + 1) + "." + renderedImageExtension
+                        ).ToString());
                         if (equalPages != null && equalPages.Contains(i))
                             continue;
                         Console.Out.WriteLine("Comparing page " + (i + 1).ToString() + " (" + imageFiles[i].FullName + ")...");
@@ -498,14 +487,13 @@ public class CompareTool {
                         is1.Close();
                         is2.Close();
                         if (!cmpResult) {
-                            if (File.Exists(compareExec)) {
-                                String compareParams = CompareTool.compareParams.Replace("<image1>", imageFiles[i].FullName).Replace("<image2>", cmpImageFiles[i].FullName).Replace("<difference>", outPath + differenceImagePrefix + (i + 1).ToString() + ".png");
-                                p = new Process();
-                                p.StartInfo.FileName = @compareExec;
-                                p.StartInfo.Arguments = @compareParams;
-                                p.StartInfo.UseShellExecute = false;
-                                p.StartInfo.RedirectStandardError = true;
-                                p.StartInfo.CreateNoWindow = true;
+                            String imageMagickExePath = compareExec.Replace("compare", "");
+                            if (compareExec != null && File.Exists(imageMagickExePath)) {
+                                String compareParams = CompareTool.compareParams.Replace("<image1>", imageFiles[i].FullName).Replace("<image2>",
+                                    cmpImageFiles[i].FullName).Replace("<difference>", Path.Combine(replacementImagesDirectory, "diff" +
+                                    (i + 1) + "." + renderedImageExtension));
+                                Process p = new Process();
+                                CompareToolUtil.SetProcessStartInfo(p, compareExec, compareParams, null);
                                 p.Start();
 
                                 while ((line = p.StandardError.ReadLine()) != null) {
@@ -540,7 +528,22 @@ public class CompareTool {
                         } else {
                             Console.Out.WriteLine("done.");
                         }
+                            CompareToolUtil.RemoveFiles(
+                                new String[] {imageFiles[i].FullName, cmpImageFiles[i].FullName});
                     }
+                    for (int i = 0; i < allImageFiles.Length; i++)
+                    {
+                        String image = Path.Combine(
+                            tarGetDir.FullName, differenceImagePrefix + "-" + (i + 1) + "." + renderedImageExtension
+                        );
+                        if (File.Exists(image))
+                        {
+                            CompareToolUtil.Copy(allImageFiles[i].FullName, image);
+                            allImageFiles[i].Delete();
+                        }
+                        
+                    }
+                    CompareToolUtil.RemoveFiles(new String[] { replacementImagesDirectory, cmpPdfTempCopy });
                     if (differentPagesFail != null) {
                         return differentPagesFail;
                     } else {
@@ -560,6 +563,21 @@ public class CompareTool {
         return null;
     }
 
+    private int RunGhostscriptAndGetExitCode(String replacementPdf, String replacementImagesDirectory)
+    {
+        String gsParams = CompareTool.gsParams.Replace("<outputfile>", replacementImagesDirectory)
+            .Replace("<inputfile>", replacementPdf);
+        using (Process proc = new Process())
+        {
+            CompareToolUtil.SetProcessStartInfo(proc, gsExec, @gsParams, null);
+            proc.Start();
+            Console.WriteLine(CompareToolUtil.GetProcessOutput(proc));
+            proc.WaitForExit();
+
+            return proc.ExitCode;
+        }
+    }
+    
     virtual public String Compare(String outPdf, String cmpPdf, String outPath, String differenceImagePrefix, IDictionary<int, IList<Rectangle>> ignoredAreas) {
         Init(outPdf, cmpPdf);
         return Compare(outPath, differenceImagePrefix, ignoredAreas);
@@ -605,7 +623,7 @@ public class CompareTool {
         this.absoluteError = false;
         return this;
     }
-
+    
     public void SetXmlReportName(String reportName) {
         this.xmlReportName = reportName;
     }
@@ -1125,9 +1143,12 @@ public class CompareTool {
         outPdfName = Path.GetFileName(outPdf);
         cmpPdfName = Path.GetFileName(cmpPdf);
         //template for GhostScript and ImageMagic
-        outImage = outPdfName + "-%03d.png";
-        if (cmpPdfName.StartsWith("cmp_")) cmpImage = cmpPdfName + "-%03d.png";
-        else cmpImage = "cmp_" + cmpPdfName + "-%03d.png";
+        outImage = outPdfName + pageNumberPattern + "." + renderedImageExtension;
+        if (cmpPdfName.StartsWith("cmp_")) {
+            cmpImage = cmpPdfName + pageNumberPattern + "." + renderedImageExtension ;
+        } else {
+            cmpImage = "cmp_" + cmpPdfName + pageNumberPattern + "." + renderedImageExtension;
+        }
     }
 
     private bool CompareStreams(FileStream is1, FileStream is2) {
@@ -1179,8 +1200,6 @@ public class CompareTool {
 
         return message;
     }
-
-
 
     private bool LinksAreSame(PdfAnnotation.PdfImportedLink cmpLink, PdfAnnotation.PdfImportedLink outLink) {
         // Compare link boxes, page numbers the links refer to, and simple parameters (non-indirect, non-arrays, non-dictionaries)
@@ -1268,16 +1287,15 @@ public class CompareTool {
         String ap = pathname.Name;
         bool b1 = ap.EndsWith(".png");
         bool b2 = ap.Contains("cmp_");
-        return b1 && !b2 && ap.Contains(outPdfName);
+        return b1 && !b2;
     }
 
     private bool CmpPngPredicate(FileSystemInfo pathname) {
         String ap = pathname.Name;
         bool b1 = ap.EndsWith(".png");
         bool b2 = ap.Contains("cmp_");
-        return b1 && b2 && ap.Contains(cmpPdfName);
+        return b1 && b2;
     }
-
     class ImageNameComparator : IComparer<FileSystemInfo> {
         virtual public int Compare(FileSystemInfo f1, FileSystemInfo f2) {
             String f1Name = f1.FullName;

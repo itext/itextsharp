@@ -99,6 +99,65 @@ namespace itextsharp.tests.iTextSharp.testutils {
             Console.WriteLine(result);
         }
         
+        [Test]
+        public void compareTwoDifferentPdfs() {
+            CompareTool compareTool = new CompareTool();
+            compareTool.SetCompareByContentErrorsLimit(10);
+            compareTool.SetGenerateCompareByContentXmlReport(true);
+            compareTool.SetXmlReportName("TestPdf");
+            String outPdf = TEST_RESOURCES_PATH + "TestPdf.pdf";
+            String cmpPdf = TEST_RESOURCES_PATH + "cmp_TestPdf.pdf";
+            String result = compareTool.CompareByContent(outPdf, cmpPdf, OUT_FOLDER, "difference");
+            Assert.NotNull("CompareTool must return differences found between the files", result);
+            // Comparing the report to the reference one.
+            Assert.IsTrue(CompareXmls(TEST_RESOURCES_PATH + "cmp_TestPdf.xml", OUT_FOLDER + "TestPdf.xml"), "CompareTool report differs from the reference one");
+            Console.WriteLine(result);
+        }
+
+        [Test]
+        public void compareTwoEqualPdfs() {
+            CompareTool compareTool = new CompareTool();
+            compareTool.SetCompareByContentErrorsLimit(10);
+            compareTool.SetGenerateCompareByContentXmlReport(true);
+            compareTool.SetXmlReportName("EqualPdfsTest");
+            String outPdf = TEST_RESOURCES_PATH + "EqualPdfsTest.pdf";
+            String cmpPdf = TEST_RESOURCES_PATH + "cmp_EqualPdfsTest.pdf";
+            String result = compareTool.CompareByContent(outPdf, cmpPdf, OUT_FOLDER, "difference");
+            Assert.NotNull("CompareTool must return differences found between the files", result);
+            // Comparing the report to the reference one.
+            Assert.IsTrue(CompareXmls(TEST_RESOURCES_PATH + "cmp_EqualPdfsTest.xml", OUT_FOLDER + "EqualPdfsTest.xml"), "CompareTool report differs from the reference one");
+            Console.WriteLine(result);
+        }
+        
+        [Test]
+    public void comparePdfsWithOneDifferentPageTest() {
+        CompareTool compareTool = new CompareTool();
+        compareTool.SetCompareByContentErrorsLimit(10);
+        compareTool.SetGenerateCompareByContentXmlReport(true);
+        compareTool.SetXmlReportName("comparePdfsWithOneDifferentPage");
+        String outPdf = TEST_RESOURCES_PATH + "comparePdfsWithOneDifferentPage.pdf";
+        String cmpPdf = TEST_RESOURCES_PATH + "cmp_comparePdfsWithOneDifferentPage.pdf";
+        String result = compareTool.CompareByContent(outPdf, cmpPdf, OUT_FOLDER, "difference");
+        Assert.NotNull("CompareTool must return differences found between the files", result);
+        // Comparing the report to the reference one.
+        Assert.IsTrue(CompareXmls(TEST_RESOURCES_PATH + "cmp_comparePdfsWithOneDifferentPage.xml",
+            OUT_FOLDER + "comparePdfsWithOneDifferentPage.xml"), "CompareTool report differs from the reference one");
+    }
+    
+    [Test]
+    public void comparePdfsWithDifferentPagesExceptOneTest() {
+        CompareTool compareTool = new CompareTool();
+        compareTool.SetCompareByContentErrorsLimit(10);
+        compareTool.SetGenerateCompareByContentXmlReport(true);
+        compareTool.SetXmlReportName("comparePdfsWithDifferentPagesExceptOne");
+        String outPdf = TEST_RESOURCES_PATH + "comparePdfsWithDifferentPagesExceptOne.pdf";
+        String cmpPdf = TEST_RESOURCES_PATH + "cmp_comparePdfsWithDifferentPagesExceptOne.pdf";
+        String result = compareTool.CompareByContent(outPdf, cmpPdf, OUT_FOLDER, "difference");
+        Assert.NotNull("CompareTool must return differences found between the files", result);
+        // Comparing the report to the reference one.
+        Assert.IsTrue(CompareXmls(TEST_RESOURCES_PATH + "cmp_comparePdfsWithDifferentPagesExceptOne.xml",
+            OUT_FOLDER + "comparePdfsWithDifferentPagesExceptOne.xml"), "CompareTool report differs from the reference one");
+    }
 
         virtual protected bool CompareXmls(String xml1, String xml2) {
             XmlDiff xmldiff = new XmlDiff(XmlDiffOptions.None);
