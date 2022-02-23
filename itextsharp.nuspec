@@ -2,7 +2,7 @@
 <package xmlns="http://schemas.microsoft.com/packaging/2011/08/nuspec.xsd">
   <metadata>
     <id>iTextSharp</id>
-    <version>5.5.14-SNAPSHOT</version>
+    <version>5.5.13.3</version>
     <title>iTextSharp</title>
     <authors>iText Software</authors>
     <owners>Bruno Lowagie,Paulo Soares</owners>
