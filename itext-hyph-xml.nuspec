@@ -4,7 +4,7 @@
     <id>itext-hyph-xml</id>
     <version>2.0.0</version>
     <title>iTextSharp.xtra</title>
-    <authors>Bruno Lowagie, Paulo Soares, et al.</authors>
+    <authors>iText Software</authors>
     <owners>Bruno Lowagie,Paulo Soares,et al.</owners>
     <licenseUrl>https://www.gnu.org/licenses/agpl.html</licenseUrl>
     <projectUrl>https://itextpdf.com/</projectUrl>
@@ -27,7 +27,7 @@ We HIGHLY recommend customers use iText 7 for new projects, and to consider movi
 This DEPRECATED library adds extra functionality for iTextSharp. Please use iText 7 instead. iText 7 Community: https://www.nuget.org/packages/itext7/ and iText 7 pdfSweep addon: https://www.nuget.org/packages/itext7.pdfsweep/</description>
     <summary>Extra functionality for DEPRECACTED iTextSharp PDF generation library written entirely in C# for the .NET platform. Please use iText 7 instead.
 iText 7 Community: https://www.nuget.org/packages/itext7/</summary>
-    <copyright>Copyright (c) 1998-2020 iText Group NV</copyright>
+    <copyright>Copyright (c) 1998-2022 iText Group NV</copyright>
     <language>en-US</language>
     <tags>itext itextsharp c# csharp .net pdf</tags>
   </metadata>

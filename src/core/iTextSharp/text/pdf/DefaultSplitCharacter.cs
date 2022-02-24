@@ -1,6 +1,6 @@
 /*
     This file is part of the iText (R) project.
-    Copyright (c) 1998-2020 iText Group NV
+    Copyright (c) 1998-2022 iText Group NV
     Authors: iText Software.
 
     This program is free software; you can redistribute it and/or modify
@@ -64,6 +64,8 @@ namespace iTextSharp.text.pdf {
 
         protected char[] characters;
 
+        private const String DATE_PATTERN = "(\\d{2,4}-\\d{2}-\\d{2,4})";
+        
         /**
          * Default constructor, has no custom characters to check.
          */
@@ -149,13 +151,18 @@ namespace iTextSharp.text.pdf {
             return (char) ck[Math.Min(current, ck.Length - 1)].GetUnicodeEquivalent(cc[current]);
         }
 
-        internal char[] CheckDatePattern(string data) {
-            String regex = "(\\d{2,4}-\\d{2}-\\d{2,4})";
-            Match m = Regex.Match(data, regex);
-            if (m.Success) {
-                string tmpData = m.Groups[1].Value.Replace('-', '\u2011');
-                data = data.Replace(m.Groups[1].Value, tmpData);
+        internal char[] CheckDatePattern(string data)
+        {
+            if (data.Contains("-"))
+            {
+                Match m = Regex.Match(data, DATE_PATTERN);
+                if (m.Success)
+                {
+                    string tmpData = m.Groups[1].Value.Replace('-', '\u2011');
+                    data = data.Replace(m.Groups[1].Value, tmpData);
+                }
             }
+
             return data.ToCharArray();
         }
     }

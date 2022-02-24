@@ -2,9 +2,9 @@
 <package xmlns="http://schemas.microsoft.com/packaging/2011/08/nuspec.xsd">
   <metadata>
     <id>iTextSharp</id>
-    <version>5.5.13.2</version>
+    <version>5.5.13.3</version>
     <title>iTextSharp</title>
-    <authors>Bruno Lowagie, Paulo Soares, et al.</authors>
+    <authors>iText Software</authors>
     <owners>Bruno Lowagie,Paulo Soares</owners>
     <licenseUrl>https://www.gnu.org/licenses/agpl.html</licenseUrl>
     <projectUrl>https://itextpdf.com/</projectUrl>
@@ -35,11 +35,11 @@ iText 7 includes pdfDebug, the first debugging tool that gives you a clear over
 Several iText engineers are actively supporting the project on StackOverflow: https://stackoverflow.com/questions/tagged/itext</description>
     <summary>iTextSharp is a DEPRECATED library for PDF generation written entirely in C# for the .NET platform. Please use iText 7 instead.
 iText 7 Community: https://www.nuget.org/packages/itext7/</summary>
-    <copyright>Copyright (c) 1998-2020 iText Group NV</copyright>
+    <copyright>Copyright (c) 1998-2022 iText Group NV</copyright>
     <language>en-US</language>
     <tags>itext itextsharp c# .net csharp pdf</tags>
 	<dependencies>
-      <dependency id="BouncyCastle" version="1.8.6.1" />
+      <dependency id="BouncyCastle" version="1.8.9" />
     </dependencies>
   </metadata>
 
