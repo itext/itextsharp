@@ -126,7 +126,7 @@ namespace iTextSharp.tool.xml.html {
          */
         protected virtual ITagProcessor Load(String className) {
             try {
-                return (ITagProcessor) Activator.CreateInstance(null, className).Unwrap();
+                return (ITagProcessor) Activator.CreateInstance(Type.GetType(className));
             } catch (Exception e) {
                 throw new NoTagProcessorException(String.Format(LocaleMessages.GetInstance().GetMessage(LocaleMessages.NO_TAGPROCESSOR), className), e);
             }

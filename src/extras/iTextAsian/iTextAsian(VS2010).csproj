@@ -1,5 +1,4 @@
-﻿<?xml version="1.0" encoding="utf-8"?>
-<Project DefaultTargets="Build" xmlns="http://schemas.microsoft.com/developer/msbuild/2003" ToolsVersion="4.0">
+﻿<Project Sdk="Microsoft.NET.Sdk">
   <PropertyGroup>
     <ProjectType>Local</ProjectType>
     <ProductVersion>8.0.50727</ProductVersion>
@@ -27,7 +26,7 @@
     <UpgradeBackupLocation>
     </UpgradeBackupLocation>
     <SignAssembly>true</SignAssembly>
-    <TargetFrameworkVersion>v2.0</TargetFrameworkVersion>
+    <TargetFramework>netstandard2.0</TargetFramework>
     <OldToolsVersion>2.0</OldToolsVersion>
     <PublishUrl>publish\</PublishUrl>
     <Install>true</Install>
@@ -44,6 +43,33 @@
     <IsWebBootstrapper>false</IsWebBootstrapper>
     <UseApplicationTrust>false</UseApplicationTrust>
     <BootstrapperEnabled>true</BootstrapperEnabled>
+    <GeneratePackageOnBuild>true</GeneratePackageOnBuild>
+    <PackageId>Portable.$(AssemblyName)</PackageId>
+    <Description>
+		PLEASE NOTE: iTextSharp is EOL, and has been replaced by iText 7. Only security fixes will be added
+
+		We HIGHLY recommend customers use iText 7 for new projects, and to consider moving existing projects from iTextSharp to iText 7 to benefit from the many improvements such as:
+		- HTML to PDF (PDF/A) conversion
+		- PDF Redaction
+		- SVG support
+		- Better language support (Indic, Thai, Khmer, Arabic, Hebrew)
+		- PDF Debugging for your IDE
+		- Data Extraction
+		- Better continued support and bugfixes
+		- More modular, extensible handling of your document workflow
+		- Extra practical add-ons
+		- Encryption, hashing and digital signatures
+
+		This DEPRECATED library adds extra functionality for iTextSharp. Please use iText 7 instead. iText 7 Community: https://www.nuget.org/packages/itext7/ and iText 7 pdfSweep addon: https://www.nuget.org/packages/itext7.pdfsweep/</Description>
+    <Company>iText Group NV</Company>
+    <Copyright>Copyright (c) 1998-2020 iText Group NV</Copyright>
+    <Version>2.1</Version>
+    <Authors>iText Software</Authors>
+    <PackageTags>itext itextsharp c# csharp .net pdf</PackageTags>
+    <PackageProjectUrl>https://itextpdf.com/</PackageProjectUrl>
+    <IconUrl>https://itextpdf.com/sites/default/files/ITSC-avatar.png</IconUrl>
+    <LicenseUrl>https://www.gnu.org/licenses/agpl.html</LicenseUrl>
+    <RequireLicenseAcceptance>true</RequireLicenseAcceptance>
   </PropertyGroup>
   <PropertyGroup Condition=" '$(Configuration)|$(Platform)' == 'Debug|AnyCPU' ">
     <OutputPath>bin\Debug\</OutputPath>
@@ -128,15 +154,6 @@
     <ErrorReport>prompt</ErrorReport>
     <CodeAnalysisRuleSet>AllRules.ruleset</CodeAnalysisRuleSet>
   </PropertyGroup>
-  <ItemGroup>
-    <Reference Include="System" />
-    <Reference Include="System.Xml" />
-  </ItemGroup>
-  <ItemGroup>
-    <Compile Include="AssemblyInfo.cs">
-      <SubType>Code</SubType>
-    </Compile>
-  </ItemGroup>
   <ItemGroup>
     <EmbeddedResource Include="78-EUC-H" />
     <EmbeddedResource Include="78-EUC-V" />
@@ -316,28 +333,4 @@
     <EmbeddedResource Include="V" />
     <EmbeddedResource Include="WP-Symbol" />
   </ItemGroup>
-  <ItemGroup>
-    <BootstrapperPackage Include="Microsoft.Net.Client.3.5">
-      <Visible>False</Visible>
-      <ProductName>.NET Framework 3.5 SP1 Client Profile</ProductName>
-      <Install>false</Install>
-    </BootstrapperPackage>
-    <BootstrapperPackage Include="Microsoft.Net.Framework.3.5.SP1">
-      <Visible>False</Visible>
-      <ProductName>.NET Framework 3.5 SP1</ProductName>
-      <Install>true</Install>
-    </BootstrapperPackage>
-    <BootstrapperPackage Include="Microsoft.Windows.Installer.3.1">
-      <Visible>False</Visible>
-      <ProductName>Windows Installer 3.1</ProductName>
-      <Install>true</Install>
-    </BootstrapperPackage>
-  </ItemGroup>
-  <Import Project="$(MSBuildBinPath)\Microsoft.CSharp.targets" />
-  <PropertyGroup>
-    <PreBuildEvent>
-    </PreBuildEvent>
-    <PostBuildEvent>
-    </PostBuildEvent>
-  </PropertyGroup>
 </Project>

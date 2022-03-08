@@ -1,5 +1,4 @@
-﻿<?xml version="1.0" encoding="utf-8"?>
-<Project DefaultTargets="Build" xmlns="http://schemas.microsoft.com/developer/msbuild/2003" ToolsVersion="4.0">
+﻿<Project Sdk="Microsoft.NET.Sdk">
   <PropertyGroup>
     <Configuration Condition=" '$(Configuration)' == '' ">Debug</Configuration>
     <Platform Condition=" '$(Platform)' == '' ">AnyCPU</Platform>
@@ -13,7 +12,7 @@
     <AssemblyName>itextsharp.xmlworker</AssemblyName>
     <SignAssembly>true</SignAssembly>
     <AssemblyOriginatorKeyFile>itextsharp.snk</AssemblyOriginatorKeyFile>
-    <TargetFrameworkVersion>v2.0</TargetFrameworkVersion>
+    <TargetFramework>netstandard2.0</TargetFramework>
     <FileUpgradeFlags>
     </FileUpgradeFlags>
     <OldToolsVersion>2.0</OldToolsVersion>
@@ -33,6 +32,36 @@
     <IsWebBootstrapper>false</IsWebBootstrapper>
     <UseApplicationTrust>false</UseApplicationTrust>
     <BootstrapperEnabled>true</BootstrapperEnabled>
+    <GeneratePackageOnBuild>true</GeneratePackageOnBuild>
+    <PackageId>Portable.$(AssemblyName)</PackageId>
+    <Description>
+		PLEASE NOTE: iTextSharp is EOL, and has been replaced by iText 7. Only security fixes will be added
+
+		We HIGHLY recommend customers use iText 7 for new projects, and to consider moving existing projects from iTextSharp to iText 7 to benefit from the many improvements such as:
+		- HTML to PDF (PDF/A) conversion
+		- PDF Redaction
+		- SVG support
+		- Better language support (Indic, Thai, Khmer, Arabic, Hebrew)
+		- PDF Debugging for your IDE
+		- Data Extraction
+		- Better continued support and bugfixes
+		- More modular, extensible handling of your document workflow
+		- Extra practical add-ons
+		- Encryption, hashing and digital signatures
+
+		This DEPRECATED tool parses (X)HTML snippets and the associated CSS and converts them to PDF. It is replaced by iText7 pdfHTML addon https://www.nuget.org/packages/itext7.pdfhtml/ and iText 7 Community: https://www.nuget.org/packages/itext7/
+
+		XMLWorker is an extra component for iTextSharp. The first XML to PDF implementation, is a new version of the old HTMLWorker that used to be shipped with iTextSharp.
+	</Description>
+    <Company>iText Group NV</Company>
+    <Copyright>Copyright (c) 1998-2020 iText Group NV</Copyright>
+    <Version>5.5.13.3</Version>
+    <Authors>iText Software</Authors>
+    <PackageTags>itext itextsharp c# csharp xml worker pdf html xhtml css</PackageTags>
+    <PackageProjectUrl>https://itextpdf.com/</PackageProjectUrl>
+    <IconUrl>https://itextpdf.com/sites/default/files/ITSC-avatar.png</IconUrl>
+    <LicenseUrl>https://www.gnu.org/licenses/agpl.html</LicenseUrl>
+    <RequireLicenseAcceptance>true</RequireLicenseAcceptance>
   </PropertyGroup>
   <PropertyGroup Condition=" '$(Configuration)|$(Platform)' == 'Debug|AnyCPU' ">
     <DebugSymbols>true</DebugSymbols>
@@ -73,171 +102,6 @@
     <CodeAnalysisRuleSet>AllRules.ruleset</CodeAnalysisRuleSet>
   </PropertyGroup>
   <ItemGroup>
-    <Reference Include="System" />
-  </ItemGroup>
-  <ItemGroup>
-    <Compile Include="iTextSharp\tool\xml\css\apply\ChunkCssApplier.cs" />
-    <Compile Include="iTextSharp\tool\xml\css\apply\DivCssApplier.cs" />
-    <Compile Include="iTextSharp\tool\xml\css\apply\HtmlCellCssApplier.cs" />
-    <Compile Include="iTextSharp\tool\xml\css\apply\ImageCssApplier.cs" />
-    <Compile Include="iTextSharp\tool\xml\css\apply\LineSeparatorCssApplier.cs" />
-    <Compile Include="iTextSharp\tool\xml\css\apply\ListStyleTypeCssApplier.cs" />
-    <Compile Include="iTextSharp\tool\xml\css\apply\IMarginMemory.cs" />
-    <Compile Include="iTextSharp\tool\xml\css\apply\MaxLeadingAndSize.cs" />
-    <Compile Include="iTextSharp\tool\xml\css\apply\NoNewLineParagraphCssApplier.cs" />
-    <Compile Include="iTextSharp\tool\xml\css\apply\IPageSizeContainable.cs" />
-    <Compile Include="iTextSharp\tool\xml\css\apply\ParagraphCssApplier.cs" />
-    <Compile Include="iTextSharp\tool\xml\css\CSS.cs" />
-    <Compile Include="iTextSharp\tool\xml\css\CssFileImpl.cs" />
-    <Compile Include="iTextSharp\tool\xml\css\CssFileProcessor.cs" />
-    <Compile Include="iTextSharp\tool\xml\css\CssFilesImpl.cs" />
-    <Compile Include="iTextSharp\tool\xml\css\CSSFileWrapper.cs" />
-    <Compile Include="iTextSharp\tool\xml\css\CssRule.cs" />
-    <Compile Include="iTextSharp\tool\xml\css\CssSelector.cs" />
-    <Compile Include="iTextSharp\tool\xml\css\CssUtils.cs" />
-    <Compile Include="iTextSharp\tool\xml\css\DefaultCssInheritanceRules.cs" />
-    <Compile Include="iTextSharp\tool\xml\css\FontSizeTranslator.cs" />
-    <Compile Include="iTextSharp\tool\xml\css\HeightCalculator.cs" />
-    <Compile Include="iTextSharp\tool\xml\css\ICssFile.cs" />
-    <Compile Include="iTextSharp\tool\xml\css\ICssFiles.cs" />
-    <Compile Include="iTextSharp\tool\xml\css\ICssInheritanceRules.cs" />
-    <Compile Include="iTextSharp\tool\xml\css\ICssSelectorItem.cs" />
-    <Compile Include="iTextSharp\tool\xml\css\parser\CssSelectorParser.cs" />
-    <Compile Include="iTextSharp\tool\xml\css\parser\CssStateController.cs" />
-    <Compile Include="iTextSharp\tool\xml\css\parser\IState.cs" />
-    <Compile Include="iTextSharp\tool\xml\css\parser\state\CommentEnd.cs" />
-    <Compile Include="iTextSharp\tool\xml\css\parser\state\CommentInside.cs" />
-    <Compile Include="iTextSharp\tool\xml\css\parser\state\CommentStart.cs" />
-    <Compile Include="iTextSharp\tool\xml\css\parser\state\Properties.cs" />
-    <Compile Include="iTextSharp\tool\xml\css\parser\state\Rule.cs" />
-    <Compile Include="iTextSharp\tool\xml\css\parser\state\Unknown.cs" />
-    <Compile Include="iTextSharp\tool\xml\css\StyleAttrCSSResolver.cs" />
-    <Compile Include="iTextSharp\tool\xml\css\WidthCalculator.cs" />
-    <Compile Include="iTextSharp\tool\xml\ElementList.cs" />
-    <Compile Include="iTextSharp\tool\xml\exceptions\CssResolverException.cs" />
-    <Compile Include="iTextSharp\tool\xml\exceptions\LocaleMessages.cs" />
-    <Compile Include="iTextSharp\tool\xml\exceptions\NoDataException.cs" />
-    <Compile Include="iTextSharp\tool\xml\exceptions\NoSiblingException.cs" />
-    <Compile Include="iTextSharp\tool\xml\exceptions\NoTagProcessorException.cs" />
-    <Compile Include="iTextSharp\tool\xml\exceptions\NotImplementedException.cs" />
-    <Compile Include="iTextSharp\tool\xml\exceptions\RuntimeWorkerException.cs" />
-    <Compile Include="iTextSharp\tool\xml\html\AbstractTagProcessor.cs" />
-    <Compile Include="iTextSharp\tool\xml\html\Anchor.cs" />
-    <Compile Include="iTextSharp\tool\xml\html\Body.cs" />
-    <Compile Include="iTextSharp\tool\xml\html\Break.cs" />
-    <Compile Include="iTextSharp\tool\xml\html\CssApplier.cs" />
-    <Compile Include="iTextSharp\tool\xml\html\ICssApplier.cs" />
-    <Compile Include="iTextSharp\tool\xml\html\CssAppliers.cs" />
-    <Compile Include="iTextSharp\tool\xml\html\CssAppliersAware.cs" />
-    <Compile Include="iTextSharp\tool\xml\html\CssAppliersImpl.cs" />
-    <Compile Include="iTextSharp\tool\xml\html\DefaultTagProcessorFactory.cs" />
-    <Compile Include="iTextSharp\tool\xml\html\Div.cs" />
-    <Compile Include="iTextSharp\tool\xml\html\DummyTagProcessor.cs" />
-    <Compile Include="iTextSharp\tool\xml\html\Header.cs" />
-    <Compile Include="iTextSharp\tool\xml\html\HeaderNode.cs" />
-    <Compile Include="iTextSharp\tool\xml\html\head\Link.cs" />
-    <Compile Include="iTextSharp\tool\xml\html\head\Meta.cs" />
-    <Compile Include="iTextSharp\tool\xml\html\head\Style.cs" />
-    <Compile Include="iTextSharp\tool\xml\html\head\Title.cs" />
-    <Compile Include="iTextSharp\tool\xml\html\head\XML.cs" />
-    <Compile Include="iTextSharp\tool\xml\html\HorizontalRule.cs" />
-    <Compile Include="iTextSharp\tool\xml\html\HTML.cs" />
-    <Compile Include="iTextSharp\tool\xml\html\HTMLUtils.cs" />
-    <Compile Include="iTextSharp\tool\xml\html\Image.cs" />
-    <Compile Include="iTextSharp\tool\xml\html\ITagProcessor.cs" />
-    <Compile Include="iTextSharp\tool\xml\html\ITagProcessorFactory.cs" />
-    <Compile Include="iTextSharp\tool\xml\html\NonSanitizedTag.cs" />
-    <Compile Include="iTextSharp\tool\xml\html\OrderedUnorderedList.cs" />
-    <Compile Include="iTextSharp\tool\xml\html\OrderedUnorderedListItem.cs" />
-    <Compile Include="iTextSharp\tool\xml\html\ParaGraph.cs" />
-    <Compile Include="iTextSharp\tool\xml\html\pdfelement\HtmlCell.cs" />
-    <Compile Include="iTextSharp\tool\xml\html\pdfelement\NoNewLineParagraph.cs" />
-    <Compile Include="iTextSharp\tool\xml\html\pdfelement\TabbedChunk.cs" />
-    <Compile Include="iTextSharp\tool\xml\html\Span.cs" />
-    <Compile Include="iTextSharp\tool\xml\html\table\CellSpacingEvent.cs" />
-    <Compile Include="iTextSharp\tool\xml\html\table\Table.cs" />
-    <Compile Include="iTextSharp\tool\xml\html\table\TableBorderEvent.cs" />
-    <Compile Include="iTextSharp\tool\xml\html\table\TableData.cs" />
-    <Compile Include="iTextSharp\tool\xml\html\table\TableRow.cs" />
-    <Compile Include="iTextSharp\tool\xml\html\table\TableRowElement.cs" />
-    <Compile Include="iTextSharp\tool\xml\html\table\TableStyleValues.cs" />
-    <Compile Include="iTextSharp\tool\xml\html\Tags.cs" />
-    <Compile Include="iTextSharp\tool\xml\IElementHandler.cs" />
-    <Compile Include="iTextSharp\tool\xml\ICustomContext.cs" />
-    <Compile Include="iTextSharp\tool\xml\IPipeline.cs" />
-    <Compile Include="iTextSharp\tool\xml\IWorkerContext.cs" />
-    <Compile Include="iTextSharp\tool\xml\IWritable.cs" />
-    <Compile Include="iTextSharp\tool\xml\net\exc\NoImageException.cs" />
-    <Compile Include="iTextSharp\tool\xml\net\FileRetrieveImpl.cs" />
-    <Compile Include="iTextSharp\tool\xml\net\IFileRetrieve.cs" />
-    <Compile Include="iTextSharp\tool\xml\net\ImageRetrieve.cs">
-      <SubType>Code</SubType>
-    </Compile>
-    <Compile Include="iTextSharp\tool\xml\net\IReadingProcessor.cs" />
-    <Compile Include="iTextSharp\tool\xml\NoCustomContextException.cs" />
-    <Compile Include="iTextSharp\tool\xml\parser\io\EncodingUtil.cs" />
-    <Compile Include="iTextSharp\tool\xml\parser\io\IAppender.cs" />
-    <Compile Include="iTextSharp\tool\xml\parser\io\IParserMonitor.cs" />
-    <Compile Include="iTextSharp\tool\xml\parser\io\MonitorInputReader.cs" />
-    <Compile Include="iTextSharp\tool\xml\parser\io\ParserListenerWriter.cs" />
-    <Compile Include="iTextSharp\tool\xml\parser\IState.cs" />
-    <Compile Include="iTextSharp\tool\xml\parser\IXMLParserListener.cs" />
-    <Compile Include="iTextSharp\tool\xml\parser\StateController.cs" />
-    <Compile Include="iTextSharp\tool\xml\parser\state\AttributeValueState.cs" />
-    <Compile Include="iTextSharp\tool\xml\parser\state\CdataState.cs" />
-    <Compile Include="iTextSharp\tool\xml\parser\state\CloseCommentState.cs" />
-    <Compile Include="iTextSharp\tool\xml\parser\state\CloseStarCommentState.cs" />
-    <Compile Include="iTextSharp\tool\xml\parser\state\ClosingTagState.cs" />
-    <Compile Include="iTextSharp\tool\xml\parser\state\CommentState.cs" />
-    <Compile Include="iTextSharp\tool\xml\parser\state\DocTypeState.cs" />
-    <Compile Include="iTextSharp\tool\xml\parser\state\DoubleQuotedAttrValueState.cs" />
-    <Compile Include="iTextSharp\tool\xml\parser\state\InsideTagHTMLState.cs" />
-    <Compile Include="iTextSharp\tool\xml\parser\state\InsideTagState.cs" />
-    <Compile Include="iTextSharp\tool\xml\parser\state\ProcessingInstructionEncounteredState.cs" />
-    <Compile Include="iTextSharp\tool\xml\parser\state\SelfClosingTagState.cs" />
-    <Compile Include="iTextSharp\tool\xml\parser\state\SingleQuotedAttrValueState.cs" />
-    <Compile Include="iTextSharp\tool\xml\parser\state\SpecialCharState.cs" />
-    <Compile Include="iTextSharp\tool\xml\parser\state\StarCommentState.cs" />
-    <Compile Include="iTextSharp\tool\xml\parser\state\TagAttributeState.cs" />
-    <Compile Include="iTextSharp\tool\xml\parser\state\TagEncounteredState.cs" />
-    <Compile Include="iTextSharp\tool\xml\parser\state\UnknownState.cs" />
-    <Compile Include="iTextSharp\tool\xml\parser\state\UnquotedAttrState.cs" />
-    <Compile Include="iTextSharp\tool\xml\parser\state\XmlState.cs" />
-    <Compile Include="iTextSharp\tool\xml\parser\TagState.cs" />
-    <Compile Include="iTextSharp\tool\xml\parser\XMLParser.cs" />
-    <Compile Include="iTextSharp\tool\xml\parser\XMLParserMemory.cs" />
-    <Compile Include="iTextSharp\tool\xml\PipelineException.cs" />
-    <Compile Include="iTextSharp\tool\xml\pipeline\AbstractPipeline.cs" />
-    <Compile Include="iTextSharp\tool\xml\pipeline\css\CssResolverPipeline.cs" />
-    <Compile Include="iTextSharp\tool\xml\pipeline\css\ICSSResolver.cs" />
-    <Compile Include="iTextSharp\tool\xml\pipeline\ctx\MapContext.cs" />
-    <Compile Include="iTextSharp\tool\xml\pipeline\ctx\ObjectContext.cs" />
-    <Compile Include="iTextSharp\tool\xml\pipeline\ctx\WorkerContextImpl.cs" />
-    <Compile Include="iTextSharp\tool\xml\pipeline\end\ElementHandlerPipeline.cs" />
-    <Compile Include="iTextSharp\tool\xml\pipeline\end\PdfWriterPipeline.cs" />
-    <Compile Include="iTextSharp\tool\xml\pipeline\html\AbstractImageProvider.cs" />
-    <Compile Include="iTextSharp\tool\xml\pipeline\html\AutoDocPipeline.cs" />
-    <Compile Include="iTextSharp\tool\xml\pipeline\html\HtmlPipeline.cs" />
-    <Compile Include="iTextSharp\tool\xml\pipeline\html\HtmlPipelineContext.cs" />
-    <Compile Include="iTextSharp\tool\xml\pipeline\html\IFileMaker.cs" />
-    <Compile Include="iTextSharp\tool\xml\pipeline\html\ILinkProvider.cs" />
-    <Compile Include="iTextSharp\tool\xml\pipeline\html\IImageProvider.cs" />
-    <Compile Include="iTextSharp\tool\xml\pipeline\html\NoImageProviderException.cs" />
-    <Compile Include="iTextSharp\tool\xml\pipeline\html\NoStackException.cs" />
-    <Compile Include="iTextSharp\tool\xml\pipeline\html\StackKeeper.cs" />
-    <Compile Include="iTextSharp\tool\xml\pipeline\html\UrlLinkResolver.cs" />
-    <Compile Include="iTextSharp\tool\xml\pipeline\WritableElement.cs" />
-    <Compile Include="iTextSharp\tool\xml\ProcessObject.cs" />
-    <Compile Include="iTextSharp\tool\xml\Tag.cs" />
-    <Compile Include="iTextSharp\tool\xml\TagUtils.cs" />
-    <Compile Include="iTextSharp\tool\xml\util\ParentTreeUtil.cs" />
-    <Compile Include="iTextSharp\tool\xml\util\SortUtil.cs" />
-    <Compile Include="iTextSharp\tool\xml\XMLWorker.cs" />
-    <Compile Include="iTextSharp\tool\xml\XMLWorkerFontProvider.cs" />
-    <Compile Include="iTextSharp\tool\xml\XMLWorkerHelper.cs" />
-    <Compile Include="Properties\AssemblyInfo.cs" />
-  </ItemGroup>
-  <ItemGroup>
     <None Include="itextsharp.snk" />
     <EmbeddedResource Include="iTextSharp\errors\errors_en.properties" />
     <EmbeddedResource Include="iTextSharp\errors\errors.properties" />
@@ -247,34 +111,11 @@
     <EmbeddedResource Include="iTextSharp\tool\xml\css\default.css" />
   </ItemGroup>
   <ItemGroup>
-    <BootstrapperPackage Include="Microsoft.Net.Client.3.5">
-      <Visible>False</Visible>
-      <ProductName>.NET Framework 3.5 SP1 Client Profile</ProductName>
-      <Install>false</Install>
-    </BootstrapperPackage>
-    <BootstrapperPackage Include="Microsoft.Net.Framework.3.5.SP1">
-      <Visible>False</Visible>
-      <ProductName>.NET Framework 3.5 SP1</ProductName>
-      <Install>true</Install>
-    </BootstrapperPackage>
-    <BootstrapperPackage Include="Microsoft.Windows.Installer.3.1">
-      <Visible>False</Visible>
-      <ProductName>Windows Installer 3.1</ProductName>
-      <Install>true</Install>
-    </BootstrapperPackage>
+    <ProjectReference Include="..\..\core\itextsharp(VS2010).csproj" />
   </ItemGroup>
-  <ItemGroup>
-    <ProjectReference Include="..\..\core\itextsharp%28VS2010%29.csproj">
-      <Project>{84C4FDD9-3ED7-453B-B9DA-B3ED52CB071C}</Project>
-      <Name>itextsharp%28VS2010%29</Name>
-    </ProjectReference>
-  </ItemGroup>
-  <Import Project="$(MSBuildBinPath)\Microsoft.CSharp.targets" />
-  <!-- To modify your build process, add your task inside one of the targets below and uncomment it. 
-       Other similar extension points exist, see Microsoft.Common.targets.
-  <Target Name="BeforeBuild">
-  </Target>
-  <Target Name="AfterBuild">
-  </Target>
-  -->
+	<ItemGroup>
+		<AssemblyAttribute Include="System.Runtime.CompilerServices.InternalsVisibleToAttribute">
+			<_Parameter1>itextsharp.xmlworker.tests, PublicKey=00240000048000009400000006020000002400005253413100040000010001008b21ed5b3fc1c11996390981fe22bbe71a39a9e11d3c2cefddd6ee92920fa871f9666ae0fa941af0280d0653df048ae2d93f8c5e2d820dba3c8df9ed468c8be40a6fffeb32aa481a254f0fb9f37aa7c3ec1c0acd2c009746bbdafcb75bcdbcecb7caf1f0f4b6e7d013906ba60b66eb1c8298e4efb052caf6cece4bf1816902cc</_Parameter1>
+		</AssemblyAttribute>
+	</ItemGroup>
 </Project>
