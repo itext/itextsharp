@@ -152,6 +152,7 @@
     <Compile Include="AssemblyInfo.cs">
       <SubType>Code</SubType>
     </Compile>
+    <Compile Include="iTextSharp\testutils\CompareToolUtil.cs" />
     <Compile Include="iTextSharp\text\pdf\MemoryLimitsAwareException.cs" />
     <Compile Include="iTextSharp\text\pdf\MemoryLimitsAwareHandler.cs" />
     <Compile Include="iTextSharp\text\pdf\MemoryLimitsAwareOutputStream.cs" />

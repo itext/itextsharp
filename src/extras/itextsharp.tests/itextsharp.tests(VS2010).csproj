@@ -180,6 +180,22 @@
     <None Include="itextsharp.snk" />
     <None Include="lib\XmlDiffPatch.dll">
     </None>
+    <Content Include="resources\testutils\CompareToolTest\cmp_EqualPdfsTest.pdf" />
+    <Content Include="resources\testutils\CompareToolTest\cmp_EqualPdfsTest.xml" />
+    <Content Include="resources\testutils\CompareToolTest\cmp_report01.xml" />
+    <Content Include="resources\testutils\CompareToolTest\cmp_report02.xml" />
+    <Content Include="resources\testutils\CompareToolTest\cmp_report03.xml" />
+    <Content Include="resources\testutils\CompareToolTest\cmp_screenAnnotation.pdf" />
+    <Content Include="resources\testutils\CompareToolTest\cmp_simple_pdf.pdf" />
+    <Content Include="resources\testutils\CompareToolTest\cmp_tagged_pdf.pdf" />
+    <Content Include="resources\testutils\CompareToolTest\cmp_TestPdf.pdf" />
+    <Content Include="resources\testutils\CompareToolTest\cmp_TestPdf.xml" />
+    <Content Include="resources\testutils\CompareToolTest\EqualPdfsTest.pdf" />
+    <Content Include="resources\testutils\CompareToolTest\cmp_report01.xml" />
+    <Content Include="resources\testutils\CompareToolTest\screenAnnotation.pdf" />
+    <Content Include="resources\testutils\CompareToolTest\simple_pdf.pdf" />
+    <Content Include="resources\testutils\CompareToolTest\tagged_pdf.pdf" />
+    <Content Include="resources\testutils\CompareToolTest\TestPdf.pdf" />
 	<Content Include="resources\text\pdf\DefaultSplitCharacterProfilingTest\profilingText.txt" />
     <Content Include="resources\text\xmp\impl\xxe-data.txt" />
     <Content Include="resources\text\ChunkTest\logo.gif" />
@@ -232,10 +248,6 @@
     <Content Include="resources\text\pdf\TaggedPdfTest\xml\test8.xml" />
     <Content Include="resources\text\pdf\TaggedPdfTest\xml\test9.xml" />
     <None Include="packages.config" />
-    <None Include="resources\testutils\CompareToolTest\cmp_simple_pdf.pdf" />
-    <None Include="resources\testutils\CompareToolTest\cmp_tagged_pdf.pdf" />
-    <None Include="resources\testutils\CompareToolTest\simple_pdf.pdf" />
-    <None Include="resources\testutils\CompareToolTest\tagged_pdf.pdf" />
     <None Include="resources\text\pdf\AcroFieldsTest\acroform.pdf" />
     <None Include="resources\text\pdf\AcroFieldsTest\choice_field_order.pdf" />
     <None Include="resources\text\pdf\AcroFieldsTest\choice_field_order_export.pdf" />
@@ -455,7 +467,6 @@
       <Name>xfaitextsharp.xtra%28VS2010%29</Name>
     </ProjectReference>
   </ItemGroup>
-  <ItemGroup />
   <Import Project="$(MSBuildBinPath)\Microsoft.CSharp.targets" />
   <!-- To modify your build process, add your task inside one of the targets below and uncomment it.
        Other similar extension points exist, see Microsoft.Common.targets.
