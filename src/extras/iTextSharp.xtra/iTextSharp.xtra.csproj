@@ -11,6 +11,7 @@
     <AssemblyName>itextsharp.xtra</AssemblyName>
     <SignAssembly>true</SignAssembly>
     <AssemblyOriginatorKeyFile>itextsharp.snk</AssemblyOriginatorKeyFile>
+    <TargetFrameworkVersion>v4.6.1</TargetFrameworkVersion>
   </PropertyGroup>
   <PropertyGroup Condition=" '$(Configuration)|$(Platform)' == 'Debug|AnyCPU' ">
     <DebugSymbols>true</DebugSymbols>
@@ -98,9 +99,9 @@
     <None Include="itextsharp.snk" />
   </ItemGroup>
   <ItemGroup>
-    <ProjectReference Include="..\..\core\itextsharp.csproj">
-      <Project>{84C4FDD9-3ED7-453B-B9DA-B3ED52CB071C}</Project>
-      <Name>itextsharp</Name>
+    <ProjectReference Include="..\..\core\xfaitextsharp(VS2010).csproj">
+      <Project>{84c4fdd9-3ed7-453b-b9da-b3ed52cb071c}</Project>
+      <Name>xfaitextsharp(VS2010)</Name>
     </ProjectReference>
   </ItemGroup>
   <Import Project="$(MSBuildBinPath)\Microsoft.CSharp.targets" />
