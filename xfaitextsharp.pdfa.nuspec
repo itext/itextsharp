@@ -2,7 +2,7 @@
 <package xmlns="http://schemas.microsoft.com/packaging/2011/08/nuspec.xsd">
   <metadata>
     <id>Xfa-iTextSharp.pdfa</id>
-    <version>3.0.1</version>
+    <version>3.0.2</version>
     <title>Xfa-iTextSharp.pdfa</title>
     <authors>iText Software</authors>
     <owners>Bruno Lowagie,Paulo Soares,et al.</owners>
@@ -31,11 +31,11 @@ iText 7 Community: https://www.nuget.org/packages/itext7/</summary>
     <language>en-US</language>
     <tags>itext itextsharp c# csharp .net pdf pdfa</tags>
     <dependencies>
-      <dependency id="Xfa-iTextSharp" version="3.0.1" />
+      <dependency id="Xfa-iTextSharp" version="3.0.2" />
     </dependencies>
   </metadata>
 
-  <files>
+  <files> 
     <file src="src\extras\itextsharp.pdfa\bin\Release\xfaitextsharp.pdfa.dll" target="lib\" />
     <file src="gnu-agpl-v3.0.md" target="" />
     <file src="LICENSE.md" target="" />

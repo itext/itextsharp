@@ -10,7 +10,7 @@
     <AppDesignerFolder>Properties</AppDesignerFolder>
     <RootNamespace>itextsharp.tests</RootNamespace>
     <AssemblyName>itextsharp.tests</AssemblyName>
-    <TargetFrameworkVersion>v4.0</TargetFrameworkVersion>
+    <TargetFrameworkVersion>v4.6.1</TargetFrameworkVersion>
     <FileUpgradeFlags>
     </FileUpgradeFlags>
     <UpgradeBackupLocation>
@@ -462,9 +462,9 @@
       <Project>{C892FA61-C495-4F30-8799-A198F89F23F4}</Project>
       <Name>xfaitextsharp.pdfa%28VS2010%29</Name>
     </ProjectReference>
-    <ProjectReference Include="..\iTextSharp.xtra\xfaitextsharp.xtra%28VS2010%29.csproj">
-      <Project>{BE1934CF-90A9-43D3-A794-7E540874EDBB}</Project>
-      <Name>xfaitextsharp.xtra%28VS2010%29</Name>
+    <ProjectReference Include="..\iTextSharp.xtra\xfaitextsharp.xtra(VS2010).csproj">
+      <Project>{be1934cf-90a9-43d3-a794-7e540874edbb}</Project>
+      <Name>xfaitextsharp.xtra(VS2010)</Name>
     </ProjectReference>
   </ItemGroup>
   <Import Project="$(MSBuildBinPath)\Microsoft.CSharp.targets" />
