@@ -11,7 +11,6 @@
     <AssemblyName>itextsharp.xmlworker.tests</AssemblyName>
     <SignAssembly>true</SignAssembly>
     <AssemblyOriginatorKeyFile>itextsharp.snk</AssemblyOriginatorKeyFile>
-    <TargetFrameworkVersion>v4.6.1</TargetFrameworkVersion>
   </PropertyGroup>
   <PropertyGroup Condition=" '$(Configuration)|$(Platform)' == 'Debug|AnyCPU' ">
     <DebugSymbols>true</DebugSymbols>
@@ -559,13 +558,13 @@
     <Compile Include="Properties\AssemblyInfo.cs" />
   </ItemGroup>
   <ItemGroup>
-    <ProjectReference Include="..\..\core\xfaitextsharp(VS2010).csproj">
-      <Project>{84c4fdd9-3ed7-453b-b9da-b3ed52cb071c}</Project>
-      <Name>xfaitextsharp(VS2010)</Name>
+    <ProjectReference Include="..\..\core\itextsharp.csproj">
+      <Project>{84C4FDD9-3ED7-453B-B9DA-B3ED52CB071C}</Project>
+      <Name>itextsharp</Name>
     </ProjectReference>
-    <ProjectReference Include="..\itextsharp.xmlworker\xfaitextsharp.xmlworker(VS2010).csproj">
-      <Project>{96647204-4a3e-41d7-bc74-b1608d6d1857}</Project>
-      <Name>xfaitextsharp.xmlworker(VS2010)</Name>
+    <ProjectReference Include="..\itextsharp.xmlworker\itextsharp.xmlworker.csproj">
+      <Project>{96647204-4A3E-41D7-BC74-B1608D6D1857}</Project>
+      <Name>itextsharp.xmlworker</Name>
     </ProjectReference>
   </ItemGroup>
   <ItemGroup>

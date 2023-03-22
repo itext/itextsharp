@@ -11,7 +11,6 @@
     <AssemblyName>itextsharp.pdfa.tests</AssemblyName>
     <SignAssembly>true</SignAssembly>
     <AssemblyOriginatorKeyFile>itextsharp.snk</AssemblyOriginatorKeyFile>
-    <TargetFrameworkVersion>v4.6.1</TargetFrameworkVersion>
   </PropertyGroup>
   <PropertyGroup Condition=" '$(Configuration)|$(Platform)' == 'Debug|AnyCPU' ">
     <DebugSymbols>true</DebugSymbols>
@@ -53,7 +52,7 @@
     <Reference Include="System" />
     <Reference Include="System.Drawing" />
     <Reference Include="System.Xml" />
-    <Reference Include="XmlDiffPatch, Version=1.0.8.28, Culture=neutral, PublicKeyToken=b03f5f7f11d50a3a">
+    <Reference Include="XmlDiffPatch, Version=1.0.8.28, Culture=neutral, PublicKeyToken=b03f5f7f11d50a3a" >
         <HintPath>lib\XmlDiffPatch.dll</HintPath>
     </Reference>
   </ItemGroup>
@@ -72,13 +71,13 @@
     <Compile Include="Properties\AssemblyInfo.cs" />
   </ItemGroup>
   <ItemGroup>
-    <ProjectReference Include="..\..\core\xfaitextsharp(VS2010).csproj">
-      <Project>{84c4fdd9-3ed7-453b-b9da-b3ed52cb071c}</Project>
-      <Name>xfaitextsharp(VS2010)</Name>
+    <ProjectReference Include="..\..\core\itextsharp.csproj">
+      <Project>{84C4FDD9-3ED7-453B-B9DA-B3ED52CB071C}</Project>
+      <Name>itextsharp</Name>
     </ProjectReference>
-    <ProjectReference Include="..\itextsharp.pdfa\xfaitextsharp.pdfa(VS2010).csproj">
-      <Project>{c892fa61-c495-4f30-8799-a198f89f23f4}</Project>
-      <Name>xfaitextsharp.pdfa(VS2010)</Name>
+    <ProjectReference Include="..\itextsharp.pdfa\itextsharp.pdfa.csproj">
+      <Project>{C892FA61-C495-4F30-8799-A198F89F23F4}</Project>
+      <Name>itextsharp.pdfa</Name>
     </ProjectReference>
   </ItemGroup>
   <ItemGroup>
