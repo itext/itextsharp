@@ -76,5 +76,11 @@ namespace iTextSharp.text.pdf.security {
          * @throws Exception - TSA request failed
          */
         byte[] GetTimeStampToken(byte[] imprint);
+		
+        /**
+         * Sets the webproxy needed when working behing proxy.
+         * @param proxy WebProxy
+         */
+        void SetProxy(System.Net.WebProxy proxy);							 
     }
 }
