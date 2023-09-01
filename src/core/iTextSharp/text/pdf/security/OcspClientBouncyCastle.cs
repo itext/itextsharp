@@ -52,6 +52,7 @@ using Org.BouncyCastle.Asn1.X509;
 using Org.BouncyCastle.Asn1.Ocsp;
 using iTextSharp.text.error_messages;
 using iTextSharp.text.log;
+using System.Collections.Generic;
 
 namespace iTextSharp.text.pdf.security {
 
@@ -156,7 +157,7 @@ namespace iTextSharp.text.pdf.security {
             gen.AddRequest(id);
             
             // create details for nonce extension
-            IDictionary extensions = new Hashtable();
+            System.Collections.Generic.IDictionary<DerObjectIdentifier, X509Extension> extensions = new Dictionary<DerObjectIdentifier, X509Extension>();
             
             extensions[OcspObjectIdentifiers.PkixOcspNonce] = new X509Extension(false, new DerOctetString(new DerOctetString(PdfEncryption.CreateDocumentId()).GetEncoded()));
             

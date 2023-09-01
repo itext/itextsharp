@@ -45,6 +45,7 @@ using System.Collections.Generic;
 using Org.BouncyCastle.X509;
 using Org.BouncyCastle.Ocsp;
 using Org.BouncyCastle.Tsp;
+using Org.BouncyCastle.Asn1;
 using Org.BouncyCastle.Asn1.X509;
 using Org.BouncyCastle.Security.Certificates;
 namespace iTextSharp.text.pdf.security {
@@ -80,7 +81,7 @@ namespace iTextSharp.text.pdf.security {
                 }
                 try {
                     // EXTENDED KEY USAGE and TIMESTAMPING is ALLOWED
-                    if (oid == X509Extensions.ExtendedKeyUsage.Id && cert.GetExtendedKeyUsage().Contains("1.3.6.1.5.5.7.3.8")) {
+                    if (oid == X509Extensions.ExtendedKeyUsage.Id && cert.GetExtendedKeyUsage().Contains(new DerObjectIdentifier("1.3.6.1.5.5.7.3.8"))) {
                         continue;
                     }
                 }

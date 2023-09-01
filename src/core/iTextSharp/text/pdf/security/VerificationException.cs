@@ -41,7 +41,6 @@
     address: sales@itextpdf.com
  */
 using System;
-using Org.BouncyCastle.Crypto.Tls;
 using Org.BouncyCastle.Security;
 using Org.BouncyCastle.X509;
 

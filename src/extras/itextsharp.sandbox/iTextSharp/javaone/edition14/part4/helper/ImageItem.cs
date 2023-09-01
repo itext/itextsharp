@@ -42,6 +42,7 @@
  */
 using iTextSharp.text;
 using iTextSharp.text.pdf.parser;
+using System;
 
 namespace iTextSharp.javaone.edition14.part4.helper
 {
