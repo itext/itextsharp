@@ -22,4 +22,4 @@ using Versions.Attributes;
 
 [assembly: AssemblyVersion("3.0.3.0")]
 [assembly: AssemblyFileVersion("3.0.3.0")]
-[assembly: AssemblyInformationalVersion("3.0.3-SNAPSHOT")]
+[assembly: AssemblyInformationalVersion("3.0.3")]
