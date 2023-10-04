@@ -43,6 +43,7 @@
 using System;
 using System.Collections.Generic;
 using System.IO;
+using System.Linq;
 using System.Reflection;
 
 
@@ -54,7 +55,11 @@ namespace iTextSharp.text.io {
      */
 
     [Obsolete("For internal use only. If you want to use iText, please use a dependency on iText 7. ")]
-    public static class StreamUtil {
+    public static class StreamUtil
+    {
+        internal static List<object> resourceSearch = new List<object>();
+        internal static ISet<string> iTextResourceAssemblyNames;
+
         /**
          * Reads the full content of a stream and returns them in a byte array
          * @param is the stream to read
@@ -62,48 +67,59 @@ namespace iTextSharp.text.io {
          * @throws IOException if there is a problem reading from the input stream
          */
 
-        static StreamUtil() {
-            StreamUtil.AddToResourceSearch("itext.font_asian.dll");
-            StreamUtil.AddToResourceSearch("itext.hyph.dll");
+        static StreamUtil()
+        {
+            iTextResourceAssemblyNames = new HashSet<string>();
+            iTextResourceAssemblyNames.Add("itext.hyph");
+            iTextResourceAssemblyNames.Add("itext.font_asian");
+
+            LoadITextResourceAssemblies();
         }
 
-        public static byte[] InputStreamToArray(Stream inp) {
+        public static byte[] InputStreamToArray(Stream inp)
+        {
             byte[] b = new byte[8192];
             MemoryStream outp = new MemoryStream();
-            while (true) {
+            while (true)
+            {
                 int read = inp.Read(b, 0, b.Length);
                 if (read < 1)
                     break;
                 outp.Write(b, 0, read);
             }
+
             outp.Close();
             return outp.ToArray();
         }
 
-        public static void CopyBytes(IRandomAccessSource source, long start, long length, Stream outs) {
+        public static void CopyBytes(IRandomAccessSource source, long start, long length, Stream outs)
+        {
             if (length <= 0)
                 return;
             long idx = start;
             byte[] buf = new byte[8192];
-            while (length > 0) {
-                long n = source.Get(idx, buf, 0, (int) Math.Min((long) buf.Length, length));
+            while (length > 0)
+            {
+                long n = source.Get(idx, buf, 0, (int)Math.Min((long)buf.Length, length));
                 if (n <= 0)
                     throw new EndOfStreamException();
-                outs.Write(buf, 0, (int) n);
+                outs.Write(buf, 0, (int)n);
                 idx += n;
                 length -= n;
             }
         }
 
-        internal static List<object> resourceSearch = new List<object>();
-
-        public static void AddToResourceSearch(object obj) {
-            lock (resourceSearch) {
-                if (obj is Assembly) {
+        public static void AddToResourceSearch(object obj)
+        {
+            lock (resourceSearch)
+            {
+                if (obj is Assembly)
+                {
                     resourceSearch.Add(obj);
                 }
-                else if (obj is string) {
-                    string f = (string) obj;
+                else if (obj is string)
+                {
+                    string f = (string)obj;
                     if (Directory.Exists(f) || File.Exists(f))
                         resourceSearch.Add(obj);
                 }
@@ -116,60 +132,152 @@ namespace iTextSharp.text.io {
          * <CODE>null</CODE> if not found
          */
 
-        public static Stream GetResourceStream(string key) {
+        public static Stream GetResourceStream(string key)
+        {
+            return GetResourceStream(key, null);
+        }
+
+        public static Stream GetResourceStream(string key, Type definedClassType)
+        {
             Stream istr = null;
             // Try to use resource loader to load the properties file.
-            try {
-                Assembly assm = Assembly.GetExecutingAssembly();
+            try
+            {
+                Assembly assm = definedClassType != null ? definedClassType.GetAssembly() : typeof(StreamUtil).GetAssembly();
                 istr = assm.GetManifestResourceStream(key);
             }
-            catch {
+            catch
+            {
             }
             if (istr != null)
                 return istr;
+
             int count;
-            lock (resourceSearch) {
+            lock (resourceSearch)
+            {
                 count = resourceSearch.Count;
             }
-            for (int k = 0; k < count; ++k) {
+
+            for (int k = 0; k < count; ++k)
+            {
                 object obj;
-                lock (resourceSearch) {
+                lock (resourceSearch)
+                {
                     obj = resourceSearch[k];
                 }
-                try {
-                    if (obj is Assembly) {
-                        istr = ((Assembly) obj).GetManifestResourceStream(key);
-                        if (istr != null)
-                            return istr;
-                    }
-                    else if (obj is string) {
-                        string dir = (string) obj;
-                        try {
-                            istr = Assembly.LoadFrom(dir).GetManifestResourceStream(key);
-                        }
-                        catch {
-                        }
-                        if (istr != null)
-                            return istr;
-                        string modkey = key.Replace('.', '/');
-                        string fullPath = Path.Combine(dir, modkey);
-                        if (File.Exists(fullPath)) {
-                            return new FileStream(fullPath, FileMode.Open, FileAccess.Read, FileShare.Read);
-                        }
-                        int idx = modkey.LastIndexOf('/');
-                        if (idx >= 0) {
-                            modkey = modkey.Substring(0, idx) + "." + modkey.Substring(idx + 1);
-                            fullPath = Path.Combine(dir, modkey);
-                            if (File.Exists(fullPath))
-                                return new FileStream(fullPath, FileMode.Open, FileAccess.Read, FileShare.Read);
-                        }
-                    }
+
+                istr = SearchResourceInAssembly(key, obj);
+                if (istr != null)
+                {
+                    return istr;
                 }
-                catch {
+            }
+
+            foreach (Assembly assembly in AppDomain.CurrentDomain.GetAssemblies())
+            {
+                if (assembly.GetName().Name.StartsWith("itext"))
+                {
+                    istr = SearchResourceInAssembly(key, assembly);
+                    if (istr != null)
+                    {
+                        return istr;
+                    }
                 }
             }
 
             return istr;
+        }
+
+        private static Stream SearchResourceInAssembly(string key, Object obj)
+        {
+            Stream istr = null;
+            try
+            {
+                if (obj is Assembly)
+                {
+                    istr = ((Assembly)obj).GetManifestResourceStream(key);
+                    if (istr != null)
+                        return istr;
+                }
+                else if (obj is string)
+                {
+                    string dir = (string)obj;
+                    try
+                    {
+                        istr = Assembly.LoadFrom(dir).GetManifestResourceStream(key);
+                    }
+                    catch
+                    {
+                    }
+
+                    if (istr != null)
+                        return istr;
+                    string modkey = key.Replace('.', '/');
+                    string fullPath = Path.Combine(dir, modkey);
+                    if (File.Exists(fullPath))
+                    {
+                        return new FileStream(fullPath, FileMode.Open, FileAccess.Read, FileShare.Read);
+                    }
+
+                    int idx = modkey.LastIndexOf('/');
+                    if (idx >= 0)
+                    {
+                        modkey = modkey.Substring(0, idx) + "." + modkey.Substring(idx + 1);
+                        fullPath = Path.Combine(dir, modkey);
+                        if (File.Exists(fullPath))
+                            return new FileStream(fullPath, FileMode.Open, FileAccess.Read, FileShare.Read);
+                    }
+                }
+            }
+            catch
+            {
+            }
+
+            return istr;
+        }
+
+        private static void LoadITextResourceAssemblies()
+        {
+
+            var loadedAssemblies = AppDomain.CurrentDomain.GetAssemblies().Where(a => !a.IsDynamic).ToList();
+            List<string> loadedPaths = new List<string>();
+            foreach (var a in AppDomain.CurrentDomain.GetAssemblies())
+            {
+                try
+                {
+                    var path = a.Location;
+                    loadedPaths.Add(path);
+                }
+                catch
+                {
+                    // to skip exceptions for dynamically loaded assemblies without location
+                    // such as anonymously hosted dynamicmethods assembly for example
+                }
+            }
+
+            var referencedPaths = Directory.GetFiles(AppDomain.CurrentDomain.BaseDirectory, "*.dll");
+            var toLoad = referencedPaths.Where(referencePath =>
+                    !loadedPaths.Any(loadedPath => loadedPath.Equals(referencePath, StringComparison.OrdinalIgnoreCase))).ToList();
+            foreach (String path in toLoad)
+            {
+                try
+                {
+                    AssemblyName name = AssemblyName.GetAssemblyName(path);
+                    if (iTextResourceAssemblyNames.Contains(name.Name) &&
+                        !loadedAssemblies.Any(assembly => assembly.GetName().Name.Equals(name.Name)))
+                    {
+                        loadedAssemblies.Add(AppDomain.CurrentDomain.Load(name));
+                    }
+                }
+                catch
+                {
+                }
+            }
+        }
+
+        private static Assembly GetAssembly(this Type type)
+        {
+            return type.Assembly;
         }
     }
 }
