@@ -131,7 +131,8 @@ namespace itextsharp.tests.iTextSharp.text.pdf {
             X509Certificate cert = new X509Certificate();
             cert.Import(SOURCE_FOLDER + "test.cer");
 
-            Pkcs12Store pkstore = new Pkcs12Store(new FileStream(SOURCE_FOLDER + "test.p12", FileMode.Open, FileAccess.Read), "kspass".ToCharArray());
+            Pkcs12Store pkstore = new Pkcs12StoreBuilder().Build();
+            pkstore.Load(new FileStream(SOURCE_FOLDER + "test.p12", FileMode.Open, FileAccess.Read), "kspass".ToCharArray());
             string pkalias = null;
             foreach (object a in pkstore.Aliases)
             {

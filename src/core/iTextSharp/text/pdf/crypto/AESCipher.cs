@@ -56,7 +56,7 @@ namespace iTextSharp.text.pdf.crypto {
         
         /** Creates a new instance of AESCipher */
         public AESCipherCBCnoPad(bool forEncryption, byte[] key) {
-            IBlockCipher aes = new AesFastEngine();
+            IBlockCipher aes = new AesEngine();
             cbc = new CbcBlockCipher(aes);
             KeyParameter kp = new KeyParameter(key);
             cbc.Init(forEncryption, kp);
