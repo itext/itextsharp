@@ -10,9 +10,9 @@
     <projectUrl>https://itextpdf.com/</projectUrl>
     <iconUrl>https://itextpdf.com/sites/default/files/ITSC-avatar.png</iconUrl>
     <requireLicenseAcceptance>true</requireLicenseAcceptance>
-    <description>PLEASE NOTE: iTextSharp is EOL, and has been replaced by iText 7. Only security fixes will be added
+    <description>PLEASE NOTE: iTextSharp is EOL, and has been replaced by iText. Only security fixes will be added
 
-We HIGHLY recommend customers use iText 7 for new projects, and to consider moving existing projects from iTextSharp to iText 7 to benefit from the many improvements such as:
+We HIGHLY recommend customers use iText for new projects, and to consider moving existing projects from iTextSharp to iText to benefit from the many improvements such as:
 - HTML to PDF (PDF/A) conversion
 - PDF Redaction
 - SVG support
@@ -24,15 +24,15 @@ We HIGHLY recommend customers use iText 7 for new projects, and to consider movi
 - Extra practical add-ons
 - Encryption, hashing and digital signatures
 
-This DEPRECATED library adds extra functionality for iTextSharp. Please use iText 7 instead. iText 7 Community: https://www.nuget.org/packages/itext7/ and iText 7 pdfSweep addon: https://www.nuget.org/packages/itext7.pdfsweep/</description>
-    <summary>Extra functionality for DEPRECACTED iTextSharp PDF generation library written entirely in C# for the .NET platform. Please use iText 7 instead.
-iText 7 Community: https://www.nuget.org/packages/itext7/</summary>
+This DEPRECATED library adds extra functionality for iTextSharp. Please use iText instead. iText Community: https://www.nuget.org/packages/itext/ and iText pdfSweep addon: https://www.nuget.org/packages/itext.pdfsweep/</description>
+    <summary>Extra functionality for DEPRECACTED iTextSharp PDF generation library written entirely in C# for the .NET platform. Please use iText instead.
+iText Community: https://www.nuget.org/packages/itext/</summary>
     <copyright>Copyright (c) 1998-2022 iText Group NV</copyright>
     <language>en-US</language>
     <tags>itext itextsharp c# csharp .net pdf</tags>
   </metadata>
 
   <files>
-    <file src="src\extras\iTextAsian\bin\Release\iTextAsian.dll" target="lib\" />
+    <file src="src\extras\iTextAsian\bin\Release\net461\iTextAsian.dll" target="lib\net461" />
   </files>
 </package>
