@@ -1,4 +1,4 @@
-### **PLEASE NOTE: iTextSharp is EOL, and has been replaced by [iText 7][itext7]. Only security fixes will be added**
+### **PLEASE NOTE: iTextSharp is EOL, and has been replaced by [iText 7][itext]. Only security fixes will be added**
  
 We HIGHLY recommend customers use iText 7 for new projects, and to consider moving existing projects from iTextSharp to iText 7 to benefit from the many improvements such as:
  
@@ -51,4 +51,4 @@ Contact sales for more info: http://itextpdf.com/sales
 [building]: BUILDING.md
 [gratis]: https://en.wikipedia.org/wiki/Gratis_versus_libre
 [itext]: http://itextpdf.com/
-[itext7]: https://github.com/itext/itext7-dotnet
+[itext]: https://github.com/itext/itext-dotnet
