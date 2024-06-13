@@ -62,7 +62,7 @@ namespace iTextSharp.text {
         private const String _4SPACES = "    4spaces    ";
         private const String _TAB = "\t4spaces    ";
 
-        private const String RESOURCES = @"..\..\resources\text\ChunkTest\";
+        private const String RESOURCES = @"..\..\..\resources\text\ChunkTest\";
         private const String TARGET = @"ChunkTest\";
 
         private const String SOURCE11 = RESOURCES + "source11.pdf";

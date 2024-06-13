@@ -60,7 +60,7 @@ namespace iTextSharp.javaone.edition14
         /// <summary>
         /// The source file that is going to be parsed.
         /// </summary>
-        public static readonly string SRC = "../../resources/pdfs/page229.pdf";
+        public static readonly string SRC = "../../../resources/pdfs/page229.pdf";
 
         /// <summary>
         /// The resulting PDF after parsing for structure.

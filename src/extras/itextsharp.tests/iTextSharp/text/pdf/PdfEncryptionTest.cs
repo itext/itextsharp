@@ -61,7 +61,7 @@ using X509Certificate = System.Security.Cryptography.X509Certificates.X509Certif
 
 namespace itextsharp.tests.iTextSharp.text.pdf {
     class PdfEncryptionTest {
-        public static string SOURCE_FOLDER = @"..\..\resources\text\pdf\PdfEncryptionTest\";
+        public static string SOURCE_FOLDER = @"..\..\..\resources\text\pdf\PdfEncryptionTest\";
         public static string DEST_FOLDER = @"PdfEncryptionTest\";
 
 

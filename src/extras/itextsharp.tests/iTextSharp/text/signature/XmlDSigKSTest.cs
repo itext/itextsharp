@@ -55,10 +55,10 @@ namespace itextsharp.tests.resources.text.signature
     [TestFixture]
     public class XmlDSigKSTest : XmlDSigTest
     {
-        public const String KEYSTORE = @"..\..\resources\text\pdf\signature\ds-ks\pkcs12";
+        public const String KEYSTORE = @"..\..\..\resources\text\pdf\signature\ds-ks\pkcs12";
         public const string PASSWORD = "password";
-        public const String Src = @"..\..\resources\text\pdf\signature\xfa.pdf";
-        public const String CmpDir = @"..\..\resources\text\pdf\signature\ds-ks\";
+        public const String Src = @"..\..\..\resources\text\pdf\signature\xfa.pdf";
+        public const String CmpDir = @"..\..\..\resources\text\pdf\signature\ds-ks\";
         public const String DestDir = @"signatures\ds-ks\";
 
 

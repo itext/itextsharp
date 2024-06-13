@@ -61,7 +61,7 @@ namespace itextsharp.xmlworker.tests.iTextSharp.tool.xml.html {
  */
 
     internal class HTMLWorkerFactoryTest {
-        public static String RESOURCE_TEST_PATH = @"..\..\resources\";
+        public static String RESOURCE_TEST_PATH = @"..\..\..\resources\";
         private string TARGET = @"HTMLWorkerFactoryTest\";
 //	public static String SNIPPETS = "/snippets/";
         public static String SNIPPETS = "/bugs/";

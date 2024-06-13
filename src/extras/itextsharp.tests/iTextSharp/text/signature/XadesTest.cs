@@ -53,9 +53,9 @@ using iTextSharp.text.pdf.security;
 namespace itextsharp.tests.resources.text.signature {
     [TestFixture]
     public class XadesTest : XmlDSigTest {
-        public const String KEYSTORE = @"..\..\resources\text\pdf\signature\ds-ks\pkcs12";
+        public const String KEYSTORE = @"..\..\..\resources\text\pdf\signature\ds-ks\pkcs12";
         public const string PASSWORD = "password";
-        public const String Src = @"..\..\resources\text\pdf\signature\xfa.pdf";
+        public const String Src = @"..\..\..\resources\text\pdf\signature\xfa.pdf";
         public const String DestDirBes = @"signatures\xades-bes\";
         public const String DestDirEpes = @"signatures\xades-epes\";
 

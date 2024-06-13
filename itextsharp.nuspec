@@ -46,8 +46,8 @@ iText Community: https://www.nuget.org/packages/itext/</summary>
   </metadata>
 
   <files>
-    <file src="src\core\bin\Release\itextsharp.dll" target="lib\" />
-    <file src="src\core\bin\Release\itextsharp.xml" target="lib\" />
+    <file src="src\core\bin\Release\net461\itextsharp.dll" target="lib\net461" />
+    <file src="src\core\bin\Release\net461\itextsharp.xml" target="lib\net461" />
     <file src="src\notice.txt" target="" />
     <file src="gnu-agpl-v3.0.md" target="" />
     <file src="LICENSE.md" target="" />

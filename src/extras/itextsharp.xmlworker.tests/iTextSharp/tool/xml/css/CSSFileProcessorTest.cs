@@ -57,7 +57,7 @@ namespace itextsharp.xmlworker.tests.iTextSharp.tool.xml.css {
     public class CSSFileProcessorTest {
         private CssFileProcessor proc;
         private IFileRetrieve retriever;
-        private const string RESOURCES = @"..\..\resources\";
+        private const string RESOURCES = @"..\..\..\resources\";
 
         [SetUp]
         virtual public void SetUp() {

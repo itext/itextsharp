@@ -55,7 +55,7 @@ namespace iTextSharp.text.xml.xmp {
     public class XmpWriterTest {
 
         public static String OUT_FOLDER = "XmpWriterTest/";
-        public static String CMP_FOLDER = @"../../resources/text/xml/xmp/";
+        public static String CMP_FOLDER = @"../../../resources/text/xml/xmp/";
 
         [TestFixtureSetUp]
         virtual public void Init() {

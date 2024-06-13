@@ -50,7 +50,7 @@ using NUnit.Framework;
 
 namespace itextsharp.tests.iTextSharp.text.pdf {
     public class VerticalPositionTest {
-        private const string TEST_RESOURCES_PATH = @"..\..\resources\text\pdf\VerticalPositionTest\";
+        private const string TEST_RESOURCES_PATH = @"..\..\..\resources\text\pdf\VerticalPositionTest\";
         private const string OUTPUT_FOLDER = @"VerticalPositionTest\";
 
         [SetUp]

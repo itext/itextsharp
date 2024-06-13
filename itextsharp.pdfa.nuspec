@@ -10,9 +10,9 @@
     <projectUrl>https://itextpdf.com/</projectUrl>
     <iconUrl>https://itextpdf.com/sites/default/files/ITSC-avatar.png</iconUrl>
     <requireLicenseAcceptance>true</requireLicenseAcceptance>
-    <description>PLEASE NOTE: iTextSharp is EOL, and has been replaced by iText 7. Only security fixes will be added
+    <description>PLEASE NOTE: iTextSharp is EOL, and has been replaced by iText. Only security fixes will be added
 
-We HIGHLY recommend customers use iText 7 for new projects, and to consider moving existing projects from iTextSharp to iText 7 to benefit from the many improvements such as:
+We HIGHLY recommend customers use iText for new projects, and to consider moving existing projects from iTextSharp to iText to benefit from the many improvements such as:
 - HTML to PDF (PDF/A) conversion
 - PDF Redaction
 - SVG support
@@ -24,9 +24,9 @@ We HIGHLY recommend customers use iText 7 for new projects, and to consider movi
 - Extra practical add-ons
 - Encryption, hashing and digital signatures
 
-The iTextSharp.pdfa adds PDF/A-related functionality for iTextSharp. The same funcionality is present in pdfa module of iText 7 Community: https://www.nuget.org/packages/itext7/</description>
-    <summary>Extra functionality for DEPRECATED iTextSharp library for PDF generation written entirely in C# for the .NET platform. Please use itext7 instead.
-iText 7 Community: https://www.nuget.org/packages/itext7/</summary>
+The iTextSharp.pdfa adds PDF/A-related functionality for iTextSharp. The same funcionality is present in pdfa module of iText Community: https://www.nuget.org/packages/itext/</description>
+    <summary>Extra functionality for DEPRECATED iTextSharp library for PDF generation written entirely in C# for the .NET platform. Please use itext instead.
+iText Community: https://www.nuget.org/packages/itext/</summary>
     <copyright>Copyright (c) 1998-2022 iText Group NV</copyright>
     <language>en-US</language>
     <tags>itext itextsharp c# csharp .net pdf pdfa</tags>
@@ -36,7 +36,7 @@ iText 7 Community: https://www.nuget.org/packages/itext7/</summary>
   </metadata>
 
   <files> 
-    <file src="src\extras\itextsharp.pdfa\bin\Release\itextsharp.pdfa.dll" target="lib\" />
+    <file src="src\extras\itextsharp.pdfa\bin\Release\net461\itextsharp.pdfa.dll" target="lib\net461" />
     <file src="gnu-agpl-v3.0.md" target="" />
     <file src="LICENSE.md" target="" />
   </files>

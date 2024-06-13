@@ -66,7 +66,7 @@ namespace itextsharp.xmlworker.tests.iTextSharp.tool.xml.examples {
 
         private const String differenceImagePrefix = "difference";
 
-        protected static string RESOURCES = @"..\..\resources\com\itextpdf\";
+        protected static string RESOURCES = @"..\..\..\resources\com\itextpdf\";
 
         [SetUp]
         public virtual void SetUp() {

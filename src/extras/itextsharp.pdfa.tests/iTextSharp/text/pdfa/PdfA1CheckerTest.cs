@@ -61,7 +61,7 @@ namespace iTextSharp.text.pdfa
             }
         }
 
-        public const String RESOURCES = @"..\..\resources\text\pdfa\";
+        public const String RESOURCES = @"..\..\..\resources\text\pdfa\";
         public const String TARGET = "PdfA1CheckerTest\\";
         public const String OUT = TARGET + "pdf\\out";
 

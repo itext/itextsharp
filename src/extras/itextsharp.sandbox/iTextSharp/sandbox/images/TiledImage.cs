@@ -49,7 +49,7 @@ namespace iTextSharp.sandbox.images
     [WrapToTest]
     public class TiledImage
     {
-        public static readonly string IMAGE = "../../resources/images/bruno_ingeborg.jpg";
+        public static readonly string IMAGE = "../../../resources/images/bruno_ingeborg.jpg";
         public static readonly string DEST = "results/images/tiled_image.pdf";
 
         public static void Main(string[] args)

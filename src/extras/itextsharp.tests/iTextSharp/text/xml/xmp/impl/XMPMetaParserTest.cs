@@ -34,7 +34,7 @@ namespace iText.Kernel.XMP.Impl
     public class XMPMetaParserTest
     {
         private const String XMP_WITH_XXE = "<?xpacket begin=\"\" id=\"W5M0MpCehiHzreSzNTczkc9d\"?>\n"
-                                            + "<!DOCTYPE foo [ <!ENTITY xxe SYSTEM \"../../resources/text/xmp/impl/xxe-data.txt\" > ]>\n"
+                                            + "<!DOCTYPE foo [ <!ENTITY xxe SYSTEM \"../../../resources/text/xmp/impl/xxe-data.txt\" > ]>\n"
                                             + "<x:xmpmeta xmlns:x=\"adobe:ns:meta/\">\n"
                                             + "    <rdf:RDF xmlns:rdf=\"http://www.w3.org/1999/02/22-rdf-syntax-ns#\">\n"
                                             + "        <rdf:Description rdf:about=\"\" xmlns:pdfaid=\"http://www.aiim.org/pdfa/ns/id/\">\n"

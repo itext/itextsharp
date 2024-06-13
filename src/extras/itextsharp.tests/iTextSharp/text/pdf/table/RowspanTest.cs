@@ -53,7 +53,7 @@ namespace itextsharp.tests.iTextSharp.text.pdf.table {
      */
     [TestFixture]
     public class RowspanTest {
-        private static readonly String CMP_FOLDER = @"..\..\resources\text\pdf\table\RowspanTest\";
+        private static readonly String CMP_FOLDER = @"..\..\..\resources\text\pdf\table\RowspanTest\";
         private static readonly String OUTPUT_FOLDER = @"table\RowspanTest\";
 
         [TestFixtureSetUp]
