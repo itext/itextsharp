@@ -49,6 +49,7 @@ using Org.BouncyCastle.Ocsp;
 using Org.BouncyCastle.Security;
 using Org.BouncyCastle.X509;
 using iTextSharp.text.log;
+using Org.BouncyCastle.Asn1;
 using Org.BouncyCastle.Asn1.Ocsp;
 using Org.BouncyCastle.Security.Certificates;
 using Org.BouncyCastle.Utilities.Date;
@@ -145,7 +146,7 @@ namespace iTextSharp.text.pdf.security {
 				    continue;
 			    }
 			    // check if the OCSP response was valid at the time of signing
-                DateTimeObject nextUpdate = resp[i].NextUpdate;
+			    DateTime? nextUpdate = resp[i].NextUpdate;
                 DateTime nextUpdateDate;
                 if (nextUpdate == null) {
                     nextUpdateDate = resp[i].ThisUpdate.AddSeconds(180);
@@ -203,10 +204,10 @@ namespace iTextSharp.text.pdf.security {
                         } catch (Exception ex) {
                             continue;
                         }
-                        IList keyPurposes = null;
+                        IList<DerObjectIdentifier> keyPurposes = null;
                         try {
                             keyPurposes = tempCert.GetExtendedKeyUsage();
-                            if ((keyPurposes != null) && keyPurposes.Contains(id_kp_OCSPSigning) && IsSignatureValid(ocspResp, tempCert)) {
+                            if ((keyPurposes != null) && keyPurposes.Contains(new DerObjectIdentifier(id_kp_OCSPSigning)) && IsSignatureValid(ocspResp, tempCert)) {
                                 responderCert = tempCert;
                                 break;
                             }
@@ -247,7 +248,7 @@ namespace iTextSharp.text.pdf.security {
             // validating ocsp signers certificate
             // Check if responders certificate has id-pkix-ocsp-nocheck extension,
             // in which case we do not validate (perform revocation check on) ocsp certs for lifetime of certificate
-            if (responderCert.GetExtensionValue(OcspObjectIdentifiers.PkixOcspNocheck.Id) == null) {
+            if (responderCert.GetExtensionValue(new DerObjectIdentifier(OcspObjectIdentifiers.PkixOcspNocheck.Id)) == null) {
                 X509Crl crl;
                 try {
                     X509CrlParser crlParser = new X509CrlParser();

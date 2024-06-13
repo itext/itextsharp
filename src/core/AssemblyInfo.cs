@@ -19,5 +19,5 @@ using Versions.Attributes;
 
 [assembly: KeyVersion("3.1.1.0")]
 
-[assembly: AssemblyVersion("5.5.13.3")]
-[assembly: AssemblyInformationalVersion("5.5.13.3")]
+[assembly: AssemblyVersion("5.5.13.4")]
+[assembly: AssemblyInformationalVersion("5.5.13.4")]

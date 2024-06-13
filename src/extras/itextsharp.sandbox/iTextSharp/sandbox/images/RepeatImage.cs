@@ -50,7 +50,7 @@ namespace iTextSharp.sandbox.images
     [WrapToTest]
     public class RepeatImage
     {
-        public static readonly string SRC = "../../resources/pdfs/chinese.pdf";
+        public static readonly string SRC = "../../../resources/pdfs/chinese.pdf";
         public static readonly string DEST = "results/images/chinese.pdf";
 
         public static void Main(string[] args)

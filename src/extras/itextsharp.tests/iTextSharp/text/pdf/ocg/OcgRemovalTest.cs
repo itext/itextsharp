@@ -49,7 +49,7 @@ using iTextSharp.testutils;
 
 namespace itextsharp.tests.iTextSharp.text.pdf.ocg {
     public class OcgRemovalTest {
-        private static readonly String INPUT_DIR = @"..\..\resources\text\pdf\ocg\";
+        private static readonly String INPUT_DIR = @"..\..\..\resources\text\pdf\ocg\";
         private static readonly String INPUT = INPUT_DIR + "Example.pdf";
         private static readonly String CMP = INPUT_DIR + "cmp_Example.pdf";
         private static readonly String OUTPUT_DIR = "OCGTest/";

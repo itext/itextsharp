@@ -55,7 +55,7 @@ namespace itextsharp.xmlworker.tests.iTextSharp.tool.xml.html {
  */
 
     internal class SamplesTest {
-        public static String RESOURCE_TEST_PATH = @"..\..\resources\";
+        public static String RESOURCE_TEST_PATH = @"..\..\..\resources\";
         private string TARGET = @"SamplesTest\";
         private List<String> list = new List<String>();
 

@@ -50,7 +50,7 @@ using NUnit.Framework;
 namespace itextsharp.tests.iTextSharp.text.pdf.cs {
     public class LabColorSpaceTest {
         public const String DEST_FOLDER = @"cs\LabColorSpaceTest\";
-        private const string TEST_RESOURCES_PATH = @"..\..\resources\text\pdf\cs\LabColorSpaceTest\";
+        private const string TEST_RESOURCES_PATH = @"..\..\..\resources\text\pdf\cs\LabColorSpaceTest\";
 
         [SetUp]
         public virtual void Init() {

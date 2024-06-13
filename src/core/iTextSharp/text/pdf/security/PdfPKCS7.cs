@@ -305,7 +305,7 @@ namespace iTextSharp.text.pdf.security {
                         EssCertIDv2 cerv2 = cerv2m[0];
                         AlgorithmIdentifier ai2 = cerv2.HashAlgorithm;
                         byte[] enc2 = signCert.GetEncoded();
-                        IDigest m2 = DigestUtilities.GetDigest(ai2.ObjectID.Id);
+                        IDigest m2 = DigestUtilities.GetDigest(ai2.Algorithm);
                         byte[] signCertHash = DigestAlgorithms.Digest(m2, enc2);
                         byte[] hs2 = cerv2.GetCertHash();
                         if (!Arrays.AreEqual(signCertHash, hs2))
@@ -606,7 +606,7 @@ namespace iTextSharp.text.pdf.security {
                 digest = sig.GenerateSignature();
             MemoryStream bOut = new MemoryStream();
             
-            Asn1OutputStream dout = new Asn1OutputStream(bOut);
+            Asn1OutputStream dout = Asn1OutputStream.Create(bOut);
             dout.WriteObject(new DerOctetString(digest));
             dout.Close();
             
@@ -753,7 +753,7 @@ namespace iTextSharp.text.pdf.security {
             
             MemoryStream bOut = new MemoryStream();
             
-            Asn1OutputStream dout = new Asn1OutputStream(bOut);
+            Asn1OutputStream dout = Asn1OutputStream.Create(bOut);
             dout.WriteObject(new DerSequence(whole));
             dout.Close();
             

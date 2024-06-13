@@ -31,7 +31,7 @@ using System.Text;
 
 namespace itextsharp.tests.iTextSharp.text.pdf {
     public class BarcodeDatamatrixTest {
-        private String cmpFolder = @"..\..\resources\text\pdf\BarcodeDatamatrix\";
+        private String cmpFolder = @"..\..\..\resources\text\pdf\BarcodeDatamatrix\";
         private String outFolder = @"BarcodeDatamatrix\";
 
         [SetUp]

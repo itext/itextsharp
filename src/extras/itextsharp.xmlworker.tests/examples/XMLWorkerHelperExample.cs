@@ -56,7 +56,7 @@ namespace itextsharp.xmlworker.tests.examples {
      */
     internal class XMLWorkerHelperExample : Setup {
         private const string TARGET = @"";
-        private const string RESOURCES = @"..\..\resources\";
+        private const string RESOURCES = @"..\..\..\resources\";
 
         /**
 	     * Parse html to a PDF.

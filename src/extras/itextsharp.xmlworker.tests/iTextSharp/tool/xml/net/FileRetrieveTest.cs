@@ -58,7 +58,7 @@ namespace itextsharp.xmlworker.tests.iTextSharp.tool.xml.net {
         private FileRetrieveImpl retriever;
         private string expected;
         private string actual;
-        private const string RESOURCES = @"..\..\resources\";
+        private const string RESOURCES = @"..\..\..\resources\";
         private const string TARGET = @"FileRetrieveTest\";
 
         private static FileStream output;

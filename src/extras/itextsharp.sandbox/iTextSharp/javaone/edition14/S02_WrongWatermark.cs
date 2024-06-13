@@ -55,7 +55,7 @@ namespace iTextSharp.javaone.edition14
         /// <summary>
         /// The original PDF file. 
         /// </summary>
-        public static readonly string SRC = "../../resources/pdfs/superman.pdf";
+        public static readonly string SRC = "../../../resources/pdfs/superman.pdf";
 
         /// <summary>
         /// The resulting PDF file.

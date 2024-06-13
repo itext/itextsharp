@@ -50,7 +50,7 @@ namespace itextsharp.tests.iTextSharp.text.pdf.parser
 {
     class PdfImageObjectTest
     {
-        string TEST_RESOURCES_PATH = @"..\..\resources\text\pdf\parser\PdfImageObjectTest\";
+        string TEST_RESOURCES_PATH = @"..\..\..\resources\text\pdf\parser\PdfImageObjectTest\";
 
         private void TestFile(String filename, int page, String objectid)
         {

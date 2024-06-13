@@ -55,7 +55,7 @@ namespace itextsharp.tests.iTextSharp.text.pdf.pdfcleanup {
 
     class PdfCleanUpProcessorTest {
 
-        private static readonly string INPUT_PATH = @"..\..\resources\text\pdf\pdfcleanup\PdfCleanUpProcessorTest\";
+        private static readonly string INPUT_PATH = @"..\..\..\resources\text\pdf\pdfcleanup\PdfCleanUpProcessorTest\";
         private static readonly string OUTPUT_PATH = @"PdfCleanUpProcessorTest\";
 
         [Test, TestCaseSourceAttribute("TestData")]

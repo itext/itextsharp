@@ -53,7 +53,7 @@ namespace itextsharp.tests.iTextSharp.text.pdf
 {
     class NamedDestinationsTest {
 
-        private String srcFolder = @"..\..\resources\text\pdf\NamedDestinationsTest\";
+        private String srcFolder = @"..\..\..\resources\text\pdf\NamedDestinationsTest\";
         private String outFolder = "com/itextpdf/test/pdf/NamedDestinationsTest/";
 
         [SetUp]

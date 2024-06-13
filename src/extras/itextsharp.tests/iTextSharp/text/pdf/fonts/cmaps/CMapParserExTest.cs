@@ -48,7 +48,7 @@ namespace itextsharp.tests.iTextSharp.text.pdf.fonts.cmaps
 {
     class CMapParserExTest
     {
-        private const string TEST_RESOURCES_PATH = @"..\..\resources\text\pdf\fonts\cmaps\CMapParserExTest\";
+        private const string TEST_RESOURCES_PATH = @"..\..\..\resources\text\pdf\fonts\cmaps\CMapParserExTest\";
 
         [SetUp]
         virtual public void SetUp()

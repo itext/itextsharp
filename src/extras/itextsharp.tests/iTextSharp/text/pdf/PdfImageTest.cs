@@ -50,7 +50,7 @@ using NUnit.Framework;
 namespace itextsharp.tests.iTextSharp.text.pdf {
     public class PdfImageTest {
         private const String target = "PdfImageTest/";
-        private const String source = "../../resources/text/pdf/PdfImageTest/";
+        private const String source = "../../../resources/text/pdf/PdfImageTest/";
 
         [SetUp]
         public static void setUp() {

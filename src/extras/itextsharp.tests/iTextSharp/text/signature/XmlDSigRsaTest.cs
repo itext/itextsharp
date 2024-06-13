@@ -54,9 +54,9 @@ namespace itextsharp.tests.resources.text.signature
     [TestFixture]
     public class XmlDSigRsaTest : XmlDSigTest {
 
-        public const String KeyStore = @"..\..\resources\text\pdf\signature\ds-rsa\key";
-        public const String Src = @"..\..\resources\text\pdf\signature\xfa.pdf";
-        public const String CmpDir = @"..\..\resources\text\pdf\signature\ds-rsa\";
+        public const String KeyStore = @"..\..\..\resources\text\pdf\signature\ds-rsa\key";
+        public const String Src = @"..\..\..\resources\text\pdf\signature\xfa.pdf";
+        public const String CmpDir = @"..\..\..\resources\text\pdf\signature\ds-rsa\";
         public const String DestDir = @"signatures\ds-rsa\";
 
         RSA publicKey;

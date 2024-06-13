@@ -53,7 +53,7 @@ using NUnit.Framework;
 namespace itextsharp.tests.iTextSharp.text.pdf.table {
     [TestFixture]
     class SplitTableTest {
-        private static readonly String cmpFolder = @"..\..\resources\text\pdf\table\SplitTableTest\";
+        private static readonly String cmpFolder = @"..\..\..\resources\text\pdf\table\SplitTableTest\";
         private static readonly String outFolder = @"table\SplitTableTest\";
 
         [TestFixtureSetUp]

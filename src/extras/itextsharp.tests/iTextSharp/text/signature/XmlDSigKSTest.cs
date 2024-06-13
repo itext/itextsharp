@@ -55,10 +55,10 @@ namespace itextsharp.tests.resources.text.signature
     [TestFixture]
     public class XmlDSigKSTest : XmlDSigTest
     {
-        public const String KEYSTORE = @"..\..\resources\text\pdf\signature\ds-ks\pkcs12";
+        public const String KEYSTORE = @"..\..\..\resources\text\pdf\signature\ds-ks\pkcs12";
         public const string PASSWORD = "password";
-        public const String Src = @"..\..\resources\text\pdf\signature\xfa.pdf";
-        public const String CmpDir = @"..\..\resources\text\pdf\signature\ds-ks\";
+        public const String Src = @"..\..\..\resources\text\pdf\signature\xfa.pdf";
+        public const String CmpDir = @"..\..\..\resources\text\pdf\signature\ds-ks\";
         public const String DestDir = @"signatures\ds-ks\";
 
 
@@ -77,7 +77,8 @@ namespace itextsharp.tests.resources.text.signature
                 ks.Write(buffer, 0, buffer.Length);
                 ks.Position = 0;
             }
-            Pkcs12Store store = new Pkcs12Store(ks, PASSWORD.ToCharArray());
+            Pkcs12Store store = new Pkcs12StoreBuilder().Build();
+            store.Load(ks, PASSWORD.ToCharArray());
             String alias = "";
             List<X509Certificate> chain = new List<X509Certificate>();
             // searching for private key
@@ -118,7 +119,8 @@ namespace itextsharp.tests.resources.text.signature
                 ks.Write(buffer, 0, buffer.Length);
                 ks.Position = 0;
             }
-            Pkcs12Store store = new Pkcs12Store(ks, PASSWORD.ToCharArray());
+            Pkcs12Store store = new Pkcs12StoreBuilder().Build();
+            store.Load(ks, PASSWORD.ToCharArray());
             String alias = "";
             List<X509Certificate> chain = new List<X509Certificate>();
             // searching for private key

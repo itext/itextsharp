@@ -2,7 +2,7 @@
 <package xmlns="http://schemas.microsoft.com/packaging/2011/08/nuspec.xsd">
   <metadata>
     <id>iTextSharp</id>
-    <version>5.5.13.3</version>
+    <version>5.5.13.4</version>
     <title>iTextSharp</title>
     <authors>iText Software</authors>
     <owners>Bruno Lowagie,Paulo Soares</owners>
@@ -10,9 +10,9 @@
     <projectUrl>https://itextpdf.com/</projectUrl>
     <iconUrl>https://itextpdf.com/sites/default/files/ITSC-avatar.png</iconUrl>
     <requireLicenseAcceptance>true</requireLicenseAcceptance>
-    <description>PLEASE NOTE: iTextSharp is EOL, and has been replaced by iText 7. Only security fixes will be added
+    <description>PLEASE NOTE: iTextSharp is EOL, and has been replaced by iText. Only security fixes will be added
 
-We HIGHLY recommend customers use iText 7 for new projects, and to consider moving existing projects from iTextSharp to iText 7 to benefit from the many improvements such as:
+We HIGHLY recommend customers use iText for new projects, and to consider moving existing projects from iTextSharp to iText to benefit from the many improvements such as:
 - HTML to PDF (PDF/A) conversion
 - PDF Redaction
 - SVG support
@@ -26,26 +26,28 @@ We HIGHLY recommend customers use iText 7 for new projects, and to consider movi
 
 iText is a PDF library that allows you to CREATE, ADAPT, INSPECT and MAINTAIN documents in the Portable Document Format (PDF), allowing you to add PDF functionality to your software projects with ease.  We even have documentation to help you get coding.
 
-iText 7 is available under AGPL and Commercial license. iText 7 Community: https://www.nuget.org/packages/itext7/
+iText is available under AGPL and Commercial license. iText Community: https://www.nuget.org/packages/itext/
 
-iText 7 is a complete re-write of iText 5, allowing you to choose your adventure with add-ons, all based on a simple, modular code structure that is easy to use and well documented.
+iText is a complete re-write of iText 5, allowing you to choose your adventure with add-ons, all based on a simple, modular code structure that is easy to use and well documented.
 
-iText 7 includes pdfDebug, the first debugging tool that gives you a clear overview of your content streams and document structure as well as pdfCalligraph, allowing you to leverage advanced typography.
+iText includes pdfDebug, the first debugging tool that gives you a clear overview of your content streams and document structure as well as pdfCalligraph, allowing you to leverage advanced typography.
 
 Several iText engineers are actively supporting the project on StackOverflow: https://stackoverflow.com/questions/tagged/itext</description>
-    <summary>iTextSharp is a DEPRECATED library for PDF generation written entirely in C# for the .NET platform. Please use iText 7 instead.
-iText 7 Community: https://www.nuget.org/packages/itext7/</summary>
+    <summary>iTextSharp is a DEPRECATED library for PDF generation written entirely in C# for the .NET platform. Please use iText instead.
+iText Community: https://www.nuget.org/packages/itext/</summary>
     <copyright>Copyright (c) 1998-2022 iText Group NV</copyright>
     <language>en-US</language>
     <tags>itext itextsharp c# .net csharp pdf</tags>
-	<dependencies>
-      <dependency id="BouncyCastle" version="1.8.9" />
+    <dependencies>
+      <group targetFramework="net461">
+        <dependency id="BouncyCastle.Cryptography" version="2.4.0" />
+      </group>
     </dependencies>
   </metadata>
 
   <files>
-    <file src="src\core\bin\Release\itextsharp.dll" target="lib\" />
-    <file src="src\core\bin\Release\itextsharp.xml" target="lib\" />
+    <file src="src\core\bin\Release\net461\itextsharp.dll" target="lib\net461" />
+    <file src="src\core\bin\Release\net461\itextsharp.xml" target="lib\net461" />
     <file src="src\notice.txt" target="" />
     <file src="gnu-agpl-v3.0.md" target="" />
     <file src="LICENSE.md" target="" />

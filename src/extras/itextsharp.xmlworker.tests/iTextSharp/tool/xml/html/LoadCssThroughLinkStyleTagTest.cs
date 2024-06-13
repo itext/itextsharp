@@ -72,7 +72,7 @@ namespace itextsharp.xmlworker.tests.iTextSharp.tool.xml.html {
         private XMLParser p;
         private CssFilesImpl cssFiles;
 
-        private const string RESOURCES = @"..\..\resources\";
+        private const string RESOURCES = @"..\..\..\resources\";
 
         [SetUp]
         virtual public void SetUp() {

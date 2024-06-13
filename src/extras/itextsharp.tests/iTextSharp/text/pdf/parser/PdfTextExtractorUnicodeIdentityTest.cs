@@ -52,7 +52,7 @@ using NUnit.Framework;
 namespace itextsharp.tests.iTextSharp.text.pdf.parser {
     internal class PdfTextExtractorUnicodeIdentityTest {
 
-        private const string TEST_RESOURCES_PATH = @"..\..\resources\text\pdf\parser\PdfTextExtractorUnicodeIdentityTest\";
+        private const string TEST_RESOURCES_PATH = @"..\..\..\resources\text\pdf\parser\PdfTextExtractorUnicodeIdentityTest\";
 
         [Test]
         virtual public void test() {
