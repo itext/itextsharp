@@ -55,7 +55,7 @@ namespace itextsharp.tests.iTextSharp.text.pdf.parser {
         
         public const int FIRST_PAGE = 1;
         public const int FIRST_ELEMENT_INDEX = 0;
-        private const string TEST_RESOURCES_PATH = @"..\..\resources\text\pdf\parser\TextRenderInfoTest\";
+        private const string TEST_RESOURCES_PATH = @"..\..\..\resources\text\pdf\parser\TextRenderInfoTest\";
 
         [Test]
         public virtual void TestCharacterRenderInfos() {

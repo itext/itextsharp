@@ -64,7 +64,7 @@ namespace itextsharp.xmlworker.tests.iTextSharp.tool.xml.html.tps {
         private static Tag I = new Tag("i");
         private Image i = new Image();
         private IWorkerContext workerContextImpl;
-        private const String RESOURCES = @"..\..\resources\";
+        private const String RESOURCES = @"..\..\..\resources\";
 
         [SetUp]
         virtual public void SetUp() {

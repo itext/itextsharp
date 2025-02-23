@@ -47,7 +47,7 @@ using NUnit.Framework;
 
 namespace itextsharp.xmlworker.tests.iTextSharp.tool.xml.html.pdfelement {
     public class NoNewLineParagraphTest {
-        private static String IMAGE = @"..\..\resources\images.jpg";
+        private static String IMAGE = @"..\..\..\resources\images.jpg";
         private NoNewLineParagraph paragraph;
         private IElement jpegImage;
 

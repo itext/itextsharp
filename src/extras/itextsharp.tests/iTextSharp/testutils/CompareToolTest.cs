@@ -49,7 +49,7 @@ using NUnit.Framework;
 namespace itextsharp.tests.iTextSharp.testutils {
     class CompareToolTest {
 
-        private const string TEST_RESOURCES_PATH = @"..\..\resources\testutils\CompareToolTest\";
+        private const string TEST_RESOURCES_PATH = @"..\..\..\resources\testutils\CompareToolTest\";
         private const string OUT_FOLDER = @"CompareToolTest\";
 
         [SetUp]

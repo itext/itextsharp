@@ -50,7 +50,7 @@ namespace itextsharp.tests.iTextSharp.text.pdf.fonts
 {
     public class FontEmbeddingTest
     {
-        private static string srcFolder = @"..\..\resources\text\pdf\fonts\NotoFont\";
+        private static string srcFolder = @"..\..\..\resources\text\pdf\fonts\NotoFont\";
 
         [Test]
         public void TestNotoFont()

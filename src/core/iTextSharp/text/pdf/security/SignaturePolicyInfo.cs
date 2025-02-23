@@ -10,7 +10,7 @@
     FOR ANY PART OF THE COVERED WORK IN WHICH THE COPYRIGHT IS OWNED BY
     ITEXT GROUP. ITEXT GROUP DISCLAIMS THE WARRANTY OF NON INFRINGEMENT
     OF THIRD PARTY RIGHTS
-    
+
     This program is distributed in the hope that it will be useful, but
     WITHOUT ANY WARRANTY; without even the implied warranty of MERCHANTABILITY
     or FITNESS FOR A PARTICULAR PURPOSE.
@@ -20,15 +20,15 @@
     the Free Software Foundation, Inc., 51 Franklin Street, Fifth Floor,
     Boston, MA, 02110-1301 USA, or download the license from the following URL:
     http://itextpdf.com/terms-of-use/
-    
+
     The interactive user interfaces in modified source and object code versions
     of this program must display Appropriate Legal Notices, as required under
     Section 5 of the GNU Affero General Public License.
-    
+
     In accordance with Section 7(b) of the GNU Affero General Public License,
     a covered work must retain the producer line in every PDF that is created
     or manipulated using iText.
-    
+
     You can be released from the requirements of the license by purchasing
     a commercial license. Buying such a license is mandatory as soon as you
     develop commercial activities involving the iText software without
@@ -36,7 +36,7 @@
     These activities include: offering paid services to customers as an ASP,
     serving PDFs on the fly in a web application, shipping iText with a closed
     source product.
-    
+
     For more information, please contact iText Software Corp. at this
     address: sales@itextpdf.com
  */
@@ -50,10 +50,10 @@ namespace iTextSharp.text.pdf.security {
     /**
      * Class that encapsulates the signature policy information
      * @author J. Arturo
-     * 
+     *
      * Sample:
-     * 
-     *      SignaturePolicyInfo spi = new SignaturePolicyInfo("2.16.724.1.3.1.1.2.1.9", 
+     *
+     *      SignaturePolicyInfo spi = new SignaturePolicyInfo("2.16.724.1.3.1.1.2.1.9",
      *      "G7roucf600+f03r/o0bAOQ6WAs0=", "SHA-1", "https://sede.060.gob.es/politica_de_firma_anexo_1.pdf");
      */
 
@@ -118,7 +118,8 @@ namespace iTextSharp.text.pdf.security {
 
             signaturePolicyIdentifier = new SignaturePolicyIdentifier(new SignaturePolicyId(
                         DerObjectIdentifier.GetInstance(new DerObjectIdentifier(this.PolicyIdentifier.Replace("urn:oid:", ""))),
-                        new OtherHashAlgAndValue(new AlgorithmIdentifier(new DerObjectIdentifier(algId)), new DerOctetString(this.PolicyHash)), spqi));
+                        new OtherHashAlgAndValue(new AlgorithmIdentifier(new DerObjectIdentifier(algId)),
+                            new DerOctetString(this.PolicyHash)), spqi));
 
             return signaturePolicyIdentifier;
         }

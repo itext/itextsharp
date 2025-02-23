@@ -74,7 +74,7 @@ namespace iTextSharp.sandbox.fonts
             // step 3
             document.Open();
             // step 4
-            BaseFont bf = BaseFont.CreateFont("../../resources/fonts/PT_Serif-Web-Regular.ttf", BaseFont.WINANSI,
+            BaseFont bf = BaseFont.CreateFont("../../../resources/fonts/PT_Serif-Web-Regular.ttf", BaseFont.WINANSI,
                 BaseFont.EMBEDDED);
             Font f = new Font(bf, 12);
             document.Add(new Paragraph("This is a test with Times New Roman.", f));

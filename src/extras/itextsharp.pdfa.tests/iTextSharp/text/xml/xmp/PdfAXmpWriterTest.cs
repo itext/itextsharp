@@ -54,7 +54,7 @@ namespace iTextSharp.text.xml.xmp {
     public class PdfAXmpWriterTest {
 
         public static String OUT_FOLDER = "PdfAXmpWriterTest/";
-        public static String CMP_FOLDER = @"../../resources/text/xml/xmp/";
+        public static String CMP_FOLDER = @"../../../resources/text/xml/xmp/";
 
         [TestFixtureSetUp]
         virtual public void Init() {
@@ -90,10 +90,10 @@ namespace iTextSharp.text.xml.xmp {
             document.AddLanguage("en_US");
 
             // step 4
-            Font font = FontFactory.GetFont("../../resources/text/pdfa/FreeMonoBold.ttf", BaseFont.WINANSI,
+            Font font = FontFactory.GetFont("../../../resources/text/pdfa/FreeMonoBold.ttf", BaseFont.WINANSI,
                                             BaseFont.EMBEDDED, 12);
             document.Add(new Paragraph("Hello World", font));
-            FileStream iccStream = new FileStream("../../resources/text/pdfa/sRGB Color Space Profile.icm",
+            FileStream iccStream = new FileStream("../../../resources/text/pdfa/sRGB Color Space Profile.icm",
                                                  FileMode.Open);
             ICC_Profile icc = ICC_Profile.GetInstance(iccStream);
             iccStream.Close();
@@ -120,11 +120,11 @@ namespace iTextSharp.text.xml.xmp {
             writer.CreateXmpMetadata();
             // step 3
             document.Open();
-            Font font = FontFactory.GetFont("../../resources/text/pdfa/FreeMonoBold.ttf", BaseFont.WINANSI,
+            Font font = FontFactory.GetFont("../../../resources/text/pdfa/FreeMonoBold.ttf", BaseFont.WINANSI,
                                             BaseFont.EMBEDDED, 12);
             document.Add(new Paragraph("Hello World", font));
 
-            FileStream iccStream = new FileStream("../../resources/text/pdfa/sRGB Color Space Profile.icm",
+            FileStream iccStream = new FileStream("../../../resources/text/pdfa/sRGB Color Space Profile.icm",
                                                  FileMode.Open);
             ICC_Profile icc = ICC_Profile.GetInstance(iccStream);
             iccStream.Close();
@@ -212,11 +212,11 @@ namespace iTextSharp.text.xml.xmp {
             document.Open();
             document.AddLanguage("en_US");
             // step 4
-            Font font = FontFactory.GetFont("../../resources/text/pdfa/FreeMonoBold.ttf", BaseFont.WINANSI,
+            Font font = FontFactory.GetFont("../../../resources/text/pdfa/FreeMonoBold.ttf", BaseFont.WINANSI,
                                             BaseFont.EMBEDDED, 12);
             document.Add(new Paragraph("Hello World", font));
 
-            FileStream iccStream = new FileStream("../../resources/text/pdfa/sRGB Color Space Profile.icm",
+            FileStream iccStream = new FileStream("../../../resources/text/pdfa/sRGB Color Space Profile.icm",
                                                  FileMode.Open);
             ICC_Profile icc = ICC_Profile.GetInstance(iccStream);
             iccStream.Close();

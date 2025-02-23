@@ -258,10 +258,17 @@ namespace itextsharp.tests.resources.text.signature
             XmlElement signatureElement = (XmlElement)xmlDocument.GetElementsByTagName("Signature")[0];
             XmlElement signedInfo = (XmlElement)signatureElement.GetElementsByTagName("SignedInfo")[0];
             
-            byte[] signedInfoByteRange = CalculateC14nByteRange(signedInfo, xmlDocument);
-            
+            // Calculate SignedInfo byte range
+            XmlElement signedInfoClone = (XmlElement)signedInfo.CloneNode(true);
+            NormalizeNamespaces(signedInfo.CreateNavigator(), signedInfoClone.CreateNavigator(), 
+                SecurityConstants.XADES_132_URI);
+            XmlDocument xmlDoc = new XmlDocument(xmlDocument.NameTable);
+            xmlDoc.LoadXml(signedInfoClone.OuterXml);
+            XmlDsigC14NTransform c14nTransform = new XmlDsigC14NTransform();
+            c14nTransform.LoadInput(xmlDoc);
+            byte[] signedInfoByteRange = ((MemoryStream)c14nTransform.GetOutput()).ToArray();
+
             XmlNodeList references = signatureElement.GetElementsByTagName("Reference");
-            
 
             foreach (XmlElement reference in references)
             {
@@ -348,12 +355,19 @@ namespace itextsharp.tests.resources.text.signature
         }
 
         private static void NormalizeNamespaces(XPathNavigator src, XPathNavigator dest) {
+            NormalizeNamespaces(src, dest, null);
+        }
+
+        private static void NormalizeNamespaces(XPathNavigator src, XPathNavigator dest, string excludedNs) {
             IDictionary<string, string> dictLocal = src.GetNamespacesInScope(XmlNamespaceScope.ExcludeXml);
             IDictionary<string, string> dictExclude = dest.GetNamespacesInScope(XmlNamespaceScope.Local);
 
-            foreach(KeyValuePair<string, string> pair in dictLocal)
-                if(!dictExclude.ContainsKey(pair.Key))
-                    dest.CreateAttribute("xmlns", pair.Key, "http://www.w3.org/2000/xmlns/", pair.Value);
+            foreach (KeyValuePair<string, string> pair in dictLocal) {
+                if (!dictExclude.ContainsKey(pair.Key) && !pair.Value.Equals(excludedNs)) {
+                    dest.CreateAttribute("xmlns", pair.Key, 
+                        "http://www.w3.org/2000/xmlns/", pair.Value);
+                }
+            }
         }
     }
 }

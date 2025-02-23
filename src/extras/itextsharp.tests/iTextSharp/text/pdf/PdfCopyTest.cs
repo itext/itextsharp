@@ -55,7 +55,7 @@ using NUnit.Framework;
 namespace itextsharp.tests.iTextSharp.text.pdf
 {
     class PdfCopyTest {
-        private const string RESOURCES = @"..\..\resources\text\pdf\PdfCopyTest\";
+        private const string RESOURCES = @"..\..\..\resources\text\pdf\PdfCopyTest\";
 
         [SetUp]
         virtual public void SetUp() {

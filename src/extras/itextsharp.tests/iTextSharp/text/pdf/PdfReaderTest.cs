@@ -67,7 +67,7 @@ namespace itextsharp.tests.iTextSharp.text.pdf
             TestResourceUtils.PurgeTempFiles();
         }
 
-        string TEST_RESOURCES_PATH = @"..\..\resources\text\pdf\PdfReaderTest\";
+        string TEST_RESOURCES_PATH = @"..\..\..\resources\text\pdf\PdfReaderTest\";
 
         [Test]
         public void TestPRTokenizer() {

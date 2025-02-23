@@ -59,7 +59,7 @@ namespace itextsharp.xmlworker.tests.iTextSharp.tool.xml.parser {
         private static List<String> list;
         private static StringBuilder writer;
 
-        private const String RESOURCES = @"..\..\resources\com\itextpdf\tool\xml\parser\";
+        private const String RESOURCES = @"..\..\..\resources\com\itextpdf\tool\xml\parser\";
         private const String TARGET = @"ParserTest\";
 
         [SetUp]

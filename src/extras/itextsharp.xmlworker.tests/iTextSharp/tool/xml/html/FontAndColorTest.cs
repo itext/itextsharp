@@ -57,7 +57,7 @@ namespace itextsharp.xmlworker.tests.iTextSharp.tool.xml.html {
     internal class FontAndColorTest {
         private static List<IElement> elementList;
 
-        private const string RESOURCES = @"..\..\resources\";
+        private const string RESOURCES = @"..\..\..\resources\";
 
         private class CustomElementHandler : IElementHandler {
             virtual public void Add(IWritable w) {

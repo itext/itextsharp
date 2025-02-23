@@ -52,7 +52,7 @@ namespace itextsharp.tests.iTextSharp.text.pdf.table
 {
     public class KeepRowsTogetherTest
     {
-        private String cmpFolder = @"..\..\resources\text\pdf\table\keeprowstogether\";
+        private String cmpFolder = @"..\..\..\resources\text\pdf\table\keeprowstogether\";
         private String outFolder = @"table\keeprowstogether\";
 
         [SetUp]

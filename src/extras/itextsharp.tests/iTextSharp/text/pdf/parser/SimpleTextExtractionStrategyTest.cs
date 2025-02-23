@@ -54,7 +54,7 @@ namespace itextsharp.tests.iTextSharp.text.pdf.parser {
         private String TEXT1;
         private String TEXT2;
 
-        protected const string TEST_RESOURCES_PATH = @"..\..\resources\text\pdf\parser\SimpleTextExtractionStrategyTest\";
+        protected const string TEST_RESOURCES_PATH = @"..\..\..\resources\text\pdf\parser\SimpleTextExtractionStrategyTest\";
 
         [SetUp]
         public virtual void SetUp() {

@@ -53,7 +53,7 @@ namespace itextsharp.tests.iTextSharp.text.pdf.parser
     class PdfContentStreamProcessorTest
     {
         private DebugRenderListener _renderListener;
-        string TEST_RESOURCES_PATH = @"..\..\resources\text\pdf\parser\PdfContentStreamProcessorTest\";
+        string TEST_RESOURCES_PATH = @"..\..\..\resources\text\pdf\parser\PdfContentStreamProcessorTest\";
 
         [SetUp]
         virtual public void SetUp()

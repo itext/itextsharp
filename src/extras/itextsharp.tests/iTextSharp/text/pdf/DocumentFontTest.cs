@@ -48,7 +48,7 @@ namespace itextsharp.tests.iTextSharp.text.pdf
 {
     class DocumentFontTest
     {
-        string TEST_RESOURCES_PATH = @"..\..\resources\text\pdf\DocumentFontTest\";
+        string TEST_RESOURCES_PATH = @"..\..\..\resources\text\pdf\DocumentFontTest\";
 
         [SetUp]
         virtual public void SetUp()

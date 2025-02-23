@@ -49,7 +49,7 @@ using NUnit.Framework;
 
 namespace itextsharp.tests.iTextSharp.text.pdf {
     public class PageEventTest {
-        private const string TEST_RESOURCES_PATH = @"..\..\resources\text\pdf\PageEventTest\";
+        private const string TEST_RESOURCES_PATH = @"..\..\..\resources\text\pdf\PageEventTest\";
         private const string OUTPUT_FOLDER = @"PageEventTest\";
 
         [SetUp]

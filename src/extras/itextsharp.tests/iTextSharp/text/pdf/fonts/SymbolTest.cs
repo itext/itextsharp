@@ -50,7 +50,7 @@ using NUnit.Framework;
 
 namespace itextsharp.tests.iTextSharp.text.pdf.fonts {
     public class SymbolTest {
-        private const string TEST_RESOURCES_PATH = @"..\..\resources\text\pdf\fonts\SymbolFontTest\";
+        private const string TEST_RESOURCES_PATH = @"..\..\..\resources\text\pdf\fonts\SymbolFontTest\";
         [SetUp]
         public virtual void SetUp() {
             Directory.CreateDirectory("fonts/SymbolFontTest");

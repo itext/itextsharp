@@ -51,7 +51,7 @@ using NUnit.Framework;
 
 namespace itextsharp.tests.iTextSharp.text.pdf {
     class AcroFieldsTest {
-        private const string TEST_RESOURCES_PATH = @"..\..\resources\text\pdf\AcroFieldsTest\";
+        private const string TEST_RESOURCES_PATH = @"..\..\..\resources\text\pdf\AcroFieldsTest\";
         private const string OUT_FOLDER = @"AcroFieldsTest\";
 
         [SetUp]

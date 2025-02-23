@@ -191,12 +191,19 @@ namespace iTextSharp.text.pdf.security
         }
 
         private static void NormalizeNamespaces(XPathNavigator src, XPathNavigator dest) {
+            NormalizeNamespaces(src, dest, null);
+        }
+
+        private static void NormalizeNamespaces(XPathNavigator src, XPathNavigator dest, string excludedNs) {
             IDictionary<string, string> dictLocal = src.GetNamespacesInScope(XmlNamespaceScope.ExcludeXml);
             IDictionary<string, string> dictExclude = dest.GetNamespacesInScope(XmlNamespaceScope.Local);
 
-            foreach(KeyValuePair<string, string> pair in dictLocal)
-                if(!dictExclude.ContainsKey(pair.Key))
-                    dest.CreateAttribute("xmlns", pair.Key, "http://www.w3.org/2000/xmlns/", pair.Value);
+            foreach (KeyValuePair<string, string> pair in dictLocal) {
+                if (!dictExclude.ContainsKey(pair.Key) && !pair.Value.Equals(excludedNs)) {
+                    dest.CreateAttribute("xmlns", pair.Key, 
+                        "http://www.w3.org/2000/xmlns/", pair.Value);
+                }
+            }
         }
 
         private static byte[] CalculateC14nByteRange(XmlDocument doc) {
@@ -467,7 +474,9 @@ namespace iTextSharp.text.pdf.security
             originalDoc.DocumentElement.AppendChild(signature);
 
             XmlElement signedInfoDigest = (XmlElement)signedInfo.CloneNode(true);
-            NormalizeNamespaces(signedInfo.CreateNavigator(), signedInfoDigest.CreateNavigator());
+            // We shouldn't add SecurityConstants.XADES_132_URI namespace for compatibility with SignedInfo code
+            NormalizeNamespaces(signedInfo.CreateNavigator(), signedInfoDigest.CreateNavigator(), 
+                SecurityConstants.XADES_132_URI);
             XmlDocument signedInfoDoc = new XmlDocument(originalDoc.NameTable);
             signedInfoDoc.XmlResolver = null;
             signedInfoDoc.LoadXml(signedInfoDigest.OuterXml);

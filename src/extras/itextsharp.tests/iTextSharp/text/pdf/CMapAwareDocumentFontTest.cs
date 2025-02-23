@@ -49,7 +49,7 @@ using NUnit.Framework;
 
 namespace itextsharp.tests.iTextSharp.text.pdf {
     internal class CMapAwareDocumentFontTest {
-        private string TEST_RESOURCES_PATH = @"..\..\resources\text\pdf\CMapAwareDocumentFontTest\";
+        private string TEST_RESOURCES_PATH = @"..\..\..\resources\text\pdf\CMapAwareDocumentFontTest\";
 
         [Test]
         virtual public void TestWidths() {

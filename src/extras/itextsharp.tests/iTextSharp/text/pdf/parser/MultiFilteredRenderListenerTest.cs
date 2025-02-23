@@ -49,7 +49,7 @@ using NUnit.Framework;
 
 namespace itextsharp.tests.iTextSharp.text.pdf.parser {
     internal class MultiFilteredRenderListenerTest {
-        private string TEST_RESOURCES_PATH = @"..\..\resources\text\pdf\parser\MultiFilteredRenderListenerTest\";
+        private string TEST_RESOURCES_PATH = @"..\..\..\resources\text\pdf\parser\MultiFilteredRenderListenerTest\";
 
         [Test]
         virtual public void Test() {

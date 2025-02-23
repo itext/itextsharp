@@ -52,7 +52,7 @@ namespace itextsharp.tests.iTextSharp.text.pdf
     {
         byte[] data;
         string dataFile;
-        string TEST_RESOURCES_PATH = @"..\..\resources\text\pdf\PdfReaderSelectPagesTest\";
+        string TEST_RESOURCES_PATH = @"..\..\..\resources\text\pdf\PdfReaderSelectPagesTest\";
 
 
 

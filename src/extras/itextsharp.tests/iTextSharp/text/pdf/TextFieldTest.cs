@@ -50,7 +50,7 @@ using NUnit.Framework;
 
 namespace itextsharp.tests.iTextSharp.text.pdf {
     public class TextFieldTest {
-        private const string CMP_FOLDER = @"..\..\resources\text\pdf\TextFieldTest\";
+        private const string CMP_FOLDER = @"..\..\..\resources\text\pdf\TextFieldTest\";
         private const string OUTPUT_FOLDER = @"TextFieldTest\";
 
         [TestFixtureSetUp]

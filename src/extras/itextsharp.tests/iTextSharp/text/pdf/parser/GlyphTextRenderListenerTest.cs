@@ -49,7 +49,7 @@ using NUnit.Framework;
 
 namespace itextsharp.tests.iTextSharp.text.pdf.parser {
     internal class GlyphTextRenderListenerTest {
-        private const string TEST_RESOURCES_PATH = @"..\..\resources\text\pdf\parser\GlyphTextRenderListenerTest\";
+        private const string TEST_RESOURCES_PATH = @"..\..\..\resources\text\pdf\parser\GlyphTextRenderListenerTest\";
 
         [Test]
         virtual public void Test1() {

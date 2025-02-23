@@ -53,7 +53,7 @@ namespace itextsharp.tests.iTextSharp.text.pdf.parser {
     public class HighlightItemsTest {
 
         private const string outputPath = @"itextpdf\text\pdf\parser\HighlightItemsTest\";
-        private const string inputPath = @"..\..\resources\text\pdf\parser\HighlightItemsTest\";
+        private const string inputPath = @"..\..\..\resources\text\pdf\parser\HighlightItemsTest\";
 
         [SetUp]
         public virtual void Before() {

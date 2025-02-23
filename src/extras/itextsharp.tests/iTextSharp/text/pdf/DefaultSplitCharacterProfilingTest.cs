@@ -9,12 +9,12 @@ namespace itextsharp.tests.iTextSharp.text.pdf
 {
     public class DefaultSplitCharacterProfilingTest
     {
-        private const string INPUT_DIR = @"..\..\resources\text\pdf\DefaultSplitCharacterProfilingTest\";
+        private const string INPUT_DIR = @"..\..\..\resources\text\pdf\DefaultSplitCharacterProfilingTest\";
 
         private const string CHECK_DATE_PATTERN_FAIL_MESSAGE =
             "The test verifies the optimization of the checkDatePattern method. This failure indicates that the optimization was broken.";
 
-        private const int TIME_LIMIT = 20000;
+        private const int TIME_LIMIT = 5000;
 
         [Test, Timeout(30000)]
         public void CheckDatePatternProfilingTest()

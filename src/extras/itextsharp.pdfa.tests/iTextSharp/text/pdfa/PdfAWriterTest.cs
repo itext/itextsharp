@@ -50,7 +50,7 @@ namespace iTextSharp.text.pdfa
     [TestFixture]
     public class PdfAWriterTest
     {
-        public const String RESOURCES = @"..\..\resources\text\pdfa\";
+        public const String RESOURCES = @"..\..\..\resources\text\pdfa\";
         public const String TARGET = "PdfAWriterTest\\";
         public const String OUT = TARGET + "pdf\\out";
 

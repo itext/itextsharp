@@ -53,7 +53,7 @@ namespace itextsharp.tests.iTextSharp.text.pdf.fonts
 {
     class EncodingTest {
 
-    private  static String sourceFolder = @"..\..\resources\text\pdf\fonts\EncodingTest/";
+    private  static String sourceFolder = @"..\..\..\resources\text\pdf\fonts\EncodingTest/";
     private static String outFolder = "fonts/EncodingTest";
 
     [SetUp]

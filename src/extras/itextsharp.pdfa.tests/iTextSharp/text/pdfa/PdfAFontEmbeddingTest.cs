@@ -50,7 +50,7 @@ namespace itextsharp.tests.iTextSharp.text.pdf.fonts
 {
     public class FontEmbeddingTest
     {
-        public const String RESOURCES = @"..\..\resources\text\pdfa\";
+        public const String RESOURCES = @"..\..\..\resources\text\pdfa\";
 
         [Test]
         public void TestNotoFont()

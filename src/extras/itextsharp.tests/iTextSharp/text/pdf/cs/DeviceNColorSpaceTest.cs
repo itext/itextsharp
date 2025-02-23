@@ -51,7 +51,7 @@ namespace itextsharp.tests.iTextSharp.text.pdf.cs {
     public class DeviceNColorSpaceTest {
 
         public const String DEST_FOLDER = @"cs\DeviceNColorSpaceTest\";
-        private const string TEST_RESOURCES_PATH = @"..\..\resources\text\pdf\cs\DeviceNColorSpaceTest\";
+        private const string TEST_RESOURCES_PATH = @"..\..\..\resources\text\pdf\cs\DeviceNColorSpaceTest\";
 
         [SetUp]
         public virtual void Init() {

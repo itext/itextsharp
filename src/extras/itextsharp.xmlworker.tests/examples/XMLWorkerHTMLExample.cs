@@ -61,7 +61,7 @@ namespace itextsharp.xmlworker.tests.examples {
 	     * @throws DocumentException if something with the document goes wrong.
 	     */
         private const string TARGET = @"";
-        private const string RESOURCES = @"..\..\resources\";
+        private const string RESOURCES = @"..\..\..\resources\";
 
         [Test]
         virtual public void SetupDefaultProcessingYourself() {

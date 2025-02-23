@@ -27,7 +27,7 @@ using NUnit.Framework;
 
 namespace itextsharp.tests.iTextSharp.text.pdf {
     public class BarcodeMacroPDF417Test : ITextTest {
-        private const String CMP_DIR = @"..\..\resources\text\pdf\BarcodeMacroPDF417Test\";
+        private const String CMP_DIR = @"..\..\..\resources\text\pdf\BarcodeMacroPDF417Test\";
         private const String OUT_DIR = "com/itextpdf/test/pdf/BarcodeMacroPDF417Test/";
 
 

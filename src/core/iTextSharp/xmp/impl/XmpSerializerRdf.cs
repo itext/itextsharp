@@ -37,10 +37,10 @@ using System.Collections.Generic;
 
 namespace iTextSharp.xmp.impl {
     /// <summary>
-    /// Serializes the <code>XMPMeta</code>-object using the standard RDF serialization format. 
-    /// The output is written to an <code>OutputStream</code> 
-    /// according to the <code>SerializeOptions</code>. 
-    /// 
+    /// Serializes the <code>XMPMeta</code>-object using the standard RDF serialization format.
+    /// The output is written to an <code>OutputStream</code>
+    /// according to the <code>SerializeOptions</code>.
+    ///
     /// @since   11.07.2006
     /// </summary>
     public class XmpSerializerRdf {
@@ -71,8 +71,8 @@ namespace iTextSharp.xmp.impl {
 
         /// <summary>
         /// a set of all rdf attribute qualifier </summary>
-        internal static readonly HashSet<string> RDF_ATTR_QUALIFIER =
-            new HashSet<string> { XmpConst.XML_LANG, "rdf:resource", "rdf:ID", "rdf:bagID", "rdf:nodeID" };
+        internal static readonly ICollection<string> RDF_ATTR_QUALIFIER =
+            new HashSet<string>(new string[] { XmpConst.XML_LANG, "rdf:resource", "rdf:ID", "rdf:bagID", "rdf:nodeID" });
 
         /// <summary>
         /// the stored serialization options </summary>
@@ -84,14 +84,14 @@ namespace iTextSharp.xmp.impl {
 
         /// <summary>
         /// the padding in the XMP Packet, or the length of the complete packet in
-        ///  case of option <em>exactPacketLength</em>. 
+        ///  case of option <em>exactPacketLength</em>.
         /// </summary>
         private int _padding;
 
         /// <summary>
-        /// the size of one unicode char, for UTF-8 set to 1 
+        /// the size of one unicode char, for UTF-8 set to 1
         ///  (Note: only valid for ASCII chars lower than 0x80),
-        ///  set to 2 in case of UTF-16 
+        ///  set to 2 in case of UTF-16
         /// </summary>
         private int _unicodeSize = 1; // UTF-8
 
@@ -123,7 +123,7 @@ namespace iTextSharp.xmp.impl {
 
                 CheckOptionsConsistence();
 
-                // serializes the whole packet, but don't write the tail yet 
+                // serializes the whole packet, but don't write the tail yet
                 // and flush to make sure that the written bytes are calculated correctly
                 string tailStr = SerializeAsRdf();
                 _writer.Flush();
@@ -339,7 +339,7 @@ namespace iTextSharp.xmp.impl {
             WriteTreeName();
 
             // Write all necessary xmlns attributes.
-            var usedPrefixes = new HashSet<string>();
+            ICollection<string> usedPrefixes = new HashSet<string>();
             usedPrefixes.Add("xml");
             usedPrefixes.Add("rdf");
 
@@ -414,18 +414,18 @@ namespace iTextSharp.xmp.impl {
         /// field of a struct, or an item of an array. The indent is that for the
         /// property element. The patterns bwlow ignore attribute qualifiers such as
         /// xml:lang, they don't affect the output form.
-        /// 
+        ///
         /// <blockquote>
-        /// 
+        ///
         /// <pre>
         ///  	&lt;ns:UnqualifiedStructProperty-1
         ///  		... The fields as attributes, if all are simple and unqualified
         ///  	/&gt;
-        ///  
+        ///
         ///  	&lt;ns:UnqualifiedStructProperty-2 rdf:parseType=&quot;Resource&quot;&gt;
         ///  		... The fields as elements, if none are simple and unqualified
         ///  	&lt;/ns:UnqualifiedStructProperty-2&gt;
-        ///  
+        ///
         ///  	&lt;ns:UnqualifiedStructProperty-3&gt;
         ///  		&lt;rdf:Description
         ///  			... The simple and unqualified fields as attributes
@@ -433,22 +433,22 @@ namespace iTextSharp.xmp.impl {
         ///  			... The compound or qualified fields as elements
         ///  		&lt;/rdf:Description&gt;
         ///  	&lt;/ns:UnqualifiedStructProperty-3&gt;
-        ///  
+        ///
         ///  	&lt;ns:UnqualifiedArrayProperty&gt;
         ///  		&lt;rdf:Bag&gt; or Seq or Alt
         ///  			... Array items as rdf:li elements, same forms as top level properties
         ///  		&lt;/rdf:Bag&gt;
         ///  	&lt;/ns:UnqualifiedArrayProperty&gt;
-        ///  
+        ///
         ///  	&lt;ns:QualifiedProperty rdf:parseType=&quot;Resource&quot;&gt;
-        ///  		&lt;rdf:value&gt; ... Property &quot;value&quot; 
+        ///  		&lt;rdf:value&gt; ... Property &quot;value&quot;
         ///  			following the unqualified forms ... &lt;/rdf:value&gt;
         ///  		... Qualifiers looking like named struct fields
         ///  	&lt;/ns:QualifiedProperty&gt;
         /// </pre>
-        /// 
+        ///
         /// </blockquote>
-        /// 
+        ///
         /// *** Consider numbered array items, but has compatibility problems. ***
         /// Consider qualified form with rdf:Description and attributes.
         /// </summary>
@@ -695,26 +695,26 @@ namespace iTextSharp.xmp.impl {
 
         /// <summary>
         /// Serializes one schema with all contained properties in pretty-printed
-        /// manner.<br> 
+        /// manner.<br>
         /// Each schema's properties are written to a single
         /// rdf:Description element. All of the necessary namespaces are declared in
         /// the rdf:Description element. The baseIndent is the base level for the
         /// entire serialization, that of the x:xmpmeta element. An xml:lang
         /// qualifier is written as an attribute of the property start tag, not by
         /// itself forcing the qualified property form.
-        /// 
+        ///
         /// <blockquote>
-        /// 
+        ///
         /// <pre>
         ///  	 &lt;rdf:Description rdf:about=&quot;TreeName&quot; xmlns:ns=&quot;URI&quot; ... &gt;
-        ///  
+        ///
         ///  	 	... The actual properties of the schema, see SerializePrettyRDFProperty
-        ///  
+        ///
         ///  	 	&lt;!-- ns1:Alias is aliased to ns2:Actual --&gt;  ... If alias comments are wanted
-        ///  
+        ///
         ///  	 &lt;/rdf:Description&gt;
         /// </pre>
-        /// 
+        ///
         /// </blockquote>
         /// </summary>
         /// <param name="schemaNode"> a schema node </param>
@@ -733,13 +733,13 @@ namespace iTextSharp.xmp.impl {
 
 
         /// <summary>
-        /// Writes all used namespaces of the subtree in node to the output. 
+        /// Writes all used namespaces of the subtree in node to the output.
         /// The subtree is recursivly traversed. </summary>
         /// <param name="node"> the root node of the subtree </param>
         /// <param name="usedPrefixes"> a set containing currently used prefixes </param>
         /// <param name="indent"> the current indent level </param>
         /// <exception cref="IOException"> Forwards all writer exceptions. </exception>
-        private void DeclareUsedNamespaces(XmpNode node, HashSet<string> usedPrefixes, int indent) {
+        private void DeclareUsedNamespaces(XmpNode node, ICollection<string> usedPrefixes, int indent) {
             if (node.Options.SchemaNode) {
                 // The schema node name is the URI, the value is the prefix.
                 string prefix = node.Value.Substring(0, node.Value.Length - 1);
@@ -778,7 +778,7 @@ namespace iTextSharp.xmp.impl {
         /// <param name="usedPrefixes"> a set containing currently used prefixes </param>
         /// <param name="indent"> the current indent level </param>
         /// <exception cref="IOException"> Forwards all writer exceptions. </exception>
-        private void DeclareNamespace(string prefix, string @namespace, HashSet<string> usedPrefixes, int indent) {
+        private void DeclareNamespace(string prefix, string @namespace, ICollection<string> usedPrefixes, int indent) {
             if (@namespace == null) {
                 // prefix contains qname, extract prefix and lookup namespace with prefix
                 QName qname = new QName(prefix);
@@ -817,7 +817,7 @@ namespace iTextSharp.xmp.impl {
             Write(RDF_SCHEMA_START);
             WriteTreeName();
 
-            var usedPrefixes = new HashSet<string>();
+            ICollection<string> usedPrefixes = new HashSet<string>();
             usedPrefixes.Add("xml");
             usedPrefixes.Add("rdf");
 
@@ -846,42 +846,42 @@ namespace iTextSharp.xmp.impl {
         /// qualified property form. The patterns below mostly ignore attribute
         /// qualifiers like xml:lang. Except for the one struct case, attribute
         /// qualifiers don't affect the output form.
-        /// 
+        ///
         /// <blockquote>
-        /// 
+        ///
         /// <pre>
         /// 	&lt;ns:UnqualifiedSimpleProperty&gt;value&lt;/ns:UnqualifiedSimpleProperty&gt;
-        /// 
+        ///
         /// 	&lt;ns:UnqualifiedStructProperty&gt; (If no rdf:resource qualifier)
         /// 		&lt;rdf:Description&gt;
         /// 			... Fields, same forms as top level properties
         /// 		&lt;/rdf:Description&gt;
         /// 	&lt;/ns:UnqualifiedStructProperty&gt;
-        /// 
+        ///
         /// 	&lt;ns:ResourceStructProperty rdf:resource=&quot;URI&quot;
         /// 		... Fields as attributes
         /// 	&gt;
-        /// 
+        ///
         /// 	&lt;ns:UnqualifiedArrayProperty&gt;
         /// 		&lt;rdf:Bag&gt; or Seq or Alt
         /// 			... Array items as rdf:li elements, same forms as top level properties
         /// 		&lt;/rdf:Bag&gt;
         /// 	&lt;/ns:UnqualifiedArrayProperty&gt;
-        /// 
+        ///
         /// 	&lt;ns:QualifiedProperty&gt;
         /// 		&lt;rdf:Description&gt;
-        /// 			&lt;rdf:value&gt; ... Property &quot;value&quot; following the unqualified 
+        /// 			&lt;rdf:value&gt; ... Property &quot;value&quot; following the unqualified
         /// 				forms ... &lt;/rdf:value&gt;
         /// 			... Qualifiers looking like named struct fields
         /// 		&lt;/rdf:Description&gt;
         /// 	&lt;/ns:QualifiedProperty&gt;
         /// </pre>
-        /// 
+        ///
         /// </blockquote>
         /// </summary>
         /// <param name="node"> the property node </param>
         /// <param name="emitAsRdfValue"> property shall be rendered as attribute rather than tag </param>
-        /// <param name="useCanonicalRdf"> use canonical form with inner description tag or 
+        /// <param name="useCanonicalRdf"> use canonical form with inner description tag or
         /// 		  the compact form with rdf:ParseType=&quot;resource&quot; attribute. </param>
         /// <param name="indent"> the current indent level </param>
         /// <exception cref="IOException"> Forwards all writer exceptions. </exception>
@@ -1152,7 +1152,7 @@ namespace iTextSharp.xmp.impl {
         /// 		<li>don't has qualifier
         /// 		<li>is no URI
         /// 		<li>is no composite property
-        /// </ul> 
+        /// </ul>
         /// </summary>
         /// <param name="node"> an XMPNode </param>
         /// <returns> Returns true if the node serialized as RDF-Attribute </returns>

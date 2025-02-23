@@ -51,7 +51,7 @@ namespace itextsharp.tests.iTextSharp.text.pdf.fonts {
     */
     public class FontFamilyTest {
 
-        private static string srcFolder = @"..\..\resources\text\pdf\fonts\NotoFont\";
+        private static string srcFolder = @"..\..\..\resources\text\pdf\fonts\NotoFont\";
 
         [Test]
         public void TestNotoFontFamily() {

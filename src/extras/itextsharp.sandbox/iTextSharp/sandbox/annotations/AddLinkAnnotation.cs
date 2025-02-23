@@ -50,7 +50,7 @@ namespace iTextSharp.sandbox.annotations
     [WrapToTest]
     public class AddLinkAnnotation
     {
-        public static readonly String SRC = "../../resources/pdfs/primes.pdf";
+        public static readonly String SRC = "../../../resources/pdfs/primes.pdf";
         public static readonly String DEST = "results/annotations/link_annotation.pdf";
 
         public static void Main(string[] args)
