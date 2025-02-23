@@ -51,7 +51,7 @@ using Org.BouncyCastle.X509;
 using iTextSharp.text.log;
 using Org.BouncyCastle.Asn1.Ocsp;
 using Org.BouncyCastle.Security.Certificates;
-using Org.BouncyCastle.Utilities.Date;
+using Org.BouncyCastle.Asn1;
 
 /**
  * Class that allows you to verify a certificate against
@@ -62,7 +62,8 @@ namespace iTextSharp.text.pdf.security {
         /** The Logger instance */
         private static ILogger LOGGER = LoggerFactory.GetLogger(typeof(OcspVerifier));
     	
-        protected readonly static String id_kp_OCSPSigning = "1.3.6.1.5.5.7.3.9";
+        protected readonly static String id_kp_OCSPSigning_Raw = "1.3.6.1.5.5.7.3.9";
+        protected static DerObjectIdentifier id_kp_OCSPSigning;
 
 	    /** The list of OCSP responses. */
 	    protected List<BasicOcspResp> ocsps;
@@ -145,7 +146,7 @@ namespace iTextSharp.text.pdf.security {
 				    continue;
 			    }
 			    // check if the OCSP response was valid at the time of signing
-                DateTimeObject nextUpdate = resp[i].NextUpdate;
+                DateTime? nextUpdate = resp[i].NextUpdate;
                 DateTime nextUpdateDate;
                 if (nextUpdate == null) {
                     nextUpdateDate = resp[i].ThisUpdate.AddSeconds(180);
@@ -203,9 +204,15 @@ namespace iTextSharp.text.pdf.security {
                         } catch (Exception ex) {
                             continue;
                         }
-                        IList keyPurposes = null;
+                        IList<Org.BouncyCastle.Asn1.DerObjectIdentifier> keyPurposes = null;
                         try {
                             keyPurposes = tempCert.GetExtendedKeyUsage();
+                            if (id_kp_OCSPSigning == null)
+                            {
+                                if (DerObjectIdentifier.TryFromID(id_kp_OCSPSigning_Raw, out var id))
+                                    id_kp_OCSPSigning = id;
+                            }
+
                             if ((keyPurposes != null) && keyPurposes.Contains(id_kp_OCSPSigning) && IsSignatureValid(ocspResp, tempCert)) {
                                 responderCert = tempCert;
                                 break;
@@ -247,7 +254,7 @@ namespace iTextSharp.text.pdf.security {
             // validating ocsp signers certificate
             // Check if responders certificate has id-pkix-ocsp-nocheck extension,
             // in which case we do not validate (perform revocation check on) ocsp certs for lifetime of certificate
-            if (responderCert.GetExtensionValue(OcspObjectIdentifiers.PkixOcspNocheck.Id) == null) {
+            if (responderCert.GetExtensionValue(OcspObjectIdentifiers.PkixOcspNocheck) == null) {
                 X509Crl crl;
                 try {
                     X509CrlParser crlParser = new X509CrlParser();

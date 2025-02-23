@@ -136,7 +136,7 @@ namespace iTextSharp.text.pdf.security {
          * @throws IOException
          */
         public static String GetTSAURL(X509Certificate certificate) {
-            Asn1OctetString octetString = certificate.GetExtensionValue(SecurityIDs.ID_TSA);
+            Asn1OctetString octetString = certificate.GetExtensionValue(new DerObjectIdentifier(SecurityIDs.ID_TSA));
             if (octetString == null)
                 return null;
             byte[] der = octetString.GetOctets();

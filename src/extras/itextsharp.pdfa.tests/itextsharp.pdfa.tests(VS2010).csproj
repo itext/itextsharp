@@ -75,7 +75,7 @@
     <CodeAnalysisRuleSet>AllRules.ruleset</CodeAnalysisRuleSet>
   </PropertyGroup>
   <ItemGroup>
-	  <PackageReference Include="NUnit" Version="2.6.2" />
+	  <PackageReference Include="NUnit" Version="4.3.2" />
 	  <PackageReference Include="XMLDiffPatch" Version="1.0.8.28" />
   </ItemGroup>
   <ItemGroup>

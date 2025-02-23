@@ -66,7 +66,7 @@
     <CodeAnalysisRuleSet>AllRules.ruleset</CodeAnalysisRuleSet>
   </PropertyGroup>
   <ItemGroup>
-    <PackageReference Include="System.Drawing.Common" Version="6.0.0" />
+    <PackageReference Include="System.Drawing.Common" Version="8.0.13" />
   </ItemGroup>
   <ItemGroup>
     <None Include="itextsharp.snk" />

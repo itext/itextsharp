@@ -118,7 +118,7 @@ namespace iTextSharp.text.pdf.security {
 
             signaturePolicyIdentifier = new SignaturePolicyIdentifier(new SignaturePolicyId(
                         DerObjectIdentifier.GetInstance(new DerObjectIdentifier(this.PolicyIdentifier.Replace("urn:oid:", ""))),
-                        new OtherHashAlgAndValue(new AlgorithmIdentifier(algId), new DerOctetString(this.PolicyHash)), spqi));
+                        new OtherHashAlgAndValue(new AlgorithmIdentifier(new DerObjectIdentifier(algId)), new DerOctetString(this.PolicyHash)), spqi));
 
             return signaturePolicyIdentifier;
         }

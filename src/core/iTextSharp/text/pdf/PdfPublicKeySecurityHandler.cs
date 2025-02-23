@@ -157,11 +157,11 @@ namespace iTextSharp.text.pdf {
             Asn1Object obj = CreateDERForRecipient(pkcs7input, certificate);
                 
             MemoryStream baos = new MemoryStream();
-                
-            DerOutputStream k = new DerOutputStream(baos);
-                
-            k.WriteObject(obj);  
-            
+
+            using (var k = Asn1OutputStream.Create(baos, "DER"))
+            {
+                k.WriteObject(obj);
+            }
             cms = baos.ToArray();
 
             recipient.Cms = cms;
@@ -226,7 +226,7 @@ namespace iTextSharp.text.pdf {
                 new Org.BouncyCastle.Asn1.Cms.IssuerAndSerialNumber(
                     tbscertificatestructure.Issuer, 
                     tbscertificatestructure.SerialNumber.Value);
-            IBufferedCipher cipher = CipherUtilities.GetCipher(algorithmidentifier.ObjectID);
+            IBufferedCipher cipher = CipherUtilities.GetCipher(algorithmidentifier.Algorithm.Id);
             cipher.Init(true, x509certificate.GetPublicKey());
             byte[] outp = new byte[10000];
             int len = cipher.DoFinal(abyte0, outp, 0);
