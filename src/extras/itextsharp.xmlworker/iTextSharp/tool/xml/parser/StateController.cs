@@ -40,8 +40,6 @@
     For more information, please contact iText Software Corp. at this
     address: sales@itextpdf.com
  */
-using System;
-using System.Runtime.Remoting.Messaging;
 using iTextSharp.tool.xml.parser.state;
 namespace iTextSharp.tool.xml.parser {
 

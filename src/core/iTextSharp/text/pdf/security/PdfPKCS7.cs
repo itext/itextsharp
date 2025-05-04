@@ -10,7 +10,7 @@
     FOR ANY PART OF THE COVERED WORK IN WHICH THE COPYRIGHT IS OWNED BY
     ITEXT GROUP. ITEXT GROUP DISCLAIMS THE WARRANTY OF NON INFRINGEMENT
     OF THIRD PARTY RIGHTS
-    
+
     This program is distributed in the hope that it will be useful, but
     WITHOUT ANY WARRANTY; without even the implied warranty of MERCHANTABILITY
     or FITNESS FOR A PARTICULAR PURPOSE.
@@ -20,15 +20,15 @@
     the Free Software Foundation, Inc., 51 Franklin Street, Fifth Floor,
     Boston, MA, 02110-1301 USA, or download the license from the following URL:
     http://itextpdf.com/terms-of-use/
-    
+
     The interactive user interfaces in modified source and object code versions
     of this program must display Appropriate Legal Notices, as required under
     Section 5 of the GNU Affero General Public License.
-    
+
     In accordance with Section 7(b) of the GNU Affero General Public License,
     a covered work must retain the producer line in every PDF that is created
     or manipulated using iText.
-    
+
     You can be released from the requirements of the license by purchasing
     a commercial license. Buying such a license is mandatory as soon as you
     develop commercial activities involving the iText software without
@@ -36,7 +36,7 @@
     These activities include: offering paid services to customers as an ASP,
     serving PDFs on the fly in a web application, shipping iText with a closed
     source product.
-    
+
     For more information, please contact iText Software Corp. at this
     address: sales@itextpdf.com
  */
@@ -82,24 +82,24 @@ namespace iTextSharp.text.pdf.security {
          * @throws NoSuchProviderException on error
          * @throws NoSuchAlgorithmException on error
          */
-        public PdfPKCS7(ICipherParameters privKey, ICollection<X509Certificate> certChain, 
+        public PdfPKCS7(ICipherParameters privKey, ICollection<X509Certificate> certChain,
                         String hashAlgorithm, bool hasRSAdata) {
-            
+
             digestAlgorithmOid = DigestAlgorithms.GetAllowedDigests(hashAlgorithm);
             if (digestAlgorithmOid == null)
                 throw new ArgumentException(MessageLocalization.GetComposedMessage("unknown.hash.algorithm.1", hashAlgorithm));
-            
+
             version = signerversion = 1;
             certs = new List<X509Certificate>(certChain);
             crls = new List<X509Crl>();
             digestalgos = new Dictionary<string,object>();
             digestalgos[digestAlgorithmOid] = null;
-            
+
             //
             // Copy in the certificates and crls used to sign the private key.
             //
             signCert = certs[0];
-                        
+
             if (privKey != null) {
                 //
                 // Now we have private key, find out what the digestEncryptionAlgorithm is.
@@ -168,12 +168,12 @@ namespace iTextSharp.text.pdf.security {
             isTsp = PdfName.ETSI_RFC3161.Equals(filterSubtype);
             isCades = PdfName.ETSI_CADES_DETACHED.Equals(filterSubtype);
             Asn1InputStream din = new Asn1InputStream(new MemoryStream(contentsKey));
-            
+
             //
             // Basic checks to make sure it's a PKCS#7 SignedData Object
             //
             Asn1Object pkcs;
-            
+
             try {
                 pkcs = din.ReadObject();
             }
@@ -194,10 +194,10 @@ namespace iTextSharp.text.pdf.security {
             //     2 - possible ID_PKCS7_DATA
             //     (the certificates and crls are taken out by other means)
             //     last - signerInfos
-            
+
             // the version
             version = ((DerInteger)content[0]).Value.IntValue;
-            
+
             // the digestAlgorithms
             digestalgos = new Dictionary<string,object>();
             IEnumerator e = ((Asn1Set)content[1]).GetEnumerator();
@@ -207,7 +207,7 @@ namespace iTextSharp.text.pdf.security {
                 DerObjectIdentifier o = (DerObjectIdentifier)s[0];
                 digestalgos[o.Id] = null;
             }
-            
+
             // the certificates and crls
             X509CertificateParser cf = new X509CertificateParser();
             certs = new List<X509Certificate>();
@@ -215,14 +215,14 @@ namespace iTextSharp.text.pdf.security {
                 certs.Add(cc);
             }
             crls = new List<X509Crl>();
-            
+
             // the possible ID_PKCS7_DATA
             Asn1Sequence rsaData = (Asn1Sequence)content[2];
             if (rsaData.Count > 1) {
                 Asn1OctetString rsaDataContent = (Asn1OctetString)((Asn1TaggedObject)rsaData[1]).GetObject();
                 RSAdata = rsaDataContent.GetOctets();
             }
-            
+
             // the signerInfos
             int next = 3;
             while (content[next] is Asn1TaggedObject)
@@ -242,14 +242,14 @@ namespace iTextSharp.text.pdf.security {
             Asn1Sequence issuerAndSerialNumber = (Asn1Sequence)signerInfo[1];
             Org.BouncyCastle.Asn1.X509.X509Name issuer = Org.BouncyCastle.Asn1.X509.X509Name.GetInstance(issuerAndSerialNumber[0]);
             BigInteger serialNumber = ((DerInteger)issuerAndSerialNumber[1]).Value;
-            foreach (X509Certificate cert in certs) {                                                            
+            foreach (X509Certificate cert in certs) {
                 if (issuer.Equivalent(cert.IssuerDN) && serialNumber.Equals(cert.SerialNumber)) {
-                    signCert = cert;                                                                             
-                    break;                                                                                            
-                }                                                                                                
+                    signCert = cert;
+                    break;
+                }
             }
             if (signCert == null) {
-                throw new ArgumentException(MessageLocalization.GetComposedMessage("can.t.find.signing.certificate.with.serial.1", 
+                throw new ArgumentException(MessageLocalization.GetComposedMessage("can.t.find.signing.certificate.with.serial.1",
                     issuer.ToString() + " / " + serialNumber.ToString(16)));
             }
             CalcSignCertificateChain();
@@ -261,7 +261,7 @@ namespace iTextSharp.text.pdf.security {
                 sigAttr = sseq.GetEncoded();
                 // maybe not necessary, but we use the following line as fallback:
                 sigAttrDer = sseq.GetEncoded(Asn1Encodable.Der);
-                
+
                 for (int k = 0; k < sseq.Count; ++k) {
                     Asn1Sequence seq2 = (Asn1Sequence)sseq[k];
                     String idSeq2 = ((DerObjectIdentifier)seq2[0]).Id;
@@ -429,13 +429,13 @@ namespace iTextSharp.text.pdf.security {
         }
 
         // version info
-        
+
         /** Version of the PKCS#7 object */
         private int version = 1;
-        
+
         /** Version of the PKCS#7 "SignerInfo" object. */
         private int signerversion = 1;
-        
+
         /**
          * Get the version of the PKCS#7 object.
          * @return the version of the PKCS#7 object.
@@ -455,15 +455,15 @@ namespace iTextSharp.text.pdf.security {
                 return signerversion;
             }
         }
-        
+
         // Message digest algorithm
 
         /** The ID of the digest algorithm, e.g. "2.16.840.1.101.3.4.2.1". */
         private String digestAlgorithmOid;
-        
+
         /** The object that will create the digest */
         private IDigest messageDigest;
-        
+
         /** The digest algorithms */
         private Dictionary<string,object> digestalgos;
 
@@ -488,9 +488,9 @@ namespace iTextSharp.text.pdf.security {
         virtual public String GetHashAlgorithm() {
             return DigestAlgorithms.GetDigest(digestAlgorithmOid);
         }
-        
+
         // Encryption algorithm
-        
+
         /** The encryption algorithm. */
         private String digestEncryptionAlgorithmOid;
 
@@ -502,7 +502,7 @@ namespace iTextSharp.text.pdf.security {
                 return digestEncryptionAlgorithmOid;
             }
         }
-       
+
         /**
          * Get the algorithm used to calculate the message digest, e.g. "SHA1withRSA".
          * @return the algorithm used to calculate the message digest
@@ -516,13 +516,13 @@ namespace iTextSharp.text.pdf.security {
          */
 
         // The signature is created externally
-        
-        /** The signed digest if created outside this class */   
+
+        /** The signed digest if created outside this class */
         private byte[] externalDigest;
-        
+
         /** External RSA data */
         private byte[] externalRSAdata;
-        
+
         /**
          * Sets the digest/signature to an external calculated value.
          * @param digest the digest. This is the actual signature
@@ -549,26 +549,26 @@ namespace iTextSharp.text.pdf.security {
                     throw new ArgumentException(MessageLocalization.GetComposedMessage("unknown.key.algorithm.1", digestEncryptionAlgorithm));
             }
         }
-        
+
         // The signature is created internally
-        
+
         /** Class from the Java SDK that provides the functionality of a digital signature algorithm. */
         private ISigner sig;
-        
+
         /** The signed digest as calculated by this class (or extracted from an existing PDF) */
         private byte[] digest;
-        
+
         /** The RSA data */
         private byte[] RSAdata;
 
         // Signing functionality.
-        
+
         private ISigner InitSignature(ICipherParameters key) {
             ISigner signature = SignerUtilities.GetSigner(GetDigestAlgorithm());
             signature.Init(true, key);
             return signature;
         }
-    
+
         private ISigner InitSignature(AsymmetricKeyParameter key) {
             String digestAlgorithm = GetDigestAlgorithm();
             if (PdfName.ADBE_X509_RSA_SHA1.Equals(GetFilterSubtype()))
@@ -577,7 +577,7 @@ namespace iTextSharp.text.pdf.security {
             signature.Init(false, signCert.GetPublicKey());
             return signature;
         }
-    
+
         /**
          * Update the digest with the specified bytes.
          * This method is used both for signing and verifying
@@ -594,7 +594,7 @@ namespace iTextSharp.text.pdf.security {
         }
 
         // adbe.x509.rsa_sha1 (PKCS#1)
-        
+
         /**
          * Gets the bytes for the PKCS#1 object.
          * @return a byte array
@@ -605,16 +605,18 @@ namespace iTextSharp.text.pdf.security {
             else
                 digest = sig.GenerateSignature();
             MemoryStream bOut = new MemoryStream();
-            
-            Asn1OutputStream dout = Asn1OutputStream.Create(bOut);
-            dout.WriteObject(new DerOctetString(digest));
-            dout.Close();
-            
+
+            using (Asn1OutputStream dout = Asn1OutputStream.Create(bOut))
+            {
+                dout.WriteObject(new DerOctetString(digest));
+                dout.Close();
+            }
+
             return bOut.ToArray();
         }
 
         // other subfilters (PKCS#7)
-        
+
         /**
          * Gets the bytes for the PKCS7SignedData object.
          * @return the bytes for the PKCS7SignedData object
@@ -661,7 +663,7 @@ namespace iTextSharp.text.pdf.security {
                 }
                 digest = sig.GenerateSignature();
             }
-            
+
             // Create the set of Hash algorithms
             Asn1EncodableVector digestAlgorithms = new Asn1EncodableVector();
             foreach (string dal in digestalgos.Keys) {
@@ -670,14 +672,14 @@ namespace iTextSharp.text.pdf.security {
                 algos.Add(DerNull.Instance);
                 digestAlgorithms.Add(new DerSequence(algos));
             }
-            
+
             // Create the contentInfo.
             Asn1EncodableVector v = new Asn1EncodableVector();
             v.Add(new DerObjectIdentifier(SecurityIDs.ID_PKCS7_DATA));
             if (RSAdata != null)
                 v.Add(new DerTaggedObject(0, new DerOctetString(RSAdata)));
             DerSequence contentinfo = new DerSequence(v);
-            
+
             // Get all the certificates
             //
             v = new Asn1EncodableVector();
@@ -685,28 +687,28 @@ namespace iTextSharp.text.pdf.security {
                 Asn1InputStream tempstream = new Asn1InputStream(new MemoryStream(xcert.GetEncoded()));
                 v.Add(tempstream.ReadObject());
             }
-            
+
             DerSet dercertificates = new DerSet(v);
-            
+
             // Create signerinfo structure.
             //
             Asn1EncodableVector signerinfo = new Asn1EncodableVector();
-            
+
             // Add the signerInfo version
             //
             signerinfo.Add(new DerInteger(signerversion));
-            
+
             v = new Asn1EncodableVector();
             v.Add(CertificateInfo.GetIssuer(signCert.GetTbsCertificate()));
             v.Add(new DerInteger(signCert.SerialNumber));
             signerinfo.Add(new DerSequence(v));
-            
+
             // Add the digestAlgorithm
             v = new Asn1EncodableVector();
             v.Add(new DerObjectIdentifier(digestAlgorithmOid));
             v.Add(DerNull.Instance);
             signerinfo.Add(new DerSequence(v));
-            
+
             // add the authenticated attribute if present
             if (secondDigest != null) {
                 signerinfo.Add(new DerTaggedObject(false, 0, GetAuthenticatedAttributeSet(secondDigest, ocsp, crlBytes, sigtype)));
@@ -716,10 +718,10 @@ namespace iTextSharp.text.pdf.security {
             v.Add(new DerObjectIdentifier(digestEncryptionAlgorithmOid));
             v.Add(DerNull.Instance);
             signerinfo.Add(new DerSequence(v));
-            
+
             // Add the digest
             signerinfo.Add(new DerOctetString(digest));
-            
+
             // When requested, go get and add the timestamp. May throw an exception.
             // Added by Martin Brunecky, 07/12/2007 folowing Aiken Sam, 2006-11-15
             // Sam found Adobe expects time-stamped SHA1-1 of the encrypted digest
@@ -733,30 +735,32 @@ namespace iTextSharp.text.pdf.security {
                     }
                 }
             }
-            
+
             // Finally build the body out of all the components above
             Asn1EncodableVector body = new Asn1EncodableVector();
             body.Add(new DerInteger(version));
             body.Add(new DerSet(digestAlgorithms));
             body.Add(contentinfo);
             body.Add(new DerTaggedObject(false, 0, dercertificates));
-                        
+
             // Only allow one signerInfo
             body.Add(new DerSet(new DerSequence(signerinfo)));
-            
+
             // Now we have the body, wrap it in it's PKCS7Signed shell
             // and return it
             //
             Asn1EncodableVector whole = new Asn1EncodableVector();
             whole.Add(new DerObjectIdentifier(SecurityIDs.ID_PKCS7_SIGNED_DATA));
             whole.Add(new DerTaggedObject(0, new DerSequence(body)));
-            
+
             MemoryStream bOut = new MemoryStream();
-            
-            Asn1OutputStream dout = Asn1OutputStream.Create(bOut);
-            dout.WriteObject(new DerSequence(whole));
-            dout.Close();
-            
+
+            using (Asn1OutputStream dout = Asn1OutputStream.Create(bOut))
+            {
+                dout.WriteObject(new DerSequence(whole));
+                dout.Close();
+            }
+
             return bOut.ToArray();
         }
 
@@ -789,7 +793,7 @@ namespace iTextSharp.text.pdf.security {
         }
 
         // Authenticated attributes
-        
+
         /**
          * When using authenticatedAttributes the authentication process is different.
          * The document digest is generated and put inside the attribute. The signing is done over the DER encoded
@@ -823,7 +827,7 @@ namespace iTextSharp.text.pdf.security {
         /**
          * This method provides that encoding and the parameters must be
          * exactly the same as in {@link #getEncodedPKCS7(byte[],Calendar)}.
-         * 
+         *
          * @param secondDigest the content digest
          * @return the byte array representation of the authenticatedAttributes ready to be signed
          */
@@ -896,9 +900,9 @@ namespace iTextSharp.text.pdf.security {
                     aaV2.Add(algoId);
                 }
 
-                byte[] dig = DigestAlgorithms.Digest(GetHashAlgorithm(), signCert.GetEncoded()); 
+                byte[] dig = DigestAlgorithms.Digest(GetHashAlgorithm(), signCert.GetEncoded());
                 aaV2.Add(new DerOctetString(dig));
-                
+
                 v.Add(new DerSet(new DerSequence(new DerSequence(new DerSequence(aaV2)))));
                 attribute.Add(new DerSequence(v));
             }
@@ -909,28 +913,28 @@ namespace iTextSharp.text.pdf.security {
 
             return new DerSet(attribute);
         }
-        
+
         /*
          *  DIGITAL SIGNATURE VERIFICATION
          */
-        
+
         /** Signature attributes */
         private byte[] sigAttr;
         /** Signature attributes (maybe not necessary, but we use it as fallback) */
         private byte[] sigAttrDer;
-        
+
         /** encrypted digest */
         private IDigest encContDigest; // Stefan Santesson
-        
+
         /** Indicates if a signature has already been verified */
         private bool verified;
-        
+
         /** The result of the verification */
         private bool verifyResult;
 
-        
+
         // verification
-        
+
         /**
          * Verify the digest.
          * @throws SignatureException on error
@@ -1005,16 +1009,16 @@ namespace iTextSharp.text.pdf.security {
         }
 
         // Certificates
-        
+
         /** All the X.509 certificates in no particular order. */
         private List<X509Certificate> certs;
-        
+
         /** All the X.509 certificates used for the main signature. */
         private ICollection<X509Certificate> signCerts;
 
         /** The X.509 certificate that is used to sign the digest. */
         private X509Certificate signCert;
-        
+
         /**
          * Get all the X.509 certificates associated with this PKCS#7 object in no particular order.
          * Other certificates, from OCSP for example, will also be included.
@@ -1042,7 +1046,7 @@ namespace iTextSharp.text.pdf.security {
                 return ret;
             }
         }
-                
+
         /**
          * Get the X.509 certificate actually used to sign the digest.
          * @return the X.509 certificate actually used to sign the digest
@@ -1087,7 +1091,7 @@ namespace iTextSharp.text.pdf.security {
             }
             signCerts = cc;
         }
-        
+
         // Certificate Revocation Lists
 
         private ICollection<X509Crl> crls;
@@ -1113,7 +1117,7 @@ namespace iTextSharp.text.pdf.security {
                 crls.Add(crl);
             }
         }
-        
+
         // Online Certificate Status Protocol
 
         /** BouncyCastle BasicOCSPResp */
@@ -1163,7 +1167,7 @@ namespace iTextSharp.text.pdf.security {
             basicResp = null;
             bool ret = false;
             while (true) {
-                if ((seq[0] is DerObjectIdentifier) 
+                if ((seq[0] is DerObjectIdentifier)
                     && ((DerObjectIdentifier)seq[0]).Id.Equals(OcspObjectIdentifiers.PkixOcspBasic.Id)) {
                     break;
                 }
@@ -1193,12 +1197,12 @@ namespace iTextSharp.text.pdf.security {
             BasicOcspResponse resp = BasicOcspResponse.GetInstance(inp.ReadObject());
             basicResp = new BasicOcspResp(resp);
         }
-        
+
         // Time Stamps
 
         /** True if there's a PAdES LTV time stamp. */
         private bool isTsp;
-        
+
         private bool isCades;
 
         /** BouncyCastle TimeStampToken. */

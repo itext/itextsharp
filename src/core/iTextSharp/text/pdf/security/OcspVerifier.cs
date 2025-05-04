@@ -10,7 +10,7 @@
     FOR ANY PART OF THE COVERED WORK IN WHICH THE COPYRIGHT IS OWNED BY
     ITEXT GROUP. ITEXT GROUP DISCLAIMS THE WARRANTY OF NON INFRINGEMENT
     OF THIRD PARTY RIGHTS
-    
+
     This program is distributed in the hope that it will be useful, but
     WITHOUT ANY WARRANTY; without even the implied warranty of MERCHANTABILITY
     or FITNESS FOR A PARTICULAR PURPOSE.
@@ -20,15 +20,15 @@
     the Free Software Foundation, Inc., 51 Franklin Street, Fifth Floor,
     Boston, MA, 02110-1301 USA, or download the license from the following URL:
     http://itextpdf.com/terms-of-use/
-    
+
     The interactive user interfaces in modified source and object code versions
     of this program must display Appropriate Legal Notices, as required under
     Section 5 of the GNU Affero General Public License.
-    
+
     In accordance with Section 7(b) of the GNU Affero General Public License,
     a covered work must retain the producer line in every PDF that is created
     or manipulated using iText.
-    
+
     You can be released from the requirements of the license by purchasing
     a commercial license. Buying such a license is mandatory as soon as you
     develop commercial activities involving the iText software without
@@ -36,7 +36,7 @@
     These activities include: offering paid services to customers as an ASP,
     serving PDFs on the fly in a web application, shipping iText with a closed
     source product.
-    
+
     For more information, please contact iText Software Corp. at this
     address: sales@itextpdf.com
  */
@@ -52,7 +52,6 @@ using iTextSharp.text.log;
 using Org.BouncyCastle.Asn1;
 using Org.BouncyCastle.Asn1.Ocsp;
 using Org.BouncyCastle.Security.Certificates;
-using Org.BouncyCastle.Utilities.Date;
 
 /**
  * Class that allows you to verify a certificate against
@@ -62,12 +61,13 @@ namespace iTextSharp.text.pdf.security {
 	public class OcspVerifier : RootStoreVerifier {
         /** The Logger instance */
         private static ILogger LOGGER = LoggerFactory.GetLogger(typeof(OcspVerifier));
-    	
-        protected readonly static String id_kp_OCSPSigning = "1.3.6.1.5.5.7.3.9";
+
+        protected readonly static String id_kp_OCSPSigning_Raw = "1.3.6.1.5.5.7.3.9";
+        protected static DerObjectIdentifier id_kp_OCSPSigning;
 
 	    /** The list of OCSP responses. */
 	    protected List<BasicOcspResp> ocsps;
-    	
+
 	    /**
 	     * Creates an OCSPVerifier instance.
 	     * @param verifier	the next verifier in the chain
@@ -207,7 +207,13 @@ namespace iTextSharp.text.pdf.security {
                         IList<DerObjectIdentifier> keyPurposes = null;
                         try {
                             keyPurposes = tempCert.GetExtendedKeyUsage();
-                            if ((keyPurposes != null) && keyPurposes.Contains(new DerObjectIdentifier(id_kp_OCSPSigning)) && IsSignatureValid(ocspResp, tempCert)) {
+                            if (id_kp_OCSPSigning == null)
+                            {
+                                if (DerObjectIdentifier.TryFromID(id_kp_OCSPSigning_Raw, out var id))
+                                    id_kp_OCSPSigning = id;
+                            }
+
+                            if ((keyPurposes != null) && keyPurposes.Contains(id_kp_OCSPSigning) && IsSignatureValid(ocspResp, tempCert)) {
                                 responderCert = tempCert;
                                 break;
                             }
@@ -248,7 +254,7 @@ namespace iTextSharp.text.pdf.security {
             // validating ocsp signers certificate
             // Check if responders certificate has id-pkix-ocsp-nocheck extension,
             // in which case we do not validate (perform revocation check on) ocsp certs for lifetime of certificate
-            if (responderCert.GetExtensionValue(new DerObjectIdentifier(OcspObjectIdentifiers.PkixOcspNocheck.Id)) == null) {
+            if (responderCert.GetExtensionValue(OcspObjectIdentifiers.PkixOcspNocheck) == null) {
                 X509Crl crl;
                 try {
                     X509CrlParser crlParser = new X509CrlParser();
@@ -289,7 +295,7 @@ namespace iTextSharp.text.pdf.security {
                 return false;
             }
 	    }
-    	
+
 	    /**
 	     * Checks if an OCSP response is genuine
 	     * @param ocspResp	the OCSP response
@@ -303,7 +309,7 @@ namespace iTextSharp.text.pdf.security {
 			    return false;
 		    }
 	    }
-    	
+
 	    /**
 	     * Gets an OCSP response online and returns it if the status is GOOD
 	     * (without further checking).

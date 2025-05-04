@@ -527,7 +527,8 @@ namespace iTextSharp.text {
             try {
                 if (!Directory.Exists(dir))
                     return 0;
-                string[] files = Directory.GetFiles(dir);
+
+                string[] files = Directory.GetFileSystemEntries(dir);
                 if (files == null)
                     return 0;
                 for (int k = 0; k < files.Length; ++k) {

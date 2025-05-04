@@ -10,7 +10,7 @@
     FOR ANY PART OF THE COVERED WORK IN WHICH THE COPYRIGHT IS OWNED BY
     ITEXT GROUP. ITEXT GROUP DISCLAIMS THE WARRANTY OF NON INFRINGEMENT
     OF THIRD PARTY RIGHTS
-    
+
     This program is distributed in the hope that it will be useful, but
     WITHOUT ANY WARRANTY; without even the implied warranty of MERCHANTABILITY
     or FITNESS FOR A PARTICULAR PURPOSE.
@@ -20,15 +20,15 @@
     the Free Software Foundation, Inc., 51 Franklin Street, Fifth Floor,
     Boston, MA, 02110-1301 USA, or download the license from the following URL:
     http://itextpdf.com/terms-of-use/
-    
+
     The interactive user interfaces in modified source and object code versions
     of this program must display Appropriate Legal Notices, as required under
     Section 5 of the GNU Affero General Public License.
-    
+
     In accordance with Section 7(b) of the GNU Affero General Public License,
     a covered work must retain the producer line in every PDF that is created
     or manipulated using iText.
-    
+
     You can be released from the requirements of the license by purchasing
     a commercial license. Buying such a license is mandatory as soon as you
     develop commercial activities involving the iText software without
@@ -36,7 +36,7 @@
     These activities include: offering paid services to customers as an ASP,
     serving PDFs on the fly in a web application, shipping iText with a closed
     source product.
-    
+
     For more information, please contact iText Software Corp. at this
     address: sales@itextpdf.com
  */
@@ -53,6 +53,7 @@ using Org.BouncyCastle.Asn1.X509;
 using Org.BouncyCastle.Asn1.Ocsp;
 using iTextSharp.text.error_messages;
 using iTextSharp.text.log;
+using System.Collections.Generic;
 
 namespace iTextSharp.text.pdf.security {
 
@@ -62,7 +63,7 @@ namespace iTextSharp.text.pdf.security {
     */
     public class OcspClientBouncyCastle : IOcspClient {
         private static readonly ILogger LOGGER = LoggerFactory.GetLogger(typeof(OcspClientBouncyCastle));
-        
+
         private readonly OcspVerifier verifier;
 
         /**
@@ -150,13 +151,13 @@ namespace iTextSharp.text.pdf.security {
         private static OcspReq GenerateOCSPRequest(X509Certificate issuerCert, BigInteger serialNumber) {
             // Generate the id for the certificate we are looking for
             CertificateID id = new CertificateID(CertificateID.HashSha1, issuerCert, serialNumber);
-            
+
             // basic request generation with nonce
             OcspReqGenerator gen = new OcspReqGenerator();
             gen.AddRequest(id);
-            
+
             // create details for nonce extension
-            IDictionary<DerObjectIdentifier, X509Extension> extensions = 
+            IDictionary<DerObjectIdentifier, X509Extension> extensions =
                 new Dictionary<DerObjectIdentifier, X509Extension>();
             DerOctetString extValue = new DerOctetString(new DerOctetString(
                 PdfEncryption.CreateDocumentId()).GetEncoded());
@@ -165,7 +166,7 @@ namespace iTextSharp.text.pdf.security {
             gen.SetRequestExtensions(new X509Extensions(extensions));
             return gen.Generate();
         }
-        
+
         private OcspResp GetOcspResponse(X509Certificate checkCert, X509Certificate rootCert, String url) {
             if (checkCert == null || rootCert == null)
                 return null;
@@ -177,7 +178,7 @@ namespace iTextSharp.text.pdf.security {
             LOGGER.Info("Getting OCSP from " + url);
             OcspReq request = GenerateOCSPRequest(rootCert, checkCert.SerialNumber);
             byte[] array = request.GetEncoded();
-            
+
             HttpWebRequest con = (HttpWebRequest)WebRequest.Create(url);
             con.ContentLength = array.Length;
             con.ContentType = "application/ocsp-request";
