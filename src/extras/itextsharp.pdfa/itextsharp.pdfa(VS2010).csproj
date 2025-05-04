@@ -54,7 +54,7 @@
     <Company>iText Group NV</Company>
     <Product>iTextSharp.pdfa</Product>
     <Copyright>Copyright (c) 1998-2020 iText Group NV</Copyright>
-    <Version>5.5.13.4</Version>
+    <Version>5.5.13.5</Version>
     <Authors>iText Software</Authors>
     <PackageTags>itext itextsharp c# csharp .net pdf pdfa</PackageTags>
     <PackageProjectUrl>https://itextpdf.com/</PackageProjectUrl>

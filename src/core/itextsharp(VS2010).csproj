@@ -72,7 +72,7 @@ Several iText engineers are actively supporting the project on StackOverflow: ht
     <Company>iText Group NV</Company>
     <Product>iTextSharp</Product>
     <Copyright>Copyright (c) 1998-2020 iText Group NV</Copyright>
-    <Version>5.5.13.4</Version>
+    <Version>5.5.13.5</Version>
     <Authors>iText Software</Authors>
     <PackageTags>itext itextsharp c# .net csharp pdf</PackageTags>
     <PackageProjectUrl>https://itextpdf.com/</PackageProjectUrl>

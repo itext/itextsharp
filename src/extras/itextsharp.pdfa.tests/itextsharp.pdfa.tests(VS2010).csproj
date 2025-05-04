@@ -34,7 +34,7 @@
     <PackageId>$(AssemblyName).portable</PackageId>
     <Company>iText Group NV</Company>
     <Copyright>Copyright (c) 1998-2020 iText Group NV</Copyright>
-    <Version>5.5.13.4</Version>
+    <Version>5.5.13.5</Version>
   </PropertyGroup>
   <PropertyGroup Condition=" '$(Configuration)|$(Platform)' == 'Debug|AnyCPU' ">
     <DebugSymbols>true</DebugSymbols>
