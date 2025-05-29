@@ -1406,9 +1406,6 @@
     <Compile Include="iTextSharp\xmp\impl\CountOutputStream.cs">
       <SubType>Code</SubType>
     </Compile>
-    <Compile Include="iTextSharp\xmp\impl\FilterReader.cs">
-      <SubType>Code</SubType>
-    </Compile>
     <Compile Include="iTextSharp\xmp\impl\FixAsciiControlsReader.cs">
       <SubType>Code</SubType>
     </Compile>
@@ -1422,9 +1419,6 @@
       <SubType>Code</SubType>
     </Compile>
     <Compile Include="iTextSharp\xmp\impl\ParseRdf.cs">
-      <SubType>Code</SubType>
-    </Compile>
-    <Compile Include="iTextSharp\xmp\impl\PushbackReader.cs">
       <SubType>Code</SubType>
     </Compile>
     <Compile Include="iTextSharp\xmp\impl\QName.cs">

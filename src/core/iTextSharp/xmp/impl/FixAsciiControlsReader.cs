@@ -27,157 +27,176 @@
 //        SOFTWARE, EVEN IF ADVISED OF THE POSSIBILITY OF SUCH DAMAGE.
 //
 //        http://www.adobe.com/devnet/xmp/library/eula-xmp-library-java.html
-
-using System;
-using System.Globalization;
 using System.IO;
-using System.Text;
+using System;
 
 namespace iTextSharp.xmp.impl {
-    /// <summary>
-    /// @since   22.08.2006
-    /// </summary>
-    public class FixAsciiControlsReader : PushbackReader {
+    /// <since>22.08.2006</since>
+    public class FixAsciiControlsReader : TextReader {
         private const int STATE_START = 0;
+
         private const int STATE_AMP = 1;
+
         private const int STATE_HASH = 2;
+
         private const int STATE_HEX = 3;
+
         private const int STATE_DIG1 = 4;
+
         private const int STATE_ERROR = 5;
-        private const int BUFFER_SIZE = 8;
 
-        /// <summary>
-        /// the result of the escaping sequence </summary>
-        private int _control;
+        /// <summary>the state of the automaton</summary>
+        private int state = STATE_START;
 
-        /// <summary>
-        /// count the digits of the sequence </summary>
-        private int _digits;
+        /// <summary>the result of the escaping sequence</summary>
+        private int control = 0;
 
-        /// <summary>
-        /// the state of the automaton </summary>
-        private int _state = STATE_START;
+        /// <summary>count the digits of the sequence</summary>
+        private int digits = 0;
 
-        /// <summary>
-        /// The look-ahead size is 6 at maximum (&amp;#xAB;) </summary>
-        /// <seealso cref= PushbackReader#PushbackReader(Reader, int) </seealso>
-        /// <param name="in"> a Reader </param>
-        public FixAsciiControlsReader(TextReader inp)
-            : base(inp, BUFFER_SIZE) {
+        private TextReader @in;
+
+        /// <summary>A wrapper xmp reader to handle control characters (&amp;#xAB;)</summary>
+        /// <param name="input">a Reader</param>
+        public FixAsciiControlsReader(TextReader input) {
+            @in = input;
         }
 
-        /// <seealso cref= Reader#read(char[], int, int) </seealso>
+        /// <seealso cref="System.IO.TextReader.Read(char[], int, int)"/>
         public override int Read(char[] cbuf, int off, int len) {
-            int readAhead = 0;
             int read = 0;
             int pos = off;
-            char[] readAheadBuffer = new char[BUFFER_SIZE];
-
+            char[] readAheadBuffer = new char[1];
             bool available = true;
             while (available && read < len) {
-                available = base.Read(readAheadBuffer, readAhead, 1) == 1;
+                available = @in.Read(readAheadBuffer, 0, 1) == 1;
                 if (available) {
-                    char c = ProcessChar(readAheadBuffer[readAhead]);
-                    if (_state == STATE_START) {
+                    char c = ProcessChar(readAheadBuffer[0]);
+                    if (state == STATE_START) {
                         // replace control chars with space
                         if (Utils.IsControlChar(c)) {
                             c = ' ';
                         }
                         cbuf[pos++] = c;
-                        readAhead = 0;
                         read++;
                     }
-                    else if (_state == STATE_ERROR) {
-                        Unread(readAheadBuffer, 0, readAhead + 1);
-                        readAhead = 0;
-                    }
                     else {
-                        readAhead++;
+                        if (state == STATE_ERROR) {
+                        }
                     }
-                }
-                else if (readAhead > 0) {
-                    // handles case when file ends within excaped sequence
-                    Unread(readAheadBuffer, 0, readAhead);
-                    _state = STATE_ERROR;
-                    readAhead = 0;
-                    available = true;
                 }
             }
-
-
             return read > 0 || available ? read : -1;
         }
 
+        /// <summary><inheritDoc/></summary>
+        public override void Close() {
+            @in.Close();
+        }
 
-        /// <summary>
-        /// Processes numeric escaped chars to find out if they are a control character. </summary>
-        /// <param name="ch"> a char </param>
-        /// <returns> Returns the char directly or as replacement for the escaped sequence. </returns>
+        /// <summary>Processes numeric escaped chars to find out if they are a control character.</summary>
+        /// <param name="ch">a char</param>
+        /// <returns>Returns the char directly or as replacement for the escaped sequence.</returns>
         private char ProcessChar(char ch) {
-            switch (_state) {
-                case STATE_START:
+            switch (state) {
+                case STATE_START: {
                     if (ch == '&') {
-                        _state = STATE_AMP;
+                        state = STATE_AMP;
                     }
                     return ch;
+                }
 
-                case STATE_AMP:
-                    _state = ch == '#' ? STATE_HASH : STATE_ERROR;
+                case STATE_AMP: {
+                    if (ch == '#') {
+                        state = STATE_HASH;
+                    }
+                    else {
+                        state = STATE_ERROR;
+                    }
                     return ch;
-                case STATE_HASH:
+                }
+
+                case STATE_HASH: {
                     if (ch == 'x') {
-                        _control = 0;
-                        _digits = 0;
-                        _state = STATE_HEX;
-                    }
-                    else if ('0' <= ch && ch <= '9') {
-                        _control = Convert.ToInt32(ch.ToString(CultureInfo.InvariantCulture), 10);
-                        _digits = 1;
-                        _state = STATE_DIG1;
+                        control = 0;
+                        digits = 0;
+                        state = STATE_HEX;
                     }
                     else {
-                        _state = STATE_ERROR;
+                        if ('0' <= ch && ch <= '9') {
+                            control = CharacterDigit(ch, 10);
+                            digits = 1;
+                            state = STATE_DIG1;
+                        }
+                        else {
+                            state = STATE_ERROR;
+                        }
                     }
                     return ch;
+                }
 
-                case STATE_DIG1:
+                case STATE_DIG1: {
                     if ('0' <= ch && ch <= '9') {
-                        _control = _control*10 + Convert.ToInt32(ch.ToString(CultureInfo.InvariantCulture), 10);
-                        _digits++;
-                        _state = _digits <= 5 ? STATE_DIG1 : STATE_ERROR;
-                    }
-                    else if (ch == ';' && Utils.IsControlChar((char) _control)) {
-                        _state = STATE_START;
-                        return (char) _control;
+                        control = control * 10 + CharacterDigit(ch, 10);
+                        digits++;
+                        if (digits <= 5) {
+                            state = STATE_DIG1;
+                        }
+                        else {
+                            state = STATE_ERROR;
+                        }
                     }
                     else {
-                        _state = STATE_ERROR;
+                        // sequence too long
+                        if (ch == ';' && Utils.IsControlChar((char)control)) {
+                            state = STATE_START;
+                            return (char)control;
+                        }
+                        else {
+                            state = STATE_ERROR;
+                        }
                     }
                     return ch;
+                }
 
-                case STATE_HEX:
+                case STATE_HEX: {
                     if (('0' <= ch && ch <= '9') || ('a' <= ch && ch <= 'f') || ('A' <= ch && ch <= 'F')) {
-                        _control = _control*16 + Convert.ToInt32(ch.ToString(CultureInfo.InvariantCulture), 16);
-                        _digits++;
-                        _state = _digits <= 4 ? STATE_HEX : STATE_ERROR;
-                    }
-                    else if (ch == ';' && Utils.IsControlChar((char) _control)) {
-                        _state = STATE_START;
-                        return (char) _control;
+                        control = control * 16 + CharacterDigit(ch, 16);
+                        digits++;
+                        if (digits <= 4) {
+                            state = STATE_HEX;
+                        }
+                        else {
+                            state = STATE_ERROR;
+                        }
                     }
                     else {
-                        _state = STATE_ERROR;
+                        // sequence too long
+                        if (ch == ';' && Utils.IsControlChar((char)control)) {
+                            state = STATE_START;
+                            return (char)control;
+                        }
+                        else {
+                            state = STATE_ERROR;
+                        }
                     }
                     return ch;
+                }
 
-                case STATE_ERROR:
-                    _state = STATE_START;
+                case STATE_ERROR: {
+                    state = STATE_START;
                     return ch;
+                }
 
-                default:
+                default: {
                     // not reachable
                     return ch;
+                }
             }
+        }
+
+        private static int CharacterDigit(char ch, int radix) {
+            return Convert.ToInt32(new String(new[] {ch}), radix);
         }
     }
 }
