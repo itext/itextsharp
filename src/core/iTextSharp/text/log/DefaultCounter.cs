@@ -79,7 +79,7 @@ namespace iTextSharp.text.log {
 
         private void PlusOne() {
 			if (count++ > repeat_level) {
-				if (Version.IsAGPLVersion) {
+				if (Version.IsAGPLVersion && UnifiedVersion.IsAGPLVersion()) {
 					level++;
 					if (level == 1) {
 						repeat_level = repeat[1];

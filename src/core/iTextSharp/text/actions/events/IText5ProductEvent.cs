@@ -41,55 +41,38 @@
     address: sales@itextpdf.com
  */
 using System;
+using iText.Commons.Actions;
+using iText.Commons.Actions.Confirmations;
+using iText.Commons.Actions.Contexts;
+using iText.Commons.Actions.Sequence;
+using iTextSharp.text.Actions.Data;
 
-namespace iTextSharp.text.xml.xmp {
+namespace iTextSharp.text.Actions.Events {
+    /// <summary>Class represents events registered in iText 5.</summary>
+    public class IText5ProductEvent : AbstractProductProcessITextEvent {
+        /// <summary>Process PDF event type.</summary>
+        public const String PROCESS_PDF = "process-pdf-itext5";
 
-    /**
-    * An implementation of an XmpSchema.
-    */
-    [Obsolete]
-    public class PdfSchema : XmpSchema {
-        
-        /** default namespace identifier*/
-        public const String DEFAULT_XPATH_ID = "pdf";
-        /** default namespace uri*/
-        public const String DEFAULT_XPATH_URI = "http://ns.adobe.com/pdf/1.3/";
-        /** Keywords. */
-        public const String KEYWORDS = "pdf:Keywords";
-        /** The PDF file version (for example: 1.0, 1.3, and so on). */
-        public const String VERSION = "pdf:PDFVersion";
-        /** The Producer. */
-        public const String PRODUCER = "pdf:Producer";
-        
-        /**
-        * @throws IOException
-        */
-        public PdfSchema() : base("xmlns:" + DEFAULT_XPATH_ID + "=\"" + DEFAULT_XPATH_URI + "\"") {
-            AddProducer(Version.GetCurrentProducer);
-        }
-        
-        /**
-        * Adds keywords.
-        * @param keywords
-        */
-        virtual public void AddKeywords(String keywords) {
-            this[KEYWORDS] = keywords;
-        }
-        
-        /**
-        * Adds the producer.
-        * @param producer
-        */
-        virtual public void AddProducer(String producer) {
-            this[PRODUCER] = producer;
+        private readonly String eventType;
+
+        /// <summary>Creates an event associated with a general identifier and additional metadata.</summary>
+        /// <param name="sequenceId">is an identifier associated with the event</param>
+        /// <param name="metaInfo">is an additional meta info</param>
+        /// <param name="eventType">is a string description of the event</param>
+        private IText5ProductEvent(SequenceId sequenceId, IMetaInfo metaInfo, String eventType)
+            : base(sequenceId, IText5ProductData.GetInstance(), metaInfo, EventConfirmationType.ON_DEMAND) {
+            this.eventType = eventType;
         }
 
-        /**
-        * Adds the version.
-        * @param version
-        */
-        virtual public void AddVersion(String version) {
-            this[VERSION] = version;
+        /// <summary>Creates a process-pdf event which is associated with a general identifier and additional metadata.
+        ///     </summary>
+        /// <returns>the process pdf iText 5 event</returns>
+        public static iTextSharp.text.Actions.Events.IText5ProductEvent CreateProcessPdfEvent() {
+            return new iTextSharp.text.Actions.Events.IText5ProductEvent(null, null, PROCESS_PDF);
+        }
+
+        public override String GetEventType() {
+            return eventType;
         }
     }
 }

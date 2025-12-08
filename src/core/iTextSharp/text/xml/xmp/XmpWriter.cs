@@ -92,7 +92,7 @@ namespace iTextSharp.text.xml.xmp {
             xmpMeta.ObjectName = "";
             try {
                 xmpMeta.SetProperty(XmpConst.NS_DC, DublinCoreProperties.FORMAT, "application/pdf");
-                xmpMeta.SetProperty(XmpConst.NS_PDF, PdfProperties.PRODUCER, Version.GetInstance().GetVersion);
+                xmpMeta.SetProperty(XmpConst.NS_PDF, PdfProperties.PRODUCER, Version.GetCurrentProducer);
             }
             catch (XmpException) {}
         }

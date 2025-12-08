@@ -41,55 +41,52 @@
     address: sales@itextpdf.com
  */
 using System;
+using System.Collections.Generic;
+using iText.Commons.Actions;
+using iText.Commons.Actions.Data;
+using iText.Commons.Utils;
 
-namespace iTextSharp.text.xml.xmp {
+namespace iTextSharp.text.pdf.Statistics {
+    /// <summary>Class which represents event related to size of the PDF document.</summary>
+    /// <remarks>Class which represents event related to size of the PDF document. Only for internal usage.</remarks>
+    public class SizeOfPdfStatisticsEvent : AbstractStatisticsEvent {
+        private const String PDF_SIZE_STATISTICS = "pdfSize";
 
-    /**
-    * An implementation of an XmpSchema.
-    */
-    [Obsolete]
-    public class PdfSchema : XmpSchema {
-        
-        /** default namespace identifier*/
-        public const String DEFAULT_XPATH_ID = "pdf";
-        /** default namespace uri*/
-        public const String DEFAULT_XPATH_URI = "http://ns.adobe.com/pdf/1.3/";
-        /** Keywords. */
-        public const String KEYWORDS = "pdf:Keywords";
-        /** The PDF file version (for example: 1.0, 1.3, and so on). */
-        public const String VERSION = "pdf:PDFVersion";
-        /** The Producer. */
-        public const String PRODUCER = "pdf:Producer";
-        
-        /**
-        * @throws IOException
-        */
-        public PdfSchema() : base("xmlns:" + DEFAULT_XPATH_ID + "=\"" + DEFAULT_XPATH_URI + "\"") {
-            AddProducer(Version.GetCurrentProducer);
-        }
-        
-        /**
-        * Adds keywords.
-        * @param keywords
-        */
-        virtual public void AddKeywords(String keywords) {
-            this[KEYWORDS] = keywords;
-        }
-        
-        /**
-        * Adds the producer.
-        * @param producer
-        */
-        virtual public void AddProducer(String producer) {
-            this[PRODUCER] = producer;
+        private readonly long amountOfBytes;
+
+        /// <summary>
+        /// Creates an instance of this class based on the
+        /// <see cref="iText.Commons.Actions.Data.ProductData"/>
+        /// and the size of the document.
+        /// </summary>
+        /// <param name="amountOfBytes">the number of bytes in the PDF document during the processing of which the event was sent
+        ///     </param>
+        /// <param name="productData">is a description of the product which has generated an event</param>
+        public SizeOfPdfStatisticsEvent(long amountOfBytes, ProductData productData)
+            : base(productData) {
+            if (amountOfBytes < 0) {
+                throw new ArgumentException("Amount of bytes in the PDF document cannot be less than zero");
+            }
+            this.amountOfBytes = amountOfBytes;
         }
 
-        /**
-        * Adds the version.
-        * @param version
-        */
-        virtual public void AddVersion(String version) {
-            this[VERSION] = version;
+        /// <summary><inheritDoc/></summary>
+        public override AbstractStatisticsAggregator CreateStatisticsAggregatorFromName(String statisticsName) {
+            if (PDF_SIZE_STATISTICS.Equals(statisticsName)) {
+                return new SizeOfPdfStatisticsAggregator();
+            }
+            return base.CreateStatisticsAggregatorFromName(statisticsName);
+        }
+
+        /// <summary><inheritDoc/></summary>
+        public override IList<String> GetStatisticsNames() {
+            return JavaCollectionsUtil.SingletonList(PDF_SIZE_STATISTICS);
+        }
+
+        /// <summary>Gets number of bytes in the PDF document during the processing of which the event was sent.</summary>
+        /// <returns>the number of pages</returns>
+        public virtual long GetAmountOfBytes() {
+            return amountOfBytes;
         }
     }
 }

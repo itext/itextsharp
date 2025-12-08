@@ -252,6 +252,10 @@ namespace iTextSharp.text {
         public static bool IsAGPLVersion {
             get { return GetInstance().GetVersion.IndexOf(AGPL) > 0; }
         }
+        
+        public static String GetCurrentProducer {
+	        get { return UnifiedVersion.IsAGPLVersion() ? Version.GetInstance().GetVersion : UnifiedVersion.GetProducer(null); }
+        }
 
         private static Version AtomicSetVersion(Version newVersion) {
             lock (staticLock) {

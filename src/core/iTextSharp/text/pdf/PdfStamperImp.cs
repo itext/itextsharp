@@ -286,22 +286,35 @@ namespace iTextSharp.text.pdf {
             }
             PdfDictionary oldInfo = reader.Trailer.GetAsDict(PdfName.INFO);
             String producer = null;
+            String oldProducer = null;
             if (oldInfo != null && oldInfo.Get(PdfName.PRODUCER) != null) {
-                producer = oldInfo.GetAsString(PdfName.PRODUCER).ToUnicodeString();
+                oldProducer = oldInfo.GetAsString(PdfName.PRODUCER).ToUnicodeString();
             }
-            Version version = Version.GetInstance();
-            if (producer == null || version.GetVersion.IndexOf(version.Product) == -1) {
-                producer = version.GetVersion;
+            if (UnifiedVersion.IsAGPLVersion()) {
+                // Old mechanism of producer line modifying
+                if (oldProducer != null) {
+                    producer = oldProducer;
+                }
+
+                Version version = Version.GetInstance();
+                if (producer == null || version.GetVersion.IndexOf(version.Product) == -1) {
+                    producer = version.GetVersion;
+                } else {
+                    int idx = producer.IndexOf("; modified using");
+                    
+                    StringBuilder buf;
+                    if (idx == -1)
+                        buf = new StringBuilder(producer);
+                    else
+                        buf = new StringBuilder(producer.Substring(0, idx));
+                    buf.Append("; modified using ");
+                    buf.Append(version.GetVersion);
+                    producer = buf.ToString();
+                }
             } else {
-                int idx = producer.IndexOf("; modified using");
-                StringBuilder buf;
-                if (idx == -1)
-                    buf = new StringBuilder(producer);
-                else
-                    buf = new StringBuilder(producer.Substring(0, idx));
-                buf.Append("; modified using ");
-                buf.Append(version.GetVersion);
-                producer = buf.ToString();
+                // Unified mechanism of producer line modifying
+                producer = UnifiedVersion.GetProducer(oldProducer);
+                // Event has been sent and confirmed on reading it by PdfReader
             }
             PdfIndirectReference info = null;
             PdfDictionary newInfo = new PdfDictionary();
@@ -397,6 +410,10 @@ namespace iTextSharp.text.pdf {
                 }
             }
             Close(info, skipInfo);
+            
+            if (!UnifiedVersion.IsAGPLVersion()) {
+                UnifiedVersion.OnEventStatistic(this.os.Counter, reader.NumberOfPages);
+            }
         }
 
         protected virtual void Close(PdfIndirectReference info, int skipInfo) {

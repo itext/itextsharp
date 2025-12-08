@@ -443,7 +443,7 @@ namespace iTextSharp.text {
         /// </summary>
         /// <returns>true if successful, false otherwise</returns>
         virtual public bool AddProducer() {
-            return Add(new Meta(Element.PRODUCER, Version.GetInstance().GetVersion));
+            return Add(new Meta(Element.PRODUCER, Version.GetCurrentProducer));
         }
 
         /**

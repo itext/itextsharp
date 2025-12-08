@@ -41,55 +41,40 @@
     address: sales@itextpdf.com
  */
 using System;
+using iText.Commons.Actions.Data;
 
-namespace iTextSharp.text.xml.xmp {
+namespace iTextSharp.text.Actions.Data {
+    /// <summary>
+    /// Stores an instance of
+    /// <see cref="iText.Commons.Actions.Data.ProductData"/>
+    /// related to iText 5.
+    /// </summary>
+    public class IText5ProductData {
+        private const String ITEXT5_PRODUCT_NAME = "itext5";
 
-    /**
-    * An implementation of an XmpSchema.
-    */
-    [Obsolete]
-    public class PdfSchema : XmpSchema {
-        
-        /** default namespace identifier*/
-        public const String DEFAULT_XPATH_ID = "pdf";
-        /** default namespace uri*/
-        public const String DEFAULT_XPATH_URI = "http://ns.adobe.com/pdf/1.3/";
-        /** Keywords. */
-        public const String KEYWORDS = "pdf:Keywords";
-        /** The PDF file version (for example: 1.0, 1.3, and so on). */
-        public const String VERSION = "pdf:PDFVersion";
-        /** The Producer. */
-        public const String PRODUCER = "pdf:Producer";
-        
-        /**
-        * @throws IOException
-        */
-        public PdfSchema() : base("xmlns:" + DEFAULT_XPATH_ID + "=\"" + DEFAULT_XPATH_URI + "\"") {
-            AddProducer(Version.GetCurrentProducer);
-        }
-        
-        /**
-        * Adds keywords.
-        * @param keywords
-        */
-        virtual public void AddKeywords(String keywords) {
-            this[KEYWORDS] = keywords;
-        }
-        
-        /**
-        * Adds the producer.
-        * @param producer
-        */
-        virtual public void AddProducer(String producer) {
-            this[PRODUCER] = producer;
+        private const String ITEXT5_PUBLIC_PRODUCT_NAME = ITEXT5_PRODUCT_NAME;
+
+        private const String ITEXT5_VERSION = "5.5.13.4";
+
+        private const int ITEXT5_COPYRIGHT_SINCE = 1998;
+
+        private const int ITEXT5_COPYRIGHT_TO = 2025;
+
+        private static readonly ProductData ITEXT5_PRODUCT_DATA = new ProductData(ITEXT5_PUBLIC_PRODUCT_NAME, ITEXT5_PRODUCT_NAME
+            , ITEXT5_VERSION, ITEXT5_COPYRIGHT_SINCE, ITEXT5_COPYRIGHT_TO);
+
+        private IText5ProductData() {
         }
 
-        /**
-        * Adds the version.
-        * @param version
-        */
-        virtual public void AddVersion(String version) {
-            this[VERSION] = version;
+        //To do nothing.
+        /// <summary>
+        /// Getter for an instance of
+        /// <see cref="iText.Commons.Actions.Data.ProductData"/>
+        /// related to iText 5.
+        /// </summary>
+        /// <returns>iText 5 product description</returns>
+        public static ProductData GetInstance() {
+            return ITEXT5_PRODUCT_DATA;
         }
     }
 }

@@ -187,6 +187,10 @@ namespace iTextSharp.text.pdf {
                 throw e;
             }
             GetCounter().Read(fileLength);
+            
+            if (!UnifiedVersion.IsAGPLVersion()) {
+                UnifiedVersion.OnEventUsage();
+            }
         }
 
         /** Reads and parses a PDF document.

@@ -41,55 +41,50 @@
     address: sales@itextpdf.com
  */
 using System;
+using System.IO;
 
-namespace iTextSharp.text.xml.xmp {
-
-    /**
-    * An implementation of an XmpSchema.
-    */
-    [Obsolete]
-    public class PdfSchema : XmpSchema {
-        
-        /** default namespace identifier*/
-        public const String DEFAULT_XPATH_ID = "pdf";
-        /** default namespace uri*/
-        public const String DEFAULT_XPATH_URI = "http://ns.adobe.com/pdf/1.3/";
-        /** Keywords. */
-        public const String KEYWORDS = "pdf:Keywords";
-        /** The PDF file version (for example: 1.0, 1.3, and so on). */
-        public const String VERSION = "pdf:PDFVersion";
-        /** The Producer. */
-        public const String PRODUCER = "pdf:Producer";
-        
-        /**
-        * @throws IOException
-        */
-        public PdfSchema() : base("xmlns:" + DEFAULT_XPATH_ID + "=\"" + DEFAULT_XPATH_URI + "\"") {
-            AddProducer(Version.GetCurrentProducer);
+namespace iTextSharp.text {
+    /// <summary>The class is only for internal usage</summary>
+    public sealed class UnifiedVersion {
+        private UnifiedVersion() {
+            // empty constructor
         }
         
-        /**
-        * Adds keywords.
-        * @param keywords
-        */
-        virtual public void AddKeywords(String keywords) {
-            this[KEYWORDS] = keywords;
+        public static void OnEventUsage() {
+            try {
+                UnifiedVersionUtil.OnEventUsage();
+            }
+            catch (FileNotFoundException) {
+            }
         }
         
-        /**
-        * Adds the producer.
-        * @param producer
-        */
-        virtual public void AddProducer(String producer) {
-            this[PRODUCER] = producer;
+        public static void OnEventStatistic(long amountOfBytes, int numberOfPages) {
+            try {
+                UnifiedVersionUtil.OnEventStatistic(amountOfBytes, numberOfPages);
+            }
+            catch (FileNotFoundException) {
+            }
+        }
+        
+        public static String GetProducer(String oldProducer) {
+            try {
+                return UnifiedVersionUtil.GetProducer(oldProducer);
+            }
+            catch (FileNotFoundException) {
+                // no commons dependency, do nothing
+                return null;
+            }
         }
 
-        /**
-        * Adds the version.
-        * @param version
-        */
-        virtual public void AddVersion(String version) {
-            this[VERSION] = version;
+        public static bool IsAGPLVersion() {
+            try {
+                // returns false if unified license has been loaded, otherwise true
+                return UnifiedVersionUtil.IsAGPLVersion();
+            }
+            catch (FileNotFoundException) {
+                // no commons dependency, do nothing
+                return true;
+            }
         }
     }
 }

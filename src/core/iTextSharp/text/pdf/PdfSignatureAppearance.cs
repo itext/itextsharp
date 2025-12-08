@@ -64,7 +64,7 @@ namespace iTextSharp.text.pdf {
             this.writer = writer;
             signDate = DateTime.Now;
             fieldName = GetNewSigName();
-            signatureCreator = Version.GetInstance().GetVersion;
+            signatureCreator = Version.GetCurrentProducer;
         }
         
         /*

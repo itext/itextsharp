@@ -139,6 +139,42 @@
       <HintPath>$(SolutionDir)\packages\BouncyCastle.Cryptography.2.4.0\lib\net461\BouncyCastle.Cryptography.dll</HintPath>
       <Private>True</Private>
     </Reference>
+    <Reference Include="itext.commons, Version=9.5.0.0, Culture=neutral, PublicKeyToken=8354ae6d2174ddca">
+      <HintPath>$(SolutionDir)\packages\itext.commons.9.5.0-SNAPSHOT\lib\net461\itext.commons.dll</HintPath>
+      <Private>True</Private>
+    </Reference>
+    <Reference Include="Newtonsoft.Json, Version=13.0.0.0, Culture=neutral, PublicKeyToken=30ad4fe6b2a6aeed">
+      <HintPath>$(SolutionDir)\packages\Newtonsoft.Json.13.0.1\lib\net45\Newtonsoft.Json.dll</HintPath>
+      <Private>True</Private>
+    </Reference>
+    <Reference Include="System.ValueTuple, Version=4.0.3.0, Culture=neutral, PublicKeyToken=cc7b13ffcd2ddd51">
+      <HintPath>$(SolutionDir)\packages\System.ValueTuple.4.5.0\lib\net461\System.ValueTuple.dll</HintPath>
+      <Private>True</Private>
+    </Reference>
+    <Reference Include="Microsoft.Extensions.Logging, Version=5.0.0.0, Culture=neutral, PublicKeyToken=adb9793829ddae60">
+      <HintPath>$(SolutionDir)\packages\Microsoft.Extensions.Logging.5.0.0\lib\net461\Microsoft.Extensions.Logging.dll</HintPath>
+      <Private>True</Private>
+    </Reference>
+    <Reference Include="Microsoft.Extensions.Logging.Abstractions, Version=5.0.0.0, Culture=neutral, PublicKeyToken=adb9793829ddae60">
+      <HintPath>$(SolutionDir)\packages\Microsoft.Extensions.Logging.Abstractions.5.0.0\lib\net461\Microsoft.Extensions.Logging.Abstractions.dll</HintPath>
+      <Private>True</Private>
+    </Reference>
+    <Reference Include="Microsoft.Extensions.Options, Version=5.0.0.0, Culture=neutral, PublicKeyToken=adb9793829ddae60">
+      <HintPath>$(SolutionDir)\packages\Microsoft.Extensions.Options.5.0.0\lib\net461\Microsoft.Extensions.Options.dll</HintPath>
+      <Private>True</Private>
+    </Reference>
+    <Reference Include="Microsoft.Extensions.Primitives, Version=5.0.0.0, Culture=neutral, PublicKeyToken=adb9793829ddae60">
+      <HintPath>$(SolutionDir)\packages\Microsoft.Extensions.Primitives.5.0.0\lib\net461\Microsoft.Extensions.Primitives.dll</HintPath>
+      <Private>True</Private>
+    </Reference>
+    <Reference Include="Microsoft.Extensions.DependencyInjection, Version=5.0.0.0, Culture=neutral, PublicKeyToken=adb9793829ddae60">
+      <HintPath>$(SolutionDir)\packages\Microsoft.Extensions.DependencyInjection.5.0.0\lib\net461\Microsoft.Extensions.DependencyInjection.dll</HintPath>
+      <Private>True</Private>
+    </Reference>
+    <Reference Include="Microsoft.Extensions.DependencyInjection.Abstractions, Version=5.0.0.0, Culture=neutral, PublicKeyToken=adb9793829ddae60">
+      <HintPath>$(SolutionDir)\packages\Microsoft.Extensions.DependencyInjection.Abstractions.5.0.0\lib\net461\Microsoft.Extensions.DependencyInjection.Abstractions.dll</HintPath>
+      <Private>True</Private>
+    </Reference>
     <Reference Include="System" />
     <Reference Include="System.Security" />
     <Reference Include="System.Xml" />
@@ -150,6 +186,7 @@
     <Compile Include="AssemblyInfo.cs">
       <SubType>Code</SubType>
     </Compile>
+    <Compile Include="iTextSharp\ITextSharpExtension.cs" />
     <Compile Include="iTextSharp\testutils\CompareToolUtil.cs" />
     <Compile Include="iTextSharp\text\pdf\MemoryLimitsAwareException.cs" />
     <Compile Include="iTextSharp\text\pdf\MemoryLimitsAwareHandler.cs" />
@@ -1620,6 +1657,8 @@
     <None Include="packages.config" />
   </ItemGroup>
   <ItemGroup>
+    <Compile Include="iTextSharp\text\actions\data\IText5ProductData.cs" />
+    <Compile Include="iTextSharp\text\actions\events\IText5ProductEvent.cs" />
     <Compile Include="iTextSharp\text\api\IIndentable.cs" />
     <Compile Include="iTextSharp\text\api\ISpaceable.cs" />
     <Compile Include="iTextSharp\text\api\IWriterOperation.cs" />
@@ -1698,8 +1737,14 @@
     <Compile Include="iTextSharp\text\pdf\security\VerificationException.cs" />
     <Compile Include="iTextSharp\text\pdf\security\VerificationOK.cs" />
     <Compile Include="iTextSharp\text\pdf\security\X509Certificate2Signature.cs" />
+    <Compile Include="iTextSharp\text\pdf\statistics\NumberOfPagesStatisticsAggregator.cs" />
+    <Compile Include="iTextSharp\text\pdf\statistics\NumberOfPagesStatisticsEvent.cs" />
+    <Compile Include="iTextSharp\text\pdf\statistics\SizeOfPdfStatisticsAggregator.cs" />
+    <Compile Include="iTextSharp\text\pdf\statistics\SizeOfPdfStatisticsEvent.cs" />
     <Compile Include="iTextSharp\text\pdf\TtfUnicodeWriter.cs" />
     <Compile Include="iTextSharp\text\Version.cs" />
+    <Compile Include="iTextSharp\text\UnifiedVersion.cs" />
+    <Compile Include="iTextSharp\text\UnifiedVersionUtil.cs" />
     <Compile Include="iTextSharp\text\WritableDirectElement.cs" />
     <Compile Include="iTextSharp\text\xml\simpleparser\handler\HTMLNewLineHandler.cs" />
     <Compile Include="iTextSharp\text\xml\simpleparser\handler\NeverNewLineHandler.cs" />
