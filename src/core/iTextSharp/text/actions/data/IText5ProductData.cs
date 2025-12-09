@@ -1,6 +1,6 @@
 /*
     This file is part of the iText (R) project.
-    Copyright (c) 1998-2022 iText Group NV
+    Copyright (c) 1998-2026 iText Group NV
     Authors: iText Software.
 
     This program is free software; you can redistribute it and/or modify
@@ -58,7 +58,7 @@ namespace iTextSharp.text.Actions.Data {
 
         private const int ITEXT5_COPYRIGHT_SINCE = 1998;
 
-        private const int ITEXT5_COPYRIGHT_TO = 2025;
+        private const int ITEXT5_COPYRIGHT_TO = 2026;
 
         private static readonly ProductData ITEXT5_PRODUCT_DATA = new ProductData(ITEXT5_PUBLIC_PRODUCT_NAME, ITEXT5_PRODUCT_NAME
             , ITEXT5_VERSION, ITEXT5_COPYRIGHT_SINCE, ITEXT5_COPYRIGHT_TO);
