@@ -1,6 +1,6 @@
 /*
     This file is part of the iText (R) project.
-    Copyright (c) 1998-2022 iText Group NV
+    Copyright (c) 1998-2026 iText Group NV
     Authors: iText Software.
 
     This program is free software; you can redistribute it and/or modify
@@ -64,7 +64,7 @@ namespace iTextSharp.text.pdf {
             this.writer = writer;
             signDate = DateTime.Now;
             fieldName = GetNewSigName();
-            signatureCreator = Version.GetInstance().GetVersion;
+            signatureCreator = Version.GetCurrentProducer;
         }
         
         /*

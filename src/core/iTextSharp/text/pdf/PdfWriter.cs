@@ -1,6 +1,6 @@
 /*
     This file is part of the iText (R) project.
-    Copyright (c) 1998-2022 iText Group NV
+    Copyright (c) 1998-2026 iText Group NV
     Authors: iText Software.
 
     This program is free software; you can redistribute it and/or modify
@@ -1260,7 +1260,10 @@ namespace iTextSharp.text.pdf {
                     }
                     catalog.Put(PdfName.METADATA, body.Add(xmp).IndirectReference);
                 }
-                Info.Put(PdfName.PRODUCER, new PdfString(Version.GetInstance().GetVersion));
+                Info.Put(PdfName.PRODUCER, new PdfString(Version.GetCurrentProducer));
+                if (!UnifiedVersion.IsAGPLVersion()) {
+                    UnifiedVersion.OnEventUsage();
+                }
                 // [C10] make pdfx conformant
                 if (IsPdfX()) {
                     CompleteInfoDictionary(Info);
@@ -1316,6 +1319,11 @@ namespace iTextSharp.text.pdf {
                     fileID, prevxref);
                     trailer.ToPdf(this, os);
                 }
+                
+                if (!UnifiedVersion.IsAGPLVersion()) {
+                    UnifiedVersion.OnEventStatistic(this.os.Counter, pdf.PageNumber);
+                }
+                
                 base.Close();
             }
             GetCounter().Written(os.Counter);
@@ -3359,7 +3367,10 @@ namespace iTextSharp.text.pdf {
 
          protected static void WriteKeyInfo(Stream os) {
     	    Version version = Version.GetInstance();
-            String k = version.Key ?? "iText";
+            String k = version.Key;
+            if (k == null || !UnifiedVersion.IsAGPLVersion()) {
+                k = "iText";
+            }
             byte[] tmp = GetISOBytes(String.Format("%{0}-{1}\n", k, version.Release));
             os.Write(tmp, 0, tmp.Length);        	
         }

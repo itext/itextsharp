@@ -7,7 +7,7 @@ using System.Runtime.InteropServices;
 [assembly: AssemblyConfiguration("")]
 [assembly: AssemblyCompany("iText Group NV")]
 [assembly: AssemblyProduct("itextsharp.sandbox")]
-[assembly: AssemblyCopyright ("Copyright (c) 1998-2022 iText Group NV")]
+[assembly: AssemblyCopyright ("Copyright (c) 1998-2026 iText Group NV")]
 [assembly: AssemblyTrademark("")]
 [assembly: AssemblyCulture("")]
 

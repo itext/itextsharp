@@ -1,6 +1,6 @@
 /*
     This file is part of the iText (R) project.
-    Copyright (c) 1998-2022 iText Group NV
+    Copyright (c) 1998-2026 iText Group NV
     Authors: iText Software.
 
     This program is free software; you can redistribute it and/or modify
@@ -77,7 +77,7 @@ namespace iTextSharp.text {
 	     * This String contains the version number of this iText release.
 	     * For debugging purposes, we request you NOT to change this constant.
 	     */
-        private const String release = "5.5.13.4";
+        private const String release = "5.5.13.5";
 
 	    /**
 	     * This String contains the iText version as shown in the producer line.
@@ -85,7 +85,7 @@ namespace iTextSharp.text {
 	     * iText Group requests that you retain the iText producer line
 	     * in every PDF that is created or manipulated using iText.
 	     */
-	    private String iTextVersion = iText + " " + release + " \u00a92000-2024 iText Group NV";
+	    private String iTextVersion = iText + " " + release + " \u00a92000-2026 iText Group NV";
 
         /**
          * The license key.
@@ -251,6 +251,10 @@ namespace iTextSharp.text {
          */
         public static bool IsAGPLVersion {
             get { return GetInstance().GetVersion.IndexOf(AGPL) > 0; }
+        }
+        
+        public static String GetCurrentProducer {
+	        get { return UnifiedVersion.IsAGPLVersion() ? Version.GetInstance().GetVersion : UnifiedVersion.GetProducer(null); }
         }
 
         private static Version AtomicSetVersion(Version newVersion) {
