@@ -40,7 +40,7 @@ iText Community: https://www.nuget.org/packages/itext/</summary>
     <tags>itext itextsharp c# .net csharp pdf</tags>
     <dependencies>
       <group targetFramework="net461">
-        <dependency id="BouncyCastle.Cryptography" version="2.4.0" />
+        <dependency id="BouncyCastle.Cryptography" version="2.6.2" />
       </group>
     </dependencies>
   </metadata>

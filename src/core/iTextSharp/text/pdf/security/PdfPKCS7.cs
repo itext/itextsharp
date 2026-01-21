@@ -742,7 +742,7 @@ namespace iTextSharp.text.pdf.security {
             body.Add(new DerTaggedObject(false, 0, dercertificates));
                         
             // Only allow one signerInfo
-            body.Add(new DerSet(new DerSequence(signerinfo)));
+            body.Add(new DerSet((IReadOnlyCollection<Asn1Encodable>)new DerSequence(signerinfo)));
             
             // Now we have the body, wrap it in it's PKCS7Signed shell
             // and return it
@@ -782,7 +782,7 @@ namespace iTextSharp.text.pdf.security {
             Asn1EncodableVector v = new Asn1EncodableVector();
             v.Add(new DerObjectIdentifier(ID_TIME_STAMP_TOKEN)); // id-aa-timeStampToken
             Asn1Sequence seq = (Asn1Sequence) tempstream.ReadObject();
-            v.Add(new DerSet(seq));
+            v.Add(new DerSet((IReadOnlyCollection<Asn1Encodable>)seq));
 
             unauthAttributes.Add(new DerSequence(v));
             return unauthAttributes;
@@ -878,7 +878,7 @@ namespace iTextSharp.text.pdf.security {
                     revocationV.Add(new DerTaggedObject(true, 1, new DerSequence(vo1)));
                 }
 
-                v.Add(new DerSet(new DerSequence(revocationV)));
+                v.Add(new DerSet((IReadOnlyCollection<Asn1Encodable>)new DerSequence(revocationV)));
                 attribute.Add(new DerSequence(v));
             }
             if (sigtype == CryptoStandard.CADES) {
@@ -899,7 +899,9 @@ namespace iTextSharp.text.pdf.security {
                 byte[] dig = DigestAlgorithms.Digest(GetHashAlgorithm(), signCert.GetEncoded()); 
                 aaV2.Add(new DerOctetString(dig));
                 
-                v.Add(new DerSet(new DerSequence(new DerSequence(new DerSequence(aaV2)))));
+                v.Add(new DerSet((IReadOnlyCollection<Asn1Encodable>)new DerSequence(
+                    (IReadOnlyCollection<Asn1Encodable>)new DerSequence(
+                        (IReadOnlyCollection<Asn1Encodable>)new DerSequence(aaV2)))));
                 attribute.Add(new DerSequence(v));
             }
 
