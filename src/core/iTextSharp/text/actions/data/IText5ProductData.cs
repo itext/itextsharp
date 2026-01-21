@@ -54,7 +54,7 @@ namespace iTextSharp.text.Actions.Data {
 
         private const String ITEXT5_PUBLIC_PRODUCT_NAME = ITEXT5_PRODUCT_NAME;
 
-        private const String ITEXT5_VERSION = "5.5.13.5-SNAPSHOT";
+        private const String ITEXT5_VERSION = "5.5.13.5";
 
         private const int ITEXT5_COPYRIGHT_SINCE = 1998;
 
