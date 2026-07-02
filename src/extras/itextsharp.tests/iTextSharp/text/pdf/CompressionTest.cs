@@ -46,6 +46,7 @@ using System.Text;
 using NUnit.Framework;
 using iTextSharp.text;
 using iTextSharp.text.pdf;
+using iTextSharp.text.pdf.parser;
 
 namespace itextsharp.tests.iTextSharp.text.pdf
 {
@@ -97,16 +98,45 @@ namespace itextsharp.tests.iTextSharp.text.pdf
 
             testDecompressionBomb(reader, MemoryLimitsAwareException.DuringDecompressionMultipleStreamsInSumOccupiedMoreMemoryThanAllowed);
         }
+
+        [Test]
+        public void flateBombTest()
+        {
+            PdfReader reader = new PdfReader(TEST_RESOURCES_PATH + "pageStreamFlateBomb.pdf");
+
+            testDecompressionBomb(reader, MemoryLimitsAwareException.DuringDecompressionSingleStreamOccupiedMoreMemoryThanAllowed);
+        }
+
+        [Test]
+        public void pngDecodeStreamTest()
+        {
+            // This test demonstrates a possible false positive
+            PdfReader reader = new PdfReader(TEST_RESOURCES_PATH + "png5000x5000.pdf");
+            PdfDictionary resources = reader.GetPageResources(1);
+            PdfDictionary xobjects = resources.GetAsDict(PdfName.XOBJECT);
+            PdfIndirectReference objRef = xobjects.GetAsIndirectObject(new PdfName("Im0"));
+            PRStream stream = (PRStream) PdfReader.GetPdfObject(objRef);
+            try {
+                PdfImageObject img = new PdfImageObject(stream);
+            } catch (MemoryLimitsAwareException e) {
+                Assert.AreEqual(
+                        MemoryLimitsAwareException.DuringDecompressionSingleStreamOccupiedMoreMemoryThanAllowed,
+                        e.Message);
+                return;
+            }
+
+            Assert.Fail("Expected MemoryLimitsAwareException was not thrown");
+        }
+
         private static void testDecompressionBomb(PdfReader reader, String expectedExceptionMessage)
         {
-
             String thrownExceptionMessage = null;
             try {
                 byte[] bytes = reader.GetPageContent(1);
             } catch (MemoryLimitsAwareException e) {
                 thrownExceptionMessage = e.Message;
             } catch (OutOfMemoryException e) {
-                Assert.IsTrue(false);
+                Assert.Fail("Expected MemoryLimitsAwareException was not thrown");
             }
 
             reader.Close();

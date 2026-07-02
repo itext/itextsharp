@@ -147,6 +147,27 @@ namespace iTextSharp.text.pdf
             return this;
         }
 
+        /// <summary>
+        /// Performs a check if the
+        /// <see cref="PRStream"/>
+        /// dictionary requires memory limits awareness during decompression.
+        /// </summary>
+        /// <param name="stream">
+        /// the
+        /// <see cref="PRStream"/>
+        /// to check
+        /// </param>
+        /// <returns>
+        /// 
+        /// <see langword="true"/>
+        /// if the stream is suspicious and
+        /// <see langword="false"/>
+        /// otherwise
+        /// </returns>
+        public virtual bool IsMemoryLimitsAwarenessRequiredOnDecompression(PRStream stream) {
+            return true;
+        }
+
         /// <summary>Considers the number of bytes which are occupied by the decompressed pdf stream.</summary>
         /// <remarks>
         /// Considers the number of bytes which are occupied by the decompressed pdf stream.
