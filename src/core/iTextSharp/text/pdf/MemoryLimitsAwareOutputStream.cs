@@ -126,14 +126,19 @@ namespace iTextSharp.text.pdf
                 throw new MemoryLimitsAwareException(MemoryLimitsAwareException.DuringDecompressionSingleStreamOccupiedMoreMemoryThanAllowed
                 );
             }
+            
             // calculate new capacity
-            int oldCapacity = this.GetBuffer().Length;
-            int newCapacity = oldCapacity << 1;
-            if (newCapacity < 0 || newCapacity - minCapacity < 0)
-            {
-                // overflow
-                newCapacity = minCapacity;
+            int newCapacity = this.GetBuffer().Length;
+            // Here we "predict" how buf is going to grow in MemoryStream
+            // to not allow it to grow over maxStreamSize
+            if (newCapacity < minCapacity) {
+                newCapacity = this.GetBuffer().Length << 1;
+                if (newCapacity < 0 || newCapacity - minCapacity < 0) {
+                    // overflow
+                    newCapacity = minCapacity;
+                }
             }
+
             if (newCapacity - maxStreamSize > 0)
             {
                 newCapacity = maxStreamSize;

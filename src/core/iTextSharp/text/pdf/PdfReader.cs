@@ -2478,20 +2478,12 @@ namespace iTextSharp.text.pdf {
             if (streamDictionary is PRStream && null != ((PRStream)streamDictionary).Reader) {
                 memoryLimitsAwareHandler = ((PRStream)streamDictionary).Reader.GetMemoryLimitsAwareHandler();
             }
-            if (null != memoryLimitsAwareHandler) {
-                HashSet2<PdfName> filterSet = new HashSet2<PdfName>();
-                int index;
-                for (index = 0; index < filters.Count; index++) {
-                    PdfName filterName = (PdfName)filters[index];
-                    if (!filterSet.AddAndCheck(filterName)) {
-                        memoryLimitsAwareHandler.BeginDecompressedPdfStreamProcessing();
-                        break;
-                    }
-                }
-                if (index == filters.Count) { // The stream isn't suspicious. We shouldn't process it.
-                    memoryLimitsAwareHandler = null;
-                }
+            bool memoryLimitsAwarenessRequired = null != memoryLimitsAwareHandler &&
+                memoryLimitsAwareHandler.IsMemoryLimitsAwarenessRequiredOnDecompression((PRStream) streamDictionary);
+            if (memoryLimitsAwarenessRequired) {
+                memoryLimitsAwareHandler.BeginDecompressedPdfStreamProcessing();
             }
+
             List<PdfObject> dp = new List<PdfObject>();
             PdfObject dpo = GetPdfObjectRelease(streamDictionary.Get(PdfName.DECODEPARMS));
             if (dpo == null || (!dpo.IsDictionary() && !dpo.IsArray()))
@@ -2527,11 +2519,11 @@ namespace iTextSharp.text.pdf {
                     decodeParams = null;
                 }
                 b = filterHandler.Decode(b, filterName, decodeParams, streamDictionary);
-                if (null != memoryLimitsAwareHandler) {
+                if (memoryLimitsAwarenessRequired) {
                     memoryLimitsAwareHandler.ConsiderBytesOccupiedByDecompressedPdfStream(b.Length);
                 }
             }
-            if (null != memoryLimitsAwareHandler) {
+            if (memoryLimitsAwarenessRequired) {
                 memoryLimitsAwareHandler.EndDecompressedPdfStreamProcessing();
             }
             return b;

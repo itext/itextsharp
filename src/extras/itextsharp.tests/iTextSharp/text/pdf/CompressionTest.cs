@@ -42,10 +42,14 @@
  */
 using System;
 using System.Collections.Generic;
+using System.IO;
 using System.Text;
 using NUnit.Framework;
 using iTextSharp.text;
+using iTextSharp.text.exceptions;
+using iTextSharp.text.io;
 using iTextSharp.text.pdf;
+using iTextSharp.text.pdf.parser;
 
 namespace itextsharp.tests.iTextSharp.text.pdf
 {
@@ -97,16 +101,168 @@ namespace itextsharp.tests.iTextSharp.text.pdf
 
             testDecompressionBomb(reader, MemoryLimitsAwareException.DuringDecompressionMultipleStreamsInSumOccupiedMoreMemoryThanAllowed);
         }
+
+        [Test]
+        public void flateBombTest()
+        {
+            PdfReader reader = new PdfReader(TEST_RESOURCES_PATH + "pageStreamFlateBomb.pdf");
+
+            testDecompressionBomb(reader, MemoryLimitsAwareException.DuringDecompressionSingleStreamOccupiedMoreMemoryThanAllowed);
+        }
+
+        [Test]
+        public void pngDecodeStreamTest()
+        {
+            // This test demonstrates a possible false positive
+            PdfReader reader = new PdfReader(TEST_RESOURCES_PATH + "png5000x5000.pdf");
+            PdfDictionary resources = reader.GetPageResources(1);
+            PdfDictionary xobjects = resources.GetAsDict(PdfName.XOBJECT);
+            PdfIndirectReference objRef = xobjects.GetAsIndirectObject(new PdfName("Im0"));
+            PRStream stream = (PRStream) PdfReader.GetPdfObject(objRef);
+            try {
+                PdfImageObject img = new PdfImageObject(stream);
+            } catch (MemoryLimitsAwareException e) {
+                Assert.AreEqual(
+                        MemoryLimitsAwareException.DuringDecompressionSingleStreamOccupiedMoreMemoryThanAllowed,
+                        e.Message);
+                return;
+            }
+
+            Assert.Fail("Expected MemoryLimitsAwareException was not thrown");
+        }
+        
+        [Test]
+        public void streamWithoutEndstreamKeywordTest() {
+            PdfReader reader = new PdfReader(TEST_RESOURCES_PATH + "NoEndstreamKeyword.pdf");
+            PdfStream xmpMetadataStream = reader.catalog.GetAsStream(PdfName.METADATA);
+            int xmpMetadataStreamLength = xmpMetadataStream.GetAsNumber(PdfName.LENGTH).IntValue;
+            Assert.AreEqual(27599, xmpMetadataStreamLength);
+
+            Exception e = Assert.Throws(typeof(EndOfStreamException), delegate { byte[] mtd = reader.Metadata; });
+        }
+
+        [Test]
+        public void endDicInsteadOfArrayClosingBracketTest() {
+            Exception e = Assert.Throws(typeof(InvalidPdfException), delegate {
+                new PdfReader(TEST_RESOURCES_PATH + "invalidArrayEndDictToken.pdf");
+            });
+            Assert.AreEqual("Rebuild failed: Unexpected '>>' at file pointer 532; Original message: Unexpected '>>'"
+                    + " at file pointer 532", e.Message);
+        }
+        
+        [Test]
+        public void endArrayClosingBracketInsteadOfEndDicTest() {
+            Exception e = Assert.Throws(typeof(InvalidPdfException), delegate {
+                new PdfReader(TEST_RESOURCES_PATH + "endArrayClosingBracketInsteadOfEndDic.pdf");
+            });
+            Assert.AreEqual("Rebuild failed: Unexpected ']' at file pointer 221; Original message: Unexpected ']'"
+                            + " at file pointer 221", e.Message);
+        }
+        
+        [Test]
+        public void endDicClosingBracketInsideTheDicTest() {
+            Exception e = Assert.Throws(typeof(InvalidPdfException), delegate {
+                new PdfReader(TEST_RESOURCES_PATH + "endDicClosingBracketInsideTheDic.pdf");
+            });
+            Assert.AreEqual("Rebuild failed: Unexpected '>>' at file pointer 221; Original message: Unexpected '>>'"
+                            + " at file pointer 221", e.Message);
+        }
+        
+        [Test]
+        public void eofInsteadOfArrayClosingBracketTest() {
+            Exception e = Assert.Throws(typeof(InvalidPdfException), delegate {
+                new PdfReader(TEST_RESOURCES_PATH + "invalidArrayEOFToken.pdf");
+            });
+            Assert.IsTrue(e.Message.Contains("Rebuild failed:  is not a valid number - System.FormatException: Input string was not in a correct format."));
+        }
+        
+        [Test]
+        public void endObjInsteadOfArrayClosingBracketTest() {
+            Exception e = Assert.Throws(typeof(InvalidPdfException), delegate {
+                new PdfReader(TEST_RESOURCES_PATH + "invalidArrayEndObjToken.pdf");
+            });
+            Assert.IsTrue(e.Message.Contains("Rebuild failed:  is not a valid number - System.FormatException: Input string was not in a correct format."));
+        }
+        
+        [Test]
+        public void nameInsteadOfArrayClosingBracketTest() {
+            Exception e = Assert.Throws(typeof(InvalidPdfException), delegate {
+                new PdfReader(TEST_RESOURCES_PATH + "invalidArrayNameToken.pdf");
+            });
+            
+            Assert.IsTrue(e.Message.Contains(" is not a valid number - System.FormatException: Input string was not in a correct format."));
+        }
+        
+        [Test]
+        public void objInsteadOfArrayClosingBracketTest() {
+            Exception e = Assert.Throws(typeof(InvalidPdfException), delegate {
+                new PdfReader(TEST_RESOURCES_PATH + "invalidArrayObjToken.pdf");
+            });
+            Assert.IsTrue(e.Message.Contains("Rebuild failed:  is not a valid number - System.FormatException: Input string was not in a correct format."));
+        }
+        
+        [Test]
+        public void refInsteadOfArrayClosingBracketTest() {
+            Exception e = Assert.Throws(typeof(InvalidPdfException), delegate {
+                new PdfReader(TEST_RESOURCES_PATH + "invalidArrayRefToken.pdf");
+            });
+            Assert.IsTrue(e.Message.Contains("Rebuild failed:  is not a valid number - System.FormatException: Input string was not in a correct format."));
+        }
+        
+        [Test]
+        public void startArrayInsteadOfArrayClosingBracketTest() {
+            Exception e = Assert.Throws(typeof(InvalidPdfException), delegate {
+                new PdfReader(TEST_RESOURCES_PATH + "invalidArrayStartArrayToken.pdf");
+            });
+            Assert.IsTrue(e.Message.Contains("Rebuild failed:  is not a valid number - System.FormatException: Input string was not in a correct format."));
+        }
+        
+        [Test]
+        public void stringInsteadOfArrayClosingBracketTest() {
+            PdfReader reader = new PdfReader(TEST_RESOURCES_PATH + "invalidArrayStringToken.pdf");
+            PdfArray actual = (PdfArray) reader.GetPdfObject(4);
+            PdfArray expected = new PdfArray(new float[]{5, 10, 15, 20});
+            for (int i = 0; i < expected.Size; i++) {
+                Assert.AreEqual(expected.GetAsNumber(i).IntValue, actual.GetAsNumber(i).IntValue);
+            }
+        }
+        
+        [Test]
+        public void closingArrayBracketMissingConservativeTest() {
+            Exception e = Assert.Throws(typeof(InvalidPdfException), delegate {
+                new PdfReader(TEST_RESOURCES_PATH + "invalidArrayObjToken.pdf");
+            });
+            Assert.IsTrue(e.Message.Contains("Rebuild failed:  is not a valid number - System.FormatException: Input string was not in a correct format."));
+        }
+        
+        [Test]
+        public void parseArrayTest() {
+            PdfReader reader = new PdfReader(TEST_RESOURCES_PATH + "innerArraysInContentStreamWithEndDictToken.pdf");
+            PRTokeniser cmpTokeniser = new PRTokeniser(new RandomAccessFileOrArray(
+                    new RandomAccessSourceFactory().CreateSource(reader.GetPageContent(1))));
+            PdfContentParser parser = new PdfContentParser(cmpTokeniser);
+            Exception e = Assert.Throws(typeof(IOException), delegate {
+                parseContentStream(parser);
+            });
+            Assert.AreEqual("Unexpected '>>'", e.Message);
+        }
+        
+        private static void parseContentStream(PdfContentParser parser) {
+            List<PdfObject> operands = new List<PdfObject>();
+            while (parser.Parse(operands).Count != 0) {
+                // do nothign with operands
+            }
+        }
+
         private static void testDecompressionBomb(PdfReader reader, String expectedExceptionMessage)
         {
-
             String thrownExceptionMessage = null;
             try {
                 byte[] bytes = reader.GetPageContent(1);
             } catch (MemoryLimitsAwareException e) {
                 thrownExceptionMessage = e.Message;
             } catch (OutOfMemoryException e) {
-                Assert.IsTrue(false);
+                Assert.Fail("Expected MemoryLimitsAwareException was not thrown");
             }
 
             reader.Close();
