@@ -53,23 +53,63 @@ namespace iTextSharp.text.pdf.security {
         private static readonly Dictionary<String, String> algorithmNames = new Dictionary<String, String>();
 
         static EncryptionAlgorithms() {
-            algorithmNames["1.2.840.113549.1.1.1"] = "RSA";
-            algorithmNames["1.2.840.10040.4.1"] = "DSA";
-            algorithmNames["1.2.840.113549.1.1.2"] = "RSA";
-            algorithmNames["1.2.840.113549.1.1.4"] = "RSA";
-            algorithmNames["1.2.840.113549.1.1.5"] = "RSA";
-            algorithmNames["1.2.840.113549.1.1.14"] = "RSA";
-            algorithmNames["1.2.840.113549.1.1.11"] = "RSA";
-            algorithmNames["1.2.840.113549.1.1.12"] = "RSA";
-            algorithmNames["1.2.840.113549.1.1.13"] = "RSA";
-            algorithmNames["1.2.840.10040.4.3"] = "DSA";
-            algorithmNames["2.16.840.1.101.3.4.3.1"] = "DSA";
-            algorithmNames["2.16.840.1.101.3.4.3.2"] = "DSA";
-            algorithmNames["1.3.14.3.2.29"] = "RSA";
-            algorithmNames["1.3.36.3.3.1.2"] = "RSA";
-            algorithmNames["1.3.36.3.3.1.3"] = "RSA";
-            algorithmNames["1.3.36.3.3.1.4"] = "RSA";
-            algorithmNames["1.2.643.2.2.19"] = "ECGOST3410";
+            // Extended using itext7+ source: https://github.com/itext/itext-dotnet/blob/develop/itext/itext.sign/itext/signatures/SignatureMechanisms.cs
+            algorithmNames.Put("1.2.840.113549.1.1.1", "RSA");
+            algorithmNames.Put("1.2.840.10040.4.1", "DSA");
+            algorithmNames.Put("1.2.840.113549.1.1.2", "RSA");
+            algorithmNames.Put("1.2.840.113549.1.1.4", "RSA");
+            algorithmNames.Put("1.2.840.113549.1.1.5", "RSA");
+            algorithmNames.Put("1.2.840.113549.1.1.11", "RSA");
+            algorithmNames.Put("1.2.840.113549.1.1.12", "RSA");
+            algorithmNames.Put("1.2.840.113549.1.1.13", "RSA");
+            algorithmNames.Put("1.2.840.113549.1.1.14", "RSA");
+            algorithmNames.Put("1.2.840.10040.4.3", "DSA");
+            algorithmNames.Put("2.16.840.1.101.3.4.3.1", "DSA");
+            algorithmNames.Put("2.16.840.1.101.3.4.3.2", "DSA");
+            algorithmNames.Put("1.3.14.3.2.29", "RSA");
+            algorithmNames.Put("1.3.36.3.3.1.2", "RSA");
+            algorithmNames.Put("1.3.36.3.3.1.3", "RSA");
+            algorithmNames.Put("1.3.36.3.3.1.4", "RSA");
+            algorithmNames.Put("1.2.643.2.2.19", "ECGOST3410");
+            // Elliptic curve public key cryptography
+            algorithmNames.Put("1.2.840.10045.2.1", "ECDSA");
+            // Elliptic curve Digital Signature Algorithm (DSA) coupled with the Secure Hashing Algorithm (SHA) algorithm
+            algorithmNames.Put("1.2.840.10045.4.1", "ECDSA");
+            // Elliptic curve Digital Signature Algorithm (DSA)
+            algorithmNames.Put("1.2.840.10045.4.3", "ECDSA");
+            // Elliptic curve Digital Signature Algorithm (DSA) coupled with the Secure Hashing Algorithm (SHA256) algorithm
+            algorithmNames.Put("1.2.840.10045.4.3.2", "ECDSA");
+            // Elliptic curve Digital Signature Algorithm (DSA) coupled with the Secure Hashing Algorithm (SHA384) algorithm
+            algorithmNames.Put("1.2.840.10045.4.3.3", "ECDSA");
+            // Elliptic curve Digital Signature Algorithm (DSA) coupled with the Secure Hashing Algorithm (SHA512) algorithm
+            algorithmNames.Put("1.2.840.10045.4.3.4", "ECDSA");
+            // Signing algorithms with SHA-3 digest functions (from NIST CSOR)
+            algorithmNames.Put("2.16.840.1.101.3.4.3.5", "DSA");
+            algorithmNames.Put("2.16.840.1.101.3.4.3.6", "DSA");
+            algorithmNames.Put("2.16.840.1.101.3.4.3.7", "DSA");
+            algorithmNames.Put("2.16.840.1.101.3.4.3.8", "DSA");
+            algorithmNames.Put("2.16.840.1.101.3.4.3.9", "ECDSA");
+            algorithmNames.Put("2.16.840.1.101.3.4.3.10", "ECDSA");
+            algorithmNames.Put("2.16.840.1.101.3.4.3.11", "ECDSA");
+            algorithmNames.Put("2.16.840.1.101.3.4.3.12", "ECDSA");
+            algorithmNames.Put("2.16.840.1.101.3.4.3.13", "RSA");
+            algorithmNames.Put("2.16.840.1.101.3.4.3.14", "RSA");
+            algorithmNames.Put("2.16.840.1.101.3.4.3.15", "RSA");
+            algorithmNames.Put("2.16.840.1.101.3.4.3.16", "RSA");
+            /*
+* We tolerate two naming conventions for RSASSA-PSS:
+*
+*  - RSASSA-PSS
+*  - <digest>withRSA/PSS
+*
+* The former is considered the canonical one because it's the standard name in JCA,
+* the digest is required to be specified in the algorithm params anyway,
+* and the OID does not depend on the digest. BouncyCastle accepts both.
+*/
+            algorithmNames.Put("1.2.840.113549.1.1.10", "RSASSA-PSS");
+            // EdDSA
+            algorithmNames.Put("1.3.101.112", "Ed25519");
+            algorithmNames.Put("1.3.101.113", "Ed448");
         }
 
         /**
