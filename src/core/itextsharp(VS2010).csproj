@@ -28,7 +28,7 @@
     <UpgradeBackupLocation>
     </UpgradeBackupLocation>
     <SignAssembly>true</SignAssembly>
-    <TargetFrameworkVersion>v2.0</TargetFrameworkVersion>
+    <TargetFrameworkVersion>v4.6.1</TargetFrameworkVersion>
     <OldToolsVersion>2.0</OldToolsVersion>
     <PublishUrl>publish\</PublishUrl>
     <Install>true</Install>
@@ -47,7 +47,7 @@
     <BootstrapperEnabled>true</BootstrapperEnabled>
   </PropertyGroup>
   <PropertyGroup Condition=" '$(Configuration)|$(Platform)' == 'Debug|AnyCPU' ">
-    <OutputPath>bin\Debug\</OutputPath>
+    <OutputPath>bin\Debug\net461\</OutputPath>
     <AllowUnsafeBlocks>false</AllowUnsafeBlocks>
     <BaseAddress>285212672</BaseAddress>
     <CheckForOverflowUnderflow>false</CheckForOverflowUnderflow>
@@ -69,7 +69,7 @@
     <CodeAnalysisRuleSet>AllRules.ruleset</CodeAnalysisRuleSet>
   </PropertyGroup>
   <PropertyGroup Condition=" '$(Configuration)|$(Platform)' == 'Debug_woDrawing|AnyCPU' ">
-    <OutputPath>bin\Debug_woDrawing\</OutputPath>
+    <OutputPath>bin\Debug_woDrawing\net461\</OutputPath>
     <AllowUnsafeBlocks>false</AllowUnsafeBlocks>
     <BaseAddress>285212672</BaseAddress>
     <CheckForOverflowUnderflow>false</CheckForOverflowUnderflow>
@@ -91,7 +91,7 @@
     <CodeAnalysisRuleSet>AllRules.ruleset</CodeAnalysisRuleSet>
   </PropertyGroup>
   <PropertyGroup Condition=" '$(Configuration)|$(Platform)' == 'Release|AnyCPU' ">
-    <OutputPath>bin\Release\</OutputPath>
+    <OutputPath>bin\Release\net461\</OutputPath>
     <AllowUnsafeBlocks>false</AllowUnsafeBlocks>
     <BaseAddress>285212672</BaseAddress>
     <CheckForOverflowUnderflow>false</CheckForOverflowUnderflow>
@@ -113,7 +113,7 @@
     <CodeAnalysisRuleSet>AllRules.ruleset</CodeAnalysisRuleSet>
   </PropertyGroup>
   <PropertyGroup Condition=" '$(Configuration)|$(Platform)' == 'Release_woDrawing|AnyCPU' ">
-    <OutputPath>bin\Release_woDrawing\</OutputPath>
+    <OutputPath>bin\Release_woDrawing\net461\</OutputPath>
     <AllowUnsafeBlocks>false</AllowUnsafeBlocks>
     <BaseAddress>285212672</BaseAddress>
     <CheckForOverflowUnderflow>false</CheckForOverflowUnderflow>
@@ -135,8 +135,44 @@
     <CodeAnalysisRuleSet>AllRules.ruleset</CodeAnalysisRuleSet>
   </PropertyGroup>
   <ItemGroup>
-    <Reference Include="BouncyCastle.Crypto, Version=1.8.6.0, Culture=neutral, PublicKeyToken=0e99375e54769942">
-      <HintPath>$(SolutionDir)\packages\BouncyCastle.1.8.6.1\lib\BouncyCastle.Crypto.dll</HintPath>
+    <Reference Include="BouncyCastle.Cryptography, Version=2.0.0.0, Culture=neutral, PublicKeyToken=072edcf4a5328938">
+      <HintPath>$(SolutionDir)\packages\BouncyCastle.Cryptography.2.6.2\lib\net461\BouncyCastle.Cryptography.dll</HintPath>
+      <Private>True</Private>
+    </Reference>
+    <Reference Include="itext.commons, Version=9.8.0.0, Culture=neutral, PublicKeyToken=8354ae6d2174ddca">
+      <HintPath>$(SolutionDir)\packages\itext.commons.9.8.0-SNAPSHOT\lib\net461\itext.commons.dll</HintPath>
+      <Private>True</Private>
+    </Reference>
+    <Reference Include="Newtonsoft.Json, Version=13.0.0.0, Culture=neutral, PublicKeyToken=30ad4fe6b2a6aeed">
+      <HintPath>$(SolutionDir)\packages\Newtonsoft.Json.13.0.1\lib\net45\Newtonsoft.Json.dll</HintPath>
+      <Private>True</Private>
+    </Reference>
+    <Reference Include="System.ValueTuple, Version=4.0.3.0, Culture=neutral, PublicKeyToken=cc7b13ffcd2ddd51">
+      <HintPath>$(SolutionDir)\packages\System.ValueTuple.4.5.0\lib\net461\System.ValueTuple.dll</HintPath>
+      <Private>True</Private>
+    </Reference>
+    <Reference Include="Microsoft.Extensions.Logging, Version=5.0.0.0, Culture=neutral, PublicKeyToken=adb9793829ddae60">
+      <HintPath>$(SolutionDir)\packages\Microsoft.Extensions.Logging.5.0.0\lib\net461\Microsoft.Extensions.Logging.dll</HintPath>
+      <Private>True</Private>
+    </Reference>
+    <Reference Include="Microsoft.Extensions.Logging.Abstractions, Version=5.0.0.0, Culture=neutral, PublicKeyToken=adb9793829ddae60">
+      <HintPath>$(SolutionDir)\packages\Microsoft.Extensions.Logging.Abstractions.5.0.0\lib\net461\Microsoft.Extensions.Logging.Abstractions.dll</HintPath>
+      <Private>True</Private>
+    </Reference>
+    <Reference Include="Microsoft.Extensions.Options, Version=5.0.0.0, Culture=neutral, PublicKeyToken=adb9793829ddae60">
+      <HintPath>$(SolutionDir)\packages\Microsoft.Extensions.Options.5.0.0\lib\net461\Microsoft.Extensions.Options.dll</HintPath>
+      <Private>True</Private>
+    </Reference>
+    <Reference Include="Microsoft.Extensions.Primitives, Version=5.0.0.0, Culture=neutral, PublicKeyToken=adb9793829ddae60">
+      <HintPath>$(SolutionDir)\packages\Microsoft.Extensions.Primitives.5.0.0\lib\net461\Microsoft.Extensions.Primitives.dll</HintPath>
+      <Private>True</Private>
+    </Reference>
+    <Reference Include="Microsoft.Extensions.DependencyInjection, Version=5.0.0.0, Culture=neutral, PublicKeyToken=adb9793829ddae60">
+      <HintPath>$(SolutionDir)\packages\Microsoft.Extensions.DependencyInjection.5.0.0\lib\net461\Microsoft.Extensions.DependencyInjection.dll</HintPath>
+      <Private>True</Private>
+    </Reference>
+    <Reference Include="Microsoft.Extensions.DependencyInjection.Abstractions, Version=5.0.0.0, Culture=neutral, PublicKeyToken=adb9793829ddae60">
+      <HintPath>$(SolutionDir)\packages\Microsoft.Extensions.DependencyInjection.Abstractions.5.0.0\lib\net461\Microsoft.Extensions.DependencyInjection.Abstractions.dll</HintPath>
       <Private>True</Private>
     </Reference>
     <Reference Include="System" />
@@ -150,6 +186,8 @@
     <Compile Include="AssemblyInfo.cs">
       <SubType>Code</SubType>
     </Compile>
+    <Compile Include="iTextSharp\ITextSharpExtension.cs" />
+    <Compile Include="iTextSharp\testutils\CompareToolUtil.cs" />
     <Compile Include="iTextSharp\text\pdf\MemoryLimitsAwareException.cs" />
     <Compile Include="iTextSharp\text\pdf\MemoryLimitsAwareHandler.cs" />
     <Compile Include="iTextSharp\text\pdf\MemoryLimitsAwareOutputStream.cs" />
@@ -1405,9 +1443,6 @@
     <Compile Include="iTextSharp\xmp\impl\CountOutputStream.cs">
       <SubType>Code</SubType>
     </Compile>
-    <Compile Include="iTextSharp\xmp\impl\FilterReader.cs">
-      <SubType>Code</SubType>
-    </Compile>
     <Compile Include="iTextSharp\xmp\impl\FixAsciiControlsReader.cs">
       <SubType>Code</SubType>
     </Compile>
@@ -1421,9 +1456,6 @@
       <SubType>Code</SubType>
     </Compile>
     <Compile Include="iTextSharp\xmp\impl\ParseRdf.cs">
-      <SubType>Code</SubType>
-    </Compile>
-    <Compile Include="iTextSharp\xmp\impl\PushbackReader.cs">
       <SubType>Code</SubType>
     </Compile>
     <Compile Include="iTextSharp\xmp\impl\QName.cs">
@@ -1625,6 +1657,8 @@
     <None Include="packages.config" />
   </ItemGroup>
   <ItemGroup>
+    <Compile Include="iTextSharp\text\actions\data\IText5ProductData.cs" />
+    <Compile Include="iTextSharp\text\actions\events\IText5ProductEvent.cs" />
     <Compile Include="iTextSharp\text\api\IIndentable.cs" />
     <Compile Include="iTextSharp\text\api\ISpaceable.cs" />
     <Compile Include="iTextSharp\text\api\IWriterOperation.cs" />
@@ -1703,8 +1737,14 @@
     <Compile Include="iTextSharp\text\pdf\security\VerificationException.cs" />
     <Compile Include="iTextSharp\text\pdf\security\VerificationOK.cs" />
     <Compile Include="iTextSharp\text\pdf\security\X509Certificate2Signature.cs" />
+    <Compile Include="iTextSharp\text\pdf\statistics\NumberOfPagesStatisticsAggregator.cs" />
+    <Compile Include="iTextSharp\text\pdf\statistics\NumberOfPagesStatisticsEvent.cs" />
+    <Compile Include="iTextSharp\text\pdf\statistics\SizeOfPdfStatisticsAggregator.cs" />
+    <Compile Include="iTextSharp\text\pdf\statistics\SizeOfPdfStatisticsEvent.cs" />
     <Compile Include="iTextSharp\text\pdf\TtfUnicodeWriter.cs" />
     <Compile Include="iTextSharp\text\Version.cs" />
+    <Compile Include="iTextSharp\text\UnifiedVersion.cs" />
+    <Compile Include="iTextSharp\text\UnifiedVersionUtil.cs" />
     <Compile Include="iTextSharp\text\WritableDirectElement.cs" />
     <Compile Include="iTextSharp\text\xml\simpleparser\handler\HTMLNewLineHandler.cs" />
     <Compile Include="iTextSharp\text\xml\simpleparser\handler\NeverNewLineHandler.cs" />

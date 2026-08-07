@@ -1,6 +1,6 @@
 /*
     This file is part of the iText (R) project.
-    Copyright (c) 1998-2020 iText Group NV
+    Copyright (c) 1998-2026 iText Group NV
     Authors: iText Software.
 
     This program is free software; you can redistribute it and/or modify
@@ -74,7 +74,7 @@ namespace iTextSharp.sandbox.fonts
             // step 3
             document.Open();
             // step 4
-            BaseFont bf = BaseFont.CreateFont("../../resources/fonts/PT_Serif-Web-Regular.ttf", BaseFont.WINANSI,
+            BaseFont bf = BaseFont.CreateFont("../../../resources/fonts/PT_Serif-Web-Regular.ttf", BaseFont.WINANSI,
                 BaseFont.EMBEDDED);
             Font f = new Font(bf, 12);
             document.Add(new Paragraph("This is a test with Times New Roman.", f));

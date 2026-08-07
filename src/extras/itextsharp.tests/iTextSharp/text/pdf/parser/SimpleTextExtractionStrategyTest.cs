@@ -1,6 +1,6 @@
 /*
     This file is part of the iText (R) project.
-    Copyright (c) 1998-2020 iText Group NV
+    Copyright (c) 1998-2026 iText Group NV
     Authors: iText Software.
 
     This program is free software; you can redistribute it and/or modify
@@ -54,7 +54,7 @@ namespace itextsharp.tests.iTextSharp.text.pdf.parser {
         private String TEXT1;
         private String TEXT2;
 
-        protected const string TEST_RESOURCES_PATH = @"..\..\resources\text\pdf\parser\SimpleTextExtractionStrategyTest\";
+        protected const string TEST_RESOURCES_PATH = @"..\..\..\resources\text\pdf\parser\SimpleTextExtractionStrategyTest\";
 
         [SetUp]
         public virtual void SetUp() {

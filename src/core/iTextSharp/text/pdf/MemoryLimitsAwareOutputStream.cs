@@ -1,6 +1,6 @@
 /*
     This file is part of the iText (R) project.
-    Copyright (c) 1998-2020 iText Group NV
+    Copyright (c) 1998-2026 iText Group NV
     Authors: iText Software.
 
     This program is free software; you can redistribute it and/or modify
@@ -126,14 +126,19 @@ namespace iTextSharp.text.pdf
                 throw new MemoryLimitsAwareException(MemoryLimitsAwareException.DuringDecompressionSingleStreamOccupiedMoreMemoryThanAllowed
                 );
             }
+            
             // calculate new capacity
-            int oldCapacity = this.GetBuffer().Length;
-            int newCapacity = oldCapacity << 1;
-            if (newCapacity < 0 || newCapacity - minCapacity < 0)
-            {
-                // overflow
-                newCapacity = minCapacity;
+            int newCapacity = this.GetBuffer().Length;
+            // Here we "predict" how buf is going to grow in MemoryStream
+            // to not allow it to grow over maxStreamSize
+            if (newCapacity < minCapacity) {
+                newCapacity = this.GetBuffer().Length << 1;
+                if (newCapacity < 0 || newCapacity - minCapacity < 0) {
+                    // overflow
+                    newCapacity = minCapacity;
+                }
             }
+
             if (newCapacity - maxStreamSize > 0)
             {
                 newCapacity = maxStreamSize;

@@ -1,6 +1,6 @@
 /*
     This file is part of the iText (R) project.
-    Copyright (c) 1998-2020 iText Group NV
+    Copyright (c) 1998-2026 iText Group NV
     Authors: iText Software.
 
     This program is free software; you can redistribute it and/or modify
@@ -53,9 +53,9 @@ namespace iTextSharp.sandbox.collections
     {
 
         public static readonly String DEST = "results/collections/portable_collection.pdf";
-        public static readonly String DATA = "../../resources/data/united_states.csv";
-        public static readonly String HELLO = "../../resources/pdfs/hello.pdf";
-        public static readonly String IMG = "../../resources/images/berlin2013.jpg";
+        public static readonly String DATA = "../../../resources/data/united_states.csv";
+        public static readonly String HELLO = "../../../resources/pdfs/hello.pdf";
+        public static readonly String IMG = "../../../resources/images/berlin2013.jpg";
 
         public static void Main(String[] args)
         {

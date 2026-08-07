@@ -1,6 +1,6 @@
 /*
     This file is part of the iText (R) project.
-    Copyright (c) 1998-2020 iText Group NV
+    Copyright (c) 1998-2026 iText Group NV
     Authors: iText Software.
 
     This program is free software; you can redistribute it and/or modify
@@ -57,7 +57,7 @@ namespace itextsharp.xmlworker.tests.iTextSharp.tool.xml.css {
     public class CSSFileProcessorTest {
         private CssFileProcessor proc;
         private IFileRetrieve retriever;
-        private const string RESOURCES = @"..\..\resources\";
+        private const string RESOURCES = @"..\..\..\resources\";
 
         [SetUp]
         virtual public void SetUp() {

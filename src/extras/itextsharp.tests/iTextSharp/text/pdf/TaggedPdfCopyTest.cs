@@ -1,6 +1,6 @@
 /*
     This file is part of the iText (R) project.
-    Copyright (c) 1998-2020 iText Group NV
+    Copyright (c) 1998-2026 iText Group NV
     Authors: iText Software.
 
     This program is free software; you can redistribute it and/or modify
@@ -68,7 +68,7 @@ namespace itextsharp.tests.text.pdf
         public const String NO_ID_TREE = "The document does not contain ID Tree";
         public const String EMPTY_ID_TREE = "The document's ID Tree is empty";
 
-        public const String RESOURCES = @"..\..\resources\text\pdf\TaggedPdfCopyTest\";
+        public const String RESOURCES = @"..\..\..\resources\text\pdf\TaggedPdfCopyTest\";
         public const String SOURCE4 =  RESOURCES + "pdf\\source4.pdf";
         public const String SOURCE10 = RESOURCES + "pdf\\source10.pdf";
         public const String SOURCE11 = RESOURCES + "pdf\\source11.pdf";

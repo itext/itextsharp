@@ -1,9 +1,9 @@
 using System.Collections;
 using System.IO;
-using Org.BouncyCastle.Utilities.Collections;
 using iTextSharp.text.xml.simpleparser;
 using iTextSharp.text.xml.xmp;
 using iTextSharp.xmp.options;
+using System.Collections.Generic;
 
 //Copyright (c) 2006, Adobe Systems Incorporated
 //All rights reserved.
@@ -71,8 +71,8 @@ namespace iTextSharp.xmp.impl {
 
         /// <summary>
         /// a set of all rdf attribute qualifier </summary>
-        internal static readonly ISet RDF_ATTR_QUALIFIER =
-            new HashSet(new string[] {XmpConst.XML_LANG, "rdf:resource", "rdf:ID", "rdf:bagID", "rdf:nodeID"});
+        internal static readonly ICollection<string> RDF_ATTR_QUALIFIER =
+            new HashSet<string>(new string[] { XmpConst.XML_LANG, "rdf:resource", "rdf:ID", "rdf:bagID", "rdf:nodeID" });
 
         /// <summary>
         /// the stored serialization options </summary>
@@ -339,7 +339,7 @@ namespace iTextSharp.xmp.impl {
             WriteTreeName();
 
             // Write all necessary xmlns attributes.
-            ISet usedPrefixes = new HashSet();
+            ICollection<string> usedPrefixes = new HashSet<string>();
             usedPrefixes.Add("xml");
             usedPrefixes.Add("rdf");
 
@@ -739,7 +739,7 @@ namespace iTextSharp.xmp.impl {
         /// <param name="usedPrefixes"> a set containing currently used prefixes </param>
         /// <param name="indent"> the current indent level </param>
         /// <exception cref="IOException"> Forwards all writer exceptions. </exception>
-        private void DeclareUsedNamespaces(XmpNode node, ISet usedPrefixes, int indent) {
+        private void DeclareUsedNamespaces(XmpNode node, ICollection<string> usedPrefixes, int indent) {
             if (node.Options.SchemaNode) {
                 // The schema node name is the URI, the value is the prefix.
                 string prefix = node.Value.Substring(0, node.Value.Length - 1);
@@ -778,7 +778,7 @@ namespace iTextSharp.xmp.impl {
         /// <param name="usedPrefixes"> a set containing currently used prefixes </param>
         /// <param name="indent"> the current indent level </param>
         /// <exception cref="IOException"> Forwards all writer exceptions. </exception>
-        private void DeclareNamespace(string prefix, string @namespace, ISet usedPrefixes, int indent) {
+        private void DeclareNamespace(string prefix, string @namespace, ICollection<string> usedPrefixes, int indent) {
             if (@namespace == null) {
                 // prefix contains qname, extract prefix and lookup namespace with prefix
                 QName qname = new QName(prefix);
@@ -817,7 +817,7 @@ namespace iTextSharp.xmp.impl {
             Write(RDF_SCHEMA_START);
             WriteTreeName();
 
-            ISet usedPrefixes = new HashSet();
+            ICollection<string> usedPrefixes = new HashSet<string>();
             usedPrefixes.Add("xml");
             usedPrefixes.Add("rdf");
 

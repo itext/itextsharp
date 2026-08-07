@@ -1,6 +1,6 @@
 /*
     This file is part of the iText (R) project.
-    Copyright (c) 1998-2020 iText Group NV
+    Copyright (c) 1998-2026 iText Group NV
     Authors: iText Software.
 
     This program is free software; you can redistribute it and/or modify
@@ -187,6 +187,10 @@ namespace iTextSharp.text.pdf {
                 throw e;
             }
             GetCounter().Read(fileLength);
+            
+            if (!UnifiedVersion.IsAGPLVersion()) {
+                UnifiedVersion.OnEventUsage();
+            }
         }
 
         /** Reads and parses a PDF document.
@@ -2474,20 +2478,12 @@ namespace iTextSharp.text.pdf {
             if (streamDictionary is PRStream && null != ((PRStream)streamDictionary).Reader) {
                 memoryLimitsAwareHandler = ((PRStream)streamDictionary).Reader.GetMemoryLimitsAwareHandler();
             }
-            if (null != memoryLimitsAwareHandler) {
-                HashSet2<PdfName> filterSet = new HashSet2<PdfName>();
-                int index;
-                for (index = 0; index < filters.Count; index++) {
-                    PdfName filterName = (PdfName)filters[index];
-                    if (!filterSet.AddAndCheck(filterName)) {
-                        memoryLimitsAwareHandler.BeginDecompressedPdfStreamProcessing();
-                        break;
-                    }
-                }
-                if (index == filters.Count) { // The stream isn't suspicious. We shouldn't process it.
-                    memoryLimitsAwareHandler = null;
-                }
+            bool memoryLimitsAwarenessRequired = null != memoryLimitsAwareHandler &&
+                memoryLimitsAwareHandler.IsMemoryLimitsAwarenessRequiredOnDecompression((PRStream) streamDictionary);
+            if (memoryLimitsAwarenessRequired) {
+                memoryLimitsAwareHandler.BeginDecompressedPdfStreamProcessing();
             }
+
             List<PdfObject> dp = new List<PdfObject>();
             PdfObject dpo = GetPdfObjectRelease(streamDictionary.Get(PdfName.DECODEPARMS));
             if (dpo == null || (!dpo.IsDictionary() && !dpo.IsArray()))
@@ -2523,11 +2519,11 @@ namespace iTextSharp.text.pdf {
                     decodeParams = null;
                 }
                 b = filterHandler.Decode(b, filterName, decodeParams, streamDictionary);
-                if (null != memoryLimitsAwareHandler) {
+                if (memoryLimitsAwarenessRequired) {
                     memoryLimitsAwareHandler.ConsiderBytesOccupiedByDecompressedPdfStream(b.Length);
                 }
             }
-            if (null != memoryLimitsAwareHandler) {
+            if (memoryLimitsAwarenessRequired) {
                 memoryLimitsAwareHandler.EndDecompressedPdfStreamProcessing();
             }
             return b;

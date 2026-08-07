@@ -1,6 +1,6 @@
 /*
     This file is part of the iText (R) project.
-    Copyright (c) 1998-2020 iText Group NV
+    Copyright (c) 1998-2026 iText Group NV
     Authors: iText Software.
 
     This program is free software; you can redistribute it and/or modify
@@ -60,7 +60,7 @@ namespace iTextSharp.javaone.edition14
         /// <summary>
         /// The source file that is going to be parsed.
         /// </summary>
-        public static readonly string SRC = "../../resources/pdfs/page229.pdf";
+        public static readonly string SRC = "../../../resources/pdfs/page229.pdf";
 
         /// <summary>
         /// The resulting PDF after parsing for structure.

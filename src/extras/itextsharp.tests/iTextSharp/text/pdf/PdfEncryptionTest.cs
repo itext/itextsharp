@@ -1,6 +1,6 @@
 /*
     This file is part of the iText (R) project.
-    Copyright (c) 1998-2020 iText Group NV
+    Copyright (c) 1998-2026 iText Group NV
     Authors: iText Software.
 
     This program is free software; you can redistribute it and/or modify
@@ -61,7 +61,7 @@ using X509Certificate = System.Security.Cryptography.X509Certificates.X509Certif
 
 namespace itextsharp.tests.iTextSharp.text.pdf {
     class PdfEncryptionTest {
-        public static string SOURCE_FOLDER = @"..\..\resources\text\pdf\PdfEncryptionTest\";
+        public static string SOURCE_FOLDER = @"..\..\..\resources\text\pdf\PdfEncryptionTest\";
         public static string DEST_FOLDER = @"PdfEncryptionTest\";
 
 
@@ -131,7 +131,8 @@ namespace itextsharp.tests.iTextSharp.text.pdf {
             X509Certificate cert = new X509Certificate();
             cert.Import(SOURCE_FOLDER + "test.cer");
 
-            Pkcs12Store pkstore = new Pkcs12Store(new FileStream(SOURCE_FOLDER + "test.p12", FileMode.Open, FileAccess.Read), "kspass".ToCharArray());
+            Pkcs12Store pkstore = new Pkcs12StoreBuilder().Build();
+            pkstore.Load(new FileStream(SOURCE_FOLDER + "test.p12", FileMode.Open, FileAccess.Read), "kspass".ToCharArray());
             string pkalias = null;
             foreach (object a in pkstore.Aliases)
             {

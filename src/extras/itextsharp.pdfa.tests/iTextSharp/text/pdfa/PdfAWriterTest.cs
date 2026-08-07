@@ -1,6 +1,6 @@
 /*
     This file is part of the iText (R) project.
-    Copyright (c) 1998-2020 iText Group NV
+    Copyright (c) 1998-2026 iText Group NV
     Authors: iText Software.
 
     This program is free software; you can redistribute it and/or modify
@@ -50,7 +50,7 @@ namespace iTextSharp.text.pdfa
     [TestFixture]
     public class PdfAWriterTest
     {
-        public const String RESOURCES = @"..\..\resources\text\pdfa\";
+        public const String RESOURCES = @"..\..\..\resources\text\pdfa\";
         public const String TARGET = "PdfAWriterTest\\";
         public const String OUT = TARGET + "pdf\\out";
 

@@ -1,6 +1,6 @@
 /*
     This file is part of the iText (R) project.
-    Copyright (c) 1998-2020 iText Group NV
+    Copyright (c) 1998-2026 iText Group NV
     Authors: iText Software.
 
     This program is free software; you can redistribute it and/or modify
@@ -52,7 +52,7 @@ namespace itextsharp.tests.iTextSharp.text.error_messages {
     internal class ErrorMessageExistenceTest {
         private static String[] LANGUAGES = {"nl", "en"};
         private static String SOURCE_FILES_EXTENSION = ".cs";
-        private static String SOURCE_CODE_ROOT_PATH = @"..\..\..\..\";
+        private static String SOURCE_CODE_ROOT_PATH = @"..\..\..\..\..\";
         private List<string> sourceFiles;
         private List<String> nonLozalizedMessageErrors;
         private Regex pattern;

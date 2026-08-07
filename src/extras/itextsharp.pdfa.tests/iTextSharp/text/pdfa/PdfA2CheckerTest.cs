@@ -1,6 +1,6 @@
 /*
     This file is part of the iText (R) project.
-    Copyright (c) 1998-2020 iText Group NV
+    Copyright (c) 1998-2026 iText Group NV
     Authors: iText Software.
 
     This program is free software; you can redistribute it and/or modify
@@ -51,7 +51,7 @@ using iTextSharp.text.pdf;
 namespace iTextSharp.text.pdfa {
     [TestFixture]
     public class PdfA2CheckerTest {
-        public const String RESOURCES = @"..\..\resources\text\pdfa\";
+        public const String RESOURCES = @"..\..\..\resources\text\pdfa\";
         public const String TARGET = "PdfA2CheckerTest\\";
         public const String OUT = TARGET + "pdf\\out";
 
@@ -1670,7 +1670,7 @@ namespace iTextSharp.text.pdfa {
         [Test]
         public virtual void CidFontCheckTest1() {
             String outPdf = TARGET + "cidFontCheckTest1.pdf";
-            String resourceDir = @"..\..\resources\text\pdfa\";
+            String resourceDir = @"..\..\..\resources\text\pdfa\";
             Document document = new Document();
             PdfAWriter writer = PdfAWriter.GetInstance(document, new FileStream(outPdf, FileMode.Create), PdfAConformanceLevel.PDF_A_2B);
             writer.CreateXmpMetadata();
@@ -1688,7 +1688,7 @@ namespace iTextSharp.text.pdfa {
         [Test]
         public virtual void CidFontCheckTest2() {
             String outPdf = TARGET + "cidFontCheckTest2.pdf";
-            String resourceDir = @"..\..\resources\text\pdfa\";
+            String resourceDir = @"..\..\..\resources\text\pdfa\";
             Document document = new Document();
             PdfAWriter writer = PdfAWriter.GetInstance(document, new FileStream(outPdf, FileMode.Create), PdfAConformanceLevel.PDF_A_2B);
             writer.CreateXmpMetadata();
@@ -1707,7 +1707,7 @@ namespace iTextSharp.text.pdfa {
         public virtual void CidFontCheckTest3()
         {
             String outPdf = TARGET + "cidFontCheckTest3.pdf";
-            String resourceDir = @"..\..\resources\text\pdfa\";
+            String resourceDir = @"..\..\..\resources\text\pdfa\";
             Document document = new Document();
             PdfAWriter writer = PdfAWriter.GetInstance(document, new FileStream(outPdf, FileMode.Create), PdfAConformanceLevel.PDF_A_2B);
             writer.CreateXmpMetadata();

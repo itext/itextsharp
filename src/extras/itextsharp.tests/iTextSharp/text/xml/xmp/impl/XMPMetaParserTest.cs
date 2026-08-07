@@ -1,6 +1,6 @@
 /*
     This file is part of the iText (R) project.
-    Copyright (c) 1998-2020 iText Group NV
+    Copyright (c) 1998-2026 iText Group NV
     Authors: iText Software.
 
 This program is free software; you can redistribute it and/or modify it under the terms of the GNU Affero General Public License version 3 as published by the Free Software Foundation with the addition of the following permission added to Section 15 as permitted in Section 7(a): FOR ANY PART OF THE COVERED WORK IN WHICH THE COPYRIGHT IS OWNED BY iText Group NV, iText Group NV DISCLAIMS THE WARRANTY OF NON INFRINGEMENT OF THIRD PARTY RIGHTS.
@@ -34,7 +34,7 @@ namespace iText.Kernel.XMP.Impl
     public class XMPMetaParserTest
     {
         private const String XMP_WITH_XXE = "<?xpacket begin=\"\" id=\"W5M0MpCehiHzreSzNTczkc9d\"?>\n"
-                                            + "<!DOCTYPE foo [ <!ENTITY xxe SYSTEM \"../../resources/text/xmp/impl/xxe-data.txt\" > ]>\n"
+                                            + "<!DOCTYPE foo [ <!ENTITY xxe SYSTEM \"../../../resources/text/xmp/impl/xxe-data.txt\" > ]>\n"
                                             + "<x:xmpmeta xmlns:x=\"adobe:ns:meta/\">\n"
                                             + "    <rdf:RDF xmlns:rdf=\"http://www.w3.org/1999/02/22-rdf-syntax-ns#\">\n"
                                             + "        <rdf:Description rdf:about=\"\" xmlns:pdfaid=\"http://www.aiim.org/pdfa/ns/id/\">\n"

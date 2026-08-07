@@ -1,6 +1,6 @@
 /*
     This file is part of the iText (R) project.
-    Copyright (c) 1998-2020 iText Group NV
+    Copyright (c) 1998-2026 iText Group NV
     Authors: iText Software.
 
     This program is free software; you can redistribute it and/or modify
@@ -158,7 +158,7 @@ namespace iTextSharp.text.pdf {
                 
             MemoryStream baos = new MemoryStream();
                 
-            DerOutputStream k = new DerOutputStream(baos);
+            Asn1OutputStream k = Asn1OutputStream.Create(baos);
                 
             k.WriteObject(obj);  
             
@@ -226,7 +226,7 @@ namespace iTextSharp.text.pdf {
                 new Org.BouncyCastle.Asn1.Cms.IssuerAndSerialNumber(
                     tbscertificatestructure.Issuer, 
                     tbscertificatestructure.SerialNumber.Value);
-            IBufferedCipher cipher = CipherUtilities.GetCipher(algorithmidentifier.ObjectID);
+            IBufferedCipher cipher = CipherUtilities.GetCipher(algorithmidentifier.Algorithm);
             cipher.Init(true, x509certificate.GetPublicKey());
             byte[] outp = new byte[10000];
             int len = cipher.DoFinal(abyte0, outp, 0);

@@ -1,6 +1,6 @@
 /*
     This file is part of the iText (R) project.
-    Copyright (c) 1998-2020 iText Group NV
+    Copyright (c) 1998-2026 iText Group NV
     Authors: iText Software.
 
     This program is free software; you can redistribute it and/or modify
@@ -89,7 +89,7 @@ namespace itextsharp.tests.text.pdf {
                                     "molestie dui id sem blandit in convallis justo euismod. Curabitur velit nisi, adipiscing sed consequat et, dignissim eget dolor. Aenean malesuada quam id mi" +
                                     "vestibulum pulvinar. Nullam diam quam, lobortis sit amet semper vitae, tempus eget dolor.";
 
-        public const String RESOURCES = @"..\..\resources\text\pdf\TaggedPdfTest\";
+        public const String RESOURCES = @"..\..\..\resources\text\pdf\TaggedPdfTest\";
         public const String TARGET = "TaggedPdfTest\\";
         public const String OUT = TARGET + "pdf\\out";
         private Document document;

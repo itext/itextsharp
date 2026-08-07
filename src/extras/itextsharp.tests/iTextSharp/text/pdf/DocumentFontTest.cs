@@ -1,6 +1,6 @@
 /*
     This file is part of the iText (R) project.
-    Copyright (c) 1998-2020 iText Group NV
+    Copyright (c) 1998-2026 iText Group NV
     Authors: iText Software.
 
     This program is free software; you can redistribute it and/or modify
@@ -48,7 +48,7 @@ namespace itextsharp.tests.iTextSharp.text.pdf
 {
     class DocumentFontTest
     {
-        string TEST_RESOURCES_PATH = @"..\..\resources\text\pdf\DocumentFontTest\";
+        string TEST_RESOURCES_PATH = @"..\..\..\resources\text\pdf\DocumentFontTest\";
 
         [SetUp]
         virtual public void SetUp()

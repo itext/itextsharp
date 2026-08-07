@@ -1,6 +1,6 @@
 /*
     This file is part of the iText (R) project.
-    Copyright (c) 1998-2020 iText Group NV
+    Copyright (c) 1998-2026 iText Group NV
     Authors: iText Software.
 
     This program is free software; you can redistribute it and/or modify
@@ -145,6 +145,27 @@ namespace iTextSharp.text.pdf
         {
             this.MaxSizeOfDecompressedPdfStreamsSum = maxSizeOfDecompressedPdfStreamsSum;
             return this;
+        }
+
+        /// <summary>
+        /// Performs a check if the
+        /// <see cref="PRStream"/>
+        /// dictionary requires memory limits awareness during decompression.
+        /// </summary>
+        /// <param name="stream">
+        /// the
+        /// <see cref="PRStream"/>
+        /// to check
+        /// </param>
+        /// <returns>
+        /// 
+        /// <see langword="true"/>
+        /// if the stream is suspicious and
+        /// <see langword="false"/>
+        /// otherwise
+        /// </returns>
+        public virtual bool IsMemoryLimitsAwarenessRequiredOnDecompression(PRStream stream) {
+            return true;
         }
 
         /// <summary>Considers the number of bytes which are occupied by the decompressed pdf stream.</summary>

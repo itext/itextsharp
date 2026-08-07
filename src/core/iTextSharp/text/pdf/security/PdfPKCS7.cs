@@ -1,6 +1,6 @@
 /*
     This file is part of the iText (R) project.
-    Copyright (c) 1998-2020 iText Group NV
+    Copyright (c) 1998-2026 iText Group NV
     Authors: iText Software.
 
     This program is free software; you can redistribute it and/or modify
@@ -305,7 +305,7 @@ namespace iTextSharp.text.pdf.security {
                         EssCertIDv2 cerv2 = cerv2m[0];
                         AlgorithmIdentifier ai2 = cerv2.HashAlgorithm;
                         byte[] enc2 = signCert.GetEncoded();
-                        IDigest m2 = DigestUtilities.GetDigest(ai2.ObjectID.Id);
+                        IDigest m2 = DigestUtilities.GetDigest(ai2.Algorithm);
                         byte[] signCertHash = DigestAlgorithms.Digest(m2, enc2);
                         byte[] hs2 = cerv2.GetCertHash();
                         if (!Arrays.AreEqual(signCertHash, hs2))
@@ -606,7 +606,7 @@ namespace iTextSharp.text.pdf.security {
                 digest = sig.GenerateSignature();
             MemoryStream bOut = new MemoryStream();
             
-            Asn1OutputStream dout = new Asn1OutputStream(bOut);
+            Asn1OutputStream dout = Asn1OutputStream.Create(bOut);
             dout.WriteObject(new DerOctetString(digest));
             dout.Close();
             
@@ -742,7 +742,7 @@ namespace iTextSharp.text.pdf.security {
             body.Add(new DerTaggedObject(false, 0, dercertificates));
                         
             // Only allow one signerInfo
-            body.Add(new DerSet(new DerSequence(signerinfo)));
+            body.Add(new DerSet((IReadOnlyCollection<Asn1Encodable>)new DerSequence(signerinfo)));
             
             // Now we have the body, wrap it in it's PKCS7Signed shell
             // and return it
@@ -753,7 +753,7 @@ namespace iTextSharp.text.pdf.security {
             
             MemoryStream bOut = new MemoryStream();
             
-            Asn1OutputStream dout = new Asn1OutputStream(bOut);
+            Asn1OutputStream dout = Asn1OutputStream.Create(bOut);
             dout.WriteObject(new DerSequence(whole));
             dout.Close();
             
@@ -782,7 +782,7 @@ namespace iTextSharp.text.pdf.security {
             Asn1EncodableVector v = new Asn1EncodableVector();
             v.Add(new DerObjectIdentifier(ID_TIME_STAMP_TOKEN)); // id-aa-timeStampToken
             Asn1Sequence seq = (Asn1Sequence) tempstream.ReadObject();
-            v.Add(new DerSet(seq));
+            v.Add(new DerSet((IReadOnlyCollection<Asn1Encodable>)seq));
 
             unauthAttributes.Add(new DerSequence(v));
             return unauthAttributes;
@@ -878,7 +878,7 @@ namespace iTextSharp.text.pdf.security {
                     revocationV.Add(new DerTaggedObject(true, 1, new DerSequence(vo1)));
                 }
 
-                v.Add(new DerSet(new DerSequence(revocationV)));
+                v.Add(new DerSet((IReadOnlyCollection<Asn1Encodable>)new DerSequence(revocationV)));
                 attribute.Add(new DerSequence(v));
             }
             if (sigtype == CryptoStandard.CADES) {
@@ -899,7 +899,9 @@ namespace iTextSharp.text.pdf.security {
                 byte[] dig = DigestAlgorithms.Digest(GetHashAlgorithm(), signCert.GetEncoded()); 
                 aaV2.Add(new DerOctetString(dig));
                 
-                v.Add(new DerSet(new DerSequence(new DerSequence(new DerSequence(aaV2)))));
+                v.Add(new DerSet((IReadOnlyCollection<Asn1Encodable>)new DerSequence(
+                    (IReadOnlyCollection<Asn1Encodable>)new DerSequence(
+                        (IReadOnlyCollection<Asn1Encodable>)new DerSequence(aaV2)))));
                 attribute.Add(new DerSequence(v));
             }
 

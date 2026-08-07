@@ -1,6 +1,6 @@
 /*
     This file is part of the iText (R) project.
-    Copyright (c) 1998-2020 iText Group NV
+    Copyright (c) 1998-2026 iText Group NV
     Authors: iText Software.
 
     This program is free software; you can redistribute it and/or modify
@@ -50,7 +50,7 @@ namespace iTextSharp.sandbox.annotations
     [WrapToTest]
     public class AddLinkAnnotation
     {
-        public static readonly String SRC = "../../resources/pdfs/primes.pdf";
+        public static readonly String SRC = "../../../resources/pdfs/primes.pdf";
         public static readonly String DEST = "results/annotations/link_annotation.pdf";
 
         public static void Main(string[] args)

@@ -1,6 +1,6 @@
 /*
     This file is part of the iText (R) project.
-    Copyright (c) 1998-2020 iText Group NV
+    Copyright (c) 1998-2026 iText Group NV
     Authors: iText Software.
 
     This program is free software; you can redistribute it and/or modify
@@ -51,7 +51,7 @@ using NUnit.Framework;
 namespace itextsharp.tests.iTextSharp.text.pdf.table {
 
     public class ColorsInTaggedDocumentsTest {
-        private String cmpFolder = @"..\..\resources\text\pdf\table\tableColorsTest\";
+        private String cmpFolder = @"..\..\..\resources\text\pdf\table\tableColorsTest\";
         private String outFolder = @"table\tableColorsTest\";
 
         [SetUp]

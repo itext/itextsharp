@@ -1,6 +1,6 @@
 /*
     This file is part of the iText (R) project.
-    Copyright (c) 1998-2020 iText Group NV
+    Copyright (c) 1998-2026 iText Group NV
     Authors: iText Software.
 
     This program is free software; you can redistribute it and/or modify
@@ -55,7 +55,7 @@ namespace itextsharp.tests.iTextSharp.text.pdf.pdfcleanup {
 
     class PdfCleanUpProcessorTest {
 
-        private static readonly string INPUT_PATH = @"..\..\resources\text\pdf\pdfcleanup\PdfCleanUpProcessorTest\";
+        private static readonly string INPUT_PATH = @"..\..\..\resources\text\pdf\pdfcleanup\PdfCleanUpProcessorTest\";
         private static readonly string OUTPUT_PATH = @"PdfCleanUpProcessorTest\";
 
         [Test, TestCaseSourceAttribute("TestData")]

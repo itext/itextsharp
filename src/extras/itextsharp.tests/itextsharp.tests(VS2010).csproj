@@ -10,7 +10,7 @@
     <AppDesignerFolder>Properties</AppDesignerFolder>
     <RootNamespace>itextsharp.tests</RootNamespace>
     <AssemblyName>itextsharp.tests</AssemblyName>
-    <TargetFrameworkVersion>v2.0</TargetFrameworkVersion>
+    <TargetFrameworkVersion>v4.6.1</TargetFrameworkVersion>
     <FileUpgradeFlags>
     </FileUpgradeFlags>
     <UpgradeBackupLocation>
@@ -21,7 +21,7 @@
     <DebugSymbols>true</DebugSymbols>
     <DebugType>full</DebugType>
     <Optimize>false</Optimize>
-    <OutputPath>bin\Debug\</OutputPath>
+    <OutputPath>bin\Debug\net461\</OutputPath>
     <DefineConstants>DEBUG;TRACE;DRAWING</DefineConstants>
     <ErrorReport>prompt</ErrorReport>
     <WarningLevel>4</WarningLevel>
@@ -30,7 +30,7 @@
   <PropertyGroup Condition=" '$(Configuration)|$(Platform)' == 'Release|AnyCPU' ">
     <DebugType>pdbonly</DebugType>
     <Optimize>true</Optimize>
-    <OutputPath>bin\Release\</OutputPath>
+    <OutputPath>bin\Release\net461\</OutputPath>
     <DefineConstants>TRACE;DRAWING</DefineConstants>
     <ErrorReport>prompt</ErrorReport>
     <WarningLevel>4</WarningLevel>
@@ -46,14 +46,14 @@
     <DebugSymbols>true</DebugSymbols>
     <DebugType>full</DebugType>
     <Optimize>false</Optimize>
-    <OutputPath>bin\Debug_woDrawing\</OutputPath>
+    <OutputPath>bin\Debug_woDrawing\net461\</OutputPath>
     <DefineConstants>DEBUG;TRACE</DefineConstants>
     <ErrorReport>prompt</ErrorReport>
     <WarningLevel>4</WarningLevel>
     <CodeAnalysisRuleSet>AllRules.ruleset</CodeAnalysisRuleSet>
   </PropertyGroup>
   <PropertyGroup Condition=" '$(Configuration)|$(Platform)' == 'Release_woDrawing|AnyCPU' ">
-    <OutputPath>bin\Release_woDrawing\</OutputPath>
+    <OutputPath>bin\Release_woDrawing\net461\</OutputPath>
     <DefineConstants>TRACE</DefineConstants>
     <Optimize>true</Optimize>
     <DebugType>pdbonly</DebugType>
@@ -65,8 +65,8 @@
     <Reference Include="nunit.framework, Version=2.6.2.12296, Culture=neutral, PublicKeyToken=96d09a1eb7f44a77, processorArchitecture=MSIL">
       <HintPath>$(SolutionDir)\packages\NUnit.2.6.2\lib\nunit.framework.dll</HintPath>
     </Reference>
-    <Reference Include="BouncyCastle.Crypto, Version=1.8.6.0, Culture=neutral, PublicKeyToken=0e99375e54769942">
-      <HintPath>$(SolutionDir)\packages\BouncyCastle.1.8.6.1\lib\BouncyCastle.Crypto.dll</HintPath>
+    <Reference Include="BouncyCastle.Cryptography, Version=2.0.0.0, Culture=neutral, PublicKeyToken=072edcf4a5328938">
+      <HintPath>$(SolutionDir)\packages\BouncyCastle.Cryptography.2.6.2\lib\net461\BouncyCastle.Cryptography.dll</HintPath>
       <Private>True</Private>
     </Reference>
     <Reference Include="System" />
@@ -176,6 +176,22 @@
     <None Include="itextsharp.snk" />
     <None Include="lib\XmlDiffPatch.dll">
     </None>
+    <Content Include="resources\testutils\CompareToolTest\cmp_EqualPdfsTest.pdf" />
+    <Content Include="resources\testutils\CompareToolTest\cmp_EqualPdfsTest.xml" />
+    <Content Include="resources\testutils\CompareToolTest\cmp_report01.xml" />
+    <Content Include="resources\testutils\CompareToolTest\cmp_report02.xml" />
+    <Content Include="resources\testutils\CompareToolTest\cmp_report03.xml" />
+    <Content Include="resources\testutils\CompareToolTest\cmp_screenAnnotation.pdf" />
+    <Content Include="resources\testutils\CompareToolTest\cmp_simple_pdf.pdf" />
+    <Content Include="resources\testutils\CompareToolTest\cmp_tagged_pdf.pdf" />
+    <Content Include="resources\testutils\CompareToolTest\cmp_TestPdf.pdf" />
+    <Content Include="resources\testutils\CompareToolTest\cmp_TestPdf.xml" />
+    <Content Include="resources\testutils\CompareToolTest\EqualPdfsTest.pdf" />
+    <Content Include="resources\testutils\CompareToolTest\cmp_report01.xml" />
+    <Content Include="resources\testutils\CompareToolTest\screenAnnotation.pdf" />
+    <Content Include="resources\testutils\CompareToolTest\simple_pdf.pdf" />
+    <Content Include="resources\testutils\CompareToolTest\tagged_pdf.pdf" />
+    <Content Include="resources\testutils\CompareToolTest\TestPdf.pdf" />
 	<Content Include="resources\text\pdf\DefaultSplitCharacterProfilingTest\profilingText.txt" />
     <Content Include="resources\text\xmp\impl\xxe-data.txt" />
     <Content Include="resources\text\ChunkTest\logo.gif" />
@@ -228,10 +244,6 @@
     <Content Include="resources\text\pdf\TaggedPdfTest\xml\test8.xml" />
     <Content Include="resources\text\pdf\TaggedPdfTest\xml\test9.xml" />
     <None Include="packages.config" />
-    <None Include="resources\testutils\CompareToolTest\cmp_simple_pdf.pdf" />
-    <None Include="resources\testutils\CompareToolTest\cmp_tagged_pdf.pdf" />
-    <None Include="resources\testutils\CompareToolTest\simple_pdf.pdf" />
-    <None Include="resources\testutils\CompareToolTest\tagged_pdf.pdf" />
     <None Include="resources\text\pdf\AcroFieldsTest\acroform.pdf" />
     <None Include="resources\text\pdf\AcroFieldsTest\choice_field_order.pdf" />
     <None Include="resources\text\pdf\AcroFieldsTest\choice_field_order_export.pdf" />
@@ -455,7 +467,6 @@
       <Name>itextsharp.xtra%28VS2010%29</Name>
     </ProjectReference>
   </ItemGroup>
-  <ItemGroup />
   <Import Project="$(MSBuildBinPath)\Microsoft.CSharp.targets" />
   <!-- To modify your build process, add your task inside one of the targets below and uncomment it.
        Other similar extension points exist, see Microsoft.Common.targets.

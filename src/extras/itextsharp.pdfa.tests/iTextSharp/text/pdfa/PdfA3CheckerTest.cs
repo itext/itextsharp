@@ -1,6 +1,6 @@
 /*
     This file is part of the iText (R) project.
-    Copyright (c) 1998-2020 iText Group NV
+    Copyright (c) 1998-2026 iText Group NV
     Authors: iText Software.
 
     This program is free software; you can redistribute it and/or modify
@@ -49,7 +49,7 @@ using NUnit.Framework;
 namespace iTextSharp.text.pdfa {
     [TestFixture]
     internal class PdfA3CheckerTest {
-        public const String RESOURCES = @"..\..\resources\text\pdfa\";
+        public const String RESOURCES = @"..\..\..\resources\text\pdfa\";
         public const String TARGET = "PdfA3CheckerTest\\";
         public const String OUT = TARGET + "pdf\\out";
 

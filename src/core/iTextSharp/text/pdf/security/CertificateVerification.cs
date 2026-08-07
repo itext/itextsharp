@@ -1,6 +1,6 @@
 /*
     This file is part of the iText (R) project.
-    Copyright (c) 1998-2020 iText Group NV
+    Copyright (c) 1998-2026 iText Group NV
     Authors: iText Software.
 
     This program is free software; you can redistribute it and/or modify
@@ -42,6 +42,7 @@
  */
 using System;
 using System.Collections.Generic;
+using Org.BouncyCastle.Asn1;
 using Org.BouncyCastle.X509;
 using Org.BouncyCastle.Ocsp;
 using Org.BouncyCastle.Tsp;
@@ -79,7 +80,7 @@ namespace iTextSharp.text.pdf.security {
                 }
                 try {
                     // EXTENDED KEY USAGE and TIMESTAMPING is ALLOWED
-                    if (oid == X509Extensions.ExtendedKeyUsage.Id && cert.GetExtendedKeyUsage().Contains("1.3.6.1.5.5.7.3.8")) {
+                    if (oid == X509Extensions.ExtendedKeyUsage.Id && cert.GetExtendedKeyUsage().Contains(new DerObjectIdentifier("1.3.6.1.5.5.7.3.8"))) {
                         continue;
                     }
                 }

@@ -1,6 +1,6 @@
 /*
     This file is part of the iText (R) project.
-    Copyright (c) 1998-2020 iText Group NV
+    Copyright (c) 1998-2026 iText Group NV
     Authors: iText Software.
 
     This program is free software; you can redistribute it and/or modify
@@ -57,8 +57,8 @@ namespace iTextSharp.text.pdf.crypto {
         
         /** Creates a new instance of AESCipher */
         public AESCipher(bool forEncryption, byte[] key, byte[] iv) {
-            IBlockCipher aes = new AesFastEngine();
-            IBlockCipher cbc = new CbcBlockCipher(aes);
+            IBlockCipher aes = new AesEngine();
+            IBlockCipherMode cbc = new CbcBlockCipher(aes);
             bp = new PaddedBufferedBlockCipher(cbc);
             KeyParameter kp = new KeyParameter(key);
             ParametersWithIV piv = new ParametersWithIV(kp, iv);

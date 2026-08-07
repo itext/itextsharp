@@ -1,6 +1,6 @@
 /*
     This file is part of the iText (R) project.
-    Copyright (c) 1998-2020 iText Group NV
+    Copyright (c) 1998-2026 iText Group NV
     Authors: iText Software.
 
     This program is free software; you can redistribute it and/or modify
@@ -49,7 +49,7 @@ namespace iTextSharp.sandbox.images
     [WrapToTest]
     public class TiledImage
     {
-        public static readonly string IMAGE = "../../resources/images/bruno_ingeborg.jpg";
+        public static readonly string IMAGE = "../../../resources/images/bruno_ingeborg.jpg";
         public static readonly string DEST = "results/images/tiled_image.pdf";
 
         public static void Main(string[] args)

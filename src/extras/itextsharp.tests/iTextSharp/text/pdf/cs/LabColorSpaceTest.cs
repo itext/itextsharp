@@ -1,6 +1,6 @@
 /*
     This file is part of the iText (R) project.
-    Copyright (c) 1998-2020 iText Group NV
+    Copyright (c) 1998-2026 iText Group NV
     Authors: iText Software.
 
     This program is free software; you can redistribute it and/or modify
@@ -50,7 +50,7 @@ using NUnit.Framework;
 namespace itextsharp.tests.iTextSharp.text.pdf.cs {
     public class LabColorSpaceTest {
         public const String DEST_FOLDER = @"cs\LabColorSpaceTest\";
-        private const string TEST_RESOURCES_PATH = @"..\..\resources\text\pdf\cs\LabColorSpaceTest\";
+        private const string TEST_RESOURCES_PATH = @"..\..\..\resources\text\pdf\cs\LabColorSpaceTest\";
 
         [SetUp]
         public virtual void Init() {

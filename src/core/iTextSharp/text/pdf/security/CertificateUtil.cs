@@ -1,6 +1,6 @@
 /*
     This file is part of the iText (R) project.
-    Copyright (c) 1998-2020 iText Group NV
+    Copyright (c) 1998-2026 iText Group NV
     Authors: iText Software.
 
     This program is free software; you can redistribute it and/or modify
@@ -136,7 +136,7 @@ namespace iTextSharp.text.pdf.security {
          * @throws IOException
          */
         public static String GetTSAURL(X509Certificate certificate) {
-            Asn1OctetString octetString = certificate.GetExtensionValue(SecurityIDs.ID_TSA);
+            Asn1OctetString octetString = certificate.GetExtensionValue(new DerObjectIdentifier(SecurityIDs.ID_TSA));
             if (octetString == null)
                 return null;
             byte[] der = octetString.GetOctets();

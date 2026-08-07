@@ -1,6 +1,6 @@
 /*
     This file is part of the iText (R) project.
-    Copyright (c) 1998-2020 iText Group NV
+    Copyright (c) 1998-2026 iText Group NV
     Authors: iText Software.
 
     This program is free software; you can redistribute it and/or modify
@@ -51,7 +51,7 @@ namespace itextsharp.tests.iTextSharp.text.pdf.fonts {
     */
     public class FontFamilyTest {
 
-        private static string srcFolder = @"..\..\resources\text\pdf\fonts\NotoFont\";
+        private static string srcFolder = @"..\..\..\resources\text\pdf\fonts\NotoFont\";
 
         [Test]
         public void TestNotoFontFamily() {

@@ -1,6 +1,6 @@
 /*
     This file is part of the iText (R) project.
-    Copyright (c) 1998-2020 iText Group NV
+    Copyright (c) 1998-2026 iText Group NV
     Authors: iText Software.
 
     This program is free software; you can redistribute it and/or modify
@@ -54,7 +54,7 @@ namespace itextsharp.pdfa.tests.iTextSharp.text.pdfa {
     [TestFixture]
     class ConcurrentWriterTest {
 
-        public const String RESOURCES = @"..\..\resources\text\pdfa\";
+        public const String RESOURCES = @"..\..\..\resources\text\pdfa\";
         
         [Test]
         public void test() {
