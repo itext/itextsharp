@@ -964,6 +964,9 @@
     <Compile Include="iTextSharp\text\pdf\PdfEncryptor.cs">
       <SubType>Code</SubType>
     </Compile>
+    <Compile Include="iTextSharp\text\pdf\SecureRandomHolder.cs">
+      <SubType>Code</SubType>
+    </Compile>
     <Compile Include="iTextSharp\text\pdf\PdfException.cs">
       <SubType>Code</SubType>
     </Compile>

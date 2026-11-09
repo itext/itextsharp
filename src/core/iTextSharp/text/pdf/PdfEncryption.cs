@@ -73,6 +73,8 @@ namespace iTextSharp.text.pdf {
             (byte) 0x69, (byte) 0x7A
         };
 
+        private static readonly SecureRandomHolder RNG = new SecureRandomHolder();
+
         private static readonly byte[] salt = {(byte) 0x73, (byte) 0x41, (byte) 0x6c, (byte) 0x54};
         internal static readonly byte[] metadataPad = {(byte) 255, (byte) 255, (byte) 255, (byte) 255};
         /** The encryption key for a particular object/generation */
@@ -326,9 +328,15 @@ namespace iTextSharp.text.pdf {
                 if (userPassword == null)
                     userPassword = new byte[0];
                 documentID = CreateDocumentId();
-                byte[] uvs = IVGenerator.GetIV(8);
-                byte[] uks = IVGenerator.GetIV(8);
-                key = IVGenerator.GetIV(32);
+
+                byte[] uvs = new byte[8];
+                RNG.GetSecureRandom().GetBytes(uvs);
+                byte[] uks = new byte[8];
+                RNG.GetSecureRandom().GetBytes(uks);
+
+                key = new byte[32];
+                RNG.GetSecureRandom().GetBytes(key);
+
                 // Algorithm 3.8.1
                 IDigest md = DigestUtilities.GetDigest("SHA-256");
                 md.BlockUpdate(userPassword, 0, Math.Min(userPassword.Length, 127));
@@ -345,8 +353,12 @@ namespace iTextSharp.text.pdf {
                 AESCipherCBCnoPad ac = new AESCipherCBCnoPad(true, tempDigest);
                 ueKey = ac.ProcessBlock(key, 0, key.Length);
                 // Algorithm 3.9.1
-                byte[] ovs = IVGenerator.GetIV(8);
-                byte[] oks = IVGenerator.GetIV(8);
+                byte[] ovs = new byte[8];
+                RNG.GetSecureRandom().GetBytes(ovs);
+
+                byte[] oks = new byte[8];
+                RNG.GetSecureRandom().GetBytes(oks);
+
                 md.BlockUpdate(ownerPassword, 0, Math.Min(ownerPassword.Length, 127));
                 md.BlockUpdate(ovs, 0, ovs.Length);
                 md.BlockUpdate(userKey, 0, userKey.Length);
@@ -362,7 +374,9 @@ namespace iTextSharp.text.pdf {
                 ac = new AESCipherCBCnoPad(true, tempDigest);
                 oeKey = ac.ProcessBlock(key, 0, key.Length);
                 // Algorithm 3.10
-                byte[] permsp = IVGenerator.GetIV(16);
+                byte[] permsp = new byte[16];
+                RNG.GetSecureRandom().GetBytes(permsp);
+
                 permsp[0] = (byte) permissions;
                 permsp[1] = (byte) (permissions >> 8);
                 permsp[2] = (byte) (permissions >> 16);
