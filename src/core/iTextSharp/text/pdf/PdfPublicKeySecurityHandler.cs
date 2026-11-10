@@ -101,7 +101,7 @@ namespace iTextSharp.text.pdf {
     */
     public class PdfPublicKeySecurityHandler {
         
-        private static readonly SecureRandomHolder RNG = new SecureRandomHolder();
+        private static readonly System.Security.Cryptography.RNGCryptoServiceProvider RNG = new System.Security.Cryptography.RNGCryptoServiceProvider();
 
         private const int SEED_LENGTH = 20;
         
@@ -111,7 +111,7 @@ namespace iTextSharp.text.pdf {
 
         public PdfPublicKeySecurityHandler() {
             seed = new byte[SEED_LENGTH];
-            RNG.GetSecureRandom().GetBytes(seed);
+            RNG.GetBytes(seed);
             recipients = new List<PdfPublicKeyRecipient>();
         }
 
@@ -193,12 +193,12 @@ namespace iTextSharp.text.pdf {
             byte[] outp = new byte[100];
             DerObjectIdentifier derob = new DerObjectIdentifier(s);
             byte[] keyp = new byte[16];
-            RNG.GetSecureRandom().GetBytes(keyp);
+            RNG.GetBytes(keyp);
 
             IBufferedCipher cf = CipherUtilities.GetCipher(derob);
             KeyParameter kp = new KeyParameter(keyp);
             byte[] iv = new byte[cf.GetBlockSize()];
-            RNG.GetSecureRandom().GetBytes(iv);
+            RNG.GetBytes(iv);
 
             ParametersWithIV piv = new ParametersWithIV(kp, iv);
             cf.Init(true, piv);

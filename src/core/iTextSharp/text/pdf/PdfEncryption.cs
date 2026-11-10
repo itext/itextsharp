@@ -73,7 +73,7 @@ namespace iTextSharp.text.pdf {
             (byte) 0x69, (byte) 0x7A
         };
 
-        private static readonly SecureRandomHolder RNG = new SecureRandomHolder();
+        private static readonly System.Security.Cryptography.RNGCryptoServiceProvider RNG = new System.Security.Cryptography.RNGCryptoServiceProvider();
 
         private static readonly byte[] salt = {(byte) 0x73, (byte) 0x41, (byte) 0x6c, (byte) 0x54};
         internal static readonly byte[] metadataPad = {(byte) 255, (byte) 255, (byte) 255, (byte) 255};
@@ -98,7 +98,6 @@ namespace iTextSharp.text.pdf {
         protected PdfPublicKeySecurityHandler publicKeyHandler = null;
         internal long permissions;
         internal byte[] documentID;
-        internal static long seq = DateTime.Now.Ticks + Environment.TickCount;
         private int revision;
         private ARCFOUREncryption rc4 = new ARCFOUREncryption();
         /** The generic key length. It may be 40 or 128. */
@@ -330,12 +329,12 @@ namespace iTextSharp.text.pdf {
                 documentID = CreateDocumentId();
 
                 byte[] uvs = new byte[8];
-                RNG.GetSecureRandom().GetBytes(uvs);
+                RNG.GetBytes(uvs);
                 byte[] uks = new byte[8];
-                RNG.GetSecureRandom().GetBytes(uks);
+                RNG.GetBytes(uks);
 
                 key = new byte[32];
-                RNG.GetSecureRandom().GetBytes(key);
+                RNG.GetBytes(key);
 
                 // Algorithm 3.8.1
                 IDigest md = DigestUtilities.GetDigest("SHA-256");
@@ -354,10 +353,10 @@ namespace iTextSharp.text.pdf {
                 ueKey = ac.ProcessBlock(key, 0, key.Length);
                 // Algorithm 3.9.1
                 byte[] ovs = new byte[8];
-                RNG.GetSecureRandom().GetBytes(ovs);
+                RNG.GetBytes(ovs);
 
                 byte[] oks = new byte[8];
-                RNG.GetSecureRandom().GetBytes(oks);
+                RNG.GetBytes(oks);
 
                 md.BlockUpdate(ownerPassword, 0, Math.Min(ownerPassword.Length, 127));
                 md.BlockUpdate(ovs, 0, ovs.Length);
@@ -375,7 +374,7 @@ namespace iTextSharp.text.pdf {
                 oeKey = ac.ProcessBlock(key, 0, key.Length);
                 // Algorithm 3.10
                 byte[] permsp = new byte[16];
-                RNG.GetSecureRandom().GetBytes(permsp);
+                RNG.GetBytes(permsp);
 
                 permsp[0] = (byte) permissions;
                 permsp[1] = (byte) (permissions >> 8);
@@ -478,11 +477,9 @@ namespace iTextSharp.text.pdf {
         }
 
         public static byte[] CreateDocumentId() {
-            long time = DateTime.Now.Ticks + Environment.TickCount;
-            long mem = GC.GetTotalMemory(false);
-            String s = time + "+" + mem + "+" + (seq++);
-            byte[] b = Encoding.ASCII.GetBytes(s);
-            return DigestAlgorithms.Digest("MD5", b);
+            byte[] bytes = new byte[16];
+            RNG.GetBytes(bytes);
+            return bytes;
         }
 
         virtual public void SetupByUserPassword(byte[] documentID, byte[] userPassword, byte[] ownerKey,

@@ -182,5 +182,15 @@ namespace itextsharp.tests.iTextSharp.text.pdf {
                 }
             }
         }
+
+        [Test]
+        public void CreateDocumentIdIsRandomTest() {
+            byte[] first = PdfEncryption.CreateDocumentId();
+            byte[] second = PdfEncryption.CreateDocumentId();
+
+            Assert.AreEqual(16, first.Length);
+            Assert.AreEqual(16, second.Length);
+            CollectionAssert.AreNotEqual(first, second);
+        }
     }
 }
