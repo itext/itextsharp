@@ -46,6 +46,9 @@ using iTextSharp.text.pdf.crypto;
 
 namespace iTextSharp.text.pdf {
     public class OutputStreamEncryption : Stream {
+
+    private static readonly System.Security.Cryptography.RNGCryptoServiceProvider RNG = new System.Security.Cryptography.RNGCryptoServiceProvider();
+
     protected Stream outc;
     protected ARCFOUREncryption arcfour;
     protected AESCipher cipher;
@@ -59,7 +62,8 @@ namespace iTextSharp.text.pdf {
             this.outc = outc;
             aes = (revision == AES_128 || revision == AES_256);
             if (aes) {
-                byte[] iv = IVGenerator.GetIV();
+                byte[] iv = new byte[16];
+                RNG.GetBytes(iv);
                 byte[] nkey = new byte[len];
                 System.Array.Copy(key, off, nkey, 0, len);
                 cipher = new AESCipher(true, nkey, iv);

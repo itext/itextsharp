@@ -136,11 +136,11 @@
   </PropertyGroup>
   <ItemGroup>
     <Reference Include="BouncyCastle.Cryptography, Version=2.0.0.0, Culture=neutral, PublicKeyToken=072edcf4a5328938">
-      <HintPath>$(SolutionDir)\packages\BouncyCastle.Cryptography.2.6.2\lib\net461\BouncyCastle.Cryptography.dll</HintPath>
+      <HintPath>$(SolutionDir)\packages\BouncyCastle.Cryptography.2.7.0\lib\net461\BouncyCastle.Cryptography.dll</HintPath>
       <Private>True</Private>
     </Reference>
-    <Reference Include="itext.commons, Version=9.7.0.0, Culture=neutral, PublicKeyToken=8354ae6d2174ddca">
-      <HintPath>$(SolutionDir)\packages\itext.commons.9.7.0\lib\net461\itext.commons.dll</HintPath>
+    <Reference Include="itext.commons, Version=9.8.1.1, Culture=neutral, PublicKeyToken=8354ae6d2174ddca">
+      <HintPath>$(SolutionDir)\packages\itext.commons.9.8.1.1\lib\net461\itext.commons.dll</HintPath>
       <Private>True</Private>
     </Reference>
     <Reference Include="Newtonsoft.Json, Version=13.0.0.0, Culture=neutral, PublicKeyToken=30ad4fe6b2a6aeed">

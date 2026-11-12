@@ -146,6 +146,36 @@ namespace itextsharp.tests.iTextSharp.text.pdf {
             CertSign(signCert, new X509CertificateParser(), outPdf, new PdfReader(tmpPdf, Org.BouncyCastle.Security.DotNetUtilities.FromX509Certificate(cert), certpk), "reason", "location");
         }
 
+        [Test]
+        public void DecryptPubSecAES256WithRC2EnvelopeTest() {
+            Pkcs12Store pkstore = new Pkcs12StoreBuilder().Build();
+            using (FileStream p12 = new FileStream(SOURCE_FOLDER + "test.p12", FileMode.Open, FileAccess.Read)) {
+                pkstore.Load(p12, "kspass".ToCharArray());
+            }
+            string pkalias = null;
+            foreach (object a in pkstore.Aliases) {
+                pkalias = (string)a;
+                if (pkstore.IsKeyEntry(pkalias))
+                    break;
+            }
+            ICipherParameters certpk = pkstore.GetKey(pkalias).Key;
+            Org.BouncyCastle.X509.X509Certificate cert =
+                new X509CertificateParser().ReadCertificate(File.ReadAllBytes(SOURCE_FOLDER + "test.cer"));
+
+            string lenientRsa = Org.BouncyCastle.Utilities.Properties.CmsAllowLenientRsaPkcs1;
+            Assert.IsNull(Org.BouncyCastle.Utilities.Properties.GetThreadProperty(lenientRsa));
+
+            PdfReader reader = new PdfReader(SOURCE_FOLDER + "PubSecAES256RC2Envelope.pdf", cert, certpk);
+            try {
+                Assert.IsNull(Org.BouncyCastle.Utilities.Properties.GetThreadProperty(lenientRsa));
+                Assert.IsTrue(reader.IsEncrypted());
+                Assert.AreEqual(1, reader.NumberOfPages);
+                Assert.AreEqual("Text", global::iTextSharp.text.pdf.parser.PdfTextExtractor.GetTextFromPage(reader, 1));
+            } finally {
+                reader.Close();
+            }
+        }
+
         public static void EncryptPdfWithCertificate(string sourceDocument, string targetDocument, string certPath)
         {
             X509Certificate chain = new X509Certificate();
@@ -181,6 +211,16 @@ namespace itextsharp.tests.iTextSharp.text.pdf {
                     stamper.Close();
                 }
             }
+        }
+
+        [Test]
+        public void CreateDocumentIdIsRandomTest() {
+            byte[] first = PdfEncryption.CreateDocumentId();
+            byte[] second = PdfEncryption.CreateDocumentId();
+
+            Assert.AreEqual(16, first.Length);
+            Assert.AreEqual(16, second.Length);
+            CollectionAssert.AreNotEqual(first, second);
         }
     }
 }

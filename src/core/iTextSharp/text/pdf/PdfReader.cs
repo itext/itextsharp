@@ -64,6 +64,7 @@ namespace iTextSharp.text.pdf {
     * @author Kazuya Ujihara
     */
     public class PdfReader : IPdfViewerPreferences, IDisposable {
+        private const string RC2_CBC_OID = "1.2.840.113549.3.2";
 
         /**
          * The iText developers are not responsible if you decide to change the
@@ -880,7 +881,15 @@ namespace iTextSharp.text.pdf {
 
                     foreach (RecipientInformation recipientInfo in data.GetRecipientInfos().GetRecipients()) {
                         if (recipientInfo.RecipientID.Match(certificate) && !foundRecipient) {
-                            envelopedData = recipientInfo.GetContent(certificateKey);
+                            if (RC2_CBC_OID.Equals(data.EncryptionAlgOid)) {
+                                // BC refuses the constant-time RSA unwrap for variable-size ciphers; allow the legacy
+                                // unwrap only for the RC2 envelopes written by earlier iText versions.
+                                envelopedData = Org.BouncyCastle.Utilities.Properties.WithThreadProperty(
+                                    Org.BouncyCastle.Utilities.Properties.CmsAllowLenientRsaPkcs1, "true",
+                                    () => recipientInfo.GetContent(certificateKey));
+                            } else {
+                                envelopedData = recipientInfo.GetContent(certificateKey);
+                            }
                             foundRecipient = true;
                         }
                     }

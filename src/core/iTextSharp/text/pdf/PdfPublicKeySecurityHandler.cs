@@ -43,6 +43,7 @@
 using System;
 using System.IO;
 using System.Collections.Generic;
+using System.Security.Cryptography;
 using iTextSharp.text.pdf.crypto;
 using Org.BouncyCastle.Crypto;
 using Org.BouncyCastle.Crypto.Parameters;
@@ -101,6 +102,8 @@ namespace iTextSharp.text.pdf {
     */
     public class PdfPublicKeySecurityHandler {
         
+        private static readonly System.Security.Cryptography.RNGCryptoServiceProvider RNG = new System.Security.Cryptography.RNGCryptoServiceProvider();
+
         private const int SEED_LENGTH = 20;
         
         private List<PdfPublicKeyRecipient> recipients = null;
@@ -108,7 +111,8 @@ namespace iTextSharp.text.pdf {
         private byte[] seed;
 
         public PdfPublicKeySecurityHandler() {
-            seed = IVGenerator.GetIV(SEED_LENGTH);
+            seed = new byte[SEED_LENGTH];
+            RNG.GetBytes(seed);
             recipients = new List<PdfPublicKeyRecipient>();
         }
 
@@ -185,28 +189,25 @@ namespace iTextSharp.text.pdf {
         
         private Asn1Object CreateDERForRecipient(byte[] inp, X509Certificate cert) {
             
-            String s = "1.2.840.113549.3.2";
+            String s = "2.16.840.1.101.3.4.1.42";
             
-            byte[] outp = new byte[100];
             DerObjectIdentifier derob = new DerObjectIdentifier(s);
-            byte[] keyp = IVGenerator.GetIV(16);
-            IBufferedCipher cf = CipherUtilities.GetCipher(derob);
-            KeyParameter kp = new KeyParameter(keyp);
-            byte[] iv = IVGenerator.GetIV(cf.GetBlockSize());
-            ParametersWithIV piv = new ParametersWithIV(kp, iv);
-            cf.Init(true, piv);
-            int len = cf.DoFinal(inp, outp, 0);
+            byte[] keyp = new byte[32];
+            RNG.GetBytes(keyp);
 
-            byte[] abyte1 = new byte[len];
-            System.Array.Copy(outp, 0, abyte1, 0, len);
+            byte[] iv = new byte[16];
+            RNG.GetBytes(iv);
+            
+            ICryptoTransform encryptor = Aes.Create().CreateEncryptor(keyp, iv);
+            byte[] abyte1 = encryptor.TransformFinalBlock(inp, 0, inp.Length);
+
             DerOctetString deroctetstring = new DerOctetString(abyte1);
             KeyTransRecipientInfo keytransrecipientinfo = ComputeRecipientInfo(cert, keyp);
             DerSet derset = new DerSet(new RecipientInfo(keytransrecipientinfo));
-            Asn1EncodableVector ev = new Asn1EncodableVector();
-            ev.Add(new DerInteger(58));
-            ev.Add(new DerOctetString(iv));
-            DerSequence seq = new DerSequence(ev);
-            AlgorithmIdentifier algorithmidentifier = new AlgorithmIdentifier(derob, seq);
+
+            DerOctetString envelopeAlgoParams = new DerOctetString(iv);
+            AlgorithmIdentifier algorithmidentifier = new AlgorithmIdentifier(derob, envelopeAlgoParams);
+
             EncryptedContentInfo encryptedcontentinfo = 
                 new EncryptedContentInfo(PkcsObjectIdentifiers.Data, algorithmidentifier, deroctetstring);
             Asn1Set set = null;

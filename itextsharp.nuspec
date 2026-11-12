@@ -2,7 +2,7 @@
 <package xmlns="http://schemas.microsoft.com/packaging/2011/08/nuspec.xsd">
   <metadata>
     <id>iTextSharp</id>
-    <version>5.5.13.6</version>
+    <version>5.5.13.7</version>
     <title>iTextSharp</title>
     <authors>iText Software</authors>
     <owners>Bruno Lowagie,Paulo Soares</owners>
@@ -40,7 +40,7 @@ iText Community: https://www.nuget.org/packages/itext/</summary>
     <tags>itext itextsharp c# .net csharp pdf</tags>
     <dependencies>
       <group targetFramework="net461">
-        <dependency id="BouncyCastle.Cryptography" version="2.6.2" />
+        <dependency id="BouncyCastle.Cryptography" version="2.7.0" />
       </group>
     </dependencies>
   </metadata>
